@@ -6,9 +6,11 @@ We are currently moving everything from our intern Gitlab to GH.
 
 - [x] Add pipeline
 - [ ] Add sonar analysis
-- [ ] Rename everything from DependaCharta to DependaCharta
+- [x] Rename everything from Codegraph to DependaCharta
 - [ ] Fix Urls
 - [ ] Add Pictures inside the issues
+- [ ] Fix pullrequests creating two pipelines
+- [ ] Create release and gh pages
 
 
 # Status
