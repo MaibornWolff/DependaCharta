@@ -21,7 +21,7 @@ You can use [tree-sitter queries](https://tree-sitter.github.io/tree-sitter/usin
 
 Use the [tree-sitter playground](https://tree-sitter.github.io/tree-sitter/7-playground.html) to find out how tree-sitter represents the code element you are looking at. You can use the query feature on the site to test your queries.
 
-For examples on how to write and use queries, you can look at the existing analyzers in the [analyzers](./src/main/kotlin/de/maibornwolff/codegraph/pipeline/analysis/analyzers) package.
+For examples on how to write and use queries, you can look at the existing analyzers in the [analyzers](./src/main/kotlin/de/maibornwolff/dependacharta/pipeline/analysis/analyzers) package.
 
 ### Handling language specifica
 The LanguageAnalyzer should be the only part of the code that handles language specific details. The rest of the code should be language agnostic.

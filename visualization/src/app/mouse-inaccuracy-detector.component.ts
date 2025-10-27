@@ -232,7 +232,7 @@ export class WarningSnackbarComponent {
   template: `
     <h2 mat-dialog-title>Reload needed. Do you want to reload?</h2>
     <mat-dialog-content>
-      Codegraph is facing difficulties with switching Input devices. If you switch between Touchpad and Mouse, zoom is not working properly. We kindly ask you to excuse this bug. We are already working hard on fixing it and hope to release a fix as soon as possible. In the meantime we can only offer you to reload the application without any loss of work and suggest you to avoid switching your input device while using Codegraph.
+      DependaCharta is facing difficulties with switching Input devices. If you switch between Touchpad and Mouse, zoom is not working properly. We kindly ask you to excuse this bug. We are already working hard on fixing it and hope to release a fix as soon as possible. In the meantime we can only offer you to reload the application without any loss of work and suggest you to avoid switching your input device while using DependaCharta.
     </mat-dialog-content>
     <mat-dialog-actions>
       <button matButton mat-dialog-close>Cancel</button>

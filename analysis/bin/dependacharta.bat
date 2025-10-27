@@ -7,7 +7,7 @@ if "%JAVA_HOME%"=="" (
   set JAVA_CMD="%JAVA_HOME%\bin\java" --enable-native-access=ALL-UNNAMED
 )
 
-set JAR_PATH=codegraph.jar
+set JAR_PATH=dependacharta.jar
 
 set ARGS=%*
 

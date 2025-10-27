@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-CodeGraph is a multi-language code analysis and visualization tool that consists of two main components:
+DependaCharta is a multi-language code analysis and visualization tool that consists of two main components:
 - **Analysis**: Kotlin-based CLI tool using Tree-sitter parsers to analyze codebases
 - **Visualization**: Angular/TypeScript web app using Cytoscape.js for interactive dependency graphs
 
@@ -44,8 +44,8 @@ cd analysis
 ./gradlew test
 
 # Run the analyzer
-java -jar build/libs/codegraph.jar -d <directory-to-analyze>
-# Or use: bin/codegraph.sh (Mac/Linux) or bin/codegraph.bat (Windows)
+java -jar build/libs/dependacharta.jar -d <directory-to-analyze>
+# Or use: bin/dependacharta.sh (Mac/Linux) or bin/dependacharta.bat (Windows)
 ```
 
 ### Visualization Component (Angular)
@@ -107,7 +107,7 @@ visualization/
 
 ### Important Patterns
 - Parser implementations extend `Parser` class and follow visitor pattern
-- Each language has its own parser in `analysis/src/main/kotlin/de/maibornwolff/codegraph/core/input/*/`
+- Each language has its own parser in `analysis/src/main/kotlin/de/maibornwolff/dependacharta/core/input/*/`
 - Angular components follow standard Angular patterns with services for data management
 - Visualization uses reactive patterns with RxJS for state management
 

@@ -2,7 +2,7 @@
 
 Great! We are happy that you are interested in contributing to the project. We welcome contributions from the community and are happy to have them.
 
-There are many ways to contribute to this project, such as logging feature request or bugs, write code to implement new features or fix bugs, improve documentation, or simply use CodeGraph and provide feedback.
+There are many ways to contribute to this project, such as logging feature request or bugs, write code to implement new features or fix bugs, improve documentation, or simply use DependaCharta and provide feedback.
 
 A few guidelines help us to manage the project and the community and help you to contribute effectively. In addition, always have the [Code of Conduct](CODE_OF_CONDUCT.md) in mind to understand the behaviour that we expect from the community.
 
@@ -37,17 +37,17 @@ A well-written bug report helps the developers understand and reproduce the prob
 
 ## Security vulnerabilities
 
-If you find a security vulnerability, please act responsibly and report it to us. Please do not create a public issue. Instead, use the ["Report a vulnerability"](https://github.com/MaibornWolff/CodeGraph/security/advisories/new) button in the GitHub repository (under the "Security" tab) to report the vulnerability.
+If you find a security vulnerability, please act responsibly and report it to us. Please do not create a public issue. Instead, use the ["Report a vulnerability"](https://github.com/MaibornWolff/DependaCharta/security/advisories/new) button in the GitHub repository (under the "Security" tab) to report the vulnerability.
 
 
 ## Code contributions
 
-Before you start working on a new feature, please have a discussion with the maintainers on the [GitHub discussions page](https://github.com/MaibornWolff/CodeGraph/discussions). This helps to ensure that your work is aligned with the project's goals and that you are not duplicating efforts. It also gives you the opportunity to get feedback and guidance from the maintainers.
+Before you start working on a new feature, please have a discussion with the maintainers on the [GitHub discussions page](https://github.com/MaibornWolff/DependaCharta/discussions). This helps to ensure that your work is aligned with the project's goals and that you are not duplicating efforts. It also gives you the opportunity to get feedback and guidance from the maintainers.
 
 
 ### Development process
 
-* **Fork the repository:** Start by forking CodeGraph's repository on GitHub. This creates a copy of the repository under your GitHub account.
+* **Fork the repository:** Start by forking DependaCharta's repository on GitHub. This creates a copy of the repository under your GitHub account.
 
 * **Clone the repository:** Clone the forked repository to your local machine using Git. This allows you to work on the code locally.
 
@@ -59,7 +59,7 @@ Before you start working on a new feature, please have a discussion with the mai
 
 * **Push your branch:** Push your branch with the committed changes to your forked repository on GitHub.
 
-* **Create a pull request:** Go to the CodeGraph's GitHub page and create a pull request from your branch to the `dev` branch. Provide a clear and descriptive title starting with *"feat:"*, *"fix:"* or *"chore:"* and a description for your pull request.
+* **Create a pull request:** Go to the DependaCharta's GitHub page and create a pull request from your branch to the `dev` branch. Provide a clear and descriptive title starting with *"feat:"*, *"fix:"* or *"chore:"* and a description for your pull request.
 
 
 ### Code conventions

@@ -18,8 +18,8 @@ exampleProjects/TypescriptExample/node_modules
 
 output
 
-/analysis/bin/codegraph_temp
-/analysis/bin/codegraph_temp_backup
-/codegraph_temp
+/analysis/bin/dependacharta_temp
+/analysis/bin/dependacharta_temp_backup
+/dependacharta_temp
 
 visualization/sbom

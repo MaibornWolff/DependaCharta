@@ -1,6 +1,6 @@
 {
   "name": "php-example/php-example",
-  "description": "Ein PHP Beispielprojekt für CodeGraph Analyzer ",
+  "description": "Ein PHP Beispielprojekt für DependaCharta Analyzer ",
   "require": {
     "php": ">=7.4"
   },

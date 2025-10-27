@@ -2,7 +2,7 @@
 ## Standalone
 Download the correct standalone version for your OS from [the latest release page](https://NEW-GITHUB-URL/-/releases). 
 ### MAC OS
-Extract, navigate into the extracted folder where the .app file is located in & run this command: <code>xattr -cr codegraph-visualization.app</code> then run the application.
+Extract, navigate into the extracted folder where the .app file is located in & run this command: <code>xattr -cr dependacharta-visualization.app</code> then run the application.
 ### WINDOWS
 Extract & run the application.
 ## Installation

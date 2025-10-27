@@ -8,7 +8,7 @@ plugins {
 }
 
 application {
-    mainClass.set("de.maibornwolff.codegraph.pipeline.MainKt")
+    mainClass.set("de.maibornwolff.dependacharta.pipeline.MainKt")
 }
 group = "de.maibornwolff"
 
@@ -50,8 +50,8 @@ tasks {
     val fatJar =
         register<Jar>("fatJar") {
             dependsOn.addAll(listOf("compileJava", "compileKotlin", "processResources")) // We need this for Gradle optimization to work
-            // set jar name to codegraph.jar
-            archiveFileName.set("codegraph.jar")
+            // set jar name to dependacharta.jar
+            archiveFileName.set("dependacharta.jar")
             duplicatesStrategy = DuplicatesStrategy.EXCLUDE
             manifest { attributes(mapOf("Main-Class" to application.mainClass)) } // Provided we set it up in the application plugin configuration
             val sourcesMain = sourceSets.main.get()
