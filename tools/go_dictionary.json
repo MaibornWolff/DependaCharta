@@ -1,0 +1,1648 @@
+{
+  "keywords": [
+    "break",
+    "case",
+    "chan",
+    "const",
+    "continue",
+    "default",
+    "defer",
+    "else",
+    "fallthrough",
+    "for",
+    "func",
+    "go",
+    "goto",
+    "if",
+    "import",
+    "interface",
+    "map",
+    "package",
+    "range",
+    "return",
+    "select",
+    "struct",
+    "switch",
+    "type",
+    "var"
+  ],
+  "builtins": [
+    "bool",
+    "byte",
+    "complex64",
+    "complex128",
+    "error",
+    "float32",
+    "float64",
+    "int",
+    "int8",
+    "int16",
+    "int32",
+    "int64",
+    "rune",
+    "string",
+    "uint",
+    "uint8",
+    "uint16",
+    "uint32",
+    "uint64",
+    "uintptr",
+    "any",
+    "comparable",
+    "true",
+    "false",
+    "iota",
+    "nil",
+    "append",
+    "cap",
+    "close",
+    "complex",
+    "copy",
+    "delete",
+    "imag",
+    "len",
+    "make",
+    "new",
+    "panic",
+    "print",
+    "println",
+    "real",
+    "recover",
+    "clear",
+    "max",
+    "min"
+  ],
+  "stdlibs": [
+    "archive/tar",
+    "archive/zip",
+    "bufio",
+    "bytes",
+    "cmp",
+    "compress/bzip2",
+    "compress/flate",
+    "compress/gzip",
+    "compress/lzw",
+    "compress/zlib",
+    "container/heap",
+    "container/list",
+    "container/ring",
+    "context",
+    "crypto",
+    "crypto/aes",
+    "crypto/cipher",
+    "crypto/des",
+    "crypto/dsa",
+    "crypto/ecdh",
+    "crypto/ecdsa",
+    "crypto/ed25519",
+    "crypto/elliptic",
+    "crypto/fips140",
+    "crypto/hkdf",
+    "crypto/hmac",
+    "crypto/md5",
+    "crypto/mlkem",
+    "crypto/pbkdf2",
+    "crypto/rand",
+    "crypto/rc4",
+    "crypto/rsa",
+    "crypto/sha1",
+    "crypto/sha256",
+    "crypto/sha3",
+    "crypto/sha512",
+    "crypto/subtle",
+    "crypto/tls",
+    "crypto/x509",
+    "crypto/x509/pkix",
+    "database/sql",
+    "database/sql/driver",
+    "debug/buildinfo",
+    "debug/dwarf",
+    "debug/elf",
+    "debug/gosym",
+    "debug/macho",
+    "debug/pe",
+    "debug/plan9obj",
+    "embed",
+    "encoding",
+    "encoding/ascii85",
+    "encoding/asn1",
+    "encoding/base32",
+    "encoding/base64",
+    "encoding/binary",
+    "encoding/csv",
+    "encoding/gob",
+    "encoding/hex",
+    "encoding/json",
+    "encoding/pem",
+    "encoding/xml",
+    "errors",
+    "expvar",
+    "flag",
+    "fmt",
+    "go/ast",
+    "go/build",
+    "go/build/constraint",
+    "go/constant",
+    "go/doc",
+    "go/doc/comment",
+    "go/format",
+    "go/importer",
+    "go/parser",
+    "go/printer",
+    "go/scanner",
+    "go/token",
+    "go/types",
+    "go/version",
+    "hash",
+    "hash/adler32",
+    "hash/crc32",
+    "hash/crc64",
+    "hash/fnv",
+    "hash/maphash",
+    "html",
+    "html/template",
+    "image",
+    "image/color",
+    "image/color/palette",
+    "image/draw",
+    "image/gif",
+    "image/jpeg",
+    "image/png",
+    "index/suffixarray",
+    "io",
+    "io/fs",
+    "io/ioutil",
+    "iter",
+    "log",
+    "log/slog",
+    "log/syslog",
+    "maps",
+    "math",
+    "math/big",
+    "math/bits",
+    "math/cmplx",
+    "math/rand",
+    "math/rand/v2",
+    "mime",
+    "mime/multipart",
+    "mime/quotedprintable",
+    "net",
+    "net/http",
+    "net/http/cgi",
+    "net/http/cookiejar",
+    "net/http/fcgi",
+    "net/http/httptest",
+    "net/http/httptrace",
+    "net/http/httputil",
+    "net/http/pprof",
+    "net/mail",
+    "net/netip",
+    "net/rpc",
+    "net/rpc/jsonrpc",
+    "net/smtp",
+    "net/textproto",
+    "net/url",
+    "os",
+    "os/exec",
+    "os/signal",
+    "os/user",
+    "path",
+    "path/filepath",
+    "plugin",
+    "reflect",
+    "regexp",
+    "regexp/syntax",
+    "runtime",
+    "runtime/cgo",
+    "runtime/coverage",
+    "runtime/debug",
+    "runtime/metrics",
+    "runtime/pprof",
+    "runtime/race",
+    "runtime/trace",
+    "slices",
+    "sort",
+    "strconv",
+    "strings",
+    "structs",
+    "sync",
+    "sync/atomic",
+    "syscall",
+    "testing",
+    "testing/fstest",
+    "testing/iotest",
+    "testing/quick",
+    "testing/slogtest",
+    "text/scanner",
+    "text/tabwriter",
+    "text/template",
+    "text/template/parse",
+    "time",
+    "time/tzdata",
+    "unicode",
+    "unicode/utf16",
+    "unicode/utf8",
+    "unique",
+    "unsafe",
+    "weak"
+  ],
+  "dictionary": {
+    "adler32": [
+      "hash",
+      "adler32"
+    ],
+    "aes": [
+      "crypto",
+      "aes"
+    ],
+    "any": [
+      "any"
+    ],
+    "append": [
+      "append"
+    ],
+    "archive/tar": [
+      "archive",
+      "tar"
+    ],
+    "archive/zip": [
+      "archive",
+      "zip"
+    ],
+    "ascii85": [
+      "encoding",
+      "ascii85"
+    ],
+    "asn1": [
+      "encoding",
+      "asn1"
+    ],
+    "ast": [
+      "go",
+      "ast"
+    ],
+    "atomic": [
+      "sync",
+      "atomic"
+    ],
+    "base32": [
+      "encoding",
+      "base32"
+    ],
+    "base64": [
+      "encoding",
+      "base64"
+    ],
+    "big": [
+      "math",
+      "big"
+    ],
+    "binary": [
+      "encoding",
+      "binary"
+    ],
+    "bits": [
+      "math",
+      "bits"
+    ],
+    "bool": [
+      "bool"
+    ],
+    "break": [
+      "break"
+    ],
+    "bufio": [
+      "bufio"
+    ],
+    "build": [
+      "go",
+      "build"
+    ],
+    "buildinfo": [
+      "debug",
+      "buildinfo"
+    ],
+    "byte": [
+      "byte"
+    ],
+    "bytes": [
+      "bytes"
+    ],
+    "bzip2": [
+      "compress",
+      "bzip2"
+    ],
+    "cap": [
+      "cap"
+    ],
+    "case": [
+      "case"
+    ],
+    "cgi": [
+      "net",
+      "http",
+      "cgi"
+    ],
+    "cgo": [
+      "runtime",
+      "cgo"
+    ],
+    "chan": [
+      "chan"
+    ],
+    "cipher": [
+      "crypto",
+      "cipher"
+    ],
+    "clear": [
+      "clear"
+    ],
+    "close": [
+      "close"
+    ],
+    "cmp": [
+      "cmp"
+    ],
+    "cmplx": [
+      "math",
+      "cmplx"
+    ],
+    "color": [
+      "image",
+      "color"
+    ],
+    "comment": [
+      "go",
+      "doc",
+      "comment"
+    ],
+    "comparable": [
+      "comparable"
+    ],
+    "complex": [
+      "complex"
+    ],
+    "complex128": [
+      "complex128"
+    ],
+    "complex64": [
+      "complex64"
+    ],
+    "compress/bzip2": [
+      "compress",
+      "bzip2"
+    ],
+    "compress/flate": [
+      "compress",
+      "flate"
+    ],
+    "compress/gzip": [
+      "compress",
+      "gzip"
+    ],
+    "compress/lzw": [
+      "compress",
+      "lzw"
+    ],
+    "compress/zlib": [
+      "compress",
+      "zlib"
+    ],
+    "const": [
+      "const"
+    ],
+    "constant": [
+      "go",
+      "constant"
+    ],
+    "constraint": [
+      "go",
+      "build",
+      "constraint"
+    ],
+    "container/heap": [
+      "container",
+      "heap"
+    ],
+    "container/list": [
+      "container",
+      "list"
+    ],
+    "container/ring": [
+      "container",
+      "ring"
+    ],
+    "context": [
+      "context"
+    ],
+    "continue": [
+      "continue"
+    ],
+    "cookiejar": [
+      "net",
+      "http",
+      "cookiejar"
+    ],
+    "copy": [
+      "copy"
+    ],
+    "coverage": [
+      "runtime",
+      "coverage"
+    ],
+    "crc32": [
+      "hash",
+      "crc32"
+    ],
+    "crc64": [
+      "hash",
+      "crc64"
+    ],
+    "crypto": [
+      "crypto"
+    ],
+    "crypto/aes": [
+      "crypto",
+      "aes"
+    ],
+    "crypto/cipher": [
+      "crypto",
+      "cipher"
+    ],
+    "crypto/des": [
+      "crypto",
+      "des"
+    ],
+    "crypto/dsa": [
+      "crypto",
+      "dsa"
+    ],
+    "crypto/ecdh": [
+      "crypto",
+      "ecdh"
+    ],
+    "crypto/ecdsa": [
+      "crypto",
+      "ecdsa"
+    ],
+    "crypto/ed25519": [
+      "crypto",
+      "ed25519"
+    ],
+    "crypto/elliptic": [
+      "crypto",
+      "elliptic"
+    ],
+    "crypto/fips140": [
+      "crypto",
+      "fips140"
+    ],
+    "crypto/hkdf": [
+      "crypto",
+      "hkdf"
+    ],
+    "crypto/hmac": [
+      "crypto",
+      "hmac"
+    ],
+    "crypto/md5": [
+      "crypto",
+      "md5"
+    ],
+    "crypto/mlkem": [
+      "crypto",
+      "mlkem"
+    ],
+    "crypto/pbkdf2": [
+      "crypto",
+      "pbkdf2"
+    ],
+    "crypto/rand": [
+      "crypto",
+      "rand"
+    ],
+    "crypto/rc4": [
+      "crypto",
+      "rc4"
+    ],
+    "crypto/rsa": [
+      "crypto",
+      "rsa"
+    ],
+    "crypto/sha1": [
+      "crypto",
+      "sha1"
+    ],
+    "crypto/sha256": [
+      "crypto",
+      "sha256"
+    ],
+    "crypto/sha3": [
+      "crypto",
+      "sha3"
+    ],
+    "crypto/sha512": [
+      "crypto",
+      "sha512"
+    ],
+    "crypto/subtle": [
+      "crypto",
+      "subtle"
+    ],
+    "crypto/tls": [
+      "crypto",
+      "tls"
+    ],
+    "crypto/x509": [
+      "crypto",
+      "x509"
+    ],
+    "crypto/x509/pkix": [
+      "crypto",
+      "x509",
+      "pkix"
+    ],
+    "csv": [
+      "encoding",
+      "csv"
+    ],
+    "database/sql": [
+      "database",
+      "sql"
+    ],
+    "database/sql/driver": [
+      "database",
+      "sql",
+      "driver"
+    ],
+    "debug": [
+      "runtime",
+      "debug"
+    ],
+    "debug/buildinfo": [
+      "debug",
+      "buildinfo"
+    ],
+    "debug/dwarf": [
+      "debug",
+      "dwarf"
+    ],
+    "debug/elf": [
+      "debug",
+      "elf"
+    ],
+    "debug/gosym": [
+      "debug",
+      "gosym"
+    ],
+    "debug/macho": [
+      "debug",
+      "macho"
+    ],
+    "debug/pe": [
+      "debug",
+      "pe"
+    ],
+    "debug/plan9obj": [
+      "debug",
+      "plan9obj"
+    ],
+    "default": [
+      "default"
+    ],
+    "defer": [
+      "defer"
+    ],
+    "delete": [
+      "delete"
+    ],
+    "des": [
+      "crypto",
+      "des"
+    ],
+    "doc": [
+      "go",
+      "doc"
+    ],
+    "draw": [
+      "image",
+      "draw"
+    ],
+    "driver": [
+      "database",
+      "sql",
+      "driver"
+    ],
+    "dsa": [
+      "crypto",
+      "dsa"
+    ],
+    "dwarf": [
+      "debug",
+      "dwarf"
+    ],
+    "ecdh": [
+      "crypto",
+      "ecdh"
+    ],
+    "ecdsa": [
+      "crypto",
+      "ecdsa"
+    ],
+    "ed25519": [
+      "crypto",
+      "ed25519"
+    ],
+    "elf": [
+      "debug",
+      "elf"
+    ],
+    "elliptic": [
+      "crypto",
+      "elliptic"
+    ],
+    "else": [
+      "else"
+    ],
+    "embed": [
+      "embed"
+    ],
+    "encoding": [
+      "encoding"
+    ],
+    "encoding/ascii85": [
+      "encoding",
+      "ascii85"
+    ],
+    "encoding/asn1": [
+      "encoding",
+      "asn1"
+    ],
+    "encoding/base32": [
+      "encoding",
+      "base32"
+    ],
+    "encoding/base64": [
+      "encoding",
+      "base64"
+    ],
+    "encoding/binary": [
+      "encoding",
+      "binary"
+    ],
+    "encoding/csv": [
+      "encoding",
+      "csv"
+    ],
+    "encoding/gob": [
+      "encoding",
+      "gob"
+    ],
+    "encoding/hex": [
+      "encoding",
+      "hex"
+    ],
+    "encoding/json": [
+      "encoding",
+      "json"
+    ],
+    "encoding/pem": [
+      "encoding",
+      "pem"
+    ],
+    "encoding/xml": [
+      "encoding",
+      "xml"
+    ],
+    "error": [
+      "error"
+    ],
+    "errors": [
+      "errors"
+    ],
+    "exec": [
+      "os",
+      "exec"
+    ],
+    "expvar": [
+      "expvar"
+    ],
+    "fallthrough": [
+      "fallthrough"
+    ],
+    "false": [
+      "false"
+    ],
+    "fcgi": [
+      "net",
+      "http",
+      "fcgi"
+    ],
+    "filepath": [
+      "path",
+      "filepath"
+    ],
+    "fips140": [
+      "crypto",
+      "fips140"
+    ],
+    "flag": [
+      "flag"
+    ],
+    "flate": [
+      "compress",
+      "flate"
+    ],
+    "float32": [
+      "float32"
+    ],
+    "float64": [
+      "float64"
+    ],
+    "fmt": [
+      "fmt"
+    ],
+    "fnv": [
+      "hash",
+      "fnv"
+    ],
+    "for": [
+      "for"
+    ],
+    "format": [
+      "go",
+      "format"
+    ],
+    "fs": [
+      "io",
+      "fs"
+    ],
+    "fstest": [
+      "testing",
+      "fstest"
+    ],
+    "func": [
+      "func"
+    ],
+    "gif": [
+      "image",
+      "gif"
+    ],
+    "go": [
+      "go"
+    ],
+    "go/ast": [
+      "go",
+      "ast"
+    ],
+    "go/build": [
+      "go",
+      "build"
+    ],
+    "go/build/constraint": [
+      "go",
+      "build",
+      "constraint"
+    ],
+    "go/constant": [
+      "go",
+      "constant"
+    ],
+    "go/doc": [
+      "go",
+      "doc"
+    ],
+    "go/doc/comment": [
+      "go",
+      "doc",
+      "comment"
+    ],
+    "go/format": [
+      "go",
+      "format"
+    ],
+    "go/importer": [
+      "go",
+      "importer"
+    ],
+    "go/parser": [
+      "go",
+      "parser"
+    ],
+    "go/printer": [
+      "go",
+      "printer"
+    ],
+    "go/scanner": [
+      "go",
+      "scanner"
+    ],
+    "go/token": [
+      "go",
+      "token"
+    ],
+    "go/types": [
+      "go",
+      "types"
+    ],
+    "go/version": [
+      "go",
+      "version"
+    ],
+    "gob": [
+      "encoding",
+      "gob"
+    ],
+    "gosym": [
+      "debug",
+      "gosym"
+    ],
+    "goto": [
+      "goto"
+    ],
+    "gzip": [
+      "compress",
+      "gzip"
+    ],
+    "hash": [
+      "hash"
+    ],
+    "hash/adler32": [
+      "hash",
+      "adler32"
+    ],
+    "hash/crc32": [
+      "hash",
+      "crc32"
+    ],
+    "hash/crc64": [
+      "hash",
+      "crc64"
+    ],
+    "hash/fnv": [
+      "hash",
+      "fnv"
+    ],
+    "hash/maphash": [
+      "hash",
+      "maphash"
+    ],
+    "heap": [
+      "container",
+      "heap"
+    ],
+    "hex": [
+      "encoding",
+      "hex"
+    ],
+    "hkdf": [
+      "crypto",
+      "hkdf"
+    ],
+    "hmac": [
+      "crypto",
+      "hmac"
+    ],
+    "html": [
+      "html"
+    ],
+    "html/template": [
+      "html",
+      "template"
+    ],
+    "http": [
+      "net",
+      "http"
+    ],
+    "httptest": [
+      "net",
+      "http",
+      "httptest"
+    ],
+    "httptrace": [
+      "net",
+      "http",
+      "httptrace"
+    ],
+    "httputil": [
+      "net",
+      "http",
+      "httputil"
+    ],
+    "if": [
+      "if"
+    ],
+    "imag": [
+      "imag"
+    ],
+    "image": [
+      "image"
+    ],
+    "image/color": [
+      "image",
+      "color"
+    ],
+    "image/color/palette": [
+      "image",
+      "color",
+      "palette"
+    ],
+    "image/draw": [
+      "image",
+      "draw"
+    ],
+    "image/gif": [
+      "image",
+      "gif"
+    ],
+    "image/jpeg": [
+      "image",
+      "jpeg"
+    ],
+    "image/png": [
+      "image",
+      "png"
+    ],
+    "import": [
+      "import"
+    ],
+    "importer": [
+      "go",
+      "importer"
+    ],
+    "index/suffixarray": [
+      "index",
+      "suffixarray"
+    ],
+    "int": [
+      "int"
+    ],
+    "int16": [
+      "int16"
+    ],
+    "int32": [
+      "int32"
+    ],
+    "int64": [
+      "int64"
+    ],
+    "int8": [
+      "int8"
+    ],
+    "interface": [
+      "interface"
+    ],
+    "io": [
+      "io"
+    ],
+    "io/fs": [
+      "io",
+      "fs"
+    ],
+    "io/ioutil": [
+      "io",
+      "ioutil"
+    ],
+    "iota": [
+      "iota"
+    ],
+    "iotest": [
+      "testing",
+      "iotest"
+    ],
+    "ioutil": [
+      "io",
+      "ioutil"
+    ],
+    "iter": [
+      "iter"
+    ],
+    "jpeg": [
+      "image",
+      "jpeg"
+    ],
+    "json": [
+      "encoding",
+      "json"
+    ],
+    "jsonrpc": [
+      "net",
+      "rpc",
+      "jsonrpc"
+    ],
+    "len": [
+      "len"
+    ],
+    "list": [
+      "container",
+      "list"
+    ],
+    "log": [
+      "log"
+    ],
+    "log/slog": [
+      "log",
+      "slog"
+    ],
+    "log/syslog": [
+      "log",
+      "syslog"
+    ],
+    "lzw": [
+      "compress",
+      "lzw"
+    ],
+    "macho": [
+      "debug",
+      "macho"
+    ],
+    "mail": [
+      "net",
+      "mail"
+    ],
+    "make": [
+      "make"
+    ],
+    "map": [
+      "map"
+    ],
+    "maphash": [
+      "hash",
+      "maphash"
+    ],
+    "maps": [
+      "maps"
+    ],
+    "math": [
+      "math"
+    ],
+    "math/big": [
+      "math",
+      "big"
+    ],
+    "math/bits": [
+      "math",
+      "bits"
+    ],
+    "math/cmplx": [
+      "math",
+      "cmplx"
+    ],
+    "math/rand": [
+      "math",
+      "rand"
+    ],
+    "math/rand/v2": [
+      "math",
+      "rand",
+      "v2"
+    ],
+    "max": [
+      "max"
+    ],
+    "md5": [
+      "crypto",
+      "md5"
+    ],
+    "metrics": [
+      "runtime",
+      "metrics"
+    ],
+    "mime": [
+      "mime"
+    ],
+    "mime/multipart": [
+      "mime",
+      "multipart"
+    ],
+    "mime/quotedprintable": [
+      "mime",
+      "quotedprintable"
+    ],
+    "min": [
+      "min"
+    ],
+    "mlkem": [
+      "crypto",
+      "mlkem"
+    ],
+    "multipart": [
+      "mime",
+      "multipart"
+    ],
+    "net": [
+      "net"
+    ],
+    "net/http": [
+      "net",
+      "http"
+    ],
+    "net/http/cgi": [
+      "net",
+      "http",
+      "cgi"
+    ],
+    "net/http/cookiejar": [
+      "net",
+      "http",
+      "cookiejar"
+    ],
+    "net/http/fcgi": [
+      "net",
+      "http",
+      "fcgi"
+    ],
+    "net/http/httptest": [
+      "net",
+      "http",
+      "httptest"
+    ],
+    "net/http/httptrace": [
+      "net",
+      "http",
+      "httptrace"
+    ],
+    "net/http/httputil": [
+      "net",
+      "http",
+      "httputil"
+    ],
+    "net/http/pprof": [
+      "net",
+      "http",
+      "pprof"
+    ],
+    "net/mail": [
+      "net",
+      "mail"
+    ],
+    "net/netip": [
+      "net",
+      "netip"
+    ],
+    "net/rpc": [
+      "net",
+      "rpc"
+    ],
+    "net/rpc/jsonrpc": [
+      "net",
+      "rpc",
+      "jsonrpc"
+    ],
+    "net/smtp": [
+      "net",
+      "smtp"
+    ],
+    "net/textproto": [
+      "net",
+      "textproto"
+    ],
+    "net/url": [
+      "net",
+      "url"
+    ],
+    "netip": [
+      "net",
+      "netip"
+    ],
+    "new": [
+      "new"
+    ],
+    "nil": [
+      "nil"
+    ],
+    "os": [
+      "os"
+    ],
+    "os/exec": [
+      "os",
+      "exec"
+    ],
+    "os/signal": [
+      "os",
+      "signal"
+    ],
+    "os/user": [
+      "os",
+      "user"
+    ],
+    "package": [
+      "package"
+    ],
+    "palette": [
+      "image",
+      "color",
+      "palette"
+    ],
+    "panic": [
+      "panic"
+    ],
+    "parse": [
+      "text",
+      "template",
+      "parse"
+    ],
+    "parser": [
+      "go",
+      "parser"
+    ],
+    "path": [
+      "path"
+    ],
+    "path/filepath": [
+      "path",
+      "filepath"
+    ],
+    "pbkdf2": [
+      "crypto",
+      "pbkdf2"
+    ],
+    "pe": [
+      "debug",
+      "pe"
+    ],
+    "pem": [
+      "encoding",
+      "pem"
+    ],
+    "pkix": [
+      "crypto",
+      "x509",
+      "pkix"
+    ],
+    "plan9obj": [
+      "debug",
+      "plan9obj"
+    ],
+    "plugin": [
+      "plugin"
+    ],
+    "png": [
+      "image",
+      "png"
+    ],
+    "pprof": [
+      "net",
+      "http",
+      "pprof"
+    ],
+    "print": [
+      "print"
+    ],
+    "printer": [
+      "go",
+      "printer"
+    ],
+    "println": [
+      "println"
+    ],
+    "quick": [
+      "testing",
+      "quick"
+    ],
+    "quotedprintable": [
+      "mime",
+      "quotedprintable"
+    ],
+    "race": [
+      "runtime",
+      "race"
+    ],
+    "rand": [
+      "crypto",
+      "rand"
+    ],
+    "range": [
+      "range"
+    ],
+    "rc4": [
+      "crypto",
+      "rc4"
+    ],
+    "real": [
+      "real"
+    ],
+    "recover": [
+      "recover"
+    ],
+    "reflect": [
+      "reflect"
+    ],
+    "regexp": [
+      "regexp"
+    ],
+    "regexp/syntax": [
+      "regexp",
+      "syntax"
+    ],
+    "return": [
+      "return"
+    ],
+    "ring": [
+      "container",
+      "ring"
+    ],
+    "rpc": [
+      "net",
+      "rpc"
+    ],
+    "rsa": [
+      "crypto",
+      "rsa"
+    ],
+    "rune": [
+      "rune"
+    ],
+    "runtime": [
+      "runtime"
+    ],
+    "runtime/cgo": [
+      "runtime",
+      "cgo"
+    ],
+    "runtime/coverage": [
+      "runtime",
+      "coverage"
+    ],
+    "runtime/debug": [
+      "runtime",
+      "debug"
+    ],
+    "runtime/metrics": [
+      "runtime",
+      "metrics"
+    ],
+    "runtime/pprof": [
+      "runtime",
+      "pprof"
+    ],
+    "runtime/race": [
+      "runtime",
+      "race"
+    ],
+    "runtime/trace": [
+      "runtime",
+      "trace"
+    ],
+    "scanner": [
+      "go",
+      "scanner"
+    ],
+    "select": [
+      "select"
+    ],
+    "sha1": [
+      "crypto",
+      "sha1"
+    ],
+    "sha256": [
+      "crypto",
+      "sha256"
+    ],
+    "sha3": [
+      "crypto",
+      "sha3"
+    ],
+    "sha512": [
+      "crypto",
+      "sha512"
+    ],
+    "signal": [
+      "os",
+      "signal"
+    ],
+    "slices": [
+      "slices"
+    ],
+    "slog": [
+      "log",
+      "slog"
+    ],
+    "slogtest": [
+      "testing",
+      "slogtest"
+    ],
+    "smtp": [
+      "net",
+      "smtp"
+    ],
+    "sort": [
+      "sort"
+    ],
+    "sql": [
+      "database",
+      "sql"
+    ],
+    "strconv": [
+      "strconv"
+    ],
+    "string": [
+      "string"
+    ],
+    "strings": [
+      "strings"
+    ],
+    "struct": [
+      "struct"
+    ],
+    "structs": [
+      "structs"
+    ],
+    "subtle": [
+      "crypto",
+      "subtle"
+    ],
+    "suffixarray": [
+      "index",
+      "suffixarray"
+    ],
+    "switch": [
+      "switch"
+    ],
+    "sync": [
+      "sync"
+    ],
+    "sync/atomic": [
+      "sync",
+      "atomic"
+    ],
+    "syntax": [
+      "regexp",
+      "syntax"
+    ],
+    "syscall": [
+      "syscall"
+    ],
+    "syslog": [
+      "log",
+      "syslog"
+    ],
+    "tabwriter": [
+      "text",
+      "tabwriter"
+    ],
+    "tar": [
+      "archive",
+      "tar"
+    ],
+    "template": [
+      "html",
+      "template"
+    ],
+    "testing": [
+      "testing"
+    ],
+    "testing/fstest": [
+      "testing",
+      "fstest"
+    ],
+    "testing/iotest": [
+      "testing",
+      "iotest"
+    ],
+    "testing/quick": [
+      "testing",
+      "quick"
+    ],
+    "testing/slogtest": [
+      "testing",
+      "slogtest"
+    ],
+    "text/scanner": [
+      "text",
+      "scanner"
+    ],
+    "text/tabwriter": [
+      "text",
+      "tabwriter"
+    ],
+    "text/template": [
+      "text",
+      "template"
+    ],
+    "text/template/parse": [
+      "text",
+      "template",
+      "parse"
+    ],
+    "textproto": [
+      "net",
+      "textproto"
+    ],
+    "time": [
+      "time"
+    ],
+    "time/tzdata": [
+      "time",
+      "tzdata"
+    ],
+    "tls": [
+      "crypto",
+      "tls"
+    ],
+    "token": [
+      "go",
+      "token"
+    ],
+    "trace": [
+      "runtime",
+      "trace"
+    ],
+    "true": [
+      "true"
+    ],
+    "type": [
+      "type"
+    ],
+    "types": [
+      "go",
+      "types"
+    ],
+    "tzdata": [
+      "time",
+      "tzdata"
+    ],
+    "uint": [
+      "uint"
+    ],
+    "uint16": [
+      "uint16"
+    ],
+    "uint32": [
+      "uint32"
+    ],
+    "uint64": [
+      "uint64"
+    ],
+    "uint8": [
+      "uint8"
+    ],
+    "uintptr": [
+      "uintptr"
+    ],
+    "unicode": [
+      "unicode"
+    ],
+    "unicode/utf16": [
+      "unicode",
+      "utf16"
+    ],
+    "unicode/utf8": [
+      "unicode",
+      "utf8"
+    ],
+    "unique": [
+      "unique"
+    ],
+    "unsafe": [
+      "unsafe"
+    ],
+    "url": [
+      "net",
+      "url"
+    ],
+    "user": [
+      "os",
+      "user"
+    ],
+    "utf16": [
+      "unicode",
+      "utf16"
+    ],
+    "utf8": [
+      "unicode",
+      "utf8"
+    ],
+    "v2": [
+      "math",
+      "rand",
+      "v2"
+    ],
+    "var": [
+      "var"
+    ],
+    "version": [
+      "go",
+      "version"
+    ],
+    "weak": [
+      "weak"
+    ],
+    "x509": [
+      "crypto",
+      "x509"
+    ],
+    "xml": [
+      "encoding",
+      "xml"
+    ],
+    "zip": [
+      "archive",
+      "zip"
+    ],
+    "zlib": [
+      "compress",
+      "zlib"
+    ]
+  }
+}

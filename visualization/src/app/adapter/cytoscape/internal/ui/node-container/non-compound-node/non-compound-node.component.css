@@ -1,0 +1,12 @@
+.non-compound-node{
+  position: absolute;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+}
+
+.label {
+  overflow: hidden;
+  overflow-wrap: break-word;
+  font-size: small;
+}

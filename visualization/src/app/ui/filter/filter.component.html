@@ -1,0 +1,5 @@
+<div>
+  <select (change)="onFilterChange($event)">
+    <option *ngFor="let option of allEdgeFilterTypes" [value]="option" [selected]="option === selectedFilter">{{ getName(option) }}</option>
+  </select>
+</div>

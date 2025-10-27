@@ -1,0 +1,12 @@
+{
+  "name": "php-example/php-example",
+  "description": "Ein PHP Beispielprojekt für CodeGraph Analyzer ",
+  "require": {
+    "php": ">=7.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "PhpExample\\": "src/"
+    }
+  }
+}

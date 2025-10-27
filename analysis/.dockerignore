@@ -1,0 +1,38 @@
+# Build outputs
+build/
+.gradle/
+bin/
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Version control
+.git/
+.gitignore
+
+# Documentation
+README.md
+*.md
+
+# Docker files
+Dockerfile*
+.dockerignore
+
+# Test reports
+reports/
+
+# Temporary files
+*.tmp
+*.temp
+codegraph_temp/
+
+# Logs
+*.log

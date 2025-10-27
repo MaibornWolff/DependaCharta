@@ -1,0 +1,59 @@
+<div class="header">
+  <div class="label">{{ node.label.toUpperCase() }}</div>
+  @if (state.isInteractive) {
+    <div class="interactionMenu">
+      @if (node.hiddenChildrenIds.length > 0) {
+        <button mat-button
+                [matMenuTriggerFor]="menu"
+                (mouseup)="$event.stopPropagation()"
+                (mousedown)="$event.stopPropagation()"
+                class="ignoredChildrenButton"
+        >
+          <div class="buttonLabel">
+            <span class="hiddenNodeSpan">Hidden: {{ hiddenChildren().length }}</span>
+            <mat-icon class="hiddenNodeIcon">arrow_drop_down</mat-icon>
+          </div>
+        </button>
+      }
+      <mat-menu
+        id="menu"
+        #menu="matMenu"
+        xPosition="before"
+      >
+        <mat-action-list class="menuItemList">
+          <button mat-menu-item
+                  class="menuItem"
+                  (mouseup)="restoreAllChildren($event)">
+            Show all
+          </button>
+          <button mat-menu-item
+                  class="menuItem"
+                  *ngFor="let ignoredChild of hiddenChildren()"
+                  (mouseup)="restoreChild(ignoredChild.id, $event)">
+            <div class="menuItemLabel">
+              <span>{{ ignoredChild.label }}</span>
+              <mat-icon>visibility_off</mat-icon>
+            </div>
+          </button>
+        </mat-action-list>
+      </mat-menu>
+      <mat-icon
+        [class]="isPinned ? 'unpinNodeButton' : 'pinNodeButton'"
+        [svgIcon]="isPinned ? 'push-pin-slashed' : 'push-pin'"
+        [class.isPinned]="isPinned"
+        (mousedown)="$event.stopPropagation()"
+        (mouseup)="emitPin($event)">
+      </mat-icon>
+      <mat-icon class="hideNodeButton"
+                (mousedown)="$event.stopPropagation()"
+                (mouseup)="hideNode($event)"
+      >visibility
+      </mat-icon>
+      <mat-icon class="collapseNodeButton"
+                (mousedown)="$event.stopPropagation()"
+                (mouseup)="collapseNode($event)"
+      >zoom_in_map
+      </mat-icon>
+    </div>
+  }
+</div>

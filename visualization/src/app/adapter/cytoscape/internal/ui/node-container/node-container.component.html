@@ -1,0 +1,23 @@
+<div class="container"
+     [style]="transformStyle()"
+>
+  @for (node of nodes; track node.id) {
+    @if (node.isExpanded) {
+      <compound-node
+        [stateChange]="stateChange"
+        [id]="node.id"
+        [node]="node"
+        [renderInformation]="renderInformationByNodeId.get(node.id)"
+        [zoom]="zoom"
+      ></compound-node>
+    } @else {
+      <non-compound-node
+        [stateChange]="stateChange"
+        [id]="node.id"
+        [node]="node"
+        [renderInformation]="renderInformationByNodeId.get(node.id)"
+        [zoom]="zoom"
+      ></non-compound-node>
+    }
+  }
+</div>

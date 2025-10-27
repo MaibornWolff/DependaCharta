@@ -1,0 +1,50 @@
+.interactionBar {
+  width: 100%;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 13px;
+  background-color: darkgray;
+  bottom: 0;
+  left: 0;
+}
+
+.pinNodeButton {
+  width: 12px;
+  height: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 1px;
+  font-size: small;
+  fill: black;
+}
+
+.unpinNodeButton {
+  width: 12px;
+  height: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pinNodeButton:hover {
+  cursor: pointer;
+}
+
+.unpinNodeButton:hover {
+  cursor: pointer;
+}
+
+.hideNodeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 1px;
+  font-size: small;
+}
+
+.hideNodeButton:hover {
+  cursor: pointer;
+}

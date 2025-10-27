@@ -1,0 +1,24 @@
+<div
+  [id]="node.id"
+  class='non-compound-node'
+  (mouseenter)="onMouseEnter()"
+  (mouseleave)="onMouseLeave()"
+  [style]="calculatedNodeStyle()"
+  (mousedown)="onMouseDown($event)"
+  (mouseup)="onMouseUp($event)"
+>
+  <div class="label">
+    {{ calculateLabel() }}
+  </div>
+  @if (stateChange.state.isInteractive) {
+    @if (isInteractionBarVisible()) {
+      <interaction-bar
+        [nodeId]="node.id"
+        (nodeHidden)="hideNode()"
+        [isPinned]="isPinned()"
+        (nodePinned)="togglePin()"
+        (nodeUnpinned)="togglePin()"
+      />
+    }
+  }
+</div>

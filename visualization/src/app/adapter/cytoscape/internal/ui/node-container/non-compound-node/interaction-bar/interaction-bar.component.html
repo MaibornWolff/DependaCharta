@@ -1,0 +1,14 @@
+<div id="{{'interaction-bar-' + nodeId}}" class="interactionBar">
+  <mat-icon
+    [class]="isPinned ? 'unpinNodeButton' : 'pinNodeButton'"
+    [svgIcon]="isPinned ? 'push-pin-slashed' : 'push-pin'"
+    [class.isPinned]="isPinned"
+    (mousedown)="$event.stopPropagation()"
+    (mouseup)="emitPin($event)">
+  </mat-icon>
+  <mat-icon class="hideNodeButton"
+            (mousedown)="$event.stopPropagation()"
+            (mouseup)="emitHide($event)"
+  >visibility
+  </mat-icon>
+</div>

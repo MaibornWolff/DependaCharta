@@ -1,0 +1,31 @@
+.compound-node{
+  display: inline-block;
+  position: absolute;
+  background-color: rgba(70, 130, 180, 0.1);
+}
+
+.label {
+  text-overflow: ellipsis;
+  max-width: 250px;
+  overflow: hidden;
+}
+
+.header {
+  padding: 2px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 20px;
+}
+
+.hideNodeButton {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  padding-right: 4px;
+}
+
+.hideNodeButton:hover {
+  cursor: pointer;
+}

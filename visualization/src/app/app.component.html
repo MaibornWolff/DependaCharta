@@ -1,0 +1,29 @@
+<main class="main">
+  <div class="menu">
+    <json-loader
+      (fileLoadingStart)="onFileLoadStart()"
+      (loadedNewFile)="initializeCytoscape($event)">
+    </json-loader>
+    <filter [selectedFilter]="state.selectedFilter" (filterSelected)="apply($event)"></filter>
+    <button (click)="onRestoreNodesClick()">Restore Nodes</button>
+    <button (click)="onToggleEdgeLabelsClick()">Toggle Edge Labels</button>
+    <button (click)="onResetViewClick()">Reset View</button>
+    <app-version/>
+    <toggle-button
+      [isOn]="state.isInteractive"
+      (toggleChanged)="onToggleInteraction()"
+    >Interaction Mode</toggle-button>
+    <toggle-button
+      [isOn]="state.isUsageShown"
+      (toggleChanged)="onToggleUsage()"
+    >Usage Type</toggle-button>
+  </div>
+  @if(cytoscapeInitialized) {<cytoscape [stateChange]="stateChange" class="cytoscape-container" (graphActionHappened)="apply($event)" /> }
+  @if (isLoading) {<div class="loading-spinner">
+    <div class="loading-container">
+      <span class="loader"></span>
+    </div>
+  </div>}
+</main>
+<router-outlet/>
+<mouse-inaccuracy-detector/>

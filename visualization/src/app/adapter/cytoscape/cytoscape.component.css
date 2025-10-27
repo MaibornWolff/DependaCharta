@@ -1,0 +1,17 @@
+#cy {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  display: block;
+  z-index: 0;
+}
+
+#non-compound-node-container {
+  z-index: 10;
+  position: absolute;
+}
+
+#compound-node-container {
+  z-index: 5;
+  position: absolute;
+}

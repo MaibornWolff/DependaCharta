@@ -1,0 +1,18 @@
+<div
+  [id]='node.id'
+  class='compound-node'
+  [style]="calculatedStyle()"
+>
+  <interaction-menu
+    [node]="node"
+    [isPinned]="stateChange.state.selectedPinnedNodeIds.includes(node.id)"
+    [state]="stateChange.state"
+    (nodePinned)="togglePin()"
+    (nodeUnpinned)="togglePin()"
+    (nodeHidden)="hideNode()"
+    (nodeCollapsed)="collapseNode()"
+    (childRestored)="restoreNode($event)"
+    (allChildrenRestored)="restoreAllChildren()"
+  />
+  <mat-divider />
+</div>

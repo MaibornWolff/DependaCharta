@@ -1,0 +1,128 @@
+.label {
+  text-overflow: ellipsis;
+  max-width: 250px;
+  overflow: hidden;
+}
+
+.header {
+  padding: 2px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 20px;
+}
+
+.interactionMenu {
+  display: flex;
+  align-items: center;
+}
+
+.pinNodeButton {
+  width: 12px;
+  height: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 1px;
+  font-size: small;
+  fill: black;
+}
+
+.unpinNodeButton {
+  width: 12px;
+  height: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pinNodeButton:hover {
+  cursor: pointer;
+}
+
+.unpinNodeButton:hover {
+  cursor: pointer;
+}
+
+.hideNodeButton {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  padding-right: 4px;
+  line-height: 24px;
+  font-size: small;
+}
+
+.hideNodeButton:hover {
+  cursor: pointer;
+}
+
+.collapseNodeButton {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  padding-right: 4px;
+  line-height: 24px;
+  font-size: small;
+}
+
+.collapseNodeButton:hover {
+  cursor: pointer;
+}
+
+.ignoredChildrenButton {
+  padding: 0 !important;
+  font-size: small;
+  height: 20px;
+  min-width: 80px;
+}
+
+.buttonLabel {
+  display: flex;
+  align-content: flex-start;
+  height: 20px;
+}
+
+.hiddenNodeSpan {
+  line-height: 20px;
+  color: #5e5e63;
+}
+
+.hiddenNodeIcon {
+  display: flex;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  color: #5e5e63;
+}
+
+.menuItemList {
+  max-height: 100px;
+}
+
+.menuItem {
+  min-height: 20px;
+}
+
+.menuItemLabel {
+  display: flex;
+  justify-content: space-between;
+  height: 20px;
+  width: 100%;
+}
+
+.menuItemLabel span {
+  line-height: 20px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  width: 130px;
+}
+
+.menuItemLabel mat-icon {
+  font-size: 20px;
+  width: 20px;
+  line-height: 20px;
+  margin: 0;
+}
