@@ -1,0 +1,108 @@
+name: Build Analysis
+
+on:
+  push:
+    branches: ['**']
+    paths:
+      - 'analysis/**'
+      - '.github/workflows/build-analysis.yml'
+  pull_request:
+    branches: ['**']
+    paths:
+      - 'analysis/**'
+      - '.github/workflows/build-analysis.yml'
+
+# Cancel in-progress runs on same PR
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Explicit permissions (principle of least privilege)
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    defaults:
+      run:
+        working-directory: analysis
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: wrapper
+
+      - name: Run ktlint
+        run: ./gradlew ktlintCheck
+
+      - name: Build and test
+        run: |
+          if [ "${{ github.ref_type }}" == "tag" ]; then
+            RELEASE="${{ github.ref_name }}"
+          else
+            RELEASE="${{ github.sha }}"
+          fi
+          ./gradlew build -Pversion=$RELEASE
+
+      - name: Upload JAR artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: codegraph-jar-${{ github.run_id }}
+          path: analysis/build/libs/codegraph.jar
+          retention-days: 1
+          if-no-files-found: error
+
+      - name: Upload SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: analysis-sbom-${{ github.run_id }}
+          path: analysis/build/reports/bom.json
+          retention-days: 1
+          if-no-files-found: error
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: analysis-test-results-${{ github.run_id }}
+          path: analysis/build/test-results/*/*.xml
+          retention-days: 1
+          if-no-files-found: warn
+
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: analysis-coverage-${{ github.run_id }}
+          path: analysis/build/reports/jacoco/test/*.xml
+          retention-days: 1
+          if-no-files-found: warn
+
+      - name: Publish test results
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Analysis Unit Tests
+          path: analysis/build/test-results/*/*.xml
+          reporter: java-junit
+          fail-on-error: false
