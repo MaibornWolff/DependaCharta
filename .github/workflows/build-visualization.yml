@@ -1,0 +1,157 @@
+name: Build Visualization
+
+on:
+  push:
+    branches: ['**']
+    paths:
+      - 'visualization/**'
+      - '.github/workflows/build-visualization.yml'
+  pull_request:
+    branches: ['**']
+    paths:
+      - 'visualization/**'
+      - '.github/workflows/build-visualization.yml'
+
+# Cancel in-progress runs on same PR
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Explicit permissions (principle of least privilege)
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    defaults:
+      run:
+        working-directory: visualization
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.12.0'
+          cache: 'npm'
+          cache-dependency-path: visualization/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linter
+        run: npx ng lint
+
+      - name: Build application
+        run: npm run build
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
+
+      - name: Run unit tests
+        run: npm run ci-test
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+
+      - name: Create version file
+        run: |
+          if [ "${{ github.ref_type }}" == "tag" ]; then
+            RELEASE="${{ github.ref_name }}"
+          else
+            RELEASE="${{ github.sha }}"
+          fi
+          npm run ci-createVersion -- $RELEASE
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: visualization-build-${{ github.run_id }}
+          path: visualization/dist
+          retention-days: 1
+          if-no-files-found: error
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: visualization-test-results-${{ github.run_id }}
+          path: visualization/test-results
+          retention-days: 1
+          if-no-files-found: warn
+
+      - name: Publish test results
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Visualization Unit Tests
+          path: visualization/test-results/*.xml
+          reporter: java-junit
+          fail-on-error: false
+
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: build
+
+    defaults:
+      run:
+        working-directory: visualization
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.12.0'
+          cache: 'npm'
+          cache-dependency-path: visualization/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install http-server and wait-on
+        run: npm install -g http-server wait-on
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: visualization-build-${{ github.run_id }}
+          path: visualization/dist
+
+      - name: Start server and run Cypress tests
+        run: |
+          http-server ./dist/visualization/browser -p 4200 &
+          SERVER_PID=$!
+          wait-on http://localhost:4200 --timeout 30000
+          npx cypress run --browser electron --config video=false,screenshotOnRunFailure=false
+          TEST_EXIT=$?
+          kill $SERVER_PID || true
+          exit $TEST_EXIT
+
+      - name: Upload Cypress screenshots on failure
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: cypress-screenshots-${{ github.run_id }}
+          path: visualization/cypress/screenshots
+          retention-days: 7
+          if-no-files-found: ignore
+
+      - name: Upload Cypress videos on failure
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: cypress-videos-${{ github.run_id }}
+          path: visualization/cypress/videos
+          retention-days: 7
+          if-no-files-found: ignore
