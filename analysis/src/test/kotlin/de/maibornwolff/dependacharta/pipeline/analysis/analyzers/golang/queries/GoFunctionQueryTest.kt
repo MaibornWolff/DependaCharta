@@ -1,6 +1,6 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers.golang.queries
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.golang.queries
 
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.utils.nodeAsString
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.nodeAsString
 import org.treesitter.TSParser
 import org.treesitter.TreeSitterGo
 import org.junit.jupiter.api.Test

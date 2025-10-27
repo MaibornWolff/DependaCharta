@@ -1,4 +1,4 @@
-package de.maibornwolff.codegraph.pipeline.shared
+package de.maibornwolff.dependacharta.pipeline.shared
 
 import me.tongfei.progressbar.ProgressBarBuilder
 import me.tongfei.progressbar.ProgressBarStyle

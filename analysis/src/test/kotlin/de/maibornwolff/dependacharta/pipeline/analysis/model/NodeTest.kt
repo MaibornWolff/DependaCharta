@@ -1,6 +1,6 @@
-package de.maibornwolff.codegraph.pipeline.analysis.model
+package de.maibornwolff.dependacharta.pipeline.analysis.model
 
-import de.maibornwolff.codegraph.pipeline.shared.SupportedLanguage
+import de.maibornwolff.dependacharta.pipeline.shared.SupportedLanguage
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 
@@ -8,7 +8,7 @@ class NodeTest {
     @Test
     fun `should resolve types of usedTypes correctly`() {
         // given
-        val bookPath = Path(listOf("de", "maibornwolff", "codegraph", "analysis", "Model", "Book"))
+        val bookPath = Path(listOf("de", "maibornwolff", "dependacharta", "analysis", "Model", "Book"))
         val stringPath = Path(listOf("java", "lang", "String"))
         val intPath = Path(listOf("int"))
 
@@ -22,7 +22,7 @@ class NodeTest {
         )
 
         val node = Node(
-            pathWithName = Path(listOf("de", "maibornwolff", "codegraph", "analysis", "analyzers", "JavaAnalyzerTest")),
+            pathWithName = Path(listOf("de", "maibornwolff", "dependacharta", "analysis", "analyzers", "JavaAnalyzerTest")),
             physicalPath = "./path",
             nodeType = NodeType.CLASS,
             language = SupportedLanguage.JAVA,
@@ -46,7 +46,7 @@ class NodeTest {
     @Test
     fun `should resolve scoped types of usedTypes correctly`() {
         // given
-        val bookPath = Path(listOf("de", "maibornwolff", "codegraph", "analysis", "Model", "Book"))
+        val bookPath = Path(listOf("de", "maibornwolff", "dependacharta", "analysis", "Model", "Book"))
         val stringPath = Path(listOf("java", "lang", "String"))
         val intPath = Path(listOf("int"))
 
@@ -60,7 +60,7 @@ class NodeTest {
         )
 
         val node = Node(
-            pathWithName = Path(listOf("de", "maibornwolff", "codegraph", "analysis", "analyzers", "JavaAnalyzerTest")),
+            pathWithName = Path(listOf("de", "maibornwolff", "dependacharta", "analysis", "analyzers", "JavaAnalyzerTest")),
             physicalPath = "./path",
             nodeType = NodeType.CLASS,
             language = SupportedLanguage.JAVA,

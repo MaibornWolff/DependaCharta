@@ -83,7 +83,7 @@ jobs:
           mkdir -p public/icons
 
           # Copy landing page template
-          cp index.html public/codegraph.html
+          cp index.html public/dependacharta.html
 
           # Copy visualization files
           cp visualization/dist/visualization/browser/index.html public/
@@ -98,9 +98,9 @@ jobs:
         run: |
           TAG="${{ steps.version.outputs.tag }}"
           REPO="${{ github.repository }}"
-          sed -i "s|{{analysis_url}}|https://github.com/$REPO/releases/download/$TAG/codegraph-analysis-$TAG.zip|g" public/codegraph.html
-          sed -i "s|{{visualization_mac_url}}|https://github.com/$REPO/releases/download/$TAG/codegraph-visualization-mac-silicon-$TAG.zip|g" public/codegraph.html
-          sed -i "s|{{visualization_win_url}}|https://github.com/$REPO/releases/download/$TAG/codegraph-visualization-win-$TAG.zip|g" public/codegraph.html
+          sed -i "s|{{analysis_url}}|https://github.com/$REPO/releases/download/$TAG/dependacharta-analysis-$TAG.zip|g" public/dependacharta.html
+          sed -i "s|{{visualization_mac_url}}|https://github.com/$REPO/releases/download/$TAG/dependacharta-visualization-mac-silicon-$TAG.zip|g" public/dependacharta.html
+          sed -i "s|{{visualization_win_url}}|https://github.com/$REPO/releases/download/$TAG/dependacharta-visualization-win-$TAG.zip|g" public/dependacharta.html
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

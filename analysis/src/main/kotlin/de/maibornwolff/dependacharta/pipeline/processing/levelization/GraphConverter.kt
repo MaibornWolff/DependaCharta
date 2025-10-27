@@ -1,8 +1,8 @@
-package de.maibornwolff.codegraph.pipeline.processing.levelization
+package de.maibornwolff.dependacharta.pipeline.processing.levelization
 
-import de.maibornwolff.codegraph.pipeline.analysis.model.Node
-import de.maibornwolff.codegraph.pipeline.processing.levelization.model.GraphEdge
-import de.maibornwolff.codegraph.pipeline.processing.levelization.model.GraphNode
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Node
+import de.maibornwolff.dependacharta.pipeline.processing.levelization.model.GraphEdge
+import de.maibornwolff.dependacharta.pipeline.processing.levelization.model.GraphNode
 
 fun Collection<Node>.toGraphNodes(): List<GraphNode> = buildTree(null, 0, this).toList()
 

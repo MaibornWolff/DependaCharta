@@ -1,9 +1,9 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers.csharp
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.csharp
 
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.utils.getNamedChildren
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.utils.nodeAsString
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.utils.find
-import de.maibornwolff.codegraph.pipeline.analysis.model.Type
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.getNamedChildren
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.nodeAsString
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.find
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Type
 import org.treesitter.TSNode
 
 fun extractType(

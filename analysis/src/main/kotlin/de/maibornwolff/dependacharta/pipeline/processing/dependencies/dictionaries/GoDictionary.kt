@@ -1,6 +1,6 @@
-package de.maibornwolff.codegraph.pipeline.processing.dependencies.dictionaries
+package de.maibornwolff.dependacharta.pipeline.processing.dependencies.dictionaries
 
-import de.maibornwolff.codegraph.pipeline.analysis.model.Path
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
 
 class GoDictionary : LanguageDictionary {
     override fun get() = goDictionary

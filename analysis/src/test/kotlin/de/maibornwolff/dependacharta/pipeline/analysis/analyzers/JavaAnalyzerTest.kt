@@ -1,12 +1,12 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers
 
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.java.JavaAnalyzer
-import de.maibornwolff.codegraph.pipeline.analysis.model.Dependency
-import de.maibornwolff.codegraph.pipeline.analysis.model.FileInfo
-import de.maibornwolff.codegraph.pipeline.analysis.model.Path
-import de.maibornwolff.codegraph.pipeline.analysis.model.Type
-import de.maibornwolff.codegraph.pipeline.analysis.model.TypeOfUsage
-import de.maibornwolff.codegraph.pipeline.shared.SupportedLanguage
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.java.JavaAnalyzer
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Dependency
+import de.maibornwolff.dependacharta.pipeline.analysis.model.FileInfo
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Type
+import de.maibornwolff.dependacharta.pipeline.analysis.model.TypeOfUsage
+import de.maibornwolff.dependacharta.pipeline.shared.SupportedLanguage
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -18,7 +18,7 @@ class JavaAnalyzerTest {
     fun `should extract field types correctly`() {
         // given
         val javaCode = """
-            package de.maibornwolff.codegraph.analysis.analyzers;
+            package de.maibornwolff.dependacharta.analysis.analyzers;
             
             public class JavaAnalyzerTest {
                 private String name;
@@ -40,7 +40,7 @@ class JavaAnalyzerTest {
     fun `should extract method return types correctly`() {
         // given
         val javaCode = """
-            package de.maibornwolff.codegraph.analysis.analyzers;
+            package de.maibornwolff.dependacharta.analysis.analyzers;
             
             public class JavaAnalyzerTest {
                 public String getName() {
@@ -67,7 +67,7 @@ class JavaAnalyzerTest {
     fun `should extract method parameter types correctly`() {
         // given
         val javaCode = """
-            package de.maibornwolff.codegraph.analysis.analyzers;
+            package de.maibornwolff.dependacharta.analysis.analyzers;
             
             public class JavaAnalyzerTest {
                 public void setName(String name) {
@@ -92,7 +92,7 @@ class JavaAnalyzerTest {
     fun `should extract constructor parameter types correctly`() {
         // given
         val javaCode = """
-            package de.maibornwolff.codegraph.analysis.analyzers;
+            package de.maibornwolff.dependacharta.analysis.analyzers;
             
             public class JavaAnalyzerTest {
                 public JavaAnalyzerTest(String name, int age) {
@@ -114,7 +114,7 @@ class JavaAnalyzerTest {
     fun `should extract used annotation types correctly`() {
         // given
         val javaCode = """
-            package de.maibornwolff.codegraph.analysis.analyzers;
+            package de.maibornwolff.dependacharta.analysis.analyzers;
             
             import java.lang.Override;
             import java.lang.SuppressWarnings;
@@ -141,7 +141,7 @@ class JavaAnalyzerTest {
     fun `should create node for each class, enum, record, annotation and interface in a given file`() {
         // given
         val javaCode = """
-            package de.maibornwolff.codegraph.analysis.analyzers;
+            package de.maibornwolff.dependacharta.analysis.analyzers;
             
             public class JavaAnalyzerTest {
             }
@@ -176,7 +176,7 @@ class JavaAnalyzerTest {
     fun `should create node for each class and detect their usages of each other but not the resolved dependencies`() {
         // given
         val javaCode = """
-            package de.maibornwolff.codegraph.analysis.analyzers;
+            package de.maibornwolff.dependacharta.analysis.analyzers;
             
             public class A {
                 private final B b = B();
@@ -205,7 +205,7 @@ class JavaAnalyzerTest {
     fun `should extract types of generics correctly`() {
         // given
         val javaCode = """
-            package de.maibornwolff.codegraph.analysis.analyzers;
+            package de.maibornwolff.dependacharta.analysis.analyzers;
             
             public class JavaAnalyzerTest {
                 private List<String> names;
@@ -230,7 +230,7 @@ class JavaAnalyzerTest {
     fun `should parse imports and add them to the node's dependencies`() {
         // given
         val javaCode = """
-            package de.maibornwolff.codegraph.analysis.analyzers;
+            package de.maibornwolff.dependacharta.analysis.analyzers;
             
             import java.util.List;
             import java.util.Map;
@@ -248,7 +248,7 @@ class JavaAnalyzerTest {
         val dependencies = report.nodes.first().dependencies
         assertEquals(3, dependencies.size)
         assertThat(dependencies).containsExactlyInAnyOrder(
-            Dependency(Path.fromStringWithDots("de.maibornwolff.codegraph.analysis.analyzers"), true),
+            Dependency(Path.fromStringWithDots("de.maibornwolff.dependacharta.analysis.analyzers"), true),
             Dependency(Path.fromStringWithDots("java.util.List")),
             Dependency(Path.fromStringWithDots("java.util.Map"))
         )
@@ -258,7 +258,7 @@ class JavaAnalyzerTest {
     fun `should add implicit dependency on the class's package`() {
         // given
         val javaCode = """
-            package de.maibornwolff.codegraph.analysis.analyzers;
+            package de.maibornwolff.dependacharta.analysis.analyzers;
             
             public class JavaAnalyzerTest {
             }
@@ -271,7 +271,7 @@ class JavaAnalyzerTest {
         val dependencies = report.nodes.first().dependencies
         assertEquals(1, dependencies.size)
         assertThat(dependencies).containsExactlyInAnyOrder(
-            Dependency(Path.fromStringWithDots("de.maibornwolff.codegraph.analysis.analyzers"), true)
+            Dependency(Path.fromStringWithDots("de.maibornwolff.dependacharta.analysis.analyzers"), true)
         )
     }
 
@@ -279,7 +279,7 @@ class JavaAnalyzerTest {
     fun `should extract types of throws clauses`() {
         // given
         val javaCode = """
-            package de.maibornwolff.codegraph.analysis.analyzers;
+            package de.maibornwolff.dependacharta.analysis.analyzers;
             
             public class JavaAnalyzerTest {
                 public void setName(String name) throws IllegalArgumentException {
@@ -305,7 +305,7 @@ class JavaAnalyzerTest {
     fun `should extract the superclass of a class correctly`() {
         // given
         val javaCode = """
-            package de.maibornwolff.codegraph.analysis.analyzers;
+            package de.maibornwolff.dependacharta.analysis.analyzers;
             
             public class JavaAnalyzerTest extends SuperClass {
             }
@@ -325,7 +325,7 @@ class JavaAnalyzerTest {
     fun `should extract the interfaces of a class correctly`() {
         // given
         val javaCode = """
-            package de.maibornwolff.codegraph.analysis.analyzers;
+            package de.maibornwolff.dependacharta.analysis.analyzers;
             
             public class JavaAnalyzerTest implements Interface1, Interface2 {
             }
@@ -346,7 +346,7 @@ class JavaAnalyzerTest {
     fun `should extract the extends clause of an interface correctly`() {
         // given
         val javaCode = """
-            package de.maibornwolff.codegraph.analysis.analyzers;
+            package de.maibornwolff.dependacharta.analysis.analyzers;
             
             public interface JavaAnalyzerTest extends Interface1, Interface2 {
             }
@@ -367,7 +367,7 @@ class JavaAnalyzerTest {
     fun `should extract constructor calls to usedTypes correctly`() {
         // given
         val javaCode = """
-            package de.maibornwolff.codegraph.analysis.analyzers;
+            package de.maibornwolff.dependacharta.analysis.analyzers;
             
             public class JavaAnalyzerTest {
                 public void someMethod() {
@@ -390,7 +390,7 @@ class JavaAnalyzerTest {
     fun `should extract static field accesses to usedTypes correctly`() {
         // given
         val javaCode = """
-            package de.maibornwolff.codegraph.analysis.analyzers;
+            package de.maibornwolff.dependacharta.analysis.analyzers;
             
             public class JavaAnalyzerTest {
                 public void someMethod() {
@@ -413,7 +413,7 @@ class JavaAnalyzerTest {
     fun `should extract static method accesses to usedTypes correctly`() {
         // given
         val javaCode = """
-            package de.maibornwolff.codegraph.analysis.analyzers;
+            package de.maibornwolff.dependacharta.analysis.analyzers;
             
             public class JavaAnalyzerTest {
                 public void someMethod() {

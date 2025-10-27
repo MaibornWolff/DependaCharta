@@ -1,4 +1,4 @@
-package de.maibornwolff.codegraph.pipeline.shared
+package de.maibornwolff.dependacharta.pipeline.shared
 
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.BeforeEach

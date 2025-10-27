@@ -1,11 +1,11 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers.cpp
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.cpp
 
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.LanguageAnalyzer
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.cpp.model.CppContext
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.cpp.processing.BodyProcessor
-import de.maibornwolff.codegraph.pipeline.analysis.model.FileInfo
-import de.maibornwolff.codegraph.pipeline.analysis.model.FileReport
-import de.maibornwolff.codegraph.pipeline.analysis.model.Node
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.LanguageAnalyzer
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.cpp.model.CppContext
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.cpp.processing.BodyProcessor
+import de.maibornwolff.dependacharta.pipeline.analysis.model.FileInfo
+import de.maibornwolff.dependacharta.pipeline.analysis.model.FileReport
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Node
 import org.treesitter.TSNode
 import org.treesitter.TSParser
 import org.treesitter.TreeSitterCpp

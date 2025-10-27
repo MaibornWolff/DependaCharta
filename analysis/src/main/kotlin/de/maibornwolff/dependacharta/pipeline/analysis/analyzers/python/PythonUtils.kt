@@ -1,4 +1,4 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers.python
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.python
 
 fun String.trimFileEnding() =
     this.endsWith(".py").let {

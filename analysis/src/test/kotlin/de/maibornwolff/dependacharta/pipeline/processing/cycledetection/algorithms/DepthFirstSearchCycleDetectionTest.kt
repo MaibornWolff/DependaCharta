@@ -1,4 +1,4 @@
-package de.maibornwolff.codegraph.pipeline.processing.cycledetection.algorithms
+package de.maibornwolff.dependacharta.pipeline.processing.cycledetection.algorithms
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test

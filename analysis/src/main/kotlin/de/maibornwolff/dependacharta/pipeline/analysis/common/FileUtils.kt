@@ -1,4 +1,4 @@
-package de.maibornwolff.codegraph.pipeline.analysis.common
+package de.maibornwolff.dependacharta.pipeline.analysis.common
 
 import java.io.File
 

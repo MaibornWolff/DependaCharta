@@ -1,10 +1,10 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers
 
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.csharp.CSharpAnalyzer
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.java.JavaAnalyzer
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.typescript.TypescriptAnalyzer
-import de.maibornwolff.codegraph.pipeline.analysis.model.FileInfo
-import de.maibornwolff.codegraph.pipeline.shared.SupportedLanguage
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.csharp.CSharpAnalyzer
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.java.JavaAnalyzer
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.TypescriptAnalyzer
+import de.maibornwolff.dependacharta.pipeline.analysis.model.FileInfo
+import de.maibornwolff.dependacharta.pipeline.shared.SupportedLanguage
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments

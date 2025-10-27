@@ -1,4 +1,4 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.utils
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils
 
 import org.treesitter.TSNode
 import org.treesitter.TSQuery

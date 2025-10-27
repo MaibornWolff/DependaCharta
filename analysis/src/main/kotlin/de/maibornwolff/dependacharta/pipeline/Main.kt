@@ -1,13 +1,13 @@
-package de.maibornwolff.codegraph.pipeline
+package de.maibornwolff.dependacharta.pipeline
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.main
 import com.github.ajalt.clikt.parameters.options.*
-import de.maibornwolff.codegraph.pipeline.analysis.AnalysisPipeline
-import de.maibornwolff.codegraph.pipeline.processing.ProcessingPipeline
-import de.maibornwolff.codegraph.pipeline.shared.LogLevel
-import de.maibornwolff.codegraph.pipeline.shared.Logger
-import de.maibornwolff.codegraph.pipeline.shared.SupportedLanguage
+import de.maibornwolff.dependacharta.pipeline.analysis.AnalysisPipeline
+import de.maibornwolff.dependacharta.pipeline.processing.ProcessingPipeline
+import de.maibornwolff.dependacharta.pipeline.shared.LogLevel
+import de.maibornwolff.dependacharta.pipeline.shared.Logger
+import de.maibornwolff.dependacharta.pipeline.shared.SupportedLanguage
 
 fun main(args: Array<String>) {
     Cli().main(args)
@@ -18,7 +18,7 @@ class Cli : CliktCommand() {
         versionOption(
             version = VersionProvider().get().toString(),
             names = setOf("--version", "-v"),
-            message = { "CodeGraph Analysis $it" }
+            message = { "dependacharta Analysis $it" }
         )
     }
 

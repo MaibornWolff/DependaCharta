@@ -1,12 +1,12 @@
-package de.maibornwolff.codegraph.pipeline.processing.reporting
+package de.maibornwolff.dependacharta.pipeline.processing.reporting
 
-import de.maibornwolff.codegraph.pipeline.analysis.model.Dependency
-import de.maibornwolff.codegraph.pipeline.analysis.model.Node
-import de.maibornwolff.codegraph.pipeline.analysis.model.NodeDependencies
-import de.maibornwolff.codegraph.pipeline.analysis.model.Path
-import de.maibornwolff.codegraph.pipeline.analysis.model.build
-import de.maibornwolff.codegraph.pipeline.processing.model.ProjectReportDto
-import de.maibornwolff.codegraph.pipeline.processing.levelization.model.GraphNodeBuilder
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Dependency
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Node
+import de.maibornwolff.dependacharta.pipeline.analysis.model.NodeDependencies
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
+import de.maibornwolff.dependacharta.pipeline.analysis.model.build
+import de.maibornwolff.dependacharta.pipeline.processing.model.ProjectReportDto
+import de.maibornwolff.dependacharta.pipeline.processing.levelization.model.GraphNodeBuilder
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 

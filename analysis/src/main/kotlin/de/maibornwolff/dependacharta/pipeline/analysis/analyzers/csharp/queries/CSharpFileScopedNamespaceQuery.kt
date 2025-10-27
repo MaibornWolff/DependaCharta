@@ -1,8 +1,8 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers.csharp.queries
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.csharp.queries
 
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.utils.execute
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.utils.nodeAsString
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.csharp.CSharpQueryFactory
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.execute
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.nodeAsString
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.csharp.CSharpQueryFactory
 import org.treesitter.TSNode
 
 /**

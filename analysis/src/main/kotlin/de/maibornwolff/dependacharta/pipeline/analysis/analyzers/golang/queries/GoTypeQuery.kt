@@ -1,10 +1,10 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers.golang.queries
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.golang.queries
 
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.utils.execute
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.utils.nodeAsString
-import de.maibornwolff.codegraph.pipeline.analysis.model.Type
-import de.maibornwolff.codegraph.pipeline.analysis.model.NodeType
-import de.maibornwolff.codegraph.pipeline.analysis.model.TypeOfUsage
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.execute
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.nodeAsString
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Type
+import de.maibornwolff.dependacharta.pipeline.analysis.model.NodeType
+import de.maibornwolff.dependacharta.pipeline.analysis.model.TypeOfUsage
 import org.treesitter.TSNode
 import org.treesitter.TSQuery
 import org.treesitter.TreeSitterGo

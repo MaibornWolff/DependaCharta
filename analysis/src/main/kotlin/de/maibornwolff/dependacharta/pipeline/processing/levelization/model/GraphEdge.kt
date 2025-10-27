@@ -1,4 +1,4 @@
-package de.maibornwolff.codegraph.pipeline.processing.levelization.model
+package de.maibornwolff.dependacharta.pipeline.processing.levelization.model
 
 data class GraphEdge(
     val source: String,

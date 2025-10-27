@@ -1,4 +1,4 @@
-package de.maibornwolff.codegraph.pipeline.processing.model
+package de.maibornwolff.dependacharta.pipeline.processing.model
 
 fun ProjectNodeDto.Companion.build(
     leafId: String? = null,

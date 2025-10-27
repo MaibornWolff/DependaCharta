@@ -1,6 +1,6 @@
-package de.maibornwolff.codegraph.pipeline
+package de.maibornwolff.dependacharta.pipeline
 
-import de.maibornwolff.codegraph.pipeline.shared.Logger
+import de.maibornwolff.dependacharta.pipeline.shared.Logger
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 

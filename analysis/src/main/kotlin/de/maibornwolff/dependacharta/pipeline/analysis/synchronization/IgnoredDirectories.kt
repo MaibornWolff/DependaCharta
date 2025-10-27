@@ -1,4 +1,4 @@
-package de.maibornwolff.codegraph.pipeline.analysis.synchronization
+package de.maibornwolff.dependacharta.pipeline.analysis.synchronization
 
 fun ignoredDirectories() = listOf("node_modules", "dist", "build")
 

@@ -1,11 +1,11 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers.cpp
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.cpp
 
-import de.maibornwolff.codegraph.pipeline.analysis.model.Dependency
-import de.maibornwolff.codegraph.pipeline.analysis.model.FileInfo
-import de.maibornwolff.codegraph.pipeline.analysis.model.Path
-import de.maibornwolff.codegraph.pipeline.analysis.model.Type
-import de.maibornwolff.codegraph.pipeline.analysis.model.TypeOfUsage
-import de.maibornwolff.codegraph.pipeline.shared.SupportedLanguage
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Dependency
+import de.maibornwolff.dependacharta.pipeline.analysis.model.FileInfo
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Type
+import de.maibornwolff.dependacharta.pipeline.analysis.model.TypeOfUsage
+import de.maibornwolff.dependacharta.pipeline.shared.SupportedLanguage
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
@@ -144,7 +144,7 @@ inline bool Address::offset_ok_for_immed(int64_t offset, uint shift) {
     fun `should set path of node to namespace if there is a namespace it resides in`() {
         // given
         val cppCode = """
-            namespace de::maibornwolff::codegraph::pipeline::analysis {
+            namespace de::maibornwolff::dependacharta::pipeline::analysis {
                 class DummyClass {
                     // This class is just a placeholder to test the include statement
                 };
@@ -157,7 +157,7 @@ inline bool Address::offset_ok_for_immed(int64_t offset, uint shift) {
         // then
         assertThat(
             report.nodes.first().pathWithName
-        ).isEqualTo(Path.fromStringWithDots("de.maibornwolff.codegraph.pipeline.analysis.DummyClass"))
+        ).isEqualTo(Path.fromStringWithDots("de.maibornwolff.dependacharta.pipeline.analysis.DummyClass"))
     }
 
     @Test
@@ -184,7 +184,7 @@ inline bool Address::offset_ok_for_immed(int64_t offset, uint shift) {
     fun `should set path of node to namespace it resides in, even when namespace is nested`() {
         // given
         val cppCode = """
-            namespace de::maibornwolff::codegraph::pipeline::analysis {
+            namespace de::maibornwolff::dependacharta::pipeline::analysis {
                 class FooClass {
                 };
                 namespace analyzers {
@@ -200,17 +200,17 @@ inline bool Address::offset_ok_for_immed(int64_t offset, uint shift) {
         // then
         assertThat(
             report.nodes.first().pathWithName
-        ).isEqualTo(Path.fromStringWithDots("de.maibornwolff.codegraph.pipeline.analysis.FooClass"))
+        ).isEqualTo(Path.fromStringWithDots("de.maibornwolff.dependacharta.pipeline.analysis.FooClass"))
         assertThat(
             report.nodes[1].pathWithName
-        ).isEqualTo(Path.fromStringWithDots("de.maibornwolff.codegraph.pipeline.analysis.analyzers.BarClass"))
+        ).isEqualTo(Path.fromStringWithDots("de.maibornwolff.dependacharta.pipeline.analysis.analyzers.BarClass"))
     }
 
     @Test
     fun `should handle nested namespaces`() {
         // given
         val cppCode = """
-            namespace de::maibornwolff::codegraph::pipeline {
+            namespace de::maibornwolff::dependacharta::pipeline {
                 namespace analysis {
                     namespace analyzers {
                         class DummyClass {
@@ -226,7 +226,7 @@ inline bool Address::offset_ok_for_immed(int64_t offset, uint shift) {
         // then
         assertThat(
             report.nodes.first().pathWithName
-        ).isEqualTo(Path.fromStringWithDots("de.maibornwolff.codegraph.pipeline.analysis.analyzers.DummyClass"))
+        ).isEqualTo(Path.fromStringWithDots("de.maibornwolff.dependacharta.pipeline.analysis.analyzers.DummyClass"))
     }
 
     /*

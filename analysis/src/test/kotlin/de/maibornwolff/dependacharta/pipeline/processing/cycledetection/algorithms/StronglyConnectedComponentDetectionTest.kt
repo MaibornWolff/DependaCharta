@@ -1,7 +1,7 @@
-package de.maibornwolff.codegraph.pipeline.processing.cycledetection.algorithms
+package de.maibornwolff.dependacharta.pipeline.processing.cycledetection.algorithms
 
-import de.maibornwolff.codegraph.pipeline.processing.cycledetection.model.build
-import de.maibornwolff.codegraph.pipeline.processing.cycledetection.model.NodeInformation
+import de.maibornwolff.dependacharta.pipeline.processing.cycledetection.model.build
+import de.maibornwolff.dependacharta.pipeline.processing.cycledetection.model.NodeInformation
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 

@@ -1,8 +1,8 @@
-package de.maibornwolff.codegraph.pipeline.analysis.model
+package de.maibornwolff.dependacharta.pipeline.analysis.model
 
-import de.maibornwolff.codegraph.pipeline.processing.model.EdgeInfoDto
-import de.maibornwolff.codegraph.pipeline.processing.model.LeafInformationDto
-import de.maibornwolff.codegraph.pipeline.shared.SupportedLanguage
+import de.maibornwolff.dependacharta.pipeline.processing.model.EdgeInfoDto
+import de.maibornwolff.dependacharta.pipeline.processing.model.LeafInformationDto
+import de.maibornwolff.dependacharta.pipeline.shared.SupportedLanguage
 import kotlinx.serialization.Serializable
 
 @Serializable

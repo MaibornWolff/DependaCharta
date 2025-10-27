@@ -1,4 +1,4 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers.golang.queries
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.golang.queries
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue

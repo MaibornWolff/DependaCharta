@@ -1,8 +1,8 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers.cpp
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.cpp
 
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.cpp.processing.TypeDefProcessor
-import de.maibornwolff.codegraph.pipeline.analysis.model.Dependency
-import de.maibornwolff.codegraph.pipeline.analysis.model.Type
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.cpp.processing.TypeDefProcessor
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Dependency
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Type
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test

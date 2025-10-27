@@ -1,4 +1,4 @@
-package de.maibornwolff.codegraph.pipeline
+package de.maibornwolff.dependacharta.pipeline
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test

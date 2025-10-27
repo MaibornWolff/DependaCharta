@@ -1,12 +1,12 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers.typescript
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript
 
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.LanguageAnalyzer
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.utils.nodeAsString
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.utils.withoutFileSuffix
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.typescript.model.Declaration
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.typescript.model.DependenciesAndAliases
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.typescript.queries.*
-import de.maibornwolff.codegraph.pipeline.analysis.model.*
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.LanguageAnalyzer
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.nodeAsString
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.withoutFileSuffix
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.model.Declaration
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.model.DependenciesAndAliases
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.queries.*
+import de.maibornwolff.dependacharta.pipeline.analysis.model.*
 import org.treesitter.TSNode
 import org.treesitter.TSParser
 import org.treesitter.TreeSitterTypescript

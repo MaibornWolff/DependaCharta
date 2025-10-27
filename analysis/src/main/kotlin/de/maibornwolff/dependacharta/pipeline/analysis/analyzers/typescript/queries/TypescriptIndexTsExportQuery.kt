@@ -1,14 +1,14 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers.typescript.queries
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.queries
 
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.model.toImport
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.utils.execute
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.utils.getNamedChildren
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.utils.nodeAsString
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.utils.resolveRelativePath
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.typescript.model.IdentifierWithAlias
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.typescript.trimFileEnding
-import de.maibornwolff.codegraph.pipeline.analysis.model.Dependency
-import de.maibornwolff.codegraph.pipeline.analysis.model.Path
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.model.toImport
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.execute
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.getNamedChildren
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.nodeAsString
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.resolveRelativePath
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.model.IdentifierWithAlias
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.trimFileEnding
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Dependency
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
 import org.treesitter.TSNode
 import org.treesitter.TSQuery
 import org.treesitter.TreeSitterTypescript

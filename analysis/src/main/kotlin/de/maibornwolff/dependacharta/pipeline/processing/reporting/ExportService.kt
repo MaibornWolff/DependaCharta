@@ -1,6 +1,6 @@
-package de.maibornwolff.codegraph.pipeline.processing.reporting
+package de.maibornwolff.dependacharta.pipeline.processing.reporting
 
-import de.maibornwolff.codegraph.pipeline.processing.model.ProjectReportDto
+import de.maibornwolff.dependacharta.pipeline.processing.model.ProjectReportDto
 import kotlinx.serialization.json.Json
 
 class ExportService {

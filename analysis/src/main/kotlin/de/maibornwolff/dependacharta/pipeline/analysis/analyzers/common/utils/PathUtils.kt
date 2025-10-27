@@ -1,9 +1,9 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.utils
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils
 
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.model.DirectImport
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.model.Import
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.model.RelativeImport
-import de.maibornwolff.codegraph.pipeline.analysis.model.Path
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.model.DirectImport
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.model.Import
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.model.RelativeImport
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
 
 /**
  * Resolves the path of an import relative to the file it is imported in.

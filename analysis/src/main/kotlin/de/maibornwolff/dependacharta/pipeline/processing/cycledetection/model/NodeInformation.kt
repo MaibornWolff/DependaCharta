@@ -1,4 +1,4 @@
-package de.maibornwolff.codegraph.pipeline.processing.cycledetection.model
+package de.maibornwolff.dependacharta.pipeline.processing.cycledetection.model
 
 data class NodeInformation(
     val id: String,

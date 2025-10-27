@@ -1,6 +1,6 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers.python.queries
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.python.queries
 
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.utils.execute
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.execute
 import org.treesitter.TSNode
 import org.treesitter.TSQuery
 import org.treesitter.TreeSitterPython

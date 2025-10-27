@@ -1,6 +1,6 @@
-package de.maibornwolff.codegraph.pipeline.analysis.synchronization
+package de.maibornwolff.dependacharta.pipeline.analysis.synchronization
 
-import de.maibornwolff.codegraph.pipeline.analysis.model.FileReport
+import de.maibornwolff.dependacharta.pipeline.analysis.model.FileReport
 import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.FileNotFoundException
@@ -8,7 +8,7 @@ import java.util.*
 import kotlin.io.path.createDirectories
 
 class AnalysisSynchronizer {
-    private val tempDir = "codegraph_temp/"
+    private val tempDir = "dependacharta_temp/"
     private val recordFileNameName = "analysis_record.json"
     private val recordDir = "${tempDir}records/"
 

@@ -1,4 +1,4 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers.cpp.processing
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.cpp.processing
 
 import org.treesitter.TSNode
 

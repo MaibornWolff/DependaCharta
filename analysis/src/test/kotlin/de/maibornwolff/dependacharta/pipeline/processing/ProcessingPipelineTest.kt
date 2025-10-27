@@ -1,13 +1,13 @@
-package de.maibornwolff.codegraph.pipeline.processing
+package de.maibornwolff.dependacharta.pipeline.processing
 
-import de.maibornwolff.codegraph.pipeline.analysis.model.Dependency
-import de.maibornwolff.codegraph.pipeline.analysis.model.FileReport
-import de.maibornwolff.codegraph.pipeline.analysis.model.Node
-import de.maibornwolff.codegraph.pipeline.analysis.model.NodeType
-import de.maibornwolff.codegraph.pipeline.analysis.model.Path
-import de.maibornwolff.codegraph.pipeline.analysis.model.Type
-import de.maibornwolff.codegraph.pipeline.processing.model.ProjectReportDto
-import de.maibornwolff.codegraph.pipeline.shared.SupportedLanguage
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Dependency
+import de.maibornwolff.dependacharta.pipeline.analysis.model.FileReport
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Node
+import de.maibornwolff.dependacharta.pipeline.analysis.model.NodeType
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Type
+import de.maibornwolff.dependacharta.pipeline.processing.model.ProjectReportDto
+import de.maibornwolff.dependacharta.pipeline.shared.SupportedLanguage
 import kotlinx.serialization.json.Json
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach

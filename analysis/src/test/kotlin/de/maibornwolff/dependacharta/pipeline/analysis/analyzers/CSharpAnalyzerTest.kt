@@ -1,11 +1,11 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers
 
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.csharp.CSharpAnalyzer
-import de.maibornwolff.codegraph.pipeline.analysis.model.Dependency
-import de.maibornwolff.codegraph.pipeline.analysis.model.FileInfo
-import de.maibornwolff.codegraph.pipeline.analysis.model.Path
-import de.maibornwolff.codegraph.pipeline.analysis.model.Type
-import de.maibornwolff.codegraph.pipeline.shared.SupportedLanguage
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.csharp.CSharpAnalyzer
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Dependency
+import de.maibornwolff.dependacharta.pipeline.analysis.model.FileInfo
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Type
+import de.maibornwolff.dependacharta.pipeline.shared.SupportedLanguage
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -17,7 +17,7 @@ class CSharpAnalyzerTest {
         val cSharpCode = """
             using System;
 
-            namespace De.Maibornwolff.Codegraph.Analysis.Analyzers
+            namespace De.Maibornwolff.DependaCharta.Analysis.Analyzers
             {
                 public class CSharpAnalyzerTest
                 {
@@ -46,7 +46,7 @@ class CSharpAnalyzerTest {
         val cSharpCode = """
             using System;
 
-            namespace De.Maibornwolff.Codegraph.Analysis.Analyzers
+            namespace De.Maibornwolff.DependaCharta.Analysis.Analyzers
             {
             
                 public class CSharpAnalyzerTest 
@@ -83,7 +83,7 @@ class CSharpAnalyzerTest {
         val cSharpCode = """
             using System;
 
-            namespace De.Maibornwolff.Codegraph.Analysis.Analyzers
+            namespace De.Maibornwolff.DependaCharta.Analysis.Analyzers
             {
             
                 public class CSharpAnalyzerTest 
@@ -119,7 +119,7 @@ class CSharpAnalyzerTest {
         val cSharpCode = """
             using System;
 
-            namespace De.Maibornwolff.Codegraph.Analysis.Analyzers
+            namespace De.Maibornwolff.DependaCharta.Analysis.Analyzers
             {
                 public class CSharpAnalyzerTest 
                 {
@@ -149,7 +149,7 @@ class CSharpAnalyzerTest {
         val cSharpCode = """
             using System;
 
-            namespace De.Maibornwolff.Codegraph.Analysis.Analyzers
+            namespace De.Maibornwolff.DependaCharta.Analysis.Analyzers
             
                 public class JavaAnalyzerTest
                 {
@@ -183,7 +183,7 @@ class CSharpAnalyzerTest {
     fun `should create node for each class, enum, record, annotation and interface in a given file`() {
         // given
         val cSharpCode = """
-            namespace De.Maibornwolff.Codegraph.Analysis.Analyzers
+            namespace De.Maibornwolff.DependaCharta.Analysis.Analyzers
             {
                 public class TestClass
                 {
@@ -226,7 +226,7 @@ class CSharpAnalyzerTest {
     fun `should extract generic types correctly`() {
         // given
         val cSharpCode = """
-            namespace De.Maibornwolff.Codegraph.Analysis.Analyzers
+            namespace De.Maibornwolff.DependaCharta.Analysis.Analyzers
             {
             
                 public class CSharpAnalyzerTest 
@@ -257,7 +257,7 @@ class CSharpAnalyzerTest {
             using System;
             using System.Collections.Generic;
             
-            namespace De.Maibornwolff.Codegraph.Analysis.Analyzers 
+            namespace De.Maibornwolff.DependaCharta.Analysis.Analyzers 
             {
                 using Microsoft.Extensions.Options; 
                 
@@ -277,7 +277,7 @@ class CSharpAnalyzerTest {
         val dependencies = report.nodes.first().dependencies
         assertEquals(4, dependencies.size)
         assertThat(dependencies).containsExactlyInAnyOrder(
-            Dependency(Path.fromStringWithDots("De.Maibornwolff.Codegraph.Analysis.Analyzers"), true),
+            Dependency(Path.fromStringWithDots("De.Maibornwolff.DependaCharta.Analysis.Analyzers"), true),
             Dependency(Path.fromStringWithDots("System"), true),
             Dependency(Path.fromStringWithDots("System.Collections.Generic"), true),
             Dependency(Path.fromStringWithDots("Microsoft.Extensions.Options"), true)
@@ -288,7 +288,7 @@ class CSharpAnalyzerTest {
     fun `should add namespace specific imports only to the nodes of that namespace`() {
         // given
         val cSharpCode = """
-            namespace De.Maibornwolff.Codegraph.Analysis.Analyzers1 
+            namespace De.Maibornwolff.DependaCharta.Analysis.Analyzers1 
             {
                 using System;
                 using System.Collections.Generic;
@@ -302,7 +302,7 @@ class CSharpAnalyzerTest {
             
             }
             
-            namespace De.Maibornwolff.Codegraph.Analysis.Analyzers2 
+            namespace De.Maibornwolff.DependaCharta.Analysis.Analyzers2 
             {
                 public class CSharpAnalyzerTest 
                 {
@@ -317,14 +317,14 @@ class CSharpAnalyzerTest {
         assertThat(report.nodes).hasSize(2)
         val node1 = report.nodes[0]
         assertThat(node1.dependencies).containsExactlyInAnyOrder(
-            Dependency(Path.fromStringWithDots("De.Maibornwolff.Codegraph.Analysis.Analyzers1"), true),
+            Dependency(Path.fromStringWithDots("De.Maibornwolff.DependaCharta.Analysis.Analyzers1"), true),
             Dependency(Path.fromStringWithDots("System"), true),
             Dependency(Path.fromStringWithDots("System.Collections.Generic"), true),
             Dependency(Path.fromStringWithDots("Microsoft.Extensions.Options"), true)
         )
         val node2 = report.nodes[1]
         assertThat(node2.dependencies).containsExactlyInAnyOrder(
-            Dependency(Path.fromStringWithDots("De.Maibornwolff.Codegraph.Analysis.Analyzers2"), true)
+            Dependency(Path.fromStringWithDots("De.Maibornwolff.DependaCharta.Analysis.Analyzers2"), true)
         )
     }
 
@@ -376,7 +376,7 @@ class CSharpAnalyzerTest {
     fun `should add the path of the classes package as an implicit wildcard dependency`() {
         // given
         val cSharpCode = """
-            namespace De.Maibornwolff.Codegraph.Analysis.Analyzers
+            namespace De.Maibornwolff.DependaCharta.Analysis.Analyzers
             {
                 public class CSharpAnalyzerTest 
                 {
@@ -391,7 +391,7 @@ class CSharpAnalyzerTest {
         val dependencies = report.nodes.first().dependencies
         assertEquals(1, dependencies.size)
         assertThat(dependencies).containsExactlyInAnyOrder(
-            Dependency(Path.fromStringWithDots("De.Maibornwolff.Codegraph.Analysis.Analyzers"), true)
+            Dependency(Path.fromStringWithDots("De.Maibornwolff.DependaCharta.Analysis.Analyzers"), true)
         )
     }
 
@@ -399,7 +399,7 @@ class CSharpAnalyzerTest {
     fun `should extract inheritance of a class to the usedTypes field`() {
         // given
         val cSharpCode = """
-            namespace De.Maibornwolff.Codegraph.Analysis.Analyzers
+            namespace De.Maibornwolff.DependaCharta.Analysis.Analyzers
             {
                 public class ChildClass : ParentClass
                 {
@@ -421,7 +421,7 @@ class CSharpAnalyzerTest {
     fun `should extract constructor calls to the usedTypes field`() {
         // given
         val cSharpCode = """
-            namespace De.Maibornwolff.Codegraph.Analysis.Analyzers
+            namespace De.Maibornwolff.DependaCharta.Analysis.Analyzers
             {
                 public class ChildClass
                 {
@@ -447,7 +447,7 @@ class CSharpAnalyzerTest {
     fun `should extract static member accesses to the usedTypes field`() {
         // given
         val cSharpCode = """
-            namespace De.Maibornwolff.Codegraph.Analysis.Analyzers
+            namespace De.Maibornwolff.DependaCharta.Analysis.Analyzers
             {
                 public class ChildClass
                 {
@@ -505,9 +505,9 @@ public class TestClass(){ }
     fun `should overwrite file scoped namespace declaration with class scoped namespace declaration`() {
         // given
         val cSharpCode = """
-            namespace De.Maibornwolff.Codegraph.Analysis.Analyzers;
+            namespace De.Maibornwolff.DependaCharta.Analysis.Analyzers;
             
-            namespace De.Maibornwolff.Codegraph.Analysis.OverwrittenNamespace
+            namespace De.Maibornwolff.DependaCharta.Analysis.OverwrittenNamespace
             {
                 public class TestClass
                 {
@@ -522,14 +522,14 @@ public class TestClass(){ }
         val node = report.nodes.first()
         assertThat(
             node.pathWithName.parts
-        ).containsExactly("De", "Maibornwolff", "Codegraph", "Analysis", "OverwrittenNamespace", "TestClass")
+        ).containsExactly("De", "Maibornwolff", "DependaCharta", "Analysis", "OverwrittenNamespace", "TestClass")
     }
 
     @Test
     fun `should test generic type parameter`() {
         // given
         val cSharpCode = """
-            namespace De.Maibornwolff.Codegraph.Analysis.Analyzers
+            namespace De.Maibornwolff.DependaCharta.Analysis.Analyzers
             {
                 public class TestClass<TFoo, TBar> where TFoo : class, IFoobar
                 {

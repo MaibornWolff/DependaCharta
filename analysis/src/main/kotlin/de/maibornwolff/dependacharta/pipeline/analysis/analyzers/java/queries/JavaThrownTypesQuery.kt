@@ -1,8 +1,8 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers.java.queries
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.java.queries
 
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.utils.execute
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.utils.getNamedChildren
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.java.extractType
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.execute
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.getNamedChildren
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.java.extractType
 import org.treesitter.TSNode
 import org.treesitter.TSQuery
 import org.treesitter.TreeSitterJava
@@ -28,7 +28,7 @@ class JavaThrownTypesQuery(
      *
      * @param node the node to execute the query on
      * @param bodyContainingNode the string that was parsed to get to the node
-     * @return list of [de.maibornwolff.codegraph.pipeline.analysis.model.Type] objects representing the types of the
+     * @return list of [de.maibornwolff.dependacharta.pipeline.analysis.model.Type] objects representing the types of the
      * Throwables that might be thrown by the node
      */
     fun execute(

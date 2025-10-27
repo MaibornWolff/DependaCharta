@@ -1,4 +1,4 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers.golang.queries
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.golang.queries
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test

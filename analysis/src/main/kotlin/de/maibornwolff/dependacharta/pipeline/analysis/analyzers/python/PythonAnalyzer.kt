@@ -1,14 +1,14 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers.python
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.python
 
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.LanguageAnalyzer
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.utils.nodeAsString
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.utils.withoutFileSuffix
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.python.queries.PythonDefinitionsQuery
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.python.queries.PythonImportQuery
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.python.queries.PythonTypeAttributeQuery
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.python.queries.PythonTypeIdentifierQuery
-import de.maibornwolff.codegraph.pipeline.analysis.model.*
-import de.maibornwolff.codegraph.pipeline.shared.SupportedLanguage
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.LanguageAnalyzer
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.nodeAsString
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.withoutFileSuffix
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.python.queries.PythonDefinitionsQuery
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.python.queries.PythonImportQuery
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.python.queries.PythonTypeAttributeQuery
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.python.queries.PythonTypeIdentifierQuery
+import de.maibornwolff.dependacharta.pipeline.analysis.model.*
+import de.maibornwolff.dependacharta.pipeline.shared.SupportedLanguage
 import org.treesitter.TSNode
 import org.treesitter.TSParser
 import org.treesitter.TreeSitterPython

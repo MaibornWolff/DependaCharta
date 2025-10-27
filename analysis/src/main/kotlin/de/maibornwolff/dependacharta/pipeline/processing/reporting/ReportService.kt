@@ -1,8 +1,8 @@
-package de.maibornwolff.codegraph.pipeline.processing.reporting
+package de.maibornwolff.dependacharta.pipeline.processing.reporting
 
-import de.maibornwolff.codegraph.pipeline.analysis.model.Node
-import de.maibornwolff.codegraph.pipeline.processing.levelization.model.GraphNode
-import de.maibornwolff.codegraph.pipeline.processing.model.ProjectReportDto
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Node
+import de.maibornwolff.dependacharta.pipeline.processing.levelization.model.GraphNode
+import de.maibornwolff.dependacharta.pipeline.processing.model.ProjectReportDto
 
 class ReportService {
     companion object {

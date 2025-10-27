@@ -1,12 +1,12 @@
-package de.maibornwolff.codegraph.pipeline.analysis
+package de.maibornwolff.dependacharta.pipeline.analysis
 
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.LanguageAnalyzerFactory
-import de.maibornwolff.codegraph.pipeline.analysis.model.FileReport
-import de.maibornwolff.codegraph.pipeline.analysis.synchronization.AnalysisRecord
-import de.maibornwolff.codegraph.pipeline.analysis.synchronization.AnalysisSynchronizer
-import de.maibornwolff.codegraph.pipeline.analysis.synchronization.RootDirectoryWalker
-import de.maibornwolff.codegraph.pipeline.shared.Logger
-import de.maibornwolff.codegraph.pipeline.shared.SupportedLanguage
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.LanguageAnalyzerFactory
+import de.maibornwolff.dependacharta.pipeline.analysis.model.FileReport
+import de.maibornwolff.dependacharta.pipeline.analysis.synchronization.AnalysisRecord
+import de.maibornwolff.dependacharta.pipeline.analysis.synchronization.AnalysisSynchronizer
+import de.maibornwolff.dependacharta.pipeline.analysis.synchronization.RootDirectoryWalker
+import de.maibornwolff.dependacharta.pipeline.shared.Logger
+import de.maibornwolff.dependacharta.pipeline.shared.SupportedLanguage
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit

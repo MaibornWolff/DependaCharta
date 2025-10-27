@@ -1,11 +1,11 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers.cpp
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.cpp
 
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.utils.getNamedChildren
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.utils.nodeAsString
-import de.maibornwolff.codegraph.pipeline.analysis.model.Dependency
-import de.maibornwolff.codegraph.pipeline.analysis.model.Path
-import de.maibornwolff.codegraph.pipeline.analysis.model.Type
-import de.maibornwolff.codegraph.pipeline.analysis.model.TypeOfUsage
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.getNamedChildren
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.nodeAsString
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Dependency
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Type
+import de.maibornwolff.dependacharta.pipeline.analysis.model.TypeOfUsage
 import org.treesitter.TSNode
 
 fun TSNode.extractTypeWithFoundNamespacesAsDependencies(

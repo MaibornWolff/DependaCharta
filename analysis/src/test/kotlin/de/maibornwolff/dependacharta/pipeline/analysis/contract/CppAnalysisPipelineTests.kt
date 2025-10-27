@@ -1,11 +1,11 @@
-package de.maibornwolff.codegraph.pipeline.analysis.contract
+package de.maibornwolff.dependacharta.pipeline.analysis.contract
 
-import de.maibornwolff.codegraph.pipeline.analysis.model.Dependency
-import de.maibornwolff.codegraph.pipeline.analysis.model.NodeType
-import de.maibornwolff.codegraph.pipeline.analysis.model.Path
-import de.maibornwolff.codegraph.pipeline.analysis.model.Type
-import de.maibornwolff.codegraph.pipeline.analysis.model.TypeOfUsage
-import de.maibornwolff.codegraph.pipeline.shared.SupportedLanguage
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Dependency
+import de.maibornwolff.dependacharta.pipeline.analysis.model.NodeType
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Type
+import de.maibornwolff.dependacharta.pipeline.analysis.model.TypeOfUsage
+import de.maibornwolff.dependacharta.pipeline.shared.SupportedLanguage
 
 class CppAnalysisPipelineTests : AnalysisPipelineContractTests() {
     override val language: SupportedLanguage = SupportedLanguage.CPP

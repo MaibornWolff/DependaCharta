@@ -1,10 +1,10 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers.cpp.processing
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.cpp.processing
 
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.cpp.extractTypeWithFoundNamespacesAsDependencies
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.cpp.model.CppContext
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.cpp.model.ProcessorResult
-import de.maibornwolff.codegraph.pipeline.analysis.model.Type
-import de.maibornwolff.codegraph.pipeline.analysis.model.TypeOfUsage
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.cpp.extractTypeWithFoundNamespacesAsDependencies
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.cpp.model.CppContext
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.cpp.model.ProcessorResult
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Type
+import de.maibornwolff.dependacharta.pipeline.analysis.model.TypeOfUsage
 import org.treesitter.TSNode
 
 class GenericTemplateProcessor : CppNodeProcessor {

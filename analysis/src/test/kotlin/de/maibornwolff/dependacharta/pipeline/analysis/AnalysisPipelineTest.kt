@@ -1,7 +1,7 @@
-package de.maibornwolff.codegraph.pipeline.analysis
+package de.maibornwolff.dependacharta.pipeline.analysis
 
-import de.maibornwolff.codegraph.pipeline.analysis.model.FileReport
-import de.maibornwolff.codegraph.pipeline.shared.SupportedLanguage
+import de.maibornwolff.dependacharta.pipeline.analysis.model.FileReport
+import de.maibornwolff.dependacharta.pipeline.shared.SupportedLanguage
 import kotlinx.serialization.json.Json
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
@@ -40,7 +40,7 @@ class AnalysisPipelineTest {
     @Test
     fun `should clean temp files`() {
         // given
-        val dummyFile = "codegraph_temp/i_should_not_be_here"
+        val dummyFile = "dependacharta_temp/i_should_not_be_here"
         File(dummyFile).mkdir()
 
         // when
@@ -57,7 +57,7 @@ class AnalysisPipelineTest {
     @Test
     fun `should not clean temp files`() {
         // given
-        val dummyFilePath = "codegraph_temp/i_should_be_here"
+        val dummyFilePath = "dependacharta_temp/i_should_be_here"
         val dummyFile = File(dummyFilePath)
         dummyFile.toPath().createDirectories()
 
@@ -99,8 +99,8 @@ class AnalysisPipelineTest {
         )
 
         // then
-        assertThat(File("codegraph_temp").exists()).isTrue
-        assertThat(File("codegraph_temp/records").listFiles()).hasSize(3)
+        assertThat(File("dependacharta_temp").exists()).isTrue
+        assertThat(File("dependacharta_temp/records").listFiles()).hasSize(3)
     }
 
     private fun List<FileReport>.removePhysicalPath() =

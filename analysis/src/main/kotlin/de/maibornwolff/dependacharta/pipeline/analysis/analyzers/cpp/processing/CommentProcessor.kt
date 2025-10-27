@@ -1,7 +1,7 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers.cpp.processing
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.cpp.processing
 
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.cpp.model.CppContext
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.cpp.model.ProcessorResult
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.cpp.model.CppContext
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.cpp.model.ProcessorResult
 import org.treesitter.TSNode
 
 class CommentProcessor : CppNodeProcessor {
