@@ -1,0 +1,193 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+      - '*.*.*'
+
+# Prevent concurrent releases
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+# Explicit permissions
+permissions:
+  contents: write
+
+jobs:
+  build-visualization:
+    name: Build Visualization Assets
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+
+    defaults:
+      run:
+        working-directory: visualization
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.12.0'
+          cache: 'npm'
+          cache-dependency-path: visualization/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
+
+      - name: Create version file
+        run: npm run ci-createVersion -- ${{ github.ref_name }}
+
+      - name: Package for Mac Silicon
+        run: npm run package-mac-silicon
+
+      - name: Package for Windows
+        run: npm run package-win
+
+      - name: Create Mac Silicon zip
+        working-directory: .
+        run: |
+          cd visualization/dist/executables
+          zip -r ../../../dependacharta-visualization-mac-silicon-${{ github.ref_name }}.zip dependacharta-visualization-darwin-arm64
+
+      - name: Create Windows zip
+        working-directory: .
+        run: |
+          cd visualization/dist/executables
+          zip -r ../../../dependacharta-visualization-win-${{ github.ref_name }}.zip dependacharta-visualization-win32-x64
+
+      - name: Upload Mac Silicon artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: visualization-mac-silicon
+          path: dependacharta-visualization-mac-silicon-${{ github.ref_name }}.zip
+          retention-days: 1
+          if-no-files-found: error
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: visualization-windows
+          path: dependacharta-visualization-win-${{ github.ref_name }}.zip
+          retention-days: 1
+          if-no-files-found: error
+
+  build-analysis:
+    name: Build Analysis Assets
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+
+    defaults:
+      run:
+        working-directory: analysis
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      - name: Build with version
+        run: ./gradlew build -Pversion=${{ github.ref_name }}
+
+      - name: Prepare release package
+        run: |
+          mkdir -p build/release
+          cp build/libs/dependacharta.jar build/release/dependacharta.jar
+          cp bin/dependacharta.sh build/release/dependacharta.sh
+          cp bin/dependacharta.bat build/release/dependacharta.bat
+
+      - name: Create analysis zip
+        working-directory: .
+        run: |
+          cd analysis/build/release
+          zip -r ../../../dependacharta-analysis-${{ github.ref_name }}.zip .
+
+      - name: Upload analysis artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: analysis-package
+          path: dependacharta-analysis-${{ github.ref_name }}.zip
+          retention-days: 1
+          if-no-files-found: error
+
+  create-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    needs:
+      - build-visualization
+      - build-analysis
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+
+      - name: Display structure
+        run: ls -R release-assets
+
+      - name: Check if prerelease
+        id: prerelease
+        run: |
+          if [[ "${{ github.ref_name }}" =~ (alpha|beta|rc) ]]; then
+            echo "is_prerelease=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_prerelease=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "release-assets/**/*.zip"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          name: DependaCharta ${{ github.ref_name }}
+          body: |
+            ## DependaCharta Release ${{ github.ref_name }}
+
+            ### Downloads
+
+            **Visualization:**
+            - 🍎 Mac (Apple Silicon): `dependacharta-visualization-mac-silicon-${{ github.ref_name }}.zip`
+            - 🪟 Windows: `dependacharta-visualization-win-${{ github.ref_name }}.zip`
+
+            **Analysis:**
+            - ☕ Java CLI: `dependacharta-analysis-${{ github.ref_name }}.zip`
+
+            ### Installation
+
+            **Visualization:**
+            1. Download the appropriate package for your platform
+            2. Extract the zip file
+            3. Run the executable
+
+            **Analysis:**
+            1. Download `dependacharta-analysis-${{ github.ref_name }}.zip`
+            2. Extract the zip file
+            3. Run `./dependacharta.sh` (Mac/Linux) or `dependacharta.bat` (Windows)
+            4. Requires Java 17 or higher
+          draft: false
+          prerelease: ${{ steps.prerelease.outputs.is_prerelease }}
+          generateReleaseNotes: true
+          makeLatest: ${{ steps.prerelease.outputs.is_prerelease == 'false' }}
