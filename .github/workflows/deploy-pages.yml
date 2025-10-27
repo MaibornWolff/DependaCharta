@@ -5,6 +5,11 @@ on:
     tags:
       - 'v*.*.*'
       - '*.*.*'
+    tags-ignore:
+      - '*-test'
+      - '*-alpha*'
+      - '*-beta*'
+      - '*-rc*'
   workflow_dispatch:
     inputs:
       tag:
