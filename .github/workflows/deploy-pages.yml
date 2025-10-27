@@ -5,6 +5,12 @@ on:
     tags:
       - 'v*.*.*'
       - '*.*.*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag/version to deploy (e.g., v1.0.0, or leave blank for latest release)'
+        required: false
+        type: string
 
 # Explicit permissions for GitHub Pages
 permissions:
@@ -26,6 +32,29 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine version to deploy
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            if [ -n "${{ inputs.tag }}" ]; then
+              TAG="${{ inputs.tag }}"
+              echo "Using manual input tag: $TAG"
+            else
+              TAG=$(git describe --tags --abbrev=0)
+              echo "Using latest tag: $TAG"
+            fi
+          else
+            TAG="${{ github.ref_name }}"
+            echo "Using pushed tag: $TAG"
+          fi
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+
+      - name: Checkout specific tag
+        if: github.event_name == 'workflow_dispatch'
+        run: git checkout ${{ steps.version.outputs.tag }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -46,7 +75,7 @@ jobs:
 
       - name: Create version file
         working-directory: visualization
-        run: npm run ci-createVersion -- ${{ github.ref_name }}
+        run: npm run ci-createVersion -- ${{ steps.version.outputs.tag }}
 
       - name: Prepare public directory
         run: |
@@ -67,7 +96,7 @@ jobs:
 
       - name: Update download links in landing page
         run: |
-          TAG="${{ github.ref_name }}"
+          TAG="${{ steps.version.outputs.tag }}"
           REPO="${{ github.repository }}"
           sed -i "s|{{analysis_url}}|https://github.com/$REPO/releases/download/$TAG/codegraph-analysis-$TAG.zip|g" public/codegraph.html
           sed -i "s|{{visualization_mac_url}}|https://github.com/$REPO/releases/download/$TAG/codegraph-visualization-mac-silicon-$TAG.zip|g" public/codegraph.html
