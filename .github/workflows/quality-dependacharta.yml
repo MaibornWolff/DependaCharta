@@ -1,4 +1,4 @@
-name: Quality - CodeGraph Self Check
+name: Quality - DependaCharta Self Check
 
 on:
   workflow_dispatch:
@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   self-check:
-    name: Run CodeGraph on Own Codebase
+    name: Run DependaCharta on Own Codebase
     runs-on: ubuntu-24.04
     timeout-minutes: 20
 
@@ -34,7 +34,7 @@ jobs:
         working-directory: analysis
         run: chmod +x gradlew
 
-      - name: Build CodeGraph JAR
+      - name: Build DependaCharta JAR
         working-directory: analysis
         run: ./gradlew build -x test
 
@@ -43,17 +43,17 @@ jobs:
 
       - name: Analyze analysis component
         run: |
-          java -jar analysis/build/libs/codegraph.jar \
-            -d analysis/src/main/kotlin/de/maibornwolff/codegraph \
+          java -jar analysis/build/libs/dependacharta.jar \
+            -d analysis/src/main/kotlin/de/maibornwolff/dependacharta \
             -o graphs \
-            -f codegraph-analysis
+            -f dependacharta-analysis
 
       - name: Analyze visualization component
         run: |
-          java -jar analysis/build/libs/codegraph.jar \
+          java -jar analysis/build/libs/dependacharta.jar \
             -d visualization/src \
             -o graphs \
-            -f codegraph-visualization
+            -f dependacharta-visualization
 
       - name: List generated graphs
         run: |
@@ -64,7 +64,7 @@ jobs:
         if: inputs.upload_artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: codegraph-self-check-${{ github.run_id }}
+          name: dependacharta-self-check-${{ github.run_id }}
           path: graphs/
           retention-days: 7
           if-no-files-found: error
