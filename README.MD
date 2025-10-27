@@ -4,12 +4,11 @@ We are currently moving everything from our intern Gitlab to GH.
 
 ## Open Migration Steps
 
--[] Add pipeline
--[] Add sonar analysis
--[] Rename everything from CodeGraph to DependaCharta
--[] Fix Urls
--[] Add Pictures inside the issues
--
+- [ ] Add pipeline
+- [ ] Add sonar analysis
+- [ ] Rename everything from CodeGraph to DependaCharta
+- [ ] Fix Urls
+- [ ] Add Pictures inside the issues
 
 
 # Status 
