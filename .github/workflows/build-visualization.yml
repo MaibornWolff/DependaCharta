@@ -2,12 +2,12 @@ name: Build Visualization
 
 on:
   push:
-    branches: ['**']
+    branches:
+      - main
     paths:
       - 'visualization/**'
       - '.github/workflows/build-visualization.yml'
   pull_request:
-    branches: ['**']
     paths:
       - 'visualization/**'
       - '.github/workflows/build-visualization.yml'

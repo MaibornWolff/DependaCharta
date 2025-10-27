@@ -2,12 +2,12 @@ name: Build Analysis
 
 on:
   push:
-    branches: ['**']
+    branches:
+      - main
     paths:
       - 'analysis/**'
       - '.github/workflows/build-analysis.yml'
   pull_request:
-    branches: ['**']
     paths:
       - 'analysis/**'
       - '.github/workflows/build-analysis.yml'
