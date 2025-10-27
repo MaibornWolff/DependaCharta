@@ -1,0 +1,70 @@
+name: Quality - CodeGraph Self Check
+
+on:
+  workflow_dispatch:
+    inputs:
+      upload_artifacts:
+        description: 'Upload graph artifacts'
+        required: false
+        type: boolean
+        default: true
+
+# Explicit permissions
+permissions:
+  contents: read
+
+jobs:
+  self-check:
+    name: Run CodeGraph on Own Codebase
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Make gradlew executable
+        working-directory: analysis
+        run: chmod +x gradlew
+
+      - name: Build CodeGraph JAR
+        working-directory: analysis
+        run: ./gradlew build -x test
+
+      - name: Create output directory
+        run: mkdir -p graphs
+
+      - name: Analyze analysis component
+        run: |
+          java -jar analysis/build/libs/codegraph.jar \
+            -d analysis/src/main/kotlin/de/maibornwolff/codegraph \
+            -o graphs \
+            -f codegraph-analysis
+
+      - name: Analyze visualization component
+        run: |
+          java -jar analysis/build/libs/codegraph.jar \
+            -d visualization/src \
+            -o graphs \
+            -f codegraph-visualization
+
+      - name: List generated graphs
+        run: |
+          echo "Generated graph files:"
+          ls -lh graphs/
+
+      - name: Upload graph artifacts
+        if: inputs.upload_artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: codegraph-self-check-${{ github.run_id }}
+          path: graphs/
+          retention-days: 7
+          if-no-files-found: error

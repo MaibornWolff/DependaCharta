@@ -1,0 +1,65 @@
+name: Quality - CodeCharta Analysis
+
+on:
+  workflow_dispatch:
+    inputs:
+      upload_artifacts:
+        description: 'Upload analysis artifacts'
+        required: false
+        type: boolean
+        default: true
+
+# Explicit permissions
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    name: Run CodeCharta Analysis
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    container:
+      image: codecharta/codecharta-analysis:latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure git safe directory
+        run: git config --global --add safe.directory /__w/DependaCharta/DependaCharta
+
+      - name: Run git log parser
+        run: |
+          ccsh gitlogparser repo-scan \
+            --repo-path . \
+            -o git.cc.json \
+            -nc
+
+      - name: Run unified parser
+        run: |
+          ccsh unifiedparser . \
+            -o unified.cc.json \
+            -nc
+
+      - name: Merge results
+        run: |
+          ccsh merge \
+            git.cc.json \
+            unified.cc.json \
+            -o=codegraph.cc.json.gz
+
+      - name: Display result info
+        run: |
+          echo "Generated CodeCharta analysis:"
+          ls -lh codegraph.cc.json.gz
+
+      - name: Upload analysis artifact
+        if: inputs.upload_artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: codecharta-analysis-${{ github.run_id }}
+          path: codegraph.cc.json.gz
+          retention-days: 7
+          if-no-files-found: error
