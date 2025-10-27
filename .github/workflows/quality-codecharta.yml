@@ -18,8 +18,6 @@ jobs:
     name: Run CodeCharta Analysis
     runs-on: ubuntu-24.04
     timeout-minutes: 30
-    container:
-      image: codecharta/codecharta-analysis:latest
 
     steps:
       - name: Checkout code
@@ -27,28 +25,29 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Configure git safe directory
-        run: git config --global --add safe.directory /__w/DependaCharta/DependaCharta
-
-      - name: Run git log parser
+      - name: Run CodeCharta Analysis
         run: |
-          ccsh gitlogparser repo-scan \
-            --repo-path . \
-            -o git.cc.json \
-            -nc
+          docker run --rm \
+            -v "${{ github.workspace }}:/workspace" \
+            -w /workspace \
+            codecharta/codecharta-analysis:latest \
+            bash -c "
+              git config --global --add safe.directory /workspace
 
-      - name: Run unified parser
-        run: |
-          ccsh unifiedparser . \
-            -o unified.cc.json \
-            -nc
+              ccsh gitlogparser repo-scan \
+                --repo-path . \
+                -o git.cc.json \
+                -nc
 
-      - name: Merge results
-        run: |
-          ccsh merge \
-            git.cc.json \
-            unified.cc.json \
-            -o=dependacharta.cc.json.gz
+              ccsh unifiedparser . \
+                -o unified.cc.json \
+                -nc
+
+              ccsh merge \
+                git.cc.json \
+                unified.cc.json \
+                -o=dependacharta.cc.json.gz
+            "
 
       - name: Display result info
         run: |
