@@ -1,7 +1,7 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers.cpp
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.cpp
 
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.model.toImport
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.cpp.processing.IncludeProcessor
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.model.toImport
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.cpp.processing.IncludeProcessor
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test

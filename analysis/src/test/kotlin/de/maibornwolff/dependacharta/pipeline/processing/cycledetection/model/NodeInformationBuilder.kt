@@ -1,4 +1,4 @@
-package de.maibornwolff.codegraph.pipeline.processing.cycledetection.model
+package de.maibornwolff.dependacharta.pipeline.processing.cycledetection.model
 
 fun NodeInformation.Companion.build(
     id: String = "",

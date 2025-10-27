@@ -1,4 +1,4 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers.csharp
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.csharp
 
 import org.treesitter.TSQuery
 import org.treesitter.TreeSitterCSharp

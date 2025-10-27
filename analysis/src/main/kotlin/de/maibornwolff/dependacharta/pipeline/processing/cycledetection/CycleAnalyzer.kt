@@ -1,13 +1,13 @@
-package de.maibornwolff.codegraph.pipeline.processing.cycledetection
+package de.maibornwolff.dependacharta.pipeline.processing.cycledetection
 
-import de.maibornwolff.codegraph.pipeline.processing.cycledetection.algorithms.DepthFirstSearchCycleDetection
-import de.maibornwolff.codegraph.pipeline.processing.cycledetection.algorithms.NumberEdge
-import de.maibornwolff.codegraph.pipeline.processing.cycledetection.algorithms.StronglyConnectedComponent
-import de.maibornwolff.codegraph.pipeline.processing.cycledetection.algorithms.StronglyConnectedComponentDetection
-import de.maibornwolff.codegraph.pipeline.processing.cycledetection.model.Cycle
-import de.maibornwolff.codegraph.pipeline.processing.cycledetection.model.Edge
-import de.maibornwolff.codegraph.pipeline.processing.cycledetection.model.NodeInformation
-import de.maibornwolff.codegraph.pipeline.shared.Logger
+import de.maibornwolff.dependacharta.pipeline.processing.cycledetection.algorithms.DepthFirstSearchCycleDetection
+import de.maibornwolff.dependacharta.pipeline.processing.cycledetection.algorithms.NumberEdge
+import de.maibornwolff.dependacharta.pipeline.processing.cycledetection.algorithms.StronglyConnectedComponent
+import de.maibornwolff.dependacharta.pipeline.processing.cycledetection.algorithms.StronglyConnectedComponentDetection
+import de.maibornwolff.dependacharta.pipeline.processing.cycledetection.model.Cycle
+import de.maibornwolff.dependacharta.pipeline.processing.cycledetection.model.Edge
+import de.maibornwolff.dependacharta.pipeline.processing.cycledetection.model.NodeInformation
+import de.maibornwolff.dependacharta.pipeline.shared.Logger
 
 class CycleAnalyzer {
     companion object {

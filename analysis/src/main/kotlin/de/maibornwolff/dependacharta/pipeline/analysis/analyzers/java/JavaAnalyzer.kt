@@ -1,10 +1,10 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers.java
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.java
 
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.LanguageAnalyzer
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.utils.nodeAsString
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.java.queries.*
-import de.maibornwolff.codegraph.pipeline.analysis.model.*
-import de.maibornwolff.codegraph.pipeline.shared.SupportedLanguage
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.LanguageAnalyzer
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.nodeAsString
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.java.queries.*
+import de.maibornwolff.dependacharta.pipeline.analysis.model.*
+import de.maibornwolff.dependacharta.pipeline.shared.SupportedLanguage
 import org.treesitter.TSNode
 import org.treesitter.TSParser
 import org.treesitter.TreeSitterJava

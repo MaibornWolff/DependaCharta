@@ -1,15 +1,15 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers.php
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.php
 
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.utils.getNamedChildren
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.utils.nodeAsString
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.php.queries.PhpClassQueries
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.php.queries.PhpConstantsQueries
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.php.queries.PhpEnumQueries
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.php.queries.PhpFunctionQueries
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.php.queries.PhpInterfaceQueries
-import de.maibornwolff.codegraph.pipeline.analysis.model.FileInfo
-import de.maibornwolff.codegraph.pipeline.analysis.model.NodeType
-import de.maibornwolff.codegraph.pipeline.analysis.model.Path
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.getNamedChildren
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.nodeAsString
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.php.queries.PhpClassQueries
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.php.queries.PhpConstantsQueries
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.php.queries.PhpEnumQueries
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.php.queries.PhpFunctionQueries
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.php.queries.PhpInterfaceQueries
+import de.maibornwolff.dependacharta.pipeline.analysis.model.FileInfo
+import de.maibornwolff.dependacharta.pipeline.analysis.model.NodeType
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
 import org.treesitter.TSNode
 
 class NodeExtractor(

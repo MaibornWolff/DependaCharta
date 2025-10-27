@@ -1,7 +1,7 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers.typescript.model
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.model
 
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.utils.nodeAsString
-import de.maibornwolff.codegraph.pipeline.analysis.model.NodeType
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.nodeAsString
+import de.maibornwolff.dependacharta.pipeline.analysis.model.NodeType
 import org.treesitter.TSNode
 
 data class Declaration(

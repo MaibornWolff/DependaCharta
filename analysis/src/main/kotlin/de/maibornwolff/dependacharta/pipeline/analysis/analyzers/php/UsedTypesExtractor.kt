@@ -1,13 +1,13 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers.php
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.php
 
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.utils.nodeAsString
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.php.queries.PhpClassQueries
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.php.queries.PhpConstantsQueries
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.php.queries.PhpFunctionQueries
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.php.queries.PhpInstantiationQueries
-import de.maibornwolff.codegraph.pipeline.analysis.model.Path
-import de.maibornwolff.codegraph.pipeline.analysis.model.Type
-import de.maibornwolff.codegraph.pipeline.analysis.model.TypeOfUsage
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.nodeAsString
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.php.queries.PhpClassQueries
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.php.queries.PhpConstantsQueries
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.php.queries.PhpFunctionQueries
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.php.queries.PhpInstantiationQueries
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Type
+import de.maibornwolff.dependacharta.pipeline.analysis.model.TypeOfUsage
 import org.treesitter.TSNode
 
 class UsedTypesExtractor(

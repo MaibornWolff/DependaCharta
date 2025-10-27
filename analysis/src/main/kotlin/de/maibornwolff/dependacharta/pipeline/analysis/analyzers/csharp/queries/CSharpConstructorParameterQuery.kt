@@ -1,9 +1,9 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers.csharp.queries
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.csharp.queries
 
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.utils.execute
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.utils.getNamedChildren
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.csharp.extractType
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.csharp.CSharpQueryFactory
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.execute
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.getNamedChildren
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.csharp.extractType
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.csharp.CSharpQueryFactory
 import org.treesitter.TSNode
 
 /**
@@ -29,7 +29,7 @@ class CSharpConstructorParameterQuery {
      *
      * @param node the node to execute the query on
      * @param bodyContainingNode the string that was parsed to get to the node
-     * @return list of [de.maibornwolff.codegraph.pipeline.analysis.model.Type] objects representing the types of the constructor parameters
+     * @return list of [de.maibornwolff.dependacharta.pipeline.analysis.model.Type] objects representing the types of the constructor parameters
      */
     fun execute(
         node: TSNode,

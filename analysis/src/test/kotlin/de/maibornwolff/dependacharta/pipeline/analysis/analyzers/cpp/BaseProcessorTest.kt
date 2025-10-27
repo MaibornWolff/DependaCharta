@@ -1,10 +1,10 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers.cpp
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.cpp
 
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.cpp.model.CppContext
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.cpp.processing.CppNodeProcessor
-import de.maibornwolff.codegraph.pipeline.analysis.model.FileInfo
-import de.maibornwolff.codegraph.pipeline.analysis.model.Path
-import de.maibornwolff.codegraph.pipeline.shared.SupportedLanguage
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.cpp.model.CppContext
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.cpp.processing.CppNodeProcessor
+import de.maibornwolff.dependacharta.pipeline.analysis.model.FileInfo
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
+import de.maibornwolff.dependacharta.pipeline.shared.SupportedLanguage
 import org.junit.jupiter.api.BeforeEach
 import org.treesitter.TSNode
 import org.treesitter.TSParser

@@ -1,6 +1,6 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers
 
-import de.maibornwolff.codegraph.pipeline.analysis.model.FileReport
+import de.maibornwolff.dependacharta.pipeline.analysis.model.FileReport
 
 interface LanguageAnalyzer {
     fun analyze(): FileReport

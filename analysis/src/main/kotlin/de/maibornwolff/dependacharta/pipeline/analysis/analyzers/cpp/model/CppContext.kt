@@ -1,9 +1,9 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers.cpp.model
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.cpp.model
 
-import de.maibornwolff.codegraph.pipeline.analysis.model.Dependency
-import de.maibornwolff.codegraph.pipeline.analysis.model.FileInfo
-import de.maibornwolff.codegraph.pipeline.analysis.model.Path
-import de.maibornwolff.codegraph.pipeline.analysis.model.Type
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Dependency
+import de.maibornwolff.dependacharta.pipeline.analysis.model.FileInfo
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Type
 
 data class CppContext(
     val fileInfo: FileInfo,

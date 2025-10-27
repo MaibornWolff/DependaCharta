@@ -1,12 +1,12 @@
-package de.maibornwolff.codegraph.pipeline.processing.levelization
+package de.maibornwolff.dependacharta.pipeline.processing.levelization
 
-import de.maibornwolff.codegraph.pipeline.processing.cycledetection.CycleAnalyzer
-import de.maibornwolff.codegraph.pipeline.processing.cycledetection.model.Edge
-import de.maibornwolff.codegraph.pipeline.processing.cycledetection.model.NodeInformation
-import de.maibornwolff.codegraph.pipeline.processing.levelization.model.GraphEdge
-import de.maibornwolff.codegraph.pipeline.processing.levelization.model.GraphNode
-import de.maibornwolff.codegraph.pipeline.shared.ConditionalProgressBar
-import de.maibornwolff.codegraph.pipeline.shared.Logger
+import de.maibornwolff.dependacharta.pipeline.processing.cycledetection.CycleAnalyzer
+import de.maibornwolff.dependacharta.pipeline.processing.cycledetection.model.Edge
+import de.maibornwolff.dependacharta.pipeline.processing.cycledetection.model.NodeInformation
+import de.maibornwolff.dependacharta.pipeline.processing.levelization.model.GraphEdge
+import de.maibornwolff.dependacharta.pipeline.processing.levelization.model.GraphNode
+import de.maibornwolff.dependacharta.pipeline.shared.ConditionalProgressBar
+import de.maibornwolff.dependacharta.pipeline.shared.Logger
 
 fun levelize(rootNodes: List<GraphNode>): List<GraphNode> {
     val rootNode = GraphNode("my_root_node_id", null, rootNodes, edges = rootNodes.flatMap { it.edges }.toSet())

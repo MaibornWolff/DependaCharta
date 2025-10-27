@@ -1,6 +1,6 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers.php
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.php
 
-import de.maibornwolff.codegraph.pipeline.analysis.model.Dependency
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Dependency
 
 data class DependencyWrapper(
     val dependency: Dependency,

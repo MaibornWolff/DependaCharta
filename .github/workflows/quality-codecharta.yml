@@ -48,18 +48,18 @@ jobs:
           ccsh merge \
             git.cc.json \
             unified.cc.json \
-            -o=codegraph.cc.json.gz
+            -o=dependacharta.cc.json.gz
 
       - name: Display result info
         run: |
           echo "Generated CodeCharta analysis:"
-          ls -lh codegraph.cc.json.gz
+          ls -lh dependacharta.cc.json.gz
 
       - name: Upload analysis artifact
         if: inputs.upload_artifacts
         uses: actions/upload-artifact@v4
         with:
           name: codecharta-analysis-${{ github.run_id }}
-          path: codegraph.cc.json.gz
+          path: dependacharta.cc.json.gz
           retention-days: 7
           if-no-files-found: error

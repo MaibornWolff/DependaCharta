@@ -1,9 +1,9 @@
-package de.maibornwolff.codegraph.pipeline.processing.levelization
+package de.maibornwolff.dependacharta.pipeline.processing.levelization
 
-import de.maibornwolff.codegraph.pipeline.analysis.model.Node
-import de.maibornwolff.codegraph.pipeline.analysis.model.NodeType
-import de.maibornwolff.codegraph.pipeline.analysis.model.Path
-import de.maibornwolff.codegraph.pipeline.shared.SupportedLanguage
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Node
+import de.maibornwolff.dependacharta.pipeline.analysis.model.NodeType
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
+import de.maibornwolff.dependacharta.pipeline.shared.SupportedLanguage
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 

@@ -1,8 +1,8 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers.cpp
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.cpp
 
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.cpp.model.CppContext
-import de.maibornwolff.codegraph.pipeline.analysis.model.*
-import de.maibornwolff.codegraph.pipeline.shared.SupportedLanguage
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.cpp.model.CppContext
+import de.maibornwolff.dependacharta.pipeline.analysis.model.*
+import de.maibornwolff.dependacharta.pipeline.shared.SupportedLanguage
 
 fun typeDeclarations() =
     listOf(

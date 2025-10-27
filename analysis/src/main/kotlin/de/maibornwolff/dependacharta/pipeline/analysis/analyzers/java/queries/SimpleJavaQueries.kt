@@ -1,7 +1,7 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers.java.queries
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.java.queries
 
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.utils.execute
-import de.maibornwolff.codegraph.pipeline.analysis.model.Type
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.execute
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Type
 import org.treesitter.TSNode
 import org.treesitter.TSQuery
 import org.treesitter.TSQueryMatch
@@ -179,6 +179,6 @@ private fun extractType(
 ): Type {
     val capturedNode = match.captures[0].node
     val typeNode = capturedNode.getChildByFieldName(fieldName)
-    return de.maibornwolff.codegraph.pipeline.analysis.analyzers.java
+    return de.maibornwolff.dependacharta.pipeline.analysis.analyzers.java
         .extractType(typeNode, nodeBody)
 }

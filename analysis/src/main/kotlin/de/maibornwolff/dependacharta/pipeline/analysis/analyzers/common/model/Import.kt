@@ -1,4 +1,4 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.model
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.model
 
 sealed interface Import
 

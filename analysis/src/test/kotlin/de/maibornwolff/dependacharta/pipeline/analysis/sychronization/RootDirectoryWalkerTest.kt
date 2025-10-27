@@ -1,8 +1,8 @@
-package de.maibornwolff.codegraph.pipeline.analysis.sychronization
+package de.maibornwolff.dependacharta.pipeline.analysis.sychronization
 
-import de.maibornwolff.codegraph.pipeline.analysis.model.FileInfo
-import de.maibornwolff.codegraph.pipeline.analysis.synchronization.RootDirectoryWalker
-import de.maibornwolff.codegraph.pipeline.shared.SupportedLanguage
+import de.maibornwolff.dependacharta.pipeline.analysis.model.FileInfo
+import de.maibornwolff.dependacharta.pipeline.analysis.synchronization.RootDirectoryWalker
+import de.maibornwolff.dependacharta.pipeline.shared.SupportedLanguage
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.io.File

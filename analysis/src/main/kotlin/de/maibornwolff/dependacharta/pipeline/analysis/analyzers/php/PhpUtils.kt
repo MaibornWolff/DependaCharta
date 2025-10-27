@@ -1,4 +1,4 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers.php
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.php
 
 fun String.trimFileEnding() =
     this.endsWith(".php").let {

@@ -1,4 +1,4 @@
-package de.maibornwolff.codegraph.pipeline.shared
+package de.maibornwolff.dependacharta.pipeline.shared
 
 import java.io.File
 import kotlin.time.measureTimedValue

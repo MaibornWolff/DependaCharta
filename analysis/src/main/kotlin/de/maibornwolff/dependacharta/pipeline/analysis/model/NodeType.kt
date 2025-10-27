@@ -1,4 +1,4 @@
-package de.maibornwolff.codegraph.pipeline.analysis.model
+package de.maibornwolff.dependacharta.pipeline.analysis.model
 
 enum class NodeType {
     CLASS,

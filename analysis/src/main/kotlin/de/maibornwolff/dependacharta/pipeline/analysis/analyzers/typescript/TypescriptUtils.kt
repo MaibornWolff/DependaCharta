@@ -1,4 +1,4 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers.typescript
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript
 
 fun String.trimFileEnding() =
     this.endsWith(".ts").let {

@@ -1,12 +1,12 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers.cpp.processing
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.cpp.processing
 
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.utils.getChildren
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.utils.nodeAsString
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.cpp.model.CppContext
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.cpp.model.ProcessorResult
-import de.maibornwolff.codegraph.pipeline.analysis.model.Dependency
-import de.maibornwolff.codegraph.pipeline.analysis.model.Path
-import de.maibornwolff.codegraph.pipeline.analysis.model.Type
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.getChildren
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.nodeAsString
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.cpp.model.CppContext
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.cpp.model.ProcessorResult
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Dependency
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Type
 import org.treesitter.TSNode
 
 class UsingProcessor : CppNodeProcessor {

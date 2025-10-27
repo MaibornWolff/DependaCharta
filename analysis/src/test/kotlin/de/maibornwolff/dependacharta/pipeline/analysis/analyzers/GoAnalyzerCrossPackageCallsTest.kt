@@ -1,9 +1,9 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers
 
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.golang.GoAnalyzer
-import de.maibornwolff.codegraph.pipeline.analysis.model.FileInfo
-import de.maibornwolff.codegraph.pipeline.analysis.model.Node
-import de.maibornwolff.codegraph.pipeline.shared.SupportedLanguage
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.golang.GoAnalyzer
+import de.maibornwolff.dependacharta.pipeline.analysis.model.FileInfo
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Node
+import de.maibornwolff.dependacharta.pipeline.shared.SupportedLanguage
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test

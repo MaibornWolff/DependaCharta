@@ -1,4 +1,4 @@
-package de.maibornwolff.codegraph.pipeline.processing.cycledetection.algorithms
+package de.maibornwolff.dependacharta.pipeline.processing.cycledetection.algorithms
 
 data class NumberEdge(
     val from: Int,

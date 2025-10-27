@@ -1,10 +1,10 @@
-package de.maibornwolff.codegraph.pipeline.processing.cycledetection
+package de.maibornwolff.dependacharta.pipeline.processing.cycledetection
 
-import de.maibornwolff.codegraph.pipeline.processing.cycledetection.CycleAnalyzer.Companion.groupByLeafs
-import de.maibornwolff.codegraph.pipeline.processing.cycledetection.model.Cycle
-import de.maibornwolff.codegraph.pipeline.processing.cycledetection.model.Edge
-import de.maibornwolff.codegraph.pipeline.processing.cycledetection.model.NodeInformation
-import de.maibornwolff.codegraph.pipeline.processing.cycledetection.model.build
+import de.maibornwolff.dependacharta.pipeline.processing.cycledetection.CycleAnalyzer.Companion.groupByLeafs
+import de.maibornwolff.dependacharta.pipeline.processing.cycledetection.model.Cycle
+import de.maibornwolff.dependacharta.pipeline.processing.cycledetection.model.Edge
+import de.maibornwolff.dependacharta.pipeline.processing.cycledetection.model.NodeInformation
+import de.maibornwolff.dependacharta.pipeline.processing.cycledetection.model.build
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 

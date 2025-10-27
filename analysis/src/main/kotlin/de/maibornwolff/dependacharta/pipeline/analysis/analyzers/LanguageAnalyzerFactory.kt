@@ -1,14 +1,14 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers
 
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.cpp.CppAnalyzer
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.csharp.CSharpAnalyzer
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.golang.GoAnalyzer
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.java.JavaAnalyzer
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.php.PhpAnalyzer
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.python.PythonAnalyzer
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.typescript.TypescriptAnalyzer
-import de.maibornwolff.codegraph.pipeline.analysis.model.FileInfo
-import de.maibornwolff.codegraph.pipeline.shared.SupportedLanguage
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.cpp.CppAnalyzer
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.csharp.CSharpAnalyzer
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.golang.GoAnalyzer
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.java.JavaAnalyzer
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.php.PhpAnalyzer
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.python.PythonAnalyzer
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.TypescriptAnalyzer
+import de.maibornwolff.dependacharta.pipeline.analysis.model.FileInfo
+import de.maibornwolff.dependacharta.pipeline.shared.SupportedLanguage
 
 class LanguageAnalyzerFactory {
     companion object {

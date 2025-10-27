@@ -1,8 +1,8 @@
-package de.maibornwolff.codegraph.pipeline.processing.levelization.model
+package de.maibornwolff.dependacharta.pipeline.processing.levelization.model
 
-import de.maibornwolff.codegraph.pipeline.analysis.model.TypeOfUsage
-import de.maibornwolff.codegraph.pipeline.processing.model.EdgeInfoDto
-import de.maibornwolff.codegraph.pipeline.processing.model.ProjectNodeDto
+import de.maibornwolff.dependacharta.pipeline.analysis.model.TypeOfUsage
+import de.maibornwolff.dependacharta.pipeline.processing.model.EdgeInfoDto
+import de.maibornwolff.dependacharta.pipeline.processing.model.ProjectNodeDto
 
 data class GraphNode(
     val id: String,

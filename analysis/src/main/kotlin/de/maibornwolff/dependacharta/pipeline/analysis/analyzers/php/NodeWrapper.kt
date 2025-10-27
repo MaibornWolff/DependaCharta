@@ -1,6 +1,6 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers.php
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.php
 
-import de.maibornwolff.codegraph.pipeline.analysis.model.NodeType
+import de.maibornwolff.dependacharta.pipeline.analysis.model.NodeType
 import org.treesitter.TSNode
 
 data class NodeWrapper(

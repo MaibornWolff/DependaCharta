@@ -11,7 +11,7 @@
           "CreatureEntity"
         ]
       },
-      "physicalPath": "/Users/moritz.suckow/learning/codegraph/./JavaExample/src/main/java/de/sots/cellarsandcentaurs/adapter/persistence/CreatureEntity.java",
+      "physicalPath": "/Users/moritz.suckow/learning/dependacharta/./JavaExample/src/main/java/de/sots/cellarsandcentaurs/adapter/persistence/CreatureEntity.java",
       "nodeType": "CLASS",
       "language": "JAVA",
       "dependencies": [

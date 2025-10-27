@@ -11,7 +11,7 @@
           "CreatureJpaRepository"
         ]
       },
-      "physicalPath": "/Users/moritz.suckow/learning/codegraph/./JavaExample/src/main/java/de/sots/cellarsandcentaurs/adapter/persistence/CreatureJpaRepository.java",
+      "physicalPath": "/Users/moritz.suckow/learning/dependacharta/./JavaExample/src/main/java/de/sots/cellarsandcentaurs/adapter/persistence/CreatureJpaRepository.java",
       "nodeType": "INTERFACE",
       "language": "JAVA",
       "dependencies": [

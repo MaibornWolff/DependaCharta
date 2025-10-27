@@ -1,8 +1,8 @@
-package de.maibornwolff.codegraph.pipeline.analysis.synchronization
+package de.maibornwolff.dependacharta.pipeline.analysis.synchronization
 
-import de.maibornwolff.codegraph.pipeline.analysis.model.FileInfo
-import de.maibornwolff.codegraph.pipeline.shared.SupportedLanguage
-import de.maibornwolff.codegraph.pipeline.shared.languagesByExtension
+import de.maibornwolff.dependacharta.pipeline.analysis.model.FileInfo
+import de.maibornwolff.dependacharta.pipeline.shared.SupportedLanguage
+import de.maibornwolff.dependacharta.pipeline.shared.languagesByExtension
 import java.io.File
 
 class RootDirectoryWalker(

@@ -1,15 +1,15 @@
-package de.maibornwolff.codegraph.pipeline.analysis.analyzers.cpp.processing
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.cpp.processing
 
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.utils.execute
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.utils.getChildren
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.common.utils.nodeAsString
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.cpp.CppQueryFactory
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.cpp.createNode
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.cpp.extractTypeWithFoundNamespacesAsDependencies
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.cpp.model.CppContext
-import de.maibornwolff.codegraph.pipeline.analysis.analyzers.cpp.model.ProcessorResult
-import de.maibornwolff.codegraph.pipeline.analysis.model.*
-import de.maibornwolff.codegraph.pipeline.shared.Logger
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.execute
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.getChildren
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.nodeAsString
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.cpp.CppQueryFactory
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.cpp.createNode
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.cpp.extractTypeWithFoundNamespacesAsDependencies
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.cpp.model.CppContext
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.cpp.model.ProcessorResult
+import de.maibornwolff.dependacharta.pipeline.analysis.model.*
+import de.maibornwolff.dependacharta.pipeline.shared.Logger
 import org.treesitter.TSNode
 
 class MethodProcessor : CppNodeProcessor {

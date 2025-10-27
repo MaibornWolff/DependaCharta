@@ -1,7 +1,7 @@
-package de.maibornwolff.codegraph.pipeline.processing.levelization
+package de.maibornwolff.dependacharta.pipeline.processing.levelization
 
-import de.maibornwolff.codegraph.pipeline.processing.levelization.model.GraphNode
-import de.maibornwolff.codegraph.pipeline.processing.levelization.model.GraphNodeBuilder
+import de.maibornwolff.dependacharta.pipeline.processing.levelization.model.GraphNode
+import de.maibornwolff.dependacharta.pipeline.processing.levelization.model.GraphNodeBuilder
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.tuple
 import org.junit.jupiter.api.Test

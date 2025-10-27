@@ -1,4 +1,4 @@
-package de.maibornwolff.codegraph.pipeline.processing.model
+package de.maibornwolff.dependacharta.pipeline.processing.model
 
 import kotlinx.serialization.Serializable
 

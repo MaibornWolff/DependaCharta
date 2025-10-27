@@ -1,6 +1,6 @@
-package de.maibornwolff.codegraph.pipeline.analysis.model
+package de.maibornwolff.dependacharta.pipeline.analysis.model
 
-import de.maibornwolff.codegraph.pipeline.analysis.common.splitNameToParts
+import de.maibornwolff.dependacharta.pipeline.analysis.common.splitNameToParts
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 

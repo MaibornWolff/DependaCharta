@@ -1,10 +1,10 @@
-package de.maibornwolff.codegraph.pipeline.processing.dependencies
+package de.maibornwolff.dependacharta.pipeline.processing.dependencies
 
-import de.maibornwolff.codegraph.pipeline.analysis.model.FileReport
-import de.maibornwolff.codegraph.pipeline.analysis.model.Node
-import de.maibornwolff.codegraph.pipeline.processing.cycledetection.model.NodeInformation
-import de.maibornwolff.codegraph.pipeline.processing.dependencies.dictionaries.*
-import de.maibornwolff.codegraph.pipeline.shared.SupportedLanguage
+import de.maibornwolff.dependacharta.pipeline.analysis.model.FileReport
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Node
+import de.maibornwolff.dependacharta.pipeline.processing.cycledetection.model.NodeInformation
+import de.maibornwolff.dependacharta.pipeline.processing.dependencies.dictionaries.*
+import de.maibornwolff.dependacharta.pipeline.shared.SupportedLanguage
 
 class DependencyResolverService {
     companion object {

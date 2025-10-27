@@ -1,6 +1,6 @@
-package de.maibornwolff.codegraph.pipeline.processing.levelization.model
+package de.maibornwolff.dependacharta.pipeline.processing.levelization.model
 
-import de.maibornwolff.codegraph.pipeline.analysis.model.TypeOfUsage
+import de.maibornwolff.dependacharta.pipeline.analysis.model.TypeOfUsage
 
 class GraphNodeBuilder(
     val id: String,

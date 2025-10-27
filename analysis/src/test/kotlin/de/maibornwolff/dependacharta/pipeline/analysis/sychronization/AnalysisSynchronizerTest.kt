@@ -1,11 +1,11 @@
-package de.maibornwolff.codegraph.pipeline.analysis.sychronization
+package de.maibornwolff.dependacharta.pipeline.analysis.sychronization
 
-import de.maibornwolff.codegraph.pipeline.analysis.model.FileReport
-import de.maibornwolff.codegraph.pipeline.analysis.model.Node
-import de.maibornwolff.codegraph.pipeline.analysis.model.Path
-import de.maibornwolff.codegraph.pipeline.analysis.model.build
-import de.maibornwolff.codegraph.pipeline.analysis.synchronization.AnalysisRecord
-import de.maibornwolff.codegraph.pipeline.analysis.synchronization.AnalysisSynchronizer
+import de.maibornwolff.dependacharta.pipeline.analysis.model.FileReport
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Node
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
+import de.maibornwolff.dependacharta.pipeline.analysis.model.build
+import de.maibornwolff.dependacharta.pipeline.analysis.synchronization.AnalysisRecord
+import de.maibornwolff.dependacharta.pipeline.analysis.synchronization.AnalysisSynchronizer
 import kotlinx.serialization.json.Json
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
@@ -32,7 +32,7 @@ class AnalysisSynchronizerTest {
         val fileReportId = testee.saveFileReport(expectedFileReport)
 
         // then
-        val fileReportJson = File("codegraph_temp/records/$fileReportId.json").readText(Charsets.UTF_8)
+        val fileReportJson = File("dependacharta_temp/records/$fileReportId.json").readText(Charsets.UTF_8)
         val fileReport = Json.decodeFromString<FileReport>(fileReportJson)
         assertThat(fileReport).isEqualTo(fileReport)
     }
@@ -72,7 +72,7 @@ class AnalysisSynchronizerTest {
         testee.saveAnalysisRecord(expectedAnalysisRecord)
 
         // then
-        val analysisRecordJson = File("codegraph_temp/analysis_record.json").readText(Charsets.UTF_8)
+        val analysisRecordJson = File("dependacharta_temp/analysis_record.json").readText(Charsets.UTF_8)
         val analysisRecord = AnalysisRecord(Json.decodeFromString<Map<String, String?>>(analysisRecordJson))
         assertThat(analysisRecord).isEqualTo(expectedAnalysisRecord)
     }
@@ -88,7 +88,7 @@ class AnalysisSynchronizerTest {
         testee.saveAnalysisRecord(expectedAnalysisRecord)
 
         // then
-        val analysisRecordJson = File("codegraph_temp/analysis_record.json").readText(Charsets.UTF_8)
+        val analysisRecordJson = File("dependacharta_temp/analysis_record.json").readText(Charsets.UTF_8)
         val analysisRecord = AnalysisRecord(Json.decodeFromString<Map<String, String?>>(analysisRecordJson))
         assertThat(analysisRecord).isEqualTo(expectedAnalysisRecord)
     }
