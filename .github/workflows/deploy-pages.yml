@@ -5,11 +5,6 @@ on:
     tags:
       - 'v*.*.*'
       - '*.*.*'
-    tags-ignore:
-      - '*-test'
-      - '*-alpha*'
-      - '*-beta*'
-      - '*-rc*'
   workflow_dispatch:
     inputs:
       tag:
@@ -33,6 +28,12 @@ jobs:
     name: Build Pages
     runs-on: ubuntu-24.04
     timeout-minutes: 30
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (!contains(github.ref_name, '-test') &&
+       !contains(github.ref_name, '-alpha') &&
+       !contains(github.ref_name, '-beta') &&
+       !contains(github.ref_name, '-rc'))
 
     steps:
       - name: Checkout code
