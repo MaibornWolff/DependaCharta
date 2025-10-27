@@ -6,7 +6,7 @@ else
   JAVA_CMD="$JAVA_HOME/bin/java"
 fi
 
-JAR_PATH="codegraph.jar"
+JAR_PATH="dependacharta.jar"
 
 args="$@"
 

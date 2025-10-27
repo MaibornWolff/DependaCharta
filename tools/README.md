@@ -12,7 +12,7 @@ To regenerate the dictionary data (for Go version updates):
 
 ```bash
 cd /tmp
-go run /path/to/codegraph/tools/gen_go_dictionary.go > /path/to/codegraph/tools/go_dictionary.json
+go run /path/to/dependacharta/tools/gen_go_dictionary.go > /path/to/dependacharta/tools/go_dictionary.json
 ```
 
 ### How to get from the json to the kotlin code

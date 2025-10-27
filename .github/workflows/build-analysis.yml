@@ -67,8 +67,8 @@ jobs:
       - name: Upload JAR artifact
         uses: actions/upload-artifact@v4
         with:
-          name: codegraph-jar-${{ github.run_id }}
-          path: analysis/build/libs/codegraph.jar
+          name: dependacharta-jar-${{ github.run_id }}
+          path: analysis/build/libs/dependacharta.jar
           retention-days: 1
           if-no-files-found: error
 

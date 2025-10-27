@@ -2,7 +2,7 @@
 
 ## Reporting a Vulnerability
 
-Please use the ["Report a vulnerability"](https://github.com/MaibornWolff/CodeGraph/security/advisories/new) button in the GitHub repository (under the "Security" tab) to report a vulnerability.
+Please use the ["Report a vulnerability"](https://github.com/MaibornWolff/DependaCharta/security/advisories/new) button in the GitHub repository (under the "Security" tab) to report a vulnerability.
 
 **Please do not report security vulnerabilities through public GitHub issues, discussions, or pull requests.**
 

@@ -32,7 +32,7 @@ reports/
 # Temporary files
 *.tmp
 *.temp
-codegraph_temp/
+dependacharta_temp/
 
 # Logs
 *.log

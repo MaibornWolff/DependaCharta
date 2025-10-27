@@ -8,28 +8,28 @@ build:
     cd analysis && ./gradlew fatJar
 
 run DIR: build
-    cd analysis && java -jar build/libs/codegraph.jar -d {{DIR}}
+    cd analysis && java -jar build/libs/dependacharta.jar -d {{DIR}}
 
 frontend:
     cd visualization && npm ci && npm run start
 
 analyze DIR: build
-    cd analysis && java -jar build/libs/codegraph.jar -d {{DIR}} -o ../visualization/public/analysis -f analyzed-project
+    cd analysis && java -jar build/libs/dependacharta.jar -d {{DIR}} -o ../visualization/public/analysis -f analyzed-project
     @echo "Analysis complete! Starting frontend..."
     @echo "Frontend will automatically load your analysis."
     @echo "You can also manually specify a file: http://localhost:4200?file=./path/to/file.cg.json"
 
 docker-build:
-    cd analysis && docker build -t codegraph-analysis .
+    cd analysis && docker build -t dependacharta-analysis .
 
 docker-build-multi:
-    cd analysis && docker buildx build --platform linux/amd64,linux/arm64 -t codegraph-analysis .
+    cd analysis && docker buildx build --platform linux/amd64,linux/arm64 -t dependacharta-analysis .
 
 docker-run DIR:
-    docker run --rm -v {{DIR}}:/workspace codegraph-analysis -d /workspace
+    docker run --rm -v {{DIR}}:/workspace dependacharta-analysis -d /workspace
 
 docker-analyze DIR: docker-build
-    docker run --rm -v {{DIR}}:/workspace -v ./visualization/public/analysis:/output codegraph-analysis -d /workspace -o /output -f analyzed-project
+    docker run --rm -v {{DIR}}:/workspace -v ./visualization/public/analysis:/output dependacharta-analysis -d /workspace -o /output -f analyzed-project
     @echo "Docker analysis complete! Starting frontend..."
     @echo "Frontend will automatically load your analysis."
     @echo "You can also manually specify a file: http://localhost:4200?file=./path/to/file.cg.json"

@@ -6,7 +6,7 @@ We are currently moving everything from our intern Gitlab to GH.
 
 - [x] Add pipeline
 - [ ] Add sonar analysis
-- [ ] Rename everything from CodeGraph to DependaCharta
+- [ ] Rename everything from DependaCharta to DependaCharta
 - [ ] Fix Urls
 - [ ] Add Pictures inside the issues
 
@@ -37,8 +37,8 @@ For a better overview, they are listed here as well.
 ### Analysis
 - [Analysis Readme](analysis/README.md)
 - [How to add a new language](analysis/howto-add-new-language.md)
-- [Cycle Detection Algorithm](analysis/src/main/kotlin/de/maibornwolff/codegraph/pipeline/processing/cycledetection/README.md)
-- [Levelization Algorithm](analysis/src/main/kotlin/de/maibornwolff/codegraph/pipeline/processing/levelization/README.md)
+- [Cycle Detection Algorithm](analysis/src/main/kotlin/de/maibornwolff/dependacharta/pipeline/processing/cycledetection/README.md)
+- [Levelization Algorithm](analysis/src/main/kotlin/de/maibornwolff/dependacharta/pipeline/processing/levelization/README.md)
 
 ### Visualization
 - [Visualization Readme](visualization/README.md)

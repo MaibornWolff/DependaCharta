@@ -787,7 +787,7 @@ export const exampleJson = {
     "de.sots.cellarsandcentaurs.adapter.persistence.CreatureJpaRepository": {
       "id": "de.sots.cellarsandcentaurs.adapter.persistence.CreatureJpaRepository",
       "name": "CreatureJpaRepository",
-      "physicalPath": "/Users/moritz.suckow/learning/codegraph/./JavaExample/src/main/java/de/sots/cellarsandcentaurs/adapter/persistence/CreatureJpaRepository.java",
+      "physicalPath": "/Users/moritz.suckow/learning/dependacharta/./JavaExample/src/main/java/de/sots/cellarsandcentaurs/adapter/persistence/CreatureJpaRepository.java",
       "nodeType": "INTERFACE",
       "language": "JAVA",
       "dependencies": {
@@ -800,7 +800,7 @@ export const exampleJson = {
     "de.sots.cellarsandcentaurs.adapter.persistence.CreatureEntity": {
       "id": "de.sots.cellarsandcentaurs.adapter.persistence.CreatureEntity",
       "name": "CreatureEntity",
-      "physicalPath": "/Users/moritz.suckow/learning/codegraph/./JavaExample/src/main/java/de/sots/cellarsandcentaurs/adapter/persistence/CreatureEntity.java",
+      "physicalPath": "/Users/moritz.suckow/learning/dependacharta/./JavaExample/src/main/java/de/sots/cellarsandcentaurs/adapter/persistence/CreatureEntity.java",
       "nodeType": "CLASS",
       "language": "JAVA",
       "dependencies": {}
@@ -808,7 +808,7 @@ export const exampleJson = {
     "de.sots.cellarsandcentaurs.adapter.persistence.PersistedCreatures": {
       "id": "de.sots.cellarsandcentaurs.adapter.persistence.PersistedCreatures",
       "name": "PersistedCreatures",
-      "physicalPath": "/Users/moritz.suckow/learning/codegraph/./JavaExample/src/main/java/de/sots/cellarsandcentaurs/adapter/persistence/PersistedCreatures.java",
+      "physicalPath": "/Users/moritz.suckow/learning/dependacharta/./JavaExample/src/main/java/de/sots/cellarsandcentaurs/adapter/persistence/PersistedCreatures.java",
       "nodeType": "CLASS",
       "language": "JAVA",
       "dependencies": {
@@ -841,7 +841,7 @@ export const exampleJson = {
     "de.sots.cellarsandcentaurs.application.CreatureFacade": {
       "id": "de.sots.cellarsandcentaurs.application.CreatureFacade",
       "name": "CreatureFacade",
-      "physicalPath": "/Users/moritz.suckow/learning/codegraph/./JavaExample/src/main/java/de/sots/cellarsandcentaurs/application/CreatureFacade.java",
+      "physicalPath": "/Users/moritz.suckow/learning/dependacharta/./JavaExample/src/main/java/de/sots/cellarsandcentaurs/application/CreatureFacade.java",
       "nodeType": "CLASS",
       "language": "JAVA",
       "dependencies": {
@@ -882,7 +882,7 @@ export const exampleJson = {
     "de.sots.cellarsandcentaurs.domain.model.Creature": {
       "id": "de.sots.cellarsandcentaurs.domain.model.Creature",
       "name": "Creature",
-      "physicalPath": "/Users/moritz.suckow/learning/codegraph/./JavaExample/src/main/java/de/sots/cellarsandcentaurs/domain/model/Creature.java",
+      "physicalPath": "/Users/moritz.suckow/learning/dependacharta/./JavaExample/src/main/java/de/sots/cellarsandcentaurs/domain/model/Creature.java",
       "nodeType": "CLASS",
       "language": "JAVA",
       "dependencies": {
@@ -923,7 +923,7 @@ export const exampleJson = {
     "de.sots.cellarsandcentaurs.domain.model.CreatureId": {
       "id": "de.sots.cellarsandcentaurs.domain.model.CreatureId",
       "name": "CreatureId",
-      "physicalPath": "/Users/moritz.suckow/learning/codegraph/./JavaExample/src/main/java/de/sots/cellarsandcentaurs/domain/model/CreatureId.java",
+      "physicalPath": "/Users/moritz.suckow/learning/dependacharta/./JavaExample/src/main/java/de/sots/cellarsandcentaurs/domain/model/CreatureId.java",
       "nodeType": "CLASS",
       "language": "JAVA",
       "dependencies": {}
@@ -931,7 +931,7 @@ export const exampleJson = {
     "de.sots.cellarsandcentaurs.domain.model.CreatureType": {
       "id": "de.sots.cellarsandcentaurs.domain.model.CreatureType",
       "name": "CreatureType",
-      "physicalPath": "/Users/moritz.suckow/learning/codegraph/./JavaExample/src/main/java/de/sots/cellarsandcentaurs/domain/model/CreatureType.java",
+      "physicalPath": "/Users/moritz.suckow/learning/dependacharta/./JavaExample/src/main/java/de/sots/cellarsandcentaurs/domain/model/CreatureType.java",
       "nodeType": "ENUM",
       "language": "JAVA",
       "dependencies": {}
@@ -939,7 +939,7 @@ export const exampleJson = {
     "de.sots.cellarsandcentaurs.domain.model.HitPoints": {
       "id": "de.sots.cellarsandcentaurs.domain.model.HitPoints",
       "name": "HitPoints",
-      "physicalPath": "/Users/moritz.suckow/learning/codegraph/./JavaExample/src/main/java/de/sots/cellarsandcentaurs/domain/model/HitPoints.java",
+      "physicalPath": "/Users/moritz.suckow/learning/dependacharta/./JavaExample/src/main/java/de/sots/cellarsandcentaurs/domain/model/HitPoints.java",
       "nodeType": "CLASS",
       "language": "JAVA",
       "dependencies": {}
@@ -947,7 +947,7 @@ export const exampleJson = {
     "de.sots.cellarsandcentaurs.domain.model.ArmorClass": {
       "id": "de.sots.cellarsandcentaurs.domain.model.ArmorClass",
       "name": "ArmorClass",
-      "physicalPath": "/Users/moritz.suckow/learning/codegraph/./JavaExample/src/main/java/de/sots/cellarsandcentaurs/domain/model/ArmorClass.java",
+      "physicalPath": "/Users/moritz.suckow/learning/dependacharta/./JavaExample/src/main/java/de/sots/cellarsandcentaurs/domain/model/ArmorClass.java",
       "nodeType": "CLASS",
       "language": "JAVA",
       "dependencies": {
@@ -960,7 +960,7 @@ export const exampleJson = {
     "de.sots.cellarsandcentaurs.domain.model.Speed": {
       "id": "de.sots.cellarsandcentaurs.domain.model.Speed",
       "name": "Speed",
-      "physicalPath": "/Users/moritz.suckow/learning/codegraph/./JavaExample/src/main/java/de/sots/cellarsandcentaurs/domain/model/Speed.java",
+      "physicalPath": "/Users/moritz.suckow/learning/dependacharta/./JavaExample/src/main/java/de/sots/cellarsandcentaurs/domain/model/Speed.java",
       "nodeType": "CLASS",
       "language": "JAVA",
       "dependencies": {}
@@ -968,7 +968,7 @@ export const exampleJson = {
     "de.sots.cellarsandcentaurs.domain.model.NoSuchCreatureException": {
       "id": "de.sots.cellarsandcentaurs.domain.model.NoSuchCreatureException",
       "name": "NoSuchCreatureException",
-      "physicalPath": "/Users/moritz.suckow/learning/codegraph/./JavaExample/src/main/java/de/sots/cellarsandcentaurs/domain/model/NoSuchCreatureException.java",
+      "physicalPath": "/Users/moritz.suckow/learning/dependacharta/./JavaExample/src/main/java/de/sots/cellarsandcentaurs/domain/model/NoSuchCreatureException.java",
       "nodeType": "CLASS",
       "language": "JAVA",
       "dependencies": {
@@ -981,7 +981,7 @@ export const exampleJson = {
     "de.sots.cellarsandcentaurs.domain.model.Fightable": {
       "id": "de.sots.cellarsandcentaurs.domain.model.Fightable",
       "name": "Fightable",
-      "physicalPath": "/Users/moritz.suckow/learning/codegraph/./JavaExample/src/main/java/de/sots/cellarsandcentaurs/domain/model/Fightable.java",
+      "physicalPath": "/Users/moritz.suckow/learning/dependacharta/./JavaExample/src/main/java/de/sots/cellarsandcentaurs/domain/model/Fightable.java",
       "nodeType": "ANNOTATION",
       "language": "JAVA",
       "dependencies": {}
@@ -989,7 +989,7 @@ export const exampleJson = {
     "de.sots.cellarsandcentaurs.domain.model.SpeedType": {
       "id": "de.sots.cellarsandcentaurs.domain.model.SpeedType",
       "name": "SpeedType",
-      "physicalPath": "/Users/moritz.suckow/learning/codegraph/./JavaExample/src/main/java/de/sots/cellarsandcentaurs/domain/model/SpeedType.java",
+      "physicalPath": "/Users/moritz.suckow/learning/dependacharta/./JavaExample/src/main/java/de/sots/cellarsandcentaurs/domain/model/SpeedType.java",
       "nodeType": "ENUM",
       "language": "JAVA",
       "dependencies": {}
@@ -997,7 +997,7 @@ export const exampleJson = {
     "de.sots.cellarsandcentaurs.domain.service.Creatures": {
       "id": "de.sots.cellarsandcentaurs.domain.service.Creatures",
       "name": "Creatures",
-      "physicalPath": "/Users/moritz.suckow/learning/codegraph/./JavaExample/src/main/java/de/sots/cellarsandcentaurs/domain/service/Creatures.java",
+      "physicalPath": "/Users/moritz.suckow/learning/dependacharta/./JavaExample/src/main/java/de/sots/cellarsandcentaurs/domain/service/Creatures.java",
       "nodeType": "INTERFACE",
       "language": "JAVA",
       "dependencies": {
@@ -1018,7 +1018,7 @@ export const exampleJson = {
     "de.sots.cellarsandcentaurs.domain.service.CreatureService": {
       "id": "de.sots.cellarsandcentaurs.domain.service.CreatureService",
       "name": "CreatureService",
-      "physicalPath": "/Users/moritz.suckow/learning/codegraph/./JavaExample/src/main/java/de/sots/cellarsandcentaurs/domain/service/CreatureService.java",
+      "physicalPath": "/Users/moritz.suckow/learning/dependacharta/./JavaExample/src/main/java/de/sots/cellarsandcentaurs/domain/service/CreatureService.java",
       "nodeType": "CLASS",
       "language": "JAVA",
       "dependencies": {

@@ -1,7 +1,7 @@
 {
   "name": "visualization",
   "version": "0.0.0",
-  "description": "CodeGraph Visualization",
+  "description": "DependaCharta Visualization",
   "main": "main.js",
   "author": "MaibornWolff GmbH",
   "scripts": {
@@ -14,9 +14,9 @@
     "test": "ng test --code-coverage",
     "ci-test": "ng test --code-coverage --karma-config=ci.karma.conf.js",
     "ci-createVersion": "sh createVersionJson.sh dist/visualization/browser",
-    "package-win": "electron-packager dist/visualization/browser codegraph-visualization --out=dist/executables --platform=win32 --arch=x64 --overwrite",
-    "package-mac-silicon": "electron-packager dist/visualization/browser codegraph-visualization --out=dist/executables --platform=darwin --arch=arm64 --overwrite",
-    "package-mac-intel": "electron-packager dist/visualization/browser codegraph-visualization --out=dist/executables --platform=darwin --arch=x64 --overwrite",
+    "package-win": "electron-packager dist/visualization/browser dependacharta-visualization --out=dist/executables --platform=win32 --arch=x64 --overwrite",
+    "package-mac-silicon": "electron-packager dist/visualization/browser dependacharta-visualization --out=dist/executables --platform=darwin --arch=arm64 --overwrite",
+    "package-mac-intel": "electron-packager dist/visualization/browser dependacharta-visualization --out=dist/executables --platform=darwin --arch=x64 --overwrite",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run"
   },

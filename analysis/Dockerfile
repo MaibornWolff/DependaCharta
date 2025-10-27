@@ -1,4 +1,4 @@
-# Multi-stage Dockerfile for CodeGraph Analysis
+# Multi-stage Dockerfile for DependaCharta Analysis
 # Stage 1: Build the application
 FROM gradle:8.14-jdk17 AS builder
 
@@ -25,10 +25,10 @@ FROM eclipse-temurin:17.0.16_8-jre
 RUN apt-get update && apt-get install -y \
     build-essential \
     git \
-    && groupadd -g 1001 codegraph \
-    && useradd -r -u 1001 -g codegraph codegraph \
-    && mkdir -p /home/codegraph/.tree-sitter \
-    && chown -R codegraph:codegraph /home/codegraph \
+    && groupadd -g 1001 dependacharta \
+    && useradd -r -u 1001 -g dependacharta dependacharta \
+    && mkdir -p /home/dependacharta/.tree-sitter \
+    && chown -R dependacharta:dependacharta /home/dependacharta \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -36,24 +36,24 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 
 # Copy the fat JAR from builder stage
-COPY --from=builder /app/build/libs/codegraph.jar ./codegraph.jar
+COPY --from=builder /app/build/libs/dependacharta.jar ./dependacharta.jar
 
 # Change ownership to non-root user
-RUN chown -R codegraph:codegraph /app
+RUN chown -R dependacharta:dependacharta /app
 
 # Switch to non-root user to initialize Tree-sitter libraries
-USER codegraph
+USER dependacharta
 
 # Pre-initialize Tree-sitter libraries by running a quick help command
 # This will trigger the native library compilation during build time
-RUN timeout 30 java -jar /app/codegraph.jar --help || true
+RUN timeout 30 java -jar /app/dependacharta.jar --help || true
 
 # Switch back to root to clean up build tools (optional, for smaller image)
 USER root
 RUN apt-get remove -y build-essential git && apt-get autoremove -y && apt-get clean
 
 # Switch back to non-root user for runtime
-USER codegraph
+USER dependacharta
 
 # Expose volume for input/output
 VOLUME ["/workspace"]
@@ -62,7 +62,7 @@ VOLUME ["/workspace"]
 WORKDIR /workspace
 
 # Set entrypoint
-ENTRYPOINT ["java", "-jar", "/app/codegraph.jar"]
+ENTRYPOINT ["java", "-jar", "/app/dependacharta.jar"]
 
 # Default command (can be overridden)
 CMD ["--help"]

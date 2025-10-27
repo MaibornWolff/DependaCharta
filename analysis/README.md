@@ -3,12 +3,12 @@
 - Clone the repository
 - Download the gradle dependencies of the `analysis` project
 - Run `./gradlew fatJar` in the `analysis` project
-- Run `java -jar analysis/build/libs/codegraph.jar`
+- Run `java -jar analysis/build/libs/dependacharta.jar`
 
 ## Use the prebuilt scripts and jar file (Recommended)
 - Navigate to `analysis/bin`
-- On Windows, run the `codegraph.bat` script
-- On Mac/Linux, run the `codegraph.sh` script
+- On Windows, run the `dependacharta.bat` script
+- On Mac/Linux, run the `dependacharta.sh` script
 
 ## Docker Installation (Alternative)
 For users who prefer containerized execution:
@@ -16,22 +16,22 @@ For users who prefer containerized execution:
 ### Build the Docker image
 ```bash
 # From the analysis directory
-docker build -t codegraph-analysis .
+docker build -t dependacharta-analysis .
 
 # For multi-platform support (ARM64/AMD64)
-docker buildx build --platform linux/amd64,linux/arm64 -t codegraph-analysis .
+docker buildx build --platform linux/amd64,linux/arm64 -t dependacharta-analysis .
 ```
 
 ### Run with Docker
 ```bash
 # Basic usage - analyze a project
-docker run --rm -v /path/to/your/project:/workspace codegraph-analysis -d /workspace
+docker run --rm -v /path/to/your/project:/workspace dependacharta-analysis -d /workspace
 
 # With custom output directory
-docker run --rm -v /path/to/your/project:/workspace -v /path/to/output:/output codegraph-analysis -d /workspace -o /output
+docker run --rm -v /path/to/your/project:/workspace -v /path/to/output:/output dependacharta-analysis -d /workspace -o /output
 
 # View help
-docker run --rm codegraph-analysis --help
+docker run --rm dependacharta-analysis --help
 ```
 
 The Docker image includes all necessary dependencies and Tree-sitter parsers, making it ideal for CI/CD pipelines or environments where Java installation is not desired.
@@ -49,7 +49,7 @@ The Docker image includes all necessary dependencies and Tree-sitter parsers, ma
 - `-l` or `--logLevel`: Define the log level for STDOUT. Possible values are debug, info, warn, error, fatal. Independent of this setting the log file will always contain all levels. 
 ## Attention
 - The analysis can take a long time for large projects. If an analysis is stopped midway, you can continue it by running the same command again.
-- During the analysis, a directory named `codegraph_temp` is created in the current directory. This directory is used to store temporary files and will be deleted after the analysis is finished. **Do not delete it during a running analysis!**
+- During the analysis, a directory named `dependacharta_temp` is created in the current directory. This directory is used to store temporary files and will be deleted after the analysis is finished. **Do not delete it during a running analysis!**
 ## Result
 - The result is a `.cg.json` file that can be used in the [visualization](../visualization/README.md) tool
 - It is located in `[outputDirectory]/[filename].cg.json`
@@ -63,6 +63,6 @@ See [ADR Log](../doc/architecture/decisions)
 
 # Processing steps
 1) Resolve dependencies between the single files of the project
-2) Find cycles (see [Cycle Detection Algorithm](src/main/kotlin/de/maibornwolff/codegraph/pipeline/processing/cycledetection/README.md))
-3) Levelize the dependency graph according to the [Levelized Structure Map](https://structure101.com/help/cpa/studio/Content/restructure101/lsm.html) (see [Levelization Algorithm](src/main/kotlin/de/maibornwolff/codegraph/pipeline/processing/levelization/README.md))
+2) Find cycles (see [Cycle Detection Algorithm](src/main/kotlin/de/maibornwolff/dependacharta/pipeline/processing/cycledetection/README.md))
+3) Levelize the dependency graph according to the [Levelized Structure Map](https://structure101.com/help/cpa/studio/Content/restructure101/lsm.html) (see [Levelization Algorithm](src/main/kotlin/de/maibornwolff/dependacharta/pipeline/processing/levelization/README.md))
 4) Generate the final `cg.json` output file
