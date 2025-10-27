@@ -1,0 +1,97 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+      - '*.*.*'
+
+# Explicit permissions for GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Prevent concurrent deployments
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build Pages
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.12.0'
+          cache: 'npm'
+          cache-dependency-path: visualization/package-lock.json
+
+      - name: Install dependencies
+        working-directory: visualization
+        run: npm ci
+
+      - name: Build visualization
+        working-directory: visualization
+        run: npm run build
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
+
+      - name: Create version file
+        working-directory: visualization
+        run: npm run ci-createVersion -- ${{ github.ref_name }}
+
+      - name: Prepare public directory
+        run: |
+          mkdir -p public/resources
+          mkdir -p public/icons
+
+          # Copy landing page template
+          cp index.html public/codegraph.html
+
+          # Copy visualization files
+          cp visualization/dist/visualization/browser/index.html public/
+          cp visualization/dist/visualization/browser/*.js public/
+          cp visualization/dist/visualization/browser/*.css public/
+          cp visualization/dist/visualization/browser/favicon.ico public/
+          cp visualization/dist/visualization/browser/*.json public/
+          cp visualization/dist/visualization/browser/resources/java-example.cg.json public/resources/
+          cp visualization/dist/visualization/browser/icons/*.svg public/icons/
+
+      - name: Update download links in landing page
+        run: |
+          TAG="${{ github.ref_name }}"
+          REPO="${{ github.repository }}"
+          sed -i "s|{{analysis_url}}|https://github.com/$REPO/releases/download/$TAG/codegraph-analysis-$TAG.zip|g" public/codegraph.html
+          sed -i "s|{{visualization_mac_url}}|https://github.com/$REPO/releases/download/$TAG/codegraph-visualization-mac-silicon-$TAG.zip|g" public/codegraph.html
+          sed -i "s|{{visualization_win_url}}|https://github.com/$REPO/releases/download/$TAG/codegraph-visualization-win-$TAG.zip|g" public/codegraph.html
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'public'
+
+  deploy:
+    name: Deploy to Pages
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    needs: build
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
