@@ -1,9 +1,9 @@
 import {Action, InitializeState, ExpandNode, CollapseNode, ToggleNodeSelection, EnterMultiselectMode, LeaveMultiselectMode, ChangeFilter, ToggleEdgeLabels, HideNode, RestoreNodes} from './Action'
 import {buildVisibleGraphNode} from './ModelBuilders.spec'
 import {EdgeFilterType} from './EdgeFilter'
-import {findGraphNode, getVisibleNodes, GraphState, reduce} from './GraphState'
+import {findGraphNode, getVisibleNodes, State, reduce} from './State'
 import {GraphNode} from './GraphNode.spec'
-import { buildFromRootNodes } from './GraphState.spec'
+import { buildFromRootNodes } from './State.spec'
 
 describe('State Handler', () => {
   describe('Graph State Reducer', () => {
@@ -21,7 +21,7 @@ describe('State Handler', () => {
       })
 
       // when
-      const newState = reduce(GraphState.build(), new InitializeState('', [rootNode]))
+      const newState = reduce(State.build(), new InitializeState('', [rootNode]))
 
       // then
       expect(newState.showLabels).toEqual(true)
@@ -105,8 +105,8 @@ describe('State Handler', () => {
         id: rootId,
         isSelected: true
       })
-      const state = buildFromRootNodes([rootNode])
-      state.selectedNodeIds = [rootId]
+      const base = buildFromRootNodes([rootNode])
+      const state = State.build({ allNodes: base.allNodes, selectedNodeIds: [rootId] })
 
       // when
       const newState = reduce(state, new ToggleNodeSelection(rootId))
@@ -118,8 +118,8 @@ describe('State Handler', () => {
     it('should enter multiselect mode', () => {
       // given
       const rootNode = GraphNode.build()
-      const state = buildFromRootNodes([rootNode])
-      state.multiselectMode = false
+      const base = buildFromRootNodes([rootNode])
+      const state = State.build({ allNodes: base.allNodes, multiselectMode: false })
 
       // when
       const newState = reduce(state, new EnterMultiselectMode())
@@ -132,8 +132,8 @@ describe('State Handler', () => {
     it('should leave multiselect mode', () => {
       // given
       const rootNode = GraphNode.build()
-      const state = buildFromRootNodes([rootNode])
-      state.multiselectMode = true
+      const base = buildFromRootNodes([rootNode])
+      const state = State.build({ allNodes: base.allNodes, multiselectMode: true })
 
       // when
       const newState = reduce(state, new LeaveMultiselectMode())
@@ -145,9 +145,8 @@ describe('State Handler', () => {
     it('should clear selected nodes when leaving multiselect mode', () => {
       // given
       const rootNode = GraphNode.build()
-      const state = buildFromRootNodes([rootNode])
-      state.multiselectMode = true
-      state.selectedNodeIds = [rootNode.id]
+      const base = buildFromRootNodes([rootNode])
+      const state = State.build({ allNodes: base.allNodes, multiselectMode: true, selectedNodeIds: [rootNode.id] })
 
       // when
       const newState = reduce(state, new LeaveMultiselectMode())
@@ -225,7 +224,7 @@ describe('State Handler', () => {
         id: rootId,
         children: [childNode]
       })
-      const state: GraphState = {
+      const state: State = {
         ...buildFromRootNodes([rootNode]),
         hiddenNodeIds: [rootId, childId, grandchildId]
       }
@@ -252,7 +251,7 @@ describe('State Handler', () => {
         hiddenChildrenIds: [childId],
         visibleChildren: []
       })
-      const state: GraphState = {
+      const state: State = {
         ...buildFromRootNodes([rootNode]),
         expandedNodeIds: [rootId],
         hiddenNodeIds: [childId],
@@ -288,7 +287,7 @@ describe('State Handler', () => {
 
     it('should throw an error if the node does not exist', () => {
       // given
-      const state = GraphState.build()
+      const state = State.build()
 
       // when + then
       expect(() => findGraphNode("some random id", state)).toThrowError()

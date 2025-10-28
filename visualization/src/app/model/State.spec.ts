@@ -1,4 +1,4 @@
-import { GraphState, getVisibleNodes, findGraphNode, reduce } from './GraphState';
+import { State, getVisibleNodes, findGraphNode, reduce, initialState } from './State';
 import { GraphNode, expand } from './GraphNode';
 import * as GraphNodeTest from './GraphNode.spec';
 import { EdgeFilterType } from './EdgeFilter';
@@ -11,7 +11,7 @@ const child1Id = 'parent-1.child-1'
 const child2Id = 'parent-1.child-2'
 const parent1Id = 'parent-1'
 
-describe('GraphState', () => {
+describe('State', () => {
   let mockParentNode: GraphNode;
   let mockChildNode1: GraphNode;
   let mockChildNode2: GraphNode;
@@ -44,9 +44,9 @@ describe('GraphState', () => {
     mockGrandChildNode.parent = mockChildNode1;
   });
 
-  describe('GraphState.build', () => {
-    it('should create a GraphState with default values', () => {
-      const state = GraphState.build()
+  describe('State.build', () => {
+    it('should create a State with default values', () => {
+      const state = State.build()
 
       expect(state.allNodes).toEqual([])
       expect(state.hiddenNodeIds).toEqual([])
@@ -68,7 +68,7 @@ describe('GraphState', () => {
         expandedNodeIds: ['test-id']
       };
 
-      const state = GraphState.build(overrides);
+      const state = State.build(overrides);
 
       expect(state.showLabels).toBe(false);
       expect(state.isInteractive).toBe(false);
@@ -77,8 +77,8 @@ describe('GraphState', () => {
     });
   });
 
-  describe('buildGraphState', () => {
-    it('should create a GraphState from root nodes', () => {
+  describe('State.build', () => {
+    it('should create a State from root nodes', () => {
       const rootNodes = [mockParentNode];
       const state = buildFromRootNodes(rootNodes);
 
@@ -91,10 +91,10 @@ describe('GraphState', () => {
   })
 
   describe('getVisibleNodes', () => {
-    let baseState: GraphState;
+    let baseState: State;
 
     beforeEach(() => {
-      baseState = GraphState.build({
+      baseState = State.build({
         allNodes: [
           mockParentNode,
           mockChildNode1,
@@ -116,7 +116,7 @@ describe('GraphState', () => {
     });
 
     it('should show grandchild nodes when their parent is also expanded', () => {
-      baseState.expandedNodeIds = [parent1Id, child1Id];
+      baseState = State.build({ allNodes: baseState.allNodes, expandedNodeIds: [parent1Id, child1Id] });
 
       const visibleNodes = getVisibleNodes(baseState);
       const visibleIds = visibleNodes.map(node => node.id);
@@ -125,7 +125,7 @@ describe('GraphState', () => {
     });
 
     it('should filter out hidden nodes', () => {
-      baseState.hiddenNodeIds = [child1Id];
+      baseState = State.build({ allNodes: baseState.allNodes, expandedNodeIds: baseState.expandedNodeIds, hiddenNodeIds: [child1Id] });
 
       const visibleNodes = getVisibleNodes(baseState);
       const visibleIds = visibleNodes.map(node => node.id);
@@ -135,8 +135,11 @@ describe('GraphState', () => {
     });
 
     it('should also filter out children of hidden nodes', () => {
-      baseState.hiddenNodeIds = [child1Id];
-      baseState.expandedNodeIds = [parent1Id, child1Id];
+      baseState = State.build({
+        allNodes: baseState.allNodes,
+        expandedNodeIds: [parent1Id, child1Id],
+        hiddenNodeIds: [child1Id]
+      });
 
       const visibleNodes = getVisibleNodes(baseState);
       const visibleIds = visibleNodes.map(node => node.id);
@@ -147,10 +150,10 @@ describe('GraphState', () => {
   });
 
   describe('findGraphNode', () => {
-    let state: GraphState;
+    let state: State;
 
     beforeEach(() => {
-      state = GraphState.build({
+      state = State.build({
         allNodes: [mockParentNode],
         selectedNodeIds: [mockParentNode.id],
       })
@@ -168,11 +171,11 @@ describe('GraphState', () => {
     })
   })
 
-  describe('graphStateReducer', () => {
-    let initialState: GraphState;
+  describe('stateReducer', () => {
+    let initialState: State;
 
     beforeEach(() => {
-      initialState = GraphState.build({
+      initialState = State.build({
         allNodes: [
           mockParentNode,
           mockChildNode1
@@ -287,7 +290,7 @@ describe('GraphState', () => {
       });
 
       it('should handle HIDE_NODE action when node has no parent', () => {
-        const rootNodeState = GraphState.build({
+        const rootNodeState = State.build({
           allNodes: [GraphNodeTest.GraphNode.build({ id: 'root', children: [] })]
         })
 
@@ -388,7 +391,7 @@ describe('GraphState', () => {
 
     describe('RESTORE_NODES action', () => {
       it('should reset all hidden and pinned nodes', () => {
-        const stateWithHiddenAndPinned: GraphState = {
+        const stateWithHiddenAndPinned: State = {
           ...initialState,
           hiddenNodeIds: ['node1', 'node2'],
           pinnedNodeIds: ['node3'],
@@ -407,7 +410,7 @@ describe('GraphState', () => {
 
     describe('RESTORE_NODE action', () => {
       it('should remove a node from the hidden list and update parent mapping', () => {
-        const stateWithHiddenNode: GraphState = {
+        const stateWithHiddenNode: State = {
           ...initialState,
           hiddenNodeIds: [child1Id, 'other-node'],
           hiddenChildrenIdsByParentId: new Map([
@@ -427,7 +430,7 @@ describe('GraphState', () => {
       });
 
       it('should handle restoring from parent with no other hidden children', () => {
-        const stateWithHiddenNode: GraphState = {
+        const stateWithHiddenNode: State = {
           ...initialState,
           hiddenNodeIds: [child1Id],
           hiddenChildrenIdsByParentId: new Map([
@@ -444,7 +447,7 @@ describe('GraphState', () => {
       });
 
       it('should handle RESTORE_NODE with empty hidden children list', () => {
-        const stateWithEmptyHiddenChildren = GraphState.build({
+        const stateWithEmptyHiddenChildren = State.build({
           hiddenNodeIds: [child1Id],
           hiddenChildrenIdsByParentId: new Map([[parent1Id, []]])
         });
@@ -460,7 +463,7 @@ describe('GraphState', () => {
 
     describe('RESTORE_ALL_CHILDREN action', () => {
       it('should restore all hidden children of a node', () => {
-        const stateWithHiddenChildren: GraphState = {
+        const stateWithHiddenChildren: State = {
           ...initialState,
           hiddenNodeIds: [child1Id, child2Id, 'other-node'],
           hiddenChildrenIdsByParentId: new Map([
@@ -481,7 +484,7 @@ describe('GraphState', () => {
       });
 
       it('should handle node with no hidden children', () => {
-        const stateWithHiddenChildren: GraphState = {
+        const stateWithHiddenChildren: State = {
           ...initialState,
           hiddenNodeIds: ['other-node'],
           hiddenChildrenIdsByParentId: new Map([
@@ -585,7 +588,7 @@ describe('GraphState', () => {
     // Since hasPinnedAncestor is not exported, we test it through the UNPIN_NODE action
 
     it('should detect pinned ancestor in hierarchical node IDs', () => {
-      const initialState = GraphState.build({
+      const initialState = State.build({
         pinnedNodeIds: ['com.example', 'com.example.service.UserService'],
         selectedPinnedNodeIds: ['com.example']
       });
@@ -600,7 +603,7 @@ describe('GraphState', () => {
     });
 
     it('should not detect pinned ancestor when none exists', () => {
-      const initialState = GraphState.build({
+      const initialState = State.build({
         pinnedNodeIds: ['com.other', 'com.example.service.UserService'],
         selectedPinnedNodeIds: ['com.other']
       });
@@ -668,8 +671,36 @@ describe('median function', () => {
   });
 });
 
-export function buildFromRootNodes(rootNodes: GraphNode[] = []): GraphState {
-  return GraphState.build({
+export function buildFromRootNodes(rootNodes: GraphNode[] = []): State {
+  return State.build({
     allNodes: rootNodes.flatMap(expand)
   })
 }
+
+declare module './State' {
+  namespace State {
+    function build(overrides?: Partial<State>): State
+  }
+}
+
+State.build = function (overrides: Partial<State> = {}): State {
+  const defaults = initialState();
+
+  return new State(
+    overrides.allNodes ?? defaults.allNodes,
+    overrides.hiddenNodeIds ?? defaults.hiddenNodeIds,
+    overrides.hiddenChildrenIdsByParentId ?? defaults.hiddenChildrenIdsByParentId,
+    overrides.expandedNodeIds ?? defaults.expandedNodeIds,
+    overrides.hoveredNodeId ?? defaults.hoveredNodeId,
+    overrides.selectedNodeIds ?? defaults.selectedNodeIds,
+    overrides.pinnedNodeIds ?? defaults.pinnedNodeIds,
+    overrides.selectedPinnedNodeIds ?? defaults.selectedPinnedNodeIds,
+    overrides.showLabels ?? defaults.showLabels,
+    overrides.selectedFilter ?? defaults.selectedFilter,
+    overrides.isInteractive ?? defaults.isInteractive,
+    overrides.isUsageShown ?? defaults.isUsageShown,
+    overrides.multiselectMode ?? defaults.multiselectMode
+  );
+}
+
+export { State }

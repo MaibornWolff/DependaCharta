@@ -4,7 +4,7 @@ import {InteractionBarComponent} from './interaction-bar/interaction-bar.compone
 import {CytoscapeService} from '../../../cytoscape.service';
 import {Action, UnpinNode, PinNode, ToggleNodeSelection, ShowAllEdgesOfNode, HideAllEdgesOfNode, ExpandNode, HideNode} from '../../../../../../model/Action';
 import {RenderInformation} from '../node-container.component';
-import {GraphStateChange} from '../../../../../../app.component';
+import {StateChange} from '../../../../../../app.component';
 
 @Component({
   selector: 'non-compound-node',
@@ -20,7 +20,7 @@ export class NonCompoundNodeComponent {
   @Input() node!: VisibleGraphNode
   @Input() renderInformation: RenderInformation | undefined
   @Input() zoom: number = 1
-  @Input() stateChange!: GraphStateChange
+  @Input() stateChange!: StateChange
   clickCoordinates = {x: 0, y: 0}
 
   isInteractionBarVisible(): boolean {

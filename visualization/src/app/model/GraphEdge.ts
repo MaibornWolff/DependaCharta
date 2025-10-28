@@ -1,6 +1,6 @@
 import {getAncestors, GraphNode, VisibleGraphNode} from './GraphNode';
 import {EdgeFilterType} from './EdgeFilter';
-import {getVisibleNodes, GraphState} from './GraphState';
+import {getVisibleNodes, State} from './State';
 
 export interface GraphEdge {
   source: VisibleGraphNode
@@ -45,7 +45,7 @@ function findSiblingsUnderLowestCommonAncestor(source: GraphNode, target: GraphN
   throw new Error("No common ancestor found")
 }
 
-export function createEdges(nodes: VisibleGraphNode[], state: GraphState): GraphEdge[] {
+export function createEdges(nodes: VisibleGraphNode[], state: State): GraphEdge[] {
   const visibleNodes = getVisibleNodes(state);
   const edges: GraphEdge[] = nodes
     .filter(node => node.visibleChildren.length === 0) // Only render edges on unexpanded/leaf nodes

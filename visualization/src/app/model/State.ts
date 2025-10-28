@@ -3,30 +3,47 @@ import {EdgeFilterType} from "./EdgeFilter";
 import {Action, InitializeState, ExpandNode, CollapseNode, ChangeFilter, ShowAllEdgesOfNode, HideAllEdgesOfNode, ToggleEdgeLabels, HideNode, RestoreNode, RestoreNodes, RestoreAllChildren, ToggleInteractionMode, ToggleUsageTypeMode, ResetView, ToggleNodeSelection, EnterMultiselectMode, LeaveMultiselectMode, PinNode, UnpinNode} from './Action';
 
 // TODO avoid Maps (→ (de-)serialization issues)
-export interface GraphState {
-  allNodes: GraphNode[]
+export class State {
+  constructor(
+    public readonly allNodes: GraphNode[],
+    public readonly hiddenNodeIds: string[],
+    public readonly hiddenChildrenIdsByParentId: Map<string, string[]>,
+    public readonly expandedNodeIds: string[],
+    public readonly hoveredNodeId: string,
+    public readonly selectedNodeIds: string[],
+    public readonly pinnedNodeIds: string[],
+    public readonly selectedPinnedNodeIds: string[],
 
-  hiddenNodeIds: string[]
-  hiddenChildrenIdsByParentId: Map<string, string[]>
-  expandedNodeIds: string[]
-  hoveredNodeId: string
-  selectedNodeIds: string[]
-  pinnedNodeIds: string[]
-  selectedPinnedNodeIds: string[]
-
-  showLabels: boolean
-  selectedFilter: EdgeFilterType
-  isInteractive: boolean
-  isUsageShown: boolean
-  multiselectMode: boolean
+    public readonly showLabels: boolean,
+    public readonly selectedFilter: EdgeFilterType,
+    public readonly isInteractive: boolean,
+    public readonly isUsageShown: boolean,
+    public readonly multiselectMode: boolean
+  ) {}
 }
 
-export function getVisibleNodes(graphState: GraphState): VisibleGraphNode[] {
-  const expandedNodes = graphState.allNodes.filter(node => graphState.expandedNodeIds.includes(node.id))
-  return graphState.allNodes
+export const initialState = () => new State(
+  [],
+  [],
+  new Map<string, string[]>(),
+  [],
+  '',
+  [],
+  [],
+  [],
+  true,
+  EdgeFilterType.FEEDBACK_EDGES_AND_TWISTED_EDGES,
+  true,
+  true,
+  false
+)
+
+export function getVisibleNodes(state: State): VisibleGraphNode[] {
+  const expandedNodes = state.allNodes.filter(node => state.expandedNodeIds.includes(node.id))
+  return state.allNodes
     .filter(node => !node.parent || expandedNodes.includes(node.parent))
-    .filter(node => !isNodeOrAncestorHidden(graphState.hiddenNodeIds, node))
-    .map(node => toVisibleGraphNode(node, graphState))
+    .filter(node => !isNodeOrAncestorHidden(state.hiddenNodeIds, node))
+    .map(node => toVisibleGraphNode(node, state))
 }
 
 function isNodeOrAncestorHidden(hiddenChildrenIds: string[], child: GraphNode): boolean {
@@ -43,13 +60,13 @@ function isNodeOrAncestorHidden(hiddenChildrenIds: string[], child: GraphNode): 
   return false;
 }
 
-function toVisibleGraphNode(graphNode: GraphNode, graphState: GraphState): VisibleGraphNode {
-  const hiddenChildrenIds = graphState.hiddenChildrenIdsByParentId.get(graphNode.id) || []
-  const isExpanded = graphState.expandedNodeIds.includes(graphNode.id)
-  const isSelected = graphState.selectedNodeIds.includes(graphNode.id)
+function toVisibleGraphNode(graphNode: GraphNode, state: State): VisibleGraphNode {
+  const hiddenChildrenIds = state.hiddenChildrenIdsByParentId.get(graphNode.id) || []
+  const isExpanded = state.expandedNodeIds.includes(graphNode.id)
+  const isSelected = state.selectedNodeIds.includes(graphNode.id)
   const visibleChildren = isExpanded ?
     graphNode.children
-      .map(child => toVisibleGraphNode(child, graphState))
+      .map(child => toVisibleGraphNode(child, state))
       .filter(child => !isNodeOrAncestorHidden(hiddenChildrenIds, child))
     : [];
   return {
@@ -61,37 +78,15 @@ function toVisibleGraphNode(graphNode: GraphNode, graphState: GraphState): Visib
   }
 }
 
-export function findGraphNode(nodeId: string, graphState: GraphState): VisibleGraphNode {
-  const graphNode = graphState.allNodes.find(node => node.id == nodeId)
+export function findGraphNode(nodeId: string, state: State): VisibleGraphNode {
+  const graphNode = state.allNodes.find(node => node.id == nodeId)
   if (!graphNode) {
     throw new Error(`Node with id ${nodeId} not found`)
   }
-  return toVisibleGraphNode(graphNode, graphState)
+  return toVisibleGraphNode(graphNode, state)
 }
 
-export namespace GraphState {
-  export function build(overrides: Partial<GraphState> = {}): GraphState {
-    const defaults: GraphState = {
-      allNodes: [],
-      hiddenNodeIds: [],
-      hiddenChildrenIdsByParentId: new Map(),
-      expandedNodeIds: [],
-      hoveredNodeId: '',
-      selectedNodeIds: [],
-      pinnedNodeIds: [],
-      selectedPinnedNodeIds: [],
-      selectedFilter: EdgeFilterType.FEEDBACK_EDGES_AND_TWISTED_EDGES,
-      showLabels: true,
-      isInteractive: true,
-      isUsageShown: true,
-      multiselectMode: false
-    }
-
-    return {...defaults, ...overrides}
-  }
-}
-
-export function reduce(state: GraphState, action: Action): GraphState {
+export function reduce(state: State, action: Action): State {
   switch (true) {
     case action instanceof InitializeState:
       return {

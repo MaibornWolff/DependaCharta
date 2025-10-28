@@ -4,8 +4,8 @@ import {exampleJson} from '../../../common/test/exampleJson.spec';
 import {EdgeFilterType} from '../../../model/EdgeFilter';
 import {convertToGraphNodes} from '../../analysis';
 import { Action, ExpandNode, CollapseNode, ChangeFilter, ToggleNodeSelection, InitializeState } from '../../../model/Action';
-import {GraphState, reduce} from "../../../model/GraphState";
-import { buildFromRootNodes } from '../../../model/GraphState.spec';
+import { State, reduce} from "../../../model/State";
+import { buildFromRootNodes } from '../../../model/State.spec';
 import { CytoscapeService } from './cytoscape.service';
 import { HighlightService } from './highlight.service';
 import cytoscape from 'cytoscape';
@@ -14,7 +14,7 @@ describe('CytoscapeService', async () => {
   let cytoscapeService: CytoscapeService;
 
   const graphNodes = convertToGraphNodes(exampleJson)
-  const graphState = buildFromRootNodes(graphNodes)
+  const state = buildFromRootNodes(graphNodes)
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -29,7 +29,7 @@ describe('CytoscapeService', async () => {
   it('should expand a node', () => {
     // given & when
     const action: Action = new ExpandNode("de");
-    const newState = reduce(graphState, action)
+    const newState = reduce(state, action)
     cytoscapeService.apply(newState, action)
 
     // then
@@ -41,12 +41,12 @@ describe('CytoscapeService', async () => {
   it('should collapse a node', () => {
     // given
     const expandAction: Action = new ExpandNode("de");
-    const stateAfterExpanding = reduce(graphState, expandAction)
+    const stateAfterExpanding = reduce(state, expandAction)
     cytoscapeService.apply(stateAfterExpanding, expandAction)
 
     // when
     const collapseAction: Action = new CollapseNode("de");
-    const stateAfterCollapsing = reduce(graphState, collapseAction)
+    const stateAfterCollapsing = reduce(state, collapseAction)
     cytoscapeService.apply(stateAfterCollapsing, collapseAction)
 
     // then
@@ -133,16 +133,16 @@ describe('CytoscapeService', async () => {
 
   it(`should reset cytoscape when initializing state`, () => {
     // given + when
-    cytoscapeService.apply(GraphState.build(), new InitializeState('', []))
+    cytoscapeService.apply(State.build(), new InitializeState('', []))
 
     // then
     const newNodes = cytoscapeService.get().nodes()
     expect(newNodes.length).toEqual(0)
   })
 
-  function expandEmptyTopLevelPackages(): GraphState {
+  function expandEmptyTopLevelPackages(): State {
     const expandDe: Action = new ExpandNode("de");
-    let finalState = reduce(graphState, expandDe);
+    let finalState = reduce(state, expandDe);
     cytoscapeService.apply(finalState, expandDe)
 
     const expandDeSots: Action = new ExpandNode("de.sots");

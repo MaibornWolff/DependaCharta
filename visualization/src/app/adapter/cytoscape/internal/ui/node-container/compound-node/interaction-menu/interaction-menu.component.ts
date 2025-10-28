@@ -5,7 +5,7 @@ import { VisibleGraphNode } from '../../../../../../../model/GraphNode';
 import { MatButton } from '@angular/material/button';
 import { NgForOf } from '@angular/common';
 import { MatActionList } from '@angular/material/list';
-import { GraphState } from '../../../../../../../model/GraphState';
+import { State } from '../../../../../../../model/State';
 import { DomSanitizer } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 
@@ -28,7 +28,7 @@ import { HttpClientModule } from '@angular/common/http';
 export class InteractionMenuComponent implements OnInit {
   @Input() node!: VisibleGraphNode
   @Input() isPinned: boolean = false
-  @Input() state!: GraphState
+  @Input() state!: State
   @Output() nodeHidden = new EventEmitter()
   @Output() nodeCollapsed = new EventEmitter()
   @Output() childRestored = new EventEmitter<string>()

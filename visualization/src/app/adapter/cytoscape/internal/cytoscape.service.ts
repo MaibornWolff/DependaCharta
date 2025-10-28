@@ -4,7 +4,7 @@ import {EdgeDisplayService} from './ui/edge-display.service';
 import {toCytoscapeEdges, toCytoscapeNodes} from './converter/elementDefinitionConverter';
 import {Action, InitializeState, ChangeFilter, ShowAllEdgesOfNode, HideAllEdgesOfNode, ResetView} from '../../../model/Action';
 import {EdgeFilter} from '../../../model/EdgeFilter';
-import {findGraphNode, getVisibleNodes, GraphState} from "../../../model/GraphState";
+import {findGraphNode, getVisibleNodes, State} from "../../../model/State";
 import {createEdges} from '../../../model/GraphEdge';
 import {HighlightService} from './highlight.service';
 import {lsmLayout} from './CyLsmLayout';
@@ -32,7 +32,7 @@ export class CytoscapeService {
   @Output() panOrZoom = new EventEmitter<Core>()
   @Output() changeCursor = new EventEmitter<string>()
 
-  apply(state: GraphState, action: Action) {
+  apply(state: State, action: Action) {
     if (action instanceof InitializeState) {
       this.initialize()
     }
@@ -58,18 +58,18 @@ export class CytoscapeService {
     }
   }
 
-  private initializeGraphFromState(cy: Core, state: GraphState) {
+  private initializeGraphFromState(cy: Core, state: State) {
     this.renderGraphFromState(cy, state)
     cy.centre()
   }
 
-  private rerenderGraphFromState(cy: Core, state: GraphState) {
+  private rerenderGraphFromState(cy: Core, state: State) {
     const nodesInViewport = getNodesInViewport(cy)
     this.renderGraphFromState(cy, state)
     fitGraph(cy, renewNodes(cy, nodesInViewport))
   }
 
-  private renderGraphFromState(cy: Core, state: GraphState) {
+  private renderGraphFromState(cy: Core, state: State) {
     cy.remove(cy.nodes())
     const visibleNodes = getVisibleNodes(state)
     const elementDefinitions = toCytoscapeNodes(visibleNodes)
@@ -78,7 +78,7 @@ export class CytoscapeService {
     this.updateGraph(cy, state, cy.nodes())
   }
 
-  private applyFilters(cy: Core, state: GraphState) {
+  private applyFilters(cy: Core, state: State) {
     const prominentNodeIds = [
       ...(state.hoveredNodeId ? [state.hoveredNodeId] : []),
       ...state.selectedNodeIds,
@@ -93,7 +93,7 @@ export class CytoscapeService {
   }
 
   // TODO cy = ui interaction ⇒ move to component
-  private updateGraph(cy: Core, state: GraphState, nodesToAddEdgesFor: NodeCollection) {
+  private updateGraph(cy: Core, state: State, nodesToAddEdgesFor: NodeCollection) {
     const newEdges = this.createNewEdges(nodesToAddEdgesFor, state)
     cy.remove(cy.edges())
 
@@ -105,7 +105,7 @@ export class CytoscapeService {
     this.applyFilters(cy, state)
   }
 
-  private createNewEdges(nodesToRerender: NodeCollection, state: GraphState) {
+  private createNewEdges(nodesToRerender: NodeCollection, state: State) {
     const allNodeIdsToRerender = nodesToRerender.map(node => node.data().id)
     const flattenedGraphNodes = allNodeIdsToRerender
       .map(nodeId => findGraphNode(nodeId, state))

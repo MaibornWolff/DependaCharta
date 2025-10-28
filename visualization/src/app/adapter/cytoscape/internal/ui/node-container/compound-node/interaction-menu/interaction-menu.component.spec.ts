@@ -3,7 +3,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {InteractionMenuComponent} from './interaction-menu.component';
 import {buildVisibleGraphNode} from '../../../../../../../model/ModelBuilders.spec';
 import { By } from '@angular/platform-browser';
-import {GraphState} from '../../../../../../../model/GraphState';
+import {State} from '../../../../../../../model/State';
 
 describe('InteractionMenuComponent', () => {
   let component: InteractionMenuComponent;
@@ -15,7 +15,6 @@ describe('InteractionMenuComponent', () => {
   }
 
   function getCollapseNodeButtonElement() {
-    component.state.isInteractive = true
     fixture.detectChanges();
     const iconDebugElement = fixture.debugElement.query(By.css('.collapseNodeButton'));
     if (iconDebugElement) {
@@ -26,7 +25,6 @@ describe('InteractionMenuComponent', () => {
   }
 
   function getHideNodeButtonElement() {
-    component.state.isInteractive = true
     fixture.detectChanges();
     const iconDebugElement = fixture.debugElement.query(By.css('.hideNodeButton'));
     if (iconDebugElement) {
@@ -45,7 +43,7 @@ describe('InteractionMenuComponent', () => {
     fixture = TestBed.createComponent(InteractionMenuComponent);
     component = fixture.componentInstance;
     component.node = buildVisibleGraphNode()
-    component.state = GraphState.build({
+    component.state = State.build({
       isInteractive: true
     })
     fixture.detectChanges();

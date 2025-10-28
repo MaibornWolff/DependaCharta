@@ -1,7 +1,8 @@
 import {buildShallowGraphEdge, buildVisibleGraphNode} from './ModelBuilders.spec';
 import {createEdges, GraphEdge} from './GraphEdge';
 import {EdgeFilterType} from './EdgeFilter';
-import {buildFromRootNodes} from './GraphState.spec';
+import {buildFromRootNodes} from './State.spec';
+import {State} from './State';
 
 describe('GraphEdge', () => {
   describe('createEdges', () => {
@@ -84,8 +85,8 @@ describe('GraphEdge', () => {
         })]
       })
 
-      const state = buildFromRootNodes([parentNode, collapsedLeaf, expandedLeaf])
-      state.expandedNodeIds = []
+      const base = buildFromRootNodes([parentNode, collapsedLeaf, expandedLeaf])
+      const state = State.build({ allNodes: base.allNodes, expandedNodeIds: [] })
 
       // when
       const edges = createEdges([parentNode, collapsedLeaf, expandedLeaf], state)
@@ -127,8 +128,8 @@ describe('GraphEdge', () => {
       })
 
       const allNodes = [parentNode, childNode, otherNode1, otherNode2];
-      const state = buildFromRootNodes(allNodes);
-      state.expandedNodeIds = [parentNodeId]
+      const base = buildFromRootNodes(allNodes);
+      const state = State.build({ allNodes: base.allNodes, expandedNodeIds: [parentNodeId] })
 
       // when
       const edges = createEdges(allNodes, state)
@@ -248,8 +249,8 @@ describe('GraphEdge', () => {
       })
 
       const allNodes = [leafNode, parentNode, hiddenChildNode];
-      const state = buildFromRootNodes(allNodes);
-      state.hiddenNodeIds = [hiddenChildNodeId]
+      const base = buildFromRootNodes(allNodes);
+      const state = State.build({ allNodes: base.allNodes, hiddenNodeIds: [hiddenChildNodeId] })
 
       // when
       const edges = createEdges([leafNode, hiddenChildNode], state)
@@ -318,8 +319,8 @@ describe('GraphEdge', () => {
              id: leafNodeId2
            })
 
-           const state = buildFromRootNodes([leafNode1, leafNode2]);
-           state.selectedFilter = EdgeFilterType.FEEDBACK_EDGES_AND_TWISTED_EDGES;
+           const base = buildFromRootNodes([leafNode1, leafNode2]);
+           const state = State.build({ allNodes: base.allNodes, selectedFilter: EdgeFilterType.FEEDBACK_EDGES_AND_TWISTED_EDGES });
 
            // when
            const edges = createEdges([leafNode1, leafNode2], state);

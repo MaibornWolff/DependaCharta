@@ -3,7 +3,7 @@ import {CytoscapeService} from './internal/cytoscape.service';
 import {Action} from '../../model/Action';
 import {Core, NodeSingular} from 'cytoscape';
 import {NodeContainerComponent, RenderableNode, RenderInformation} from './internal/ui/node-container/node-container.component';
-import {GraphStateChange} from '../../app.component';
+import {StateChange} from '../../app.component';
 
 @Component({
   selector: 'cytoscape',
@@ -20,7 +20,7 @@ export class CytoscapeComponent implements OnInit, OnChanges {
   // TODO naming
   @Output() graphActionHappened = new EventEmitter<Action>()
   // TODO use "required" parameter of @Input, research
-  @Input() stateChange!: GraphStateChange
+  @Input() stateChange!: StateChange
   @ViewChild("non_compound_node_container") nonCompoundNodeContainer!: NodeContainerComponent
   @ViewChild("compound_node_container") compoundNodeContainer!: NodeContainerComponent
 

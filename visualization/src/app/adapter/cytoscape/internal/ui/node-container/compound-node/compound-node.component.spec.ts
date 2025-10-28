@@ -1,9 +1,8 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-
 import {CompoundNodeComponent} from './compound-node.component';
 import {buildVisibleGraphNode} from '../../../../../../model/ModelBuilders.spec';
-import {GraphState} from '../../../../../../model/GraphState';
-import {Action, ToggleEdgeLabels} from '../../../../../../model/Action';
+import {State} from '../../../../../../model/State';
+import {ToggleEdgeLabels} from '../../../../../../model/Action';
 
 describe('CompoundNodeComponent', () => {
   let component: CompoundNodeComponent;
@@ -19,7 +18,7 @@ describe('CompoundNodeComponent', () => {
     component = fixture.componentInstance
     component.node = buildVisibleGraphNode()
     component.stateChange = {
-      state: GraphState.build(),
+      state: State.build(),
       action: new ToggleEdgeLabels()
     }
     fixture.detectChanges()
