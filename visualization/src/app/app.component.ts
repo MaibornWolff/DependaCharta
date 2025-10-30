@@ -8,12 +8,12 @@ import {Action, InitializeState, EnterMultiselectMode, LeaveMultiselectMode, Res
 import {CytoscapeComponent} from './adapter/cytoscape'
 import {MouseInaccuracyDetectorComponent} from './mouse-inaccuracy-detector.component'
 import {ProjectReport} from './adapter/analysis/internal/ProjectReport'
-import {GraphState, reduce} from './model/GraphState'
+import {State, initialState} from './model/State'
 import {ToggleButtonComponent} from "./ui/toggle-button/toggle-button.component";
 
 // TODO move to better location (model?)
 // TODO naming
-export type GraphStateChange = {state: GraphState, action: Action}
+export type StateChange = {state: State, action: Action}
 
 @Component({
   selector: 'app-root',
@@ -30,12 +30,12 @@ export class AppComponent {
   private changeDetector = inject(ChangeDetectorRef)
   isLoading: boolean = false
   cytoscapeInitialized: boolean = true
-  state: GraphState = GraphState.build()
-  stateChange!: GraphStateChange
+  state: State = initialState()
+  stateChange!: StateChange
 
   apply(action: Action) {
     this.isLoading = true
-    this.state = reduce(this.state, action)
+    this.state = this.state.reduce(action)
     this.stateChange = {state: this.state, action: action}
     this.isLoading = false
   }

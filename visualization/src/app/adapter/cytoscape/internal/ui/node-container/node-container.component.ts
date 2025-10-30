@@ -2,7 +2,7 @@ import {Component, Input} from '@angular/core';
 import {VisibleGraphNode} from '../../../../../model/GraphNode';
 import {NonCompoundNodeComponent} from './non-compound-node/non-compound-node.component';
 import {CompoundNodeComponent} from './compound-node/compound-node.component';
-import {GraphStateChange} from '../../../../../app.component';
+import {StateChange} from '../../../../../app.component';
 import {Position} from 'cytoscape';
 
 @Component({
@@ -18,9 +18,9 @@ import {Position} from 'cytoscape';
 export class NodeContainerComponent {
   @Input() pan: Position = { x: 0, y: 0 }
   @Input() zoom: number = 1
-  @Input() stateChange!: GraphStateChange
+  @Input() stateChange!: StateChange
   
-  // TODO remove state; use GraphState.hiddenChildrenIds instead
+  // TODO remove state; use State.hiddenChildrenIds instead
   nodes: VisibleGraphNode[] = []
   renderInformationByNodeId = new Map<string, RenderInformation>()
 
@@ -55,7 +55,7 @@ export class NodeContainerComponent {
   }
 }
 
-// TODO make this part of VisibleGraphNode, or remove VisibleGraphNode entirely (moving its information to GraphState)
+// TODO make this part of VisibleGraphNode, or remove VisibleGraphNode entirely (moving its information to State)
 export class RenderableNode {
   constructor(
     public readonly node: VisibleGraphNode,

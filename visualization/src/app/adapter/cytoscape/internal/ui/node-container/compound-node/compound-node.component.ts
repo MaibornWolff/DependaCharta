@@ -5,7 +5,7 @@ import {MatDivider} from '@angular/material/divider';
 import {Action, UnpinNode, PinNode, HideNode, RestoreAllChildren, RestoreNode, CollapseNode} from '../../../../../../model/Action';
 import {InteractionMenuComponent} from './interaction-menu/interaction-menu.component';
 import {RenderInformation} from '../node-container.component';
-import {GraphStateChange} from '../../../../../../app.component';
+import {StateChange} from '../../../../../../app.component';
 
 @Component({
   selector: 'compound-node',
@@ -22,7 +22,7 @@ export class CompoundNodeComponent {
   @Input() node!: VisibleGraphNode
   @Input() renderInformation: RenderInformation | undefined;
   @Input() zoom: number = 1;
-  @Input() stateChange!: GraphStateChange
+  @Input() stateChange!: StateChange
 
   togglePin() {
     if (this.isPinned()) {
