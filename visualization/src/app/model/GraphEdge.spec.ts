@@ -84,8 +84,7 @@ describe('GraphEdge', () => {
         })]
       })
 
-      const base = State.buildFromRootNodes([parentNode, collapsedLeaf, expandedLeaf])
-      const state = new State({ allNodes: base.allNodes, expandedNodeIds: [] })
+      const state = State.buildFromRootNodes([parentNode, collapsedLeaf, expandedLeaf]).copy({ expandedNodeIds: [] })
 
       // when
       const edges = createEdges([parentNode, collapsedLeaf, expandedLeaf], state)
@@ -127,8 +126,7 @@ describe('GraphEdge', () => {
       })
 
       const allNodes = [parentNode, childNode, otherNode1, otherNode2];
-      const base = State.buildFromRootNodes(allNodes);
-      const state = new State({ allNodes: base.allNodes, expandedNodeIds: [parentNodeId] })
+      const state = State.buildFromRootNodes(allNodes).copy({ expandedNodeIds: [parentNodeId] });
 
       // when
       const edges = createEdges(allNodes, state)
@@ -248,8 +246,7 @@ describe('GraphEdge', () => {
       })
 
       const allNodes = [leafNode, parentNode, hiddenChildNode];
-      const base = State.buildFromRootNodes(allNodes);
-      const state = new State({ allNodes: base.allNodes, hiddenNodeIds: [hiddenChildNodeId] })
+      const state = State.buildFromRootNodes(allNodes).copy({ hiddenNodeIds: [hiddenChildNodeId] });
 
       // when
       const edges = createEdges([leafNode, hiddenChildNode], state)
@@ -318,8 +315,7 @@ describe('GraphEdge', () => {
              id: leafNodeId2
            })
 
-           const base = State.buildFromRootNodes([leafNode1, leafNode2]);
-           const state = new State({ allNodes: base.allNodes, selectedFilter: EdgeFilterType.FEEDBACK_EDGES_AND_TWISTED_EDGES });
+           const state = State.buildFromRootNodes([leafNode1, leafNode2]).copy({ selectedFilter: EdgeFilterType.FEEDBACK_EDGES_AND_TWISTED_EDGES });
 
            // when
            const edges = createEdges([leafNode1, leafNode2], state);

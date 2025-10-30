@@ -103,8 +103,7 @@ describe('State Handler', () => {
         id: rootId,
         isSelected: true
       })
-      const base = State.buildFromRootNodes([rootNode])
-      const state = new State({ allNodes: base.allNodes, selectedNodeIds: [rootId] })
+      const state = State.buildFromRootNodes([rootNode]).copy({ selectedNodeIds: [rootId] })
 
       // when
       const newState = state.reduce(new ToggleNodeSelection(rootId))
@@ -116,8 +115,7 @@ describe('State Handler', () => {
     it('should enter multiselect mode', () => {
       // given
       const rootNode = GraphNode.build()
-      const base = State.buildFromRootNodes([rootNode])
-      const state = new State({ allNodes: base.allNodes, multiselectMode: false })
+      const state = State.buildFromRootNodes([rootNode]).copy({ multiselectMode: false })
 
       // when
       const newState = state.reduce(new EnterMultiselectMode())
@@ -130,8 +128,7 @@ describe('State Handler', () => {
     it('should leave multiselect mode', () => {
       // given
       const rootNode = GraphNode.build()
-      const base = State.buildFromRootNodes([rootNode])
-      const state = new State({ allNodes: base.allNodes, multiselectMode: true })
+      const state = State.buildFromRootNodes([rootNode]).copy({ multiselectMode: true })
 
       // when
       const newState = state.reduce(new LeaveMultiselectMode())
@@ -143,8 +140,7 @@ describe('State Handler', () => {
     it('should clear selected nodes when leaving multiselect mode', () => {
       // given
       const rootNode = GraphNode.build()
-      const base = State.buildFromRootNodes([rootNode])
-      const state = new State({ allNodes: base.allNodes, multiselectMode: true, selectedNodeIds: [rootNode.id] })
+      const state = State.buildFromRootNodes([rootNode]).copy({ multiselectMode: true, selectedNodeIds: [rootNode.id] })
 
       // when
       const newState = state.reduce(new LeaveMultiselectMode())
