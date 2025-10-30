@@ -57,7 +57,7 @@ export class State {
           showLabels: !this.showLabels
         })
       case action instanceof HideNode: {
-        const node = findGraphNode(action.nodeId, this)
+        const node = this.findGraphNode(action.nodeId)
         const hiddenChildrenIdsByParentId = this.hiddenChildrenIdsByParentId
         if (node.parent) {
           const previousHiddenChildren = hiddenChildrenIdsByParentId.get(node.parent.id) || []
@@ -70,7 +70,7 @@ export class State {
         })
       }
       case action instanceof PinNode: {
-        const descendants = [...getDescendants(findGraphNode(action.nodeId, this))]
+        const descendants = [...getDescendants(this.findGraphNode(action.nodeId))]
         const unpinnedDescendants = descendants.filter(node => !this.pinnedNodeIds.includes(node.id))
         return this.copy({
           pinnedNodeIds: [...this.pinnedNodeIds, ...(unpinnedDescendants.map(node => node.id))],
@@ -150,7 +150,15 @@ export class State {
       .map(node => this.toVisibleGraphNode(node))
   }
 
-  toVisibleGraphNode(graphNode: GraphNode): VisibleGraphNode {
+  findGraphNode(nodeId: string): VisibleGraphNode {
+    const graphNode = this.allNodes.find(node => node.id == nodeId)
+    if (!graphNode) {
+      throw new Error(`Node with id ${nodeId} not found`)
+    }
+    return this.toVisibleGraphNode(graphNode)    
+  }
+
+  private toVisibleGraphNode(graphNode: GraphNode): VisibleGraphNode {
     const hiddenChildrenIds = this.hiddenChildrenIdsByParentId.get(graphNode.id) || []
     const isExpanded = this.expandedNodeIds.includes(graphNode.id)
     const isSelected = this.selectedNodeIds.includes(graphNode.id)
@@ -181,14 +189,6 @@ function isNodeOrAncestorHidden(hiddenChildrenIds: string[], child: GraphNode): 
     parent = parent.parent;
   }
   return false;
-}
-
-export function findGraphNode(nodeId: string, state: State): VisibleGraphNode {
-  const graphNode = state.allNodes.find(node => node.id == nodeId)
-  if (!graphNode) {
-    throw new Error(`Node with id ${nodeId} not found`)
-  }
-  return state.toVisibleGraphNode(graphNode)
 }
 
 // TODO move to an appropriate utility collection

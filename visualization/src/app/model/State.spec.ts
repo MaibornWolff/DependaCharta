@@ -1,4 +1,4 @@
-import { State, findGraphNode} from './State';
+import { State } from './State';
 import { GraphNode, expand } from './GraphNode';
 import * as GraphNodeTest from './GraphNode.spec';
 import { EdgeFilterType } from './EdgeFilter';
@@ -160,13 +160,13 @@ describe('State', () => {
     })
 
     it('should find an existing node and return it as VisibleGraphNode', () => {
-      const result = findGraphNode(parent1Id, state)
+      const result = state.findGraphNode(parent1Id)
 
       expect(result.id).toBe(parent1Id)
     })
 
     it('should throw an error when node does not exist', () => {
-      expect(() => findGraphNode('nonexistent-id', state))
+      expect(() => state.findGraphNode('nonexistent-id'))
         .toThrowError('Node with id nonexistent-id not found')
     })
   })

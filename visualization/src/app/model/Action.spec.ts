@@ -1,7 +1,7 @@
 import {InitializeState, ExpandNode, CollapseNode, ToggleNodeSelection, EnterMultiselectMode, LeaveMultiselectMode, ChangeFilter, ToggleEdgeLabels, HideNode, RestoreNodes} from './Action'
 import {buildVisibleGraphNode} from './ModelBuilders.spec'
 import {EdgeFilterType} from './EdgeFilter'
-import {findGraphNode, State} from './State'
+import {State} from './State'
 import {GraphNode} from './GraphNode.spec'
 
 describe('State Handler', () => {
@@ -272,7 +272,7 @@ describe('State Handler', () => {
       })
       const state = State.buildFromRootNodes([rootNode])
       // when
-      const foundNode = findGraphNode(rootId, state)
+      const foundNode = state.findGraphNode(rootId)
 
       // then
       expect(foundNode).toEqual(rootNode)
@@ -283,7 +283,7 @@ describe('State Handler', () => {
       const state = new State()
 
       // when + then
-      expect(() => findGraphNode("some random id", state)).toThrowError()
+      expect(() => state.findGraphNode("some random id")).toThrowError()
     })
   })
 })
