@@ -1,11 +1,12 @@
-import {buildGraphEdge, buildVisibleGraphNode} from './ModelBuilders.spec';
+import {buildVisibleGraphNode} from './ModelBuilders.spec';
 import {EdgeFilter, EdgeFilterResult, EdgeFilterType} from './EdgeFilter';
 import {EdgeType} from './EdgeType';
+import {GraphEdge} from './GraphEdge.spec';
 
 describe('New Graph Filter', () => {
   it('showNoEdges should not return any edges', () => {
     // given
-    const edge = buildGraphEdge()
+    const edge = GraphEdge.build()
 
     // when
     const edges = [edge]
@@ -26,12 +27,12 @@ describe('New Graph Filter', () => {
       level: 1
     })
 
-    const feedbackEdge = buildGraphEdge({
+    const feedbackEdge = GraphEdge.build({
       source: level0Node,
       target: level1Node,
       isCyclic: true
     })
-    const nonFeedbackEdge = buildGraphEdge({
+    const nonFeedbackEdge = GraphEdge.build({
       source: level1Node,
       target: level0Node,
       isCyclic: true
@@ -58,12 +59,12 @@ describe('New Graph Filter', () => {
     })
 
 
-    const feedbackEdge = buildGraphEdge({
+    const feedbackEdge = GraphEdge.build({
       source: level0Node,
       target: level1Node,
       isCyclic: true
     })
-    const twistedEdge = buildGraphEdge({
+    const twistedEdge = GraphEdge.build({
       source: level0Node,
       target: level1Node,
       isCyclic: false
@@ -82,7 +83,7 @@ describe('New Graph Filter', () => {
 
   it('showOnlyFeedbackEdges should not return any non-cyclic edges', () => {
     // given
-    const edge = buildGraphEdge({
+    const edge = GraphEdge.build({
       source: buildVisibleGraphNode({
         level: 0
       }),
@@ -111,14 +112,14 @@ describe('New Graph Filter', () => {
       level: 1
     })
 
-    const twistedEdge = buildGraphEdge({
+    const twistedEdge = GraphEdge.build({
       id: '1',
       source: level0Node,
       target: level1Node,
       isCyclic: false
     })
 
-    const feedbackEdge = buildGraphEdge({
+    const feedbackEdge = GraphEdge.build({
       id: '2',
       source: level0Node,
       target: level1Node,
@@ -146,13 +147,13 @@ describe('New Graph Filter', () => {
       level: 1
     })
 
-    const regularEdge = buildGraphEdge({
+    const regularEdge = GraphEdge.build({
       source: level1Node,
       target: level0Node,
       isCyclic: false
     })
 
-    const regularCyclicEdge = buildGraphEdge({
+    const regularCyclicEdge = GraphEdge.build({
       source: level1Node,
       target: level0Node,
       isCyclic: true
@@ -177,14 +178,14 @@ describe('New Graph Filter', () => {
       level: 1
     })
 
-    const feedbackEdge = buildGraphEdge({
+    const feedbackEdge = GraphEdge.build({
       id: '1',
       source: level0Node,
       target: level1Node,
       isCyclic: true
     })
 
-    const regularCyclicEdge = buildGraphEdge({
+    const regularCyclicEdge = GraphEdge.build({
       id: '2',
       source: level1Node,
       target: level0Node,
@@ -212,13 +213,13 @@ describe('New Graph Filter', () => {
       level: 1
     })
 
-    const regularEdge = buildGraphEdge({
+    const regularEdge = GraphEdge.build({
       source: level1Node,
       target: level0Node,
       isCyclic: false
     })
 
-    const twistedEdge = buildGraphEdge({
+    const twistedEdge = GraphEdge.build({
       source: level0Node,
       target: level1Node,
       isCyclic: false
@@ -243,28 +244,28 @@ describe('New Graph Filter', () => {
       level: 1
     })
 
-    const regularEdge = buildGraphEdge({
+    const regularEdge = GraphEdge.build({
       id: '1',
       source: level1Node,
       target: level0Node,
       isCyclic: false
     })
 
-    const twistedEdge = buildGraphEdge({
+    const twistedEdge = GraphEdge.build({
       id: '2',
       source: level0Node,
       target: level1Node,
       isCyclic: false
     })
 
-    const feedbackEdge = buildGraphEdge({
+    const feedbackEdge = GraphEdge.build({
       id: '3',
       source: level0Node,
       target: level1Node,
       isCyclic: true
     })
 
-    const regularCyclicEdge = buildGraphEdge({
+    const regularCyclicEdge = GraphEdge.build({
       id: '4',
       source: level1Node,
       target: level0Node,

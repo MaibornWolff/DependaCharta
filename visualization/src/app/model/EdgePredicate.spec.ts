@@ -1,10 +1,11 @@
-import {buildGraphEdge, buildVisibleGraphNode} from './ModelBuilders.spec';
+import {buildVisibleGraphNode} from './ModelBuilders.spec';
 import {EdgePredicate} from './EdgePredicate';
 import {EdgeType} from './EdgeType';
+import {GraphEdge} from './GraphEdge.spec';
 
 describe('Layout', () => {
   it('Is no feedback edge, when edge points from lower level node to higher level node and is not cyclic', () => {
-    const edge = buildGraphEdge({
+    const edge = GraphEdge.build({
       source: buildVisibleGraphNode({
         level: 1
       }),
@@ -19,7 +20,7 @@ describe('Layout', () => {
   });
 
   it('Is no feedback edge, when edge points from higher level node to lower level node and is cyclic', () => {
-    const edge = buildGraphEdge({
+    const edge = GraphEdge.build({
       source: buildVisibleGraphNode({
         level: 2
       }),
@@ -34,7 +35,7 @@ describe('Layout', () => {
   });
 
   it('Is feedback edge, when edge points from lower level node to higher level node and is cyclic', () => {
-    const edge = buildGraphEdge({
+    const edge = GraphEdge.build({
       source: buildVisibleGraphNode({
         level: 1
       }),
@@ -49,7 +50,7 @@ describe('Layout', () => {
   });
 
   it('Is no twisted edge, when edge points from higher level node to lower level node and is cyclic', () => {
-    const edge = buildGraphEdge({
+    const edge = GraphEdge.build({
       source: buildVisibleGraphNode({
         level: 2
       }),
@@ -64,7 +65,7 @@ describe('Layout', () => {
   });
 
   it('Is no twisted edge, when edge points from lower level node to higher level node and is cyclic', () => {
-    const edge = buildGraphEdge({
+    const edge = GraphEdge.build({
       source: buildVisibleGraphNode({
         level: 1
       }),
@@ -79,7 +80,7 @@ describe('Layout', () => {
   });
 
   it('Is no twisted edge, when edge points from higher level node to lower level node and is not cyclic', () => {
-    const edge = buildGraphEdge({
+    const edge = GraphEdge.build({
       source: buildVisibleGraphNode({
         level: 2
       }),
@@ -94,7 +95,7 @@ describe('Layout', () => {
   });
 
   it('Is twisted edge, when edge points from lower level node to higher level node and is not cyclic', () => {
-    const edge = buildGraphEdge({
+    const edge = GraphEdge.build({
       source: buildVisibleGraphNode({
         level: 1
       }),
@@ -109,7 +110,7 @@ describe('Layout', () => {
   });
 
   it('Is pointing upwards, when edge points to other node on the same level', () => {
-    const edge = buildGraphEdge({
+    const edge = GraphEdge.build({
       source: buildVisibleGraphNode({
         level: 1
       }),
@@ -124,7 +125,7 @@ describe('Layout', () => {
   });
 
   it('Only compares nodes of the same level and not the source of the edge itself', () => {
-    const edge = buildGraphEdge({
+    const edge = GraphEdge.build({
       source: buildVisibleGraphNode({
         level: 1,
         parent: buildVisibleGraphNode({
@@ -141,7 +142,7 @@ describe('Layout', () => {
   });
 
   it('Only compares nodes of the same level and not the target of the edge itself', () => {
-    const edge = buildGraphEdge({
+    const edge = GraphEdge.build({
       source: buildVisibleGraphNode({
         level: 1
       }),

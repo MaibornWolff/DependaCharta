@@ -1,8 +1,9 @@
-import {buildGraphEdge, buildShallowGraphEdge, buildVisibleGraphNode} from '../../../../model/ModelBuilders.spec'
+import {buildShallowGraphEdge, buildVisibleGraphNode} from '../../../../model/ModelBuilders.spec'
 import {toCytoscapeEdges, toCytoscapeNodes, toGraphEdges, toVisibleGraphNodes} from './elementDefinitionConverter'
 import {EdgeCollectionBuilder, NodeCollectionBuilder} from './CytoscapeModelBuilders.spec'
 import {convertTypeOfUsage} from './UsageTypeConverter'
 import {GraphNode} from '../../../../model/GraphNode.spec'
+import {GraphEdge} from '../../../../model/GraphEdge.spec'
 
 describe('ElementDefinitionConverter', () => {
   describe('GraphNode Conversion', () => {
@@ -152,7 +153,7 @@ describe('ElementDefinitionConverter', () => {
       const target = buildVisibleGraphNode({
         id: 'target',
       })
-      const graphEdge = buildGraphEdge({
+      const graphEdge = GraphEdge.build({
         source: source,
         target: target,
         isCyclic: true,
@@ -184,7 +185,7 @@ describe('ElementDefinitionConverter', () => {
         const target = buildVisibleGraphNode({
           id: 'target'
         })
-        const graphEdge = buildGraphEdge({
+        const graphEdge = GraphEdge.build({
           source: source,
           target: target,
           isCyclic: true,
@@ -205,7 +206,7 @@ describe('ElementDefinitionConverter', () => {
 
     it('Should not label ElementDefiniton if showLabels is false', () => {
       // given
-      const graphEdge = buildGraphEdge({
+      const graphEdge = GraphEdge.build({
         weight: 2
       })
 
@@ -218,7 +219,7 @@ describe('ElementDefinitionConverter', () => {
 
     it('Should label ElementDefiniton with type if showLabels is true and weight is 1', () => {
       // given
-      const graphEdge = buildGraphEdge({
+      const graphEdge = GraphEdge.build({
         weight: 1,
         type: 'inheritance'
       })
@@ -232,7 +233,7 @@ describe('ElementDefinitionConverter', () => {
 
     it('Should label ElementDefiniton if showLabels is true and weight is greater than 1', () => {
       // given
-      const graphEdge = buildGraphEdge({
+      const graphEdge = GraphEdge.build({
         weight: 5
       })
 
@@ -246,7 +247,7 @@ describe('ElementDefinitionConverter', () => {
     it('Converts edgeCollection to graphEdges', () => {
       const target = buildVisibleGraphNode()
       const source = buildVisibleGraphNode()
-      const expectedEdge = buildGraphEdge({
+      const expectedEdge = GraphEdge.build({
         source: source,
         target: target,
         isCyclic: true,
@@ -263,7 +264,7 @@ describe('ElementDefinitionConverter', () => {
     })
 
     it('Returns no GraphEdges if there are no suitable GraphNodes', () => {
-      const expectedEdge = buildGraphEdge()
+      const expectedEdge = GraphEdge.build()
       const cyEdges = new EdgeCollectionBuilder()
         .addGraphEdge(expectedEdge)
         .build()

@@ -1,5 +1,6 @@
 import {buildShallowGraphEdge, buildVisibleGraphNode} from './ModelBuilders.spec';
-import {createEdges, GraphEdge} from './GraphEdge';
+import {createEdges} from './GraphEdge';
+import type { GraphEdge } from './GraphEdge';
 import {EdgeFilterType} from './EdgeFilter';
 import {State} from './State';
 
@@ -25,14 +26,14 @@ describe('GraphEdge', () => {
       const edges = createEdges([leafNode1, leafNode2], state);
 
       // then
-      const expectedEdge: GraphEdge = {
+      const expectedEdge = GraphEdge.build({
         id: leafNode2Id + '-' + leafNode1Id,
         source: leafNode2,
         target: leafNode1,
         isCyclic: false,
         weight: 1,
         type: 'usage'
-      }
+      })
       expect(edges.length).toEqual(1);
       expect(edges[0]).toEqual(expectedEdge);
     })
@@ -328,3 +329,22 @@ describe('GraphEdge', () => {
 
   })
 });
+
+namespace GraphEdge {
+  export function build(overrides: Partial<GraphEdge> = {}): GraphEdge {
+    const defaultTarget = buildVisibleGraphNode()
+    const defaultSource = buildVisibleGraphNode()
+
+    const defaults: GraphEdge = {
+      id: defaultSource + "-" + defaultTarget,
+      isCyclic: false,
+      source: defaultSource,
+      target: defaultTarget,
+      weight: 1,
+      type: 'usage'
+    }
+
+    return {...defaults, ...overrides}
+  }
+}
+export { GraphEdge }
