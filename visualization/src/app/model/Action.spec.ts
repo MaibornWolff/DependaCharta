@@ -1,7 +1,7 @@
 import {Action, InitializeState, ExpandNode, CollapseNode, ToggleNodeSelection, EnterMultiselectMode, LeaveMultiselectMode, ChangeFilter, ToggleEdgeLabels, HideNode, RestoreNodes} from './Action'
 import {buildVisibleGraphNode} from './ModelBuilders.spec'
 import {EdgeFilterType} from './EdgeFilter'
-import {findGraphNode, getVisibleNodes, State, reduce} from './State'
+import {findGraphNode, getVisibleNodes, State} from './State'
 import {GraphNode} from './GraphNode.spec'
 import { buildFromRootNodes } from './State.spec'
 

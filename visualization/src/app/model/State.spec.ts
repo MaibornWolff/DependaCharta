@@ -1,4 +1,4 @@
-import { State, getVisibleNodes, findGraphNode, reduce, initialState } from './State';
+import { State, getVisibleNodes, findGraphNode, initialState } from './State';
 import { GraphNode, expand } from './GraphNode';
 import * as GraphNodeTest from './GraphNode.spec';
 import { EdgeFilterType } from './EdgeFilter';

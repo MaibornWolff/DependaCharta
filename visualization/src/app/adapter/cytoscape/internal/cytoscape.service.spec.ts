@@ -4,7 +4,7 @@ import {exampleJson} from '../../../common/test/exampleJson.spec';
 import {EdgeFilterType} from '../../../model/EdgeFilter';
 import {convertToGraphNodes} from '../../analysis';
 import { Action, ExpandNode, CollapseNode, ChangeFilter, ToggleNodeSelection, InitializeState } from '../../../model/Action';
-import { State, reduce} from "../../../model/State";
+import { State } from "../../../model/State";
 import { buildFromRootNodes } from '../../../model/State.spec';
 import { CytoscapeService } from './cytoscape.service';
 import { HighlightService } from './highlight.service';
