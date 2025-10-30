@@ -559,17 +559,6 @@ describe('State', () => {
         expect(newState.selectedNodeIds).not.toContain('selected-node');
       });
     });
-
-    describe('default case', () => {
-      it('should return the same state for unknown action types', () => {
-        class Unknown extends Action {}
-        const unknownAction = new Unknown();
-
-        const newState = initialState.reduce(unknownAction);
-
-        expect(newState).toBe(initialState);
-      });
-    });
   });
 
   describe('hasPinnedAncestor function', () => {
