@@ -1,7 +1,7 @@
-import {Action, InitializeState, ExpandNode, CollapseNode, ToggleNodeSelection, EnterMultiselectMode, LeaveMultiselectMode, ChangeFilter, ToggleEdgeLabels, HideNode, RestoreNodes} from './Action'
+import {InitializeState, ExpandNode, CollapseNode, ToggleNodeSelection, EnterMultiselectMode, LeaveMultiselectMode, ChangeFilter, ToggleEdgeLabels, HideNode, RestoreNodes} from './Action'
 import {buildVisibleGraphNode} from './ModelBuilders.spec'
 import {EdgeFilterType} from './EdgeFilter'
-import {findGraphNode, getVisibleNodes, State} from './State'
+import {findGraphNode, State} from './State'
 import {GraphNode} from './GraphNode.spec'
 
 describe('State Handler', () => {
@@ -255,7 +255,7 @@ describe('State Handler', () => {
       })
 
       // when
-      const visibleNodes = getVisibleNodes(state)
+      const visibleNodes = state.getVisibleNodes()
 
       // then
       expect(visibleNodes.map(node => node.id)).toContain(rootNode.id)

@@ -141,14 +141,14 @@ export class State {
         return this
     }
   }
-}
 
-export function getVisibleNodes(state: State): VisibleGraphNode[] {
-  const expandedNodes = state.allNodes.filter(node => state.expandedNodeIds.includes(node.id))
-  return state.allNodes
+  getVisibleNodes(): VisibleGraphNode[] {
+  const expandedNodes = this.allNodes.filter(node => this.expandedNodeIds.includes(node.id))
+  return this.allNodes
     .filter(node => !node.parent || expandedNodes.includes(node.parent))
-    .filter(node => !isNodeOrAncestorHidden(state.hiddenNodeIds, node))
-    .map(node => toVisibleGraphNode(node, state))
+    .filter(node => !isNodeOrAncestorHidden(this.hiddenNodeIds, node))
+    .map(node => toVisibleGraphNode(node, this))
+}
 }
 
 function isNodeOrAncestorHidden(hiddenChildrenIds: string[], child: GraphNode): boolean {

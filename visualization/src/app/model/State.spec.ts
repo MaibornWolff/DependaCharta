@@ -1,8 +1,8 @@
-import { State, getVisibleNodes, findGraphNode} from './State';
+import { State, findGraphNode} from './State';
 import { GraphNode, expand } from './GraphNode';
 import * as GraphNodeTest from './GraphNode.spec';
 import { EdgeFilterType } from './EdgeFilter';
-import { Action, InitializeState, ExpandNode, CollapseNode, ChangeFilter, ShowAllEdgesOfNode, HideAllEdgesOfNode, ToggleEdgeLabels, HideNode, RestoreNodes, RestoreNode, RestoreAllChildren, ToggleInteractionMode, ToggleUsageTypeMode, EnterMultiselectMode, LeaveMultiselectMode, ToggleNodeSelection, PinNode, UnpinNode } from './Action';
+import { InitializeState, ExpandNode, CollapseNode, ChangeFilter, ShowAllEdgesOfNode, HideAllEdgesOfNode, ToggleEdgeLabels, HideNode, RestoreNodes, RestoreNode, RestoreAllChildren, ToggleInteractionMode, ToggleUsageTypeMode, EnterMultiselectMode, LeaveMultiselectMode, ToggleNodeSelection, PinNode, UnpinNode } from './Action';
 import {InputDevice, MouseInaccuracyDetectorComponent} from '../mouse-inaccuracy-detector.component';
 import {of} from 'rxjs';
 
@@ -106,7 +106,7 @@ describe('State', () => {
     })
 
     it('should show only root nodes and their direct children when parent is expanded', () => {
-      const visibleNodes = getVisibleNodes(baseState);
+      const visibleNodes = baseState.getVisibleNodes();
 
       const visibleIds = visibleNodes.map(node => node.id);
       expect(visibleIds).toContain(parent1Id);
@@ -118,7 +118,7 @@ describe('State', () => {
     it('should show grandchild nodes when their parent is also expanded', () => {
       baseState = new State({ allNodes: baseState.allNodes, expandedNodeIds: [parent1Id, child1Id] });
 
-      const visibleNodes = getVisibleNodes(baseState);
+      const visibleNodes = baseState.getVisibleNodes();
       const visibleIds = visibleNodes.map(node => node.id);
 
       expect(visibleIds).toContain(grandchild1Id);
@@ -127,7 +127,7 @@ describe('State', () => {
     it('should filter out hidden nodes', () => {
       baseState = new State({ allNodes: baseState.allNodes, expandedNodeIds: baseState.expandedNodeIds, hiddenNodeIds: [child1Id] });
 
-      const visibleNodes = getVisibleNodes(baseState);
+      const visibleNodes = baseState.getVisibleNodes();
       const visibleIds = visibleNodes.map(node => node.id);
 
       expect(visibleIds).not.toContain(child1Id);
@@ -141,7 +141,7 @@ describe('State', () => {
         hiddenNodeIds: [child1Id]
       });
 
-      const visibleNodes = getVisibleNodes(baseState);
+      const visibleNodes = baseState.getVisibleNodes();
       const visibleIds = visibleNodes.map(node => node.id);
 
       expect(visibleIds).not.toContain(child1Id);
