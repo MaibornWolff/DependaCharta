@@ -1,7 +1,7 @@
-import {buildVisibleGraphNode} from './ModelBuilders.spec';
 import {EdgeFilter, EdgeFilterResult, EdgeFilterType} from './EdgeFilter';
 import {EdgeType} from './EdgeType';
 import {GraphEdge} from './GraphEdge.spec';
+import {VisibleGraphNode} from './GraphNode.spec';
 
 describe('New Graph Filter', () => {
   it('showNoEdges should not return any edges', () => {
@@ -20,10 +20,10 @@ describe('New Graph Filter', () => {
 
   it('showOnlyFeedbackEdges should only return feedback edges', () => {
     // given
-    const level0Node = buildVisibleGraphNode({
+    const level0Node = VisibleGraphNode.build({
       level: 0
     })
-    const level1Node = buildVisibleGraphNode({
+    const level1Node = VisibleGraphNode.build({
       level: 1
     })
 
@@ -51,10 +51,10 @@ describe('New Graph Filter', () => {
 
   it('showOnlyFeedbackEdges should not return twisted edges', () => {
     // given
-    const level0Node = buildVisibleGraphNode({
+    const level0Node = VisibleGraphNode.build({
       level: 0
     })
-    const level1Node = buildVisibleGraphNode({
+    const level1Node = VisibleGraphNode.build({
       level: 1
     })
 
@@ -84,10 +84,10 @@ describe('New Graph Filter', () => {
   it('showOnlyFeedbackEdges should not return any non-cyclic edges', () => {
     // given
     const edge = GraphEdge.build({
-      source: buildVisibleGraphNode({
+      source: VisibleGraphNode.build({
         level: 0
       }),
-      target: buildVisibleGraphNode({
+      target: VisibleGraphNode.build({
         level: 1
       }),
       isCyclic: false
@@ -105,10 +105,10 @@ describe('New Graph Filter', () => {
 
   it('showFeedbackEdgesAndTwistedEdges should return twisted and feedback edges', () => {
     // given
-    const level0Node = buildVisibleGraphNode({
+    const level0Node = VisibleGraphNode.build({
       level: 0
     })
-    const level1Node = buildVisibleGraphNode({
+    const level1Node = VisibleGraphNode.build({
       level: 1
     })
 
@@ -140,10 +140,10 @@ describe('New Graph Filter', () => {
 
   it('showFeedbackEdgesAndTwistedEdges should not return regular and cyclic edges which are no feedback or twisted edge', () => {
     // given
-    const level0Node = buildVisibleGraphNode({
+    const level0Node = VisibleGraphNode.build({
       level: 0
     })
-    const level1Node = buildVisibleGraphNode({
+    const level1Node = VisibleGraphNode.build({
       level: 1
     })
 
@@ -171,10 +171,10 @@ describe('New Graph Filter', () => {
 
   it('showCyclicEdges should show cyclic and feedback edges', () => {
     // given
-    const level0Node = buildVisibleGraphNode({
+    const level0Node = VisibleGraphNode.build({
       level: 0
     })
-    const level1Node = buildVisibleGraphNode({
+    const level1Node = VisibleGraphNode.build({
       level: 1
     })
 
@@ -206,10 +206,10 @@ describe('New Graph Filter', () => {
 
   it('showCyclicEdges should not show regular and twisted edges', () => {
     // given
-    const level0Node = buildVisibleGraphNode({
+    const level0Node = VisibleGraphNode.build({
       level: 0
     })
-    const level1Node = buildVisibleGraphNode({
+    const level1Node = VisibleGraphNode.build({
       level: 1
     })
 
@@ -237,10 +237,10 @@ describe('New Graph Filter', () => {
 
   it('showAllEdges should show all edges', () => {
     // given
-    const level0Node = buildVisibleGraphNode({
+    const level0Node = VisibleGraphNode.build({
       level: 0
     })
-    const level1Node = buildVisibleGraphNode({
+    const level1Node = VisibleGraphNode.build({
       level: 1
     })
 

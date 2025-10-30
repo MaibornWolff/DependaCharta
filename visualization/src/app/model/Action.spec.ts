@@ -1,8 +1,7 @@
 import {InitializeState, ExpandNode, CollapseNode, ToggleNodeSelection, EnterMultiselectMode, LeaveMultiselectMode, ChangeFilter, ToggleEdgeLabels, HideNode, RestoreNodes} from './Action'
-import {buildVisibleGraphNode} from './ModelBuilders.spec'
 import {EdgeFilterType} from './EdgeFilter'
 import {State} from './State'
-import {GraphNode} from './GraphNode.spec'
+import {GraphNode, VisibleGraphNode} from './GraphNode.spec'
 
 describe('State Handler', () => {
   describe('Graph State Reducer', () => {
@@ -83,7 +82,7 @@ describe('State Handler', () => {
     it('should add id of selected node to selectedNodeIds when toggling an unselected node', () => {
       // given
       const rootId = "de"
-      const rootNode = buildVisibleGraphNode({
+      const rootNode = VisibleGraphNode.build({
         id: rootId,
         isSelected: false
       })
@@ -99,7 +98,7 @@ describe('State Handler', () => {
     it('should remove id of selected node from selectedNodeIds when toggling a selected node', () => {
       // given
       const rootId = "de"
-      const rootNode = buildVisibleGraphNode({
+      const rootNode = VisibleGraphNode.build({
         id: rootId,
         isSelected: true
       })
@@ -235,10 +234,10 @@ describe('State Handler', () => {
       // given
       const rootId = "de"
       const childId = "de.org";
-      const childNode = buildVisibleGraphNode({
+      const childNode = VisibleGraphNode.build({
         id: childId
       })
-      const rootNode = buildVisibleGraphNode({
+      const rootNode = VisibleGraphNode.build({
         id: rootId,
         children: [childNode],
         hiddenChildrenIds: [childId],
@@ -263,7 +262,7 @@ describe('State Handler', () => {
     it('should return GraphNode for id', () => {
       // given
       const rootId = "de"
-      const rootNode = buildVisibleGraphNode({
+      const rootNode = VisibleGraphNode.build({
         id: rootId
       })
       const state = State.buildFromRootNodes([rootNode])

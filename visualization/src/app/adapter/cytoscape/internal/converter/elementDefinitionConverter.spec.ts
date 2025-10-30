@@ -1,8 +1,8 @@
-import {buildShallowGraphEdge, buildVisibleGraphNode} from '../../../../model/ModelBuilders.spec'
+import {buildShallowGraphEdge} from '../../../../model/ModelBuilders.spec'
 import {toCytoscapeEdges, toCytoscapeNodes, toGraphEdges, toVisibleGraphNodes} from './elementDefinitionConverter'
 import {EdgeCollectionBuilder, NodeCollectionBuilder} from './CytoscapeModelBuilders.spec'
 import {convertTypeOfUsage} from './UsageTypeConverter'
-import {GraphNode} from '../../../../model/GraphNode.spec'
+import {GraphNode, VisibleGraphNode} from '../../../../model/GraphNode.spec'
 import {GraphEdge} from '../../../../model/GraphEdge.spec'
 
 describe('ElementDefinitionConverter', () => {
@@ -15,7 +15,7 @@ describe('ElementDefinitionConverter', () => {
       const dependency = buildShallowGraphEdge({
         id: id,
       })
-      const graphNode = buildVisibleGraphNode({
+      const graphNode = VisibleGraphNode.build({
         id: id,
         label: label,
         parent: parent,
@@ -46,8 +46,8 @@ describe('ElementDefinitionConverter', () => {
 
     it('should convert GraphNode with children to ElementDefinition', () => {
       // given
-      const child = buildVisibleGraphNode()
-      const graphNode = buildVisibleGraphNode({
+      const child = VisibleGraphNode.build()
+      const graphNode = VisibleGraphNode.build({
         visibleChildren: [child]
       })
 
@@ -72,8 +72,8 @@ describe('ElementDefinitionConverter', () => {
 
     it('should convert expanded GraphNode with children to Compound ElementDefinition', () => {
       // given
-      const child = buildVisibleGraphNode()
-      const graphNode = buildVisibleGraphNode({
+      const child = VisibleGraphNode.build()
+      const graphNode = VisibleGraphNode.build({
         visibleChildren: [child],
         isExpanded: true
       })
@@ -99,7 +99,7 @@ describe('ElementDefinitionConverter', () => {
 
     it('should convert selected GraphNode to valid ElementDefinition', () => {
       // given
-      const graphNode = buildVisibleGraphNode({
+      const graphNode = VisibleGraphNode.build({
         isSelected: true
       })
 
@@ -123,15 +123,15 @@ describe('ElementDefinitionConverter', () => {
     })
 
     it('Converts nodeCollection without children to graphNodes', () => {
-      const expectedGraphNode = buildVisibleGraphNode()
+      const expectedGraphNode = VisibleGraphNode.build()
       const nodeCollection = new NodeCollectionBuilder().addGraphNode(expectedGraphNode).build()
       const graphNodes = toVisibleGraphNodes(nodeCollection)
       expect(graphNodes[0]).toEqual(expectedGraphNode)
     })
 
     it('Converts nodeCollection with children to graphNodes', () => {
-      const expectedParentNode = buildVisibleGraphNode()
-      const child1 = buildVisibleGraphNode({
+      const expectedParentNode = VisibleGraphNode.build()
+      const child1 = VisibleGraphNode.build({
         parent: expectedParentNode
       })
       expectedParentNode.visibleChildren = [child1]
@@ -147,10 +147,10 @@ describe('ElementDefinitionConverter', () => {
   describe('Edge Conversion', () => {
     it('Should convert GraphEdge to ElementDefiniton', () => {
       // given
-      const source = buildVisibleGraphNode({
+      const source = VisibleGraphNode.build({
         id: 'source'
       })
-      const target = buildVisibleGraphNode({
+      const target = VisibleGraphNode.build({
         id: 'target',
       })
       const graphEdge = GraphEdge.build({
@@ -179,10 +179,10 @@ describe('ElementDefinitionConverter', () => {
 
       it('Should hide label if usageType is false', () => {
         // given
-        const source = buildVisibleGraphNode({
+        const source = VisibleGraphNode.build({
           id: 'source'
         })
-        const target = buildVisibleGraphNode({
+        const target = VisibleGraphNode.build({
           id: 'target'
         })
         const graphEdge = GraphEdge.build({
@@ -245,8 +245,8 @@ describe('ElementDefinitionConverter', () => {
     })
 
     it('Converts edgeCollection to graphEdges', () => {
-      const target = buildVisibleGraphNode()
-      const source = buildVisibleGraphNode()
+      const target = VisibleGraphNode.build()
+      const source = VisibleGraphNode.build()
       const expectedEdge = GraphEdge.build({
         source: source,
         target: target,

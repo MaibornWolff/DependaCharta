@@ -14,19 +14,3 @@ export function buildShallowGraphEdge(overrides: Partial<ShallowGraphEdge> = {})
 
   return { ...defaults, ...overrides }
 }
-
-export function buildVisibleGraphNode(overrides: Partial<VisibleGraphNode> = {}): VisibleGraphNode {
-  const defaults: VisibleGraphNode = {
-    children: [],
-    id: buildUniqueId(),
-    label: 'id1',
-    dependencies: [],
-    level: 0,
-    visibleChildren: [],
-    hiddenChildrenIds: [],
-    isExpanded: false,
-    isSelected: false
-  }
-
-  return { ...defaults, ...overrides }
-}

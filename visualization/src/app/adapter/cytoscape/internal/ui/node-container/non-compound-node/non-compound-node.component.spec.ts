@@ -1,11 +1,11 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {NonCompoundNodeComponent} from './non-compound-node.component';
-import {buildVisibleGraphNode} from '../../../../../../model/ModelBuilders.spec';
 import {CytoscapeService} from '../../../cytoscape.service';
 import {UnpinNode, ShowAllEdgesOfNode, HideAllEdgesOfNode, ExpandNode, HideNode, ToggleEdgeLabels} from '../../../../../../model/Action';
 import {RenderInformation} from '../node-container.component';
 import {Subject} from 'rxjs';
 import {State} from '../../../../../../model/State';
+import { VisibleGraphNode } from '../../../../../../model/GraphNode.spec';
 
 describe('NonCompoundNodeComponent', () => {
   let component: NonCompoundNodeComponent;
@@ -33,7 +33,7 @@ describe('NonCompoundNodeComponent', () => {
     fixture = TestBed.createComponent(NonCompoundNodeComponent);
     component = fixture.componentInstance;
 
-    component.node = buildVisibleGraphNode();
+    component.node = VisibleGraphNode.build();
     component.stateChange = { state: new State(), action: new ToggleEdgeLabels() }
   });
 
@@ -43,7 +43,7 @@ describe('NonCompoundNodeComponent', () => {
 
   describe('togglePin', () => {
     it('should handle node pinning', () => {
-      component.node = buildVisibleGraphNode();
+      component.node = VisibleGraphNode.build();
       component.stateChange = { state: new State({ selectedPinnedNodeIds: [component.node.id] }), action: new ToggleEdgeLabels() }
       component.togglePin();
 
@@ -108,7 +108,7 @@ describe('NonCompoundNodeComponent', () => {
 
   describe('expandNode', () => {
     it('should emit expand action when node has children', () => {
-      const childNode = buildVisibleGraphNode();
+      const childNode = VisibleGraphNode.build();
       component.node.children = [childNode];
 
       component.expandNode();
@@ -143,7 +143,7 @@ describe('NonCompoundNodeComponent', () => {
 
     it('should not set cursor for non-package nodes', () => {
       // Create a non-package node
-      const nonPackageNode = buildVisibleGraphNode();
+      const nonPackageNode = VisibleGraphNode.build();
       (nonPackageNode as any).type = 'CLASS'; // Adjust based on your GraphNode structure
       component.node = nonPackageNode;
 
@@ -173,7 +173,7 @@ describe('NonCompoundNodeComponent', () => {
     });
 
     it('should use teal border color for non-package nodes', () => {
-      const nonPackageNode = buildVisibleGraphNode();
+      const nonPackageNode = VisibleGraphNode.build();
       (nonPackageNode as any).type = 'CLASS';
       component.node = nonPackageNode;
 
@@ -183,7 +183,7 @@ describe('NonCompoundNodeComponent', () => {
     });
 
     it('should set white background for non-package nodes', () => {
-      const nonPackageNode = buildVisibleGraphNode();
+      const nonPackageNode = VisibleGraphNode.build();
       (nonPackageNode as any).type = 'CLASS';
       component.node = nonPackageNode;
 
@@ -220,14 +220,14 @@ describe('NonCompoundNodeComponent', () => {
 
     it('should calculate different lightness for nodes with different parent structures', () => {
       // Create node with no parent
-      const rootNode = buildVisibleGraphNode();
+      const rootNode = VisibleGraphNode.build();
       rootNode.parent = undefined;
       component.node = rootNode;
       const rootLightness = component['calculateLightnessOfPackageNodes']();
 
       // Create node with parent
-      const parentNode = buildVisibleGraphNode();
-      const childNode = buildVisibleGraphNode();
+      const parentNode = VisibleGraphNode.build();
+      const childNode = VisibleGraphNode.build();
       childNode.parent = parentNode;
       component.node = childNode;
       const childLightness = component['calculateLightnessOfPackageNodes']();
@@ -266,7 +266,7 @@ describe('NonCompoundNodeComponent', () => {
 
   describe('calculateLabel', () => {
     it('should return uppercase label for package nodes', () => {
-      const packageNode = buildVisibleGraphNode();
+      const packageNode = VisibleGraphNode.build();
       (packageNode as any).type = 'PACKAGE';
       packageNode.label = 'test package';
       component.node = packageNode;
@@ -277,7 +277,7 @@ describe('NonCompoundNodeComponent', () => {
     });
 
     it('should return normal label for non-package nodes', () => {
-      const nonPackageNode = buildVisibleGraphNode();
+      const nonPackageNode = VisibleGraphNode.build();
       (nonPackageNode as any).type = 'CLASS';
       nonPackageNode.label = 'Test Method';
       component.node = nonPackageNode;
@@ -288,7 +288,7 @@ describe('NonCompoundNodeComponent', () => {
     });
 
     it('should handle empty labels', () => {
-      const node = buildVisibleGraphNode();
+      const node = VisibleGraphNode.build();
       node.label = '';
       component.node = node;
 
