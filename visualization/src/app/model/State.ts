@@ -143,12 +143,30 @@ export class State {
   }
 
   getVisibleNodes(): VisibleGraphNode[] {
-  const expandedNodes = this.allNodes.filter(node => this.expandedNodeIds.includes(node.id))
-  return this.allNodes
-    .filter(node => !node.parent || expandedNodes.includes(node.parent))
-    .filter(node => !isNodeOrAncestorHidden(this.hiddenNodeIds, node))
-    .map(node => toVisibleGraphNode(node, this))
-}
+    const expandedNodes = this.allNodes.filter(node => this.expandedNodeIds.includes(node.id))
+    return this.allNodes
+      .filter(node => !node.parent || expandedNodes.includes(node.parent))
+      .filter(node => !isNodeOrAncestorHidden(this.hiddenNodeIds, node))
+      .map(node => this.toVisibleGraphNode(node))
+  }
+
+  toVisibleGraphNode(graphNode: GraphNode): VisibleGraphNode {
+    const hiddenChildrenIds = this.hiddenChildrenIdsByParentId.get(graphNode.id) || []
+    const isExpanded = this.expandedNodeIds.includes(graphNode.id)
+    const isSelected = this.selectedNodeIds.includes(graphNode.id)
+    const visibleChildren = isExpanded ?
+      graphNode.children
+        .map(child => this.toVisibleGraphNode(child))
+        .filter(child => !isNodeOrAncestorHidden(hiddenChildrenIds, child))
+      : [];
+    return {
+      ...graphNode,
+      visibleChildren: visibleChildren,
+      hiddenChildrenIds: hiddenChildrenIds,
+      isExpanded: isExpanded,
+      isSelected: isSelected,
+    }
+  }
 }
 
 function isNodeOrAncestorHidden(hiddenChildrenIds: string[], child: GraphNode): boolean {
@@ -165,30 +183,12 @@ function isNodeOrAncestorHidden(hiddenChildrenIds: string[], child: GraphNode): 
   return false;
 }
 
-function toVisibleGraphNode(graphNode: GraphNode, state: State): VisibleGraphNode {
-  const hiddenChildrenIds = state.hiddenChildrenIdsByParentId.get(graphNode.id) || []
-  const isExpanded = state.expandedNodeIds.includes(graphNode.id)
-  const isSelected = state.selectedNodeIds.includes(graphNode.id)
-  const visibleChildren = isExpanded ?
-    graphNode.children
-      .map(child => toVisibleGraphNode(child, state))
-      .filter(child => !isNodeOrAncestorHidden(hiddenChildrenIds, child))
-    : [];
-  return {
-    ...graphNode,
-    visibleChildren: visibleChildren,
-    hiddenChildrenIds: hiddenChildrenIds,
-    isExpanded: isExpanded,
-    isSelected: isSelected,
-  }
-}
-
 export function findGraphNode(nodeId: string, state: State): VisibleGraphNode {
   const graphNode = state.allNodes.find(node => node.id == nodeId)
   if (!graphNode) {
     throw new Error(`Node with id ${nodeId} not found`)
   }
-  return toVisibleGraphNode(graphNode, state)
+  return state.toVisibleGraphNode(graphNode)
 }
 
 // TODO move to an appropriate utility collection
