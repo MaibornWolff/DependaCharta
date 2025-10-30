@@ -5,7 +5,6 @@ import {EdgeFilterType} from '../../../model/EdgeFilter';
 import {convertToGraphNodes} from '../../analysis';
 import { Action, ExpandNode, CollapseNode, ChangeFilter, ToggleNodeSelection, InitializeState } from '../../../model/Action';
 import { State } from "../../../model/State";
-import { buildFromRootNodes } from '../../../model/State.spec';
 import { CytoscapeService } from './cytoscape.service';
 import { HighlightService } from './highlight.service';
 import cytoscape from 'cytoscape';
@@ -14,7 +13,7 @@ describe('CytoscapeService', async () => {
   let cytoscapeService: CytoscapeService;
 
   const graphNodes = convertToGraphNodes(exampleJson)
-  const state = buildFromRootNodes(graphNodes)
+  const state = State.buildFromRootNodes(graphNodes)
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -133,7 +132,7 @@ describe('CytoscapeService', async () => {
 
   it(`should reset cytoscape when initializing state`, () => {
     // given + when
-    cytoscapeService.apply(State.build(), new InitializeState('', []))
+    cytoscapeService.apply(new State(), new InitializeState('', []))
 
     // then
     const newNodes = cytoscapeService.get().nodes()

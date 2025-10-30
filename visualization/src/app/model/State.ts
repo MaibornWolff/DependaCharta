@@ -4,39 +4,26 @@ import {Action, InitializeState, ExpandNode, CollapseNode, ChangeFilter, ShowAll
 
 // TODO avoid Maps (→ (de-)serialization issues)
 export class State {
-  constructor(
-    public readonly allNodes: GraphNode[],
-    public readonly hiddenNodeIds: string[],
-    public readonly hiddenChildrenIdsByParentId: Map<string, string[]>,
-    public readonly expandedNodeIds: string[],
-    public readonly hoveredNodeId: string,
-    public readonly selectedNodeIds: string[],
-    public readonly pinnedNodeIds: string[],
-    public readonly selectedPinnedNodeIds: string[],
+  public readonly allNodes: GraphNode[] = []
+  public readonly hiddenNodeIds: string[] = []
+  public readonly hiddenChildrenIdsByParentId: Map<string, string[]> = new Map<string, string[]>()
+  public readonly expandedNodeIds: string[] = []
+  public readonly hoveredNodeId: string = ''
+  public readonly selectedNodeIds: string[] = []
+  public readonly pinnedNodeIds: string[] = []
+  public readonly selectedPinnedNodeIds: string[] = []
+  public readonly showLabels: boolean = true
+  public readonly selectedFilter: EdgeFilterType = EdgeFilterType.FEEDBACK_EDGES_AND_TWISTED_EDGES
+  public readonly isInteractive: boolean = true
+  public readonly isUsageShown: boolean = true
+  public readonly multiselectMode: boolean = false
 
-    public readonly showLabels: boolean,
-    public readonly selectedFilter: EdgeFilterType,
-    public readonly isInteractive: boolean,
-    public readonly isUsageShown: boolean,
-    public readonly multiselectMode: boolean
-  ) {}
+  constructor(from: Partial<State> = {}) {
+    Object.assign(this, from)
+  }
 
   copy(overrides: Partial<State> = {}): State {
-    return new State(
-      overrides.allNodes ?? this.allNodes,
-      overrides.hiddenNodeIds ?? this.hiddenNodeIds,
-      overrides.hiddenChildrenIdsByParentId ?? this.hiddenChildrenIdsByParentId,
-      overrides.expandedNodeIds ?? this.expandedNodeIds,
-      overrides.hoveredNodeId ?? this.hoveredNodeId,
-      overrides.selectedNodeIds ?? this.selectedNodeIds,
-      overrides.pinnedNodeIds ?? this.pinnedNodeIds,
-      overrides.selectedPinnedNodeIds ?? this.selectedPinnedNodeIds,
-      overrides.showLabels ?? this.showLabels,
-      overrides.selectedFilter ?? this.selectedFilter,
-      overrides.isInteractive ?? this.isInteractive,
-      overrides.isUsageShown ?? this.isUsageShown,
-      overrides.multiselectMode ?? this.multiselectMode
-    )
+    return new State(Object.assign({}, this, overrides))
   }
 
   reduce(action: Action): State {
@@ -70,7 +57,7 @@ export class State {
           showLabels: !this.showLabels
         })
       case action instanceof HideNode: {
-        const node = findGraphNode(action.nodeId, this)
+        const node = this.findGraphNode(action.nodeId)
         const hiddenChildrenIdsByParentId = this.hiddenChildrenIdsByParentId
         if (node.parent) {
           const previousHiddenChildren = hiddenChildrenIdsByParentId.get(node.parent.id) || []
@@ -83,7 +70,7 @@ export class State {
         })
       }
       case action instanceof PinNode: {
-        const descendants = [...getDescendants(findGraphNode(action.nodeId, this))]
+        const descendants = [...getDescendants(this.findGraphNode(action.nodeId))]
         const unpinnedDescendants = descendants.filter(node => !this.pinnedNodeIds.includes(node.id))
         return this.copy({
           pinnedNodeIds: [...this.pinnedNodeIds, ...(unpinnedDescendants.map(node => node.id))],
@@ -154,30 +141,40 @@ export class State {
         return this
     }
   }
-}
 
-export const initialState = () => new State(
-  [],
-  [],
-  new Map<string, string[]>(),
-  [],
-  '',
-  [],
-  [],
-  [],
-  true,
-  EdgeFilterType.FEEDBACK_EDGES_AND_TWISTED_EDGES,
-  true,
-  true,
-  false
-)
+  getVisibleNodes(): VisibleGraphNode[] {
+    const expandedNodes = this.allNodes.filter(node => this.expandedNodeIds.includes(node.id))
+    return this.allNodes
+      .filter(node => !node.parent || expandedNodes.includes(node.parent))
+      .filter(node => !isNodeOrAncestorHidden(this.hiddenNodeIds, node))
+      .map(node => this.toVisibleGraphNode(node))
+  }
 
-export function getVisibleNodes(state: State): VisibleGraphNode[] {
-  const expandedNodes = state.allNodes.filter(node => state.expandedNodeIds.includes(node.id))
-  return state.allNodes
-    .filter(node => !node.parent || expandedNodes.includes(node.parent))
-    .filter(node => !isNodeOrAncestorHidden(state.hiddenNodeIds, node))
-    .map(node => toVisibleGraphNode(node, state))
+  findGraphNode(nodeId: string): VisibleGraphNode {
+    const graphNode = this.allNodes.find(node => node.id == nodeId)
+    if (!graphNode) {
+      throw new Error(`Node with id ${nodeId} not found`)
+    }
+    return this.toVisibleGraphNode(graphNode)    
+  }
+
+  private toVisibleGraphNode(graphNode: GraphNode): VisibleGraphNode {
+    const hiddenChildrenIds = this.hiddenChildrenIdsByParentId.get(graphNode.id) || []
+    const isExpanded = this.expandedNodeIds.includes(graphNode.id)
+    const isSelected = this.selectedNodeIds.includes(graphNode.id)
+    const visibleChildren = isExpanded ?
+      graphNode.children
+        .map(child => this.toVisibleGraphNode(child))
+        .filter(child => !isNodeOrAncestorHidden(hiddenChildrenIds, child))
+      : [];
+    return {
+      ...graphNode,
+      visibleChildren: visibleChildren,
+      hiddenChildrenIds: hiddenChildrenIds,
+      isExpanded: isExpanded,
+      isSelected: isSelected,
+    }
+  }
 }
 
 function isNodeOrAncestorHidden(hiddenChildrenIds: string[], child: GraphNode): boolean {
@@ -192,32 +189,6 @@ function isNodeOrAncestorHidden(hiddenChildrenIds: string[], child: GraphNode): 
     parent = parent.parent;
   }
   return false;
-}
-
-function toVisibleGraphNode(graphNode: GraphNode, state: State): VisibleGraphNode {
-  const hiddenChildrenIds = state.hiddenChildrenIdsByParentId.get(graphNode.id) || []
-  const isExpanded = state.expandedNodeIds.includes(graphNode.id)
-  const isSelected = state.selectedNodeIds.includes(graphNode.id)
-  const visibleChildren = isExpanded ?
-    graphNode.children
-      .map(child => toVisibleGraphNode(child, state))
-      .filter(child => !isNodeOrAncestorHidden(hiddenChildrenIds, child))
-    : [];
-  return {
-    ...graphNode,
-    visibleChildren: visibleChildren,
-    hiddenChildrenIds: hiddenChildrenIds,
-    isExpanded: isExpanded,
-    isSelected: isSelected,
-  }
-}
-
-export function findGraphNode(nodeId: string, state: State): VisibleGraphNode {
-  const graphNode = state.allNodes.find(node => node.id == nodeId)
-  if (!graphNode) {
-    throw new Error(`Node with id ${nodeId} not found`)
-  }
-  return toVisibleGraphNode(graphNode, state)
 }
 
 // TODO move to an appropriate utility collection

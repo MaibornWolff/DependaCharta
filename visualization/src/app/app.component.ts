@@ -8,7 +8,7 @@ import {Action, InitializeState, EnterMultiselectMode, LeaveMultiselectMode, Res
 import {CytoscapeComponent} from './adapter/cytoscape'
 import {MouseInaccuracyDetectorComponent} from './mouse-inaccuracy-detector.component'
 import {ProjectReport} from './adapter/analysis/internal/ProjectReport'
-import {State, initialState} from './model/State'
+import {State} from './model/State'
 import {ToggleButtonComponent} from "./ui/toggle-button/toggle-button.component";
 
 // TODO move to better location (model?)
@@ -30,7 +30,7 @@ export class AppComponent {
   private changeDetector = inject(ChangeDetectorRef)
   isLoading: boolean = false
   cytoscapeInitialized: boolean = true
-  state: State = initialState()
+  state: State = new State()
   stateChange!: StateChange
 
   apply(action: Action) {

@@ -34,7 +34,7 @@ describe('NonCompoundNodeComponent', () => {
     component = fixture.componentInstance;
 
     component.node = buildVisibleGraphNode();
-    component.stateChange = { state: State.build(), action: new ToggleEdgeLabels() }
+    component.stateChange = { state: new State(), action: new ToggleEdgeLabels() }
   });
 
   it('should create', () => {
@@ -44,7 +44,7 @@ describe('NonCompoundNodeComponent', () => {
   describe('togglePin', () => {
     it('should handle node pinning', () => {
       component.node = buildVisibleGraphNode();
-      component.stateChange = { state: State.build({ selectedPinnedNodeIds: [component.node.id] }), action: new ToggleEdgeLabels() }
+      component.stateChange = { state: new State({ selectedPinnedNodeIds: [component.node.id] }), action: new ToggleEdgeLabels() }
       component.togglePin();
 
       expect(mockStateService.graphActionHappened.emit).toHaveBeenCalledWith(new UnpinNode(component.node.id));
@@ -138,7 +138,7 @@ describe('NonCompoundNodeComponent', () => {
     beforeEach(() => {
       spyOn(component, 'calculateLightnessOfPackageNodes').and.returnValue(50);
       spyOn(component, 'calculateBorderWidth').and.returnValue(2);
-      component.stateChange = { state: State.build({ isInteractive: true }), action: new ToggleEdgeLabels() }
+      component.stateChange = { state: new State({ isInteractive: true }), action: new ToggleEdgeLabels() }
     });
 
     it('should not set cursor for non-package nodes', () => {
@@ -165,7 +165,7 @@ describe('NonCompoundNodeComponent', () => {
     });
 
     it('should use green border color for pinned nodes in interaction mode', () => {
-      component.stateChange = { state: State.build({ selectedPinnedNodeIds: [component.node.id], isInteractive: true }), action: new ToggleEdgeLabels() }
+      component.stateChange = { state: new State({ selectedPinnedNodeIds: [component.node.id], isInteractive: true }), action: new ToggleEdgeLabels() }
 
       const style = component.calculatedNodeStyle();
 
@@ -239,7 +239,7 @@ describe('NonCompoundNodeComponent', () => {
 
   describe('calculateBorderWidth', () => {
     it('should return thick border for pinned nodes in interaction mode', () => {
-      component.stateChange = { state: State.build({ selectedPinnedNodeIds: [component.node.id], isInteractive: true }), action: new ToggleEdgeLabels() }
+      component.stateChange = { state: new State({ selectedPinnedNodeIds: [component.node.id], isInteractive: true }), action: new ToggleEdgeLabels() }
       component.zoom = 2;
 
       expect(component.calculateBorderWidth()).toBe(1.5); // 3 / 2
@@ -252,7 +252,7 @@ describe('NonCompoundNodeComponent', () => {
     });
 
     it('should return normal border for pinned nodes not in interaction mode', () => {
-      component.stateChange = { state: State.build({ isInteractive: false }), action: new ToggleEdgeLabels() }
+      component.stateChange = { state: new State({ isInteractive: false }), action: new ToggleEdgeLabels() }
       component.zoom = 2;
 
       expect(component.calculateBorderWidth()).toBe(0.5); // 1 / 2
