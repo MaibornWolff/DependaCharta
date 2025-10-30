@@ -4,39 +4,26 @@ import {Action, InitializeState, ExpandNode, CollapseNode, ChangeFilter, ShowAll
 
 // TODO avoid Maps (→ (de-)serialization issues)
 export class State {
-  constructor(
-    public readonly allNodes: GraphNode[],
-    public readonly hiddenNodeIds: string[],
-    public readonly hiddenChildrenIdsByParentId: Map<string, string[]>,
-    public readonly expandedNodeIds: string[],
-    public readonly hoveredNodeId: string,
-    public readonly selectedNodeIds: string[],
-    public readonly pinnedNodeIds: string[],
-    public readonly selectedPinnedNodeIds: string[],
+  public readonly allNodes: GraphNode[] = []
+  public readonly hiddenNodeIds: string[] = []
+  public readonly hiddenChildrenIdsByParentId: Map<string, string[]> = new Map<string, string[]>()
+  public readonly expandedNodeIds: string[] = []
+  public readonly hoveredNodeId: string = ''
+  public readonly selectedNodeIds: string[] = []
+  public readonly pinnedNodeIds: string[] = []
+  public readonly selectedPinnedNodeIds: string[] = []
+  public readonly showLabels: boolean = true
+  public readonly selectedFilter: EdgeFilterType = EdgeFilterType.FEEDBACK_EDGES_AND_TWISTED_EDGES
+  public readonly isInteractive: boolean = true
+  public readonly isUsageShown: boolean = true
+  public readonly multiselectMode: boolean = false
 
-    public readonly showLabels: boolean,
-    public readonly selectedFilter: EdgeFilterType,
-    public readonly isInteractive: boolean,
-    public readonly isUsageShown: boolean,
-    public readonly multiselectMode: boolean
-  ) {}
+  constructor(from: Partial<State> = {}) {
+    Object.assign(this, from)
+  }
 
   copy(overrides: Partial<State> = {}): State {
-    return new State(
-      overrides.allNodes ?? this.allNodes,
-      overrides.hiddenNodeIds ?? this.hiddenNodeIds,
-      overrides.hiddenChildrenIdsByParentId ?? this.hiddenChildrenIdsByParentId,
-      overrides.expandedNodeIds ?? this.expandedNodeIds,
-      overrides.hoveredNodeId ?? this.hoveredNodeId,
-      overrides.selectedNodeIds ?? this.selectedNodeIds,
-      overrides.pinnedNodeIds ?? this.pinnedNodeIds,
-      overrides.selectedPinnedNodeIds ?? this.selectedPinnedNodeIds,
-      overrides.showLabels ?? this.showLabels,
-      overrides.selectedFilter ?? this.selectedFilter,
-      overrides.isInteractive ?? this.isInteractive,
-      overrides.isUsageShown ?? this.isUsageShown,
-      overrides.multiselectMode ?? this.multiselectMode
-    )
+    return new State(Object.assign({}, this, overrides))
   }
 
   reduce(action: Action): State {
@@ -155,22 +142,6 @@ export class State {
     }
   }
 }
-
-export const initialState = () => new State(
-  [],
-  [],
-  new Map<string, string[]>(),
-  [],
-  '',
-  [],
-  [],
-  [],
-  true,
-  EdgeFilterType.FEEDBACK_EDGES_AND_TWISTED_EDGES,
-  true,
-  true,
-  false
-)
 
 export function getVisibleNodes(state: State): VisibleGraphNode[] {
   const expandedNodes = state.allNodes.filter(node => state.expandedNodeIds.includes(node.id))

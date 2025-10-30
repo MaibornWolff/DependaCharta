@@ -1,4 +1,4 @@
-import { State, getVisibleNodes, findGraphNode, initialState } from './State';
+import { State, getVisibleNodes, findGraphNode} from './State';
 import { GraphNode, expand } from './GraphNode';
 import * as GraphNodeTest from './GraphNode.spec';
 import { EdgeFilterType } from './EdgeFilter';
@@ -661,7 +661,7 @@ declare module './State' {
 }
 
 State.build = function(overrides: Partial<State> = {}): State {
-  return initialState().copy(overrides)
+  return new State(overrides)
 }
 
 export { State }
