@@ -29,7 +29,7 @@ describe('CytoscapeService', async () => {
   it('should expand a node', () => {
     // given & when
     const action: Action = new ExpandNode("de");
-    const newState = reduce(state, action)
+    const newState = state.reduce(action)
     cytoscapeService.apply(newState, action)
 
     // then
@@ -41,12 +41,12 @@ describe('CytoscapeService', async () => {
   it('should collapse a node', () => {
     // given
     const expandAction: Action = new ExpandNode("de");
-    const stateAfterExpanding = reduce(state, expandAction)
+    const stateAfterExpanding = state.reduce(expandAction)
     cytoscapeService.apply(stateAfterExpanding, expandAction)
 
     // when
     const collapseAction: Action = new CollapseNode("de");
-    const stateAfterCollapsing = reduce(state, collapseAction)
+    const stateAfterCollapsing = state.reduce(collapseAction)
     cytoscapeService.apply(stateAfterCollapsing, collapseAction)
 
     // then
@@ -74,7 +74,7 @@ describe('CytoscapeService', async () => {
     // given
     const updatedState = expandEmptyTopLevelPackages()
     const action: Action = new ExpandNode("de.sots.cellarsandcentaurs.domain");
-    const finalState = reduce(updatedState, action)
+    const finalState = updatedState.reduce(action)
 
     // when
     cytoscapeService.apply(finalState, action)
@@ -88,7 +88,7 @@ describe('CytoscapeService', async () => {
     // given
     const updatedState = expandEmptyTopLevelPackages()
     const action: Action = new ChangeFilter(EdgeFilterType.NONE)
-    const finalState = reduce(updatedState, action)
+    const finalState = updatedState.reduce(action)
 
     // when
     cytoscapeService.apply(finalState, action)
@@ -103,7 +103,7 @@ describe('CytoscapeService', async () => {
     // given
     const initialState = expandEmptyTopLevelPackages()
     const action: Action = new ToggleNodeSelection("de.sots.cellarsandcentaurs.adapter");
-    const finalState = reduce(initialState, action)
+    const finalState = initialState.reduce(action)
 
     // when
     cytoscapeService.apply(finalState, action)
@@ -118,12 +118,12 @@ describe('CytoscapeService', async () => {
     // given
     const initialState = expandEmptyTopLevelPackages()
     const selectAction: Action = new ToggleNodeSelection("de.sots.cellarsandcentaurs.adapter");
-    const selectedState = reduce(initialState, selectAction)
+    const selectedState = initialState.reduce(selectAction)
     cytoscapeService.apply(selectedState, selectAction)
 
     // when
     const deselectAction: Action = new ToggleNodeSelection("de.sots.cellarsandcentaurs.adapter");
-    const deselectedState = reduce(selectedState, deselectAction)
+    const deselectedState = selectedState.reduce(deselectAction)
     cytoscapeService.apply(deselectedState, deselectAction)
 
     // then
@@ -142,15 +142,15 @@ describe('CytoscapeService', async () => {
 
   function expandEmptyTopLevelPackages(): State {
     const expandDe: Action = new ExpandNode("de");
-    let finalState = reduce(state, expandDe);
+    let finalState = state.reduce(expandDe);
     cytoscapeService.apply(finalState, expandDe)
 
     const expandDeSots: Action = new ExpandNode("de.sots");
-    finalState = reduce(finalState, expandDeSots)
+    finalState = finalState.reduce(expandDeSots)
     cytoscapeService.apply(finalState, new ExpandNode("de.sots"))
 
     const expandDeSotsCellarsandcentaurs: Action = new ExpandNode("de.sots.cellarsandcentaurs");
-    finalState = reduce(finalState, expandDeSotsCellarsandcentaurs)
+    finalState = finalState.reduce(expandDeSotsCellarsandcentaurs)
     cytoscapeService.apply(finalState, new ExpandNode("de.sots.cellarsandcentaurs"))
     return finalState
   }

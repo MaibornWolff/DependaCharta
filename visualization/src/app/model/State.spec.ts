@@ -187,7 +187,7 @@ describe('State', () => {
       it('should initialize state with new root nodes', () => {
         const action: Action = new InitializeState('', [mockParentNode]);
 
-        const newState = reduce(initialState, action);
+        const newState = initialState.reduce(action);
 
         expect(newState.allNodes.length).toBeGreaterThan(0);
         expect(newState.allNodes.find(node => node.id == parent1Id)).toBe(mockParentNode);
@@ -198,7 +198,7 @@ describe('State', () => {
       it('should add a node to the expanded nodes list', () => {
         const action: Action = new ExpandNode('test-node');
 
-        const newState = reduce(initialState, action);
+        const newState = initialState.reduce(action);
 
         expect(newState.expandedNodeIds).toContain('test-node');
         expect(newState.expandedNodeIds.length).toBe(1);
@@ -207,10 +207,9 @@ describe('State', () => {
 
     describe('COLLAPSE_NODE action', () => {
       it('should remove a node and its descendants from the expanded list', () => {
-        const stateWithExpandedNodes = {
-          ...initialState,
+        const stateWithExpandedNodes = initialState.copy({
           expandedNodeIds: [parent1Id, child1Id, grandchild1Id]
-        };
+        });
 
         const action: Action = new CollapseNode(child1Id);
 
@@ -220,7 +219,7 @@ describe('State', () => {
           { id: grandchild1Id } as GraphNode
         ]);
 
-        const newState = reduce(stateWithExpandedNodes, action);
+        const newState = stateWithExpandedNodes.reduce(action);
 
         expect(newState.expandedNodeIds).toEqual([parent1Id]);
       });
@@ -230,7 +229,7 @@ describe('State', () => {
       it('should change the selected filter', () => {
         const action: Action = new ChangeFilter(EdgeFilterType.ALL);
 
-        const newState = reduce(initialState, action);
+        const newState = initialState.reduce(action);
 
         expect(newState.selectedFilter).toBe(EdgeFilterType.ALL);
       });
@@ -240,7 +239,7 @@ describe('State', () => {
       it('should set the hoveredNodeId', () => {
         const action: Action = new ShowAllEdgesOfNode('hover-node');
 
-        const newState = reduce(initialState, action);
+        const newState = initialState.reduce(action);
 
         expect(newState.hoveredNodeId).toBe('hover-node');
       });
@@ -248,10 +247,12 @@ describe('State', () => {
 
     describe('HIDE_ALL_EDGES_OF_NODE action', () => {
       it('should reset the hoveredNodeId', () => {
-        const stateWithHover = { ...initialState, hoveredNodeId: 'some-node' };
+        const stateWithHover = initialState.copy({
+          hoveredNodeId: 'some-node'
+        });
         const action: Action = new HideAllEdgesOfNode('some-node');
 
-        const newState = reduce(stateWithHover, action);
+        const newState = stateWithHover.reduce(action);
 
         expect(newState.hoveredNodeId).toBe('');
       });
@@ -261,7 +262,7 @@ describe('State', () => {
       it('should toggle showLabels', () => {
         const action: Action = new ToggleEdgeLabels();
 
-        const newState = reduce(initialState, action);
+        const newState = initialState.reduce(action);
 
         expect(newState.showLabels).toBe(false); // default is true
       });
@@ -271,20 +272,19 @@ describe('State', () => {
       it('should add a node to the hidden list', () => {
         const action: Action = new HideNode(child1Id);
 
-        const newState = reduce(initialState, action);
+        const newState = initialState.reduce(action);
 
         expect(newState.hiddenNodeIds).toContain(child1Id);
       });
 
-      it('should remove an hidden node from the pinned list', () => {
-        const stateWithPinnedNode = {
-          ...initialState,
+      it('should remove a hidden node from the pinned list', () => {
+        const stateWithPinnedNode = initialState.copy({
           pinnedNodeIds: [child1Id]
-        };
+        });
 
         const action: Action = new HideNode(child1Id);
 
-        const newState = reduce(stateWithPinnedNode, action);
+        const newState = stateWithPinnedNode.reduce(action);
 
         expect(newState.pinnedNodeIds).not.toContain(child1Id);
       });
@@ -296,7 +296,7 @@ describe('State', () => {
 
         const action: Action = new HideNode('root')
 
-        const newState = reduce(rootNodeState, action)
+        const newState = rootNodeState.reduce(action)
 
         expect(newState.hiddenNodeIds).toContain('root')
         expect(newState.hiddenChildrenIdsByParentId.size).toBe(0)
@@ -307,20 +307,19 @@ describe('State', () => {
       it('should add a node to the pinned list', () => {
         const action: Action = new PinNode(child1Id);
 
-        const newState = reduce(initialState, action);
+        const newState = initialState.reduce(action);
 
         expect(newState.pinnedNodeIds).toContain(child1Id);
       });
 
       it('should not add a node twice', () => {
-        const stateWithPinnedNode = {
-          ...initialState,
+        const stateWithPinnedNode = initialState.copy({
           pinnedNodeIds: [child1Id]
-        };
+        });
 
         const action: Action = new PinNode(child1Id);
 
-        const newState = reduce(stateWithPinnedNode, action);
+        const newState = stateWithPinnedNode.reduce(action);
 
         expect(newState.pinnedNodeIds.filter(id => id === child1Id).length).toBe(1);
       });
@@ -328,44 +327,41 @@ describe('State', () => {
 
     describe('UNPIN_NODE action', () => {
       it('should remove a node from the pinned list', () => {
-        const stateWithPinnedNode = {
-          ...initialState,
+        const stateWithPinnedNode = initialState.copy({
           pinnedNodeIds: [child1Id, child2Id],
           selectedPinnedNodeIds: [child1Id, child2Id]
-        }
+        })
 
         const action: Action = new UnpinNode(child1Id)
 
-        const newState = reduce(stateWithPinnedNode, action);
+        const newState = stateWithPinnedNode.reduce(action);
 
         expect(newState.pinnedNodeIds).not.toContain(child1Id);
         expect(newState.pinnedNodeIds).toContain(child2Id);
       });
 
       it('should not remove node if it has a pinned ancestor', () => {
-        const stateWithPinnedNodes = {
-          ...initialState,
+        const stateWithPinnedNodes = initialState.copy({
           pinnedNodeIds: [parent1Id, child1Id],
           selectedPinnedNodeIds: [parent1Id]
-        };
+        });
 
         const action: Action = new UnpinNode(child1Id);
 
-        const newState = reduce(stateWithPinnedNodes, action);
+        const newState = stateWithPinnedNodes.reduce(action);
 
         expect(newState.pinnedNodeIds).toEqual([parent1Id, child1Id]);
       });
 
       it('should remove descendants when unpinning a parent', () => {
-        const stateWithPinnedNodes = {
-          ...initialState,
+        const stateWithPinnedNodes = initialState.copy({
           pinnedNodeIds: [parent1Id, child1Id, grandchild1Id, 'other-node'],
           selectedPinnedNodeIds: [parent1Id, 'other-node']
-        };
+        });
 
         const action: Action = new UnpinNode(parent1Id);
 
-        const newState = reduce(stateWithPinnedNodes, action);
+        const newState =stateWithPinnedNodes.reduce(action);
 
         expect(newState.pinnedNodeIds).not.toContain(parent1Id);
         expect(newState.pinnedNodeIds).not.toContain(child1Id);
@@ -374,15 +370,14 @@ describe('State', () => {
       });
 
       it('should not remove descendants that are explicitly pinned', () => {
-        const stateWithPinnedNodes = {
-          ...initialState,
+        const stateWithPinnedNodes = initialState.copy({
           pinnedNodeIds: [parent1Id, child1Id],
           selectedPinnedNodeIds: [parent1Id, child1Id]
-        };
+        });
 
         const action: Action = new UnpinNode(parent1Id);
 
-        const newState = reduce(stateWithPinnedNodes, action);
+        const newState = stateWithPinnedNodes.reduce(action);
 
         expect(newState.pinnedNodeIds).not.toContain(parent1Id);
         expect(newState.pinnedNodeIds).toContain(child1Id);
@@ -391,16 +386,15 @@ describe('State', () => {
 
     describe('RESTORE_NODES action', () => {
       it('should reset all hidden and pinned nodes', () => {
-        const stateWithHiddenAndPinned: State = {
-          ...initialState,
+        const stateWithHiddenAndPinned: State = initialState.copy({
           hiddenNodeIds: ['node1', 'node2'],
           pinnedNodeIds: ['node3'],
           hiddenChildrenIdsByParentId: new Map([['parent', ['child1']]])
-        };
+        });
 
         const action: Action = new RestoreNodes();
 
-        const newState = reduce(stateWithHiddenAndPinned, action);
+        const newState = stateWithHiddenAndPinned.reduce(action);
 
         expect(newState.hiddenNodeIds).toEqual([]);
         expect(newState.pinnedNodeIds).toEqual([]);
@@ -410,18 +404,17 @@ describe('State', () => {
 
     describe('RESTORE_NODE action', () => {
       it('should remove a node from the hidden list and update parent mapping', () => {
-        const stateWithHiddenNode: State = {
-          ...initialState,
+        const stateWithHiddenNode: State = initialState.copy({
           hiddenNodeIds: [child1Id, 'other-node'],
           hiddenChildrenIdsByParentId: new Map([
             [parent1Id, [child1Id, child2Id]],
             ['other-parent', ['other-node']]
           ])
-        };
+        });
 
         const action: Action = new RestoreNode(child1Id, parent1Id);
 
-        const newState = reduce(stateWithHiddenNode, action);
+        const newState = stateWithHiddenNode.reduce(action);
 
         expect(newState.hiddenNodeIds).not.toContain(child1Id);
         expect(newState.hiddenNodeIds).toContain('other-node');
@@ -430,17 +423,16 @@ describe('State', () => {
       });
 
       it('should handle restoring from parent with no other hidden children', () => {
-        const stateWithHiddenNode: State = {
-          ...initialState,
+        const stateWithHiddenNode: State = initialState.copy({
           hiddenNodeIds: [child1Id],
           hiddenChildrenIdsByParentId: new Map([
             [parent1Id, [child1Id]]
           ])
-        };
+        });
 
         const action: Action = new RestoreNode(child1Id, parent1Id);
 
-        const newState = reduce(stateWithHiddenNode, action);
+        const newState = stateWithHiddenNode.reduce(action);
 
         expect(newState.hiddenNodeIds).not.toContain(child1Id);
         expect(newState.hiddenChildrenIdsByParentId.get(parent1Id)).toEqual([]);
@@ -454,7 +446,7 @@ describe('State', () => {
 
         const action: Action = new RestoreNode(child1Id, parent1Id);
 
-        const newState = reduce(stateWithEmptyHiddenChildren, action);
+        const newState = stateWithEmptyHiddenChildren.reduce(action);
 
         expect(newState.hiddenNodeIds).not.toContain(child1Id);
         expect(newState.hiddenChildrenIdsByParentId.get(parent1Id)).toEqual([]);
@@ -463,18 +455,17 @@ describe('State', () => {
 
     describe('RESTORE_ALL_CHILDREN action', () => {
       it('should restore all hidden children of a node', () => {
-        const stateWithHiddenChildren: State = {
-          ...initialState,
+        const stateWithHiddenChildren: State = initialState.copy({
           hiddenNodeIds: [child1Id, child2Id, 'other-node'],
           hiddenChildrenIdsByParentId: new Map([
             [parent1Id, [child1Id, child2Id]],
             ['other-parent', ['other-node']]
           ])
-        };
+        });
 
         const action: Action = new RestoreAllChildren(parent1Id);
 
-        const newState = reduce(stateWithHiddenChildren, action);
+        const newState = stateWithHiddenChildren.reduce(action);
 
         expect(newState.hiddenNodeIds).not.toContain(child1Id);
         expect(newState.hiddenNodeIds).not.toContain(child2Id);
@@ -484,17 +475,16 @@ describe('State', () => {
       });
 
       it('should handle node with no hidden children', () => {
-        const stateWithHiddenChildren: State = {
-          ...initialState,
+        const stateWithHiddenChildren: State = initialState.copy({
           hiddenNodeIds: ['other-node'],
           hiddenChildrenIdsByParentId: new Map([
             ['other-parent', ['other-node']]
           ])
-        };
+        });
 
         const action: Action = new RestoreAllChildren(parent1Id);
 
-        const newState = reduce(stateWithHiddenChildren, action);
+        const newState = stateWithHiddenChildren.reduce(action);
 
         expect(newState.hiddenNodeIds).toEqual(['other-node']);
         expect(newState.hiddenChildrenIdsByParentId.get(parent1Id)).toEqual([]);
@@ -506,7 +496,7 @@ describe('State', () => {
       it('should toggle interaction mode', () => {
         const action: Action = new ToggleInteractionMode()
 
-        const newState = reduce(initialState, action)
+        const newState = initialState.reduce(action)
 
         expect(newState.isInteractive).toBe(!initialState.isInteractive)
       })
@@ -516,7 +506,7 @@ describe('State', () => {
       it('should toggle usage type mode', () => {
         const action: Action = new ToggleUsageTypeMode()
 
-        const newState = reduce(initialState, action)
+        const newState = initialState.reduce(action)
 
         expect(newState.isUsageShown).toBe(!initialState.isUsageShown)
       })
@@ -526,7 +516,7 @@ describe('State', () => {
       it('should activate multiselect mode', () => {
         const action: Action = new EnterMultiselectMode()
 
-        const newState = reduce(initialState, action)
+        const newState = initialState.reduce(action)
 
         expect(newState.multiselectMode).toBe(!initialState.multiselectMode)
       })
@@ -534,15 +524,14 @@ describe('State', () => {
 
     describe('LEAVE_MULTISELECT_MODE action', () => {
       it('should deactivate multiselect mode and reset selection', () => {
-        const stateWithMultiselect = {
-          ...initialState,
+        const stateWithMultiselect = initialState.copy({
           multiselectMode: true,
           selectedNodeIds: ['node1', 'node2']
-        };
+        });
 
         const action: Action = new LeaveMultiselectMode();
 
-        const newState = reduce(stateWithMultiselect, action);
+        const newState = stateWithMultiselect.reduce(action);
 
         expect(newState.multiselectMode).toBe(!stateWithMultiselect.multiselectMode);
         expect(newState.selectedNodeIds).toEqual([]);
@@ -553,20 +542,19 @@ describe('State', () => {
       it('should add a non-selected node to selection', () => {
         const action: Action = new ToggleNodeSelection('toggle-node');
 
-        const newState = reduce(initialState, action);
+        const newState = initialState.reduce(action);
 
         expect(newState.selectedNodeIds).toContain('toggle-node');
       });
 
       it('should remove an already selected node from selection', () => {
-        const stateWithSelection = {
-          ...initialState,
+        const stateWithSelection = initialState.copy({
           selectedNodeIds: ['selected-node']
-        };
+        });
 
         const action: Action = new ToggleNodeSelection('selected-node');
 
-        const newState = reduce(stateWithSelection, action);
+        const newState = stateWithSelection.reduce(action);
 
         expect(newState.selectedNodeIds).not.toContain('selected-node');
       });
@@ -577,7 +565,7 @@ describe('State', () => {
         class Unknown extends Action {}
         const unknownAction = new Unknown();
 
-        const newState = reduce(initialState, unknownAction);
+        const newState = initialState.reduce(unknownAction);
 
         expect(newState).toBe(initialState);
       });
@@ -596,7 +584,7 @@ describe('State', () => {
       // Try to unpin a child when parent is pinned
       const action: Action = new UnpinNode('com.example.service.UserService.method');
 
-      const newState = reduce(initialState, action);
+      const newState = initialState.reduce(action);
 
       // Should not change because the node has a pinned ancestor
       expect(newState.pinnedNodeIds).toEqual(['com.example', 'com.example.service.UserService']);
@@ -610,7 +598,7 @@ describe('State', () => {
 
       const action: Action = new UnpinNode('com.example.service.UserService');
 
-      const newState = reduce(initialState, action);
+      const newState = initialState.reduce(action);
 
       expect(newState.pinnedNodeIds).not.toContain('com.example.service.UserService');
       expect(newState.pinnedNodeIds).toContain('com.other');
@@ -683,24 +671,8 @@ declare module './State' {
   }
 }
 
-State.build = function (overrides: Partial<State> = {}): State {
-  const defaults = initialState();
-
-  return new State(
-    overrides.allNodes ?? defaults.allNodes,
-    overrides.hiddenNodeIds ?? defaults.hiddenNodeIds,
-    overrides.hiddenChildrenIdsByParentId ?? defaults.hiddenChildrenIdsByParentId,
-    overrides.expandedNodeIds ?? defaults.expandedNodeIds,
-    overrides.hoveredNodeId ?? defaults.hoveredNodeId,
-    overrides.selectedNodeIds ?? defaults.selectedNodeIds,
-    overrides.pinnedNodeIds ?? defaults.pinnedNodeIds,
-    overrides.selectedPinnedNodeIds ?? defaults.selectedPinnedNodeIds,
-    overrides.showLabels ?? defaults.showLabels,
-    overrides.selectedFilter ?? defaults.selectedFilter,
-    overrides.isInteractive ?? defaults.isInteractive,
-    overrides.isUsageShown ?? defaults.isUsageShown,
-    overrides.multiselectMode ?? defaults.multiselectMode
-  );
+State.build = function(overrides: Partial<State> = {}): State {
+  return initialState().copy(overrides)
 }
 
 export { State }

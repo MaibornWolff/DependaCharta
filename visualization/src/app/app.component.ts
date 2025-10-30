@@ -8,7 +8,7 @@ import {Action, InitializeState, EnterMultiselectMode, LeaveMultiselectMode, Res
 import {CytoscapeComponent} from './adapter/cytoscape'
 import {MouseInaccuracyDetectorComponent} from './mouse-inaccuracy-detector.component'
 import {ProjectReport} from './adapter/analysis/internal/ProjectReport'
-import {State, initialState, reduce} from './model/State'
+import {State, initialState} from './model/State'
 import {ToggleButtonComponent} from "./ui/toggle-button/toggle-button.component";
 
 // TODO move to better location (model?)
@@ -35,7 +35,7 @@ export class AppComponent {
 
   apply(action: Action) {
     this.isLoading = true
-    this.state = reduce(this.state, action)
+    this.state = this.state.reduce(action)
     this.stateChange = {state: this.state, action: action}
     this.isLoading = false
   }
