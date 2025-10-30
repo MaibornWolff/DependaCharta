@@ -114,7 +114,7 @@ describe('CytoscapeComponent', () => {
 
     describe('stateChangeRequested subscription', () => {
       it('should emit stateChangeRequested when cytoscapeService emits', () => {
-        const mockAction: Action = new ExpandNode('test');
+        const mockAction = new ExpandNode('test');
         spyOn(component.graphActionHappened, 'emit');
         
         graphActionHappenedSubject.next(mockAction);

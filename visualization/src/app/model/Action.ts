@@ -1,66 +1,108 @@
 import {GraphNode} from './GraphNode';
 import {EdgeFilterType} from './EdgeFilter';
 
-export abstract class Action {}
+export type Action =
+  | InitializeState
+  | ExpandNode
+  | CollapseNode
+  | ChangeFilter
+  | ShowAllEdgesOfNode
+  | HideAllEdgesOfNode
+  | ToggleEdgeLabels
+  | HideNode
+  | RestoreNode
+  | RestoreNodes
+  | ToggleInteractionMode
+  | ToggleUsageTypeMode
+  | ResetView
+  | ToggleNodeSelection
+  | EnterMultiselectMode
+  | LeaveMultiselectMode
+  | PinNode
+  | UnpinNode
 
-export class InitializeState extends Action {
-  constructor(public readonly filename: string, public readonly rootNodes: GraphNode[]) { super(); }
+export class InitializeState {
+  constructor(
+    public readonly filename: string,
+    public readonly rootNodes: GraphNode[]
+  ) {}
 }
 
-export class ExpandNode extends Action {
-  constructor(public readonly nodeId: string) { super(); }
+export class ExpandNode {
+  constructor(
+    public readonly nodeId: string
+  ) {}
 }
 
-export class CollapseNode extends Action {
-  constructor(public readonly nodeId: string) { super(); }
+export class CollapseNode {
+  constructor(
+    public readonly nodeId: string
+  ) {}
 }
 
-export class ChangeFilter extends Action {
-  constructor(public readonly edgeFilter: EdgeFilterType) { super(); }
+export class ChangeFilter {
+  constructor(
+    public readonly edgeFilter: EdgeFilterType
+  ) {}
 }
 
-export class ShowAllEdgesOfNode extends Action {
-  constructor(public readonly nodeId: string) { super(); }
+export class ShowAllEdgesOfNode {
+  constructor(
+    public readonly nodeId: string
+  ) {}
 }
 
-export class HideAllEdgesOfNode extends Action {
-  constructor(public readonly nodeId: string) { super(); }
+export class HideAllEdgesOfNode {
+  constructor(
+    public readonly nodeId: string
+  ) {}
 }
 
-export class ToggleEdgeLabels extends Action {}
+export class ToggleEdgeLabels {}
 
-export class HideNode extends Action {
-  constructor(public readonly nodeId: string) { super(); }
+export class HideNode {
+  constructor(
+    public readonly nodeId: string
+  ) {}
 }
 
-export class RestoreNode extends Action {
-  constructor(public readonly nodeIdToBeRestored: string, public readonly parentNodeId: string) { super(); }
+export class RestoreNode {
+  constructor(
+    public readonly nodeIdToBeRestored: string,
+    public readonly parentNodeId: string
+  ) {}
 }
 
-export class RestoreNodes extends Action {}
+export class RestoreNodes {}
 
-export class RestoreAllChildren extends Action {
-  constructor(public readonly nodeId: string) { super(); }
+export class RestoreAllChildren {
+  constructor(public readonly nodeId: string) {}
 }
 
-export class ToggleInteractionMode extends Action {}
+export class ToggleInteractionMode {}
 
-export class ToggleUsageTypeMode extends Action {}
+export class ToggleUsageTypeMode {}
 
-export class ResetView extends Action {}
+export class ResetView {}
 
-export class ToggleNodeSelection extends Action {
-  constructor(public readonly nodeId: string) { super(); }
+export class ToggleNodeSelection {
+  constructor(
+    public readonly nodeId: string
+  ) {}
 }
 
-export class EnterMultiselectMode extends Action {}
+export class EnterMultiselectMode {}
 
-export class LeaveMultiselectMode extends Action {}
+export class LeaveMultiselectMode {}
 
-export class PinNode extends Action {
-  constructor(public readonly nodeId: string) { super(); }
+export class PinNode {
+  constructor(
+    public readonly nodeId: string
+  ) {}
 }
 
-export class UnpinNode extends Action {
-  constructor(public readonly nodeId: string) { super(); }
+export class UnpinNode {
+  constructor(
+    public readonly nodeId: string
+  ) {}
 }

@@ -147,7 +147,10 @@ export class State {
             ? this.selectedNodeIds.filter(id => id !== action.nodeId)
             : [...this.selectedNodeIds, action.nodeId]
         })
+      case action instanceof ResetView:
+        return this
       default:
+        action satisfies never
         return this
     }
   }
