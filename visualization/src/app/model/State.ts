@@ -20,35 +20,138 @@ export class State {
     public readonly isUsageShown: boolean,
     public readonly multiselectMode: boolean
   ) {}
-}
 
-export interface State {
-  reduce(action: Action): State
-  copy(overrides: Partial<State>): State
-}
+  copy(overrides: Partial<State> = {}): State {
+    return new State(
+      overrides.allNodes ?? this.allNodes,
+      overrides.hiddenNodeIds ?? this.hiddenNodeIds,
+      overrides.hiddenChildrenIdsByParentId ?? this.hiddenChildrenIdsByParentId,
+      overrides.expandedNodeIds ?? this.expandedNodeIds,
+      overrides.hoveredNodeId ?? this.hoveredNodeId,
+      overrides.selectedNodeIds ?? this.selectedNodeIds,
+      overrides.pinnedNodeIds ?? this.pinnedNodeIds,
+      overrides.selectedPinnedNodeIds ?? this.selectedPinnedNodeIds,
+      overrides.showLabels ?? this.showLabels,
+      overrides.selectedFilter ?? this.selectedFilter,
+      overrides.isInteractive ?? this.isInteractive,
+      overrides.isUsageShown ?? this.isUsageShown,
+      overrides.multiselectMode ?? this.multiselectMode
+    )
+  }
 
-State.prototype.reduce = function(action: Action) {
-  return reduce(this, action)
+  reduce(action: Action): State {
+    switch (true) {
+      case action instanceof InitializeState:
+        return this.copy({
+          allNodes: action.rootNodes.flatMap(expand)
+        })
+      case action instanceof ExpandNode:
+        return this.copy({
+          expandedNodeIds: [...this.expandedNodeIds, action.nodeId]
+        })
+      case action instanceof CollapseNode:
+        return this.copy({
+          expandedNodeIds: this.expandedNodeIds.filter(id => !isDescendantOf([action.nodeId])(id))
+        })
+      case action instanceof ChangeFilter:
+        return this.copy({
+          selectedFilter: action.edgeFilter
+        })
+      case action instanceof ShowAllEdgesOfNode:
+        return this.copy({
+          hoveredNodeId: action.nodeId
+        })
+      case action instanceof HideAllEdgesOfNode:
+        return this.copy({
+          hoveredNodeId: ''
+        })
+      case action instanceof ToggleEdgeLabels:
+        return this.copy({
+          showLabels: !this.showLabels
+        })
+      case action instanceof HideNode: {
+        const node = findGraphNode(action.nodeId, this)
+        const hiddenChildrenIdsByParentId = this.hiddenChildrenIdsByParentId
+        if (node.parent) {
+          const previousHiddenChildren = hiddenChildrenIdsByParentId.get(node.parent.id) || []
+          hiddenChildrenIdsByParentId.set(node.parent.id, [...previousHiddenChildren, node.id])
+        }
+        return this.copy({
+          hiddenNodeIds: [...this.hiddenNodeIds, node.id],
+          hiddenChildrenIdsByParentId: hiddenChildrenIdsByParentId,
+          pinnedNodeIds: this.pinnedNodeIds.filter(id => id !== action.nodeId)
+        })
+      }
+      case action instanceof PinNode: {
+        const descendants = [...getDescendants(findGraphNode(action.nodeId, this))]
+        const unpinnedDescendants = descendants.filter(node => !this.pinnedNodeIds.includes(node.id))
+        return this.copy({
+          pinnedNodeIds: [...this.pinnedNodeIds, ...(unpinnedDescendants.map(node => node.id))],
+          selectedPinnedNodeIds: [...this.selectedPinnedNodeIds, action.nodeId]
+        })
+      }
+      case action instanceof UnpinNode: {
+        const newSelectedPinnedNodeIds = this.selectedPinnedNodeIds.filter(id => id !== action.nodeId)
+        return this.copy({
+          pinnedNodeIds: this.pinnedNodeIds.filter(isDescendantOf(newSelectedPinnedNodeIds)),
+          selectedPinnedNodeIds: newSelectedPinnedNodeIds
+        })
+      }
+      case action instanceof RestoreNodes:
+        return this.copy({
+          hiddenNodeIds: [],
+          pinnedNodeIds: [],
+          selectedPinnedNodeIds: [],
+          hiddenChildrenIdsByParentId: new Map()
+        })
+      case action instanceof RestoreNode: {
+        const updatedMap = new Map(this.hiddenChildrenIdsByParentId)
+        const newChildrenIds = (updatedMap.get(action.parentNodeId) || [])
+          .filter(id => id !== action.nodeIdToBeRestored)
+        updatedMap.set(action.parentNodeId, newChildrenIds)
+        return this.copy({
+          hiddenNodeIds: this.hiddenNodeIds.filter(id => id !== action.nodeIdToBeRestored),
+          hiddenChildrenIdsByParentId: updatedMap
+        })
+      }
+      case action instanceof RestoreAllChildren: {
+        const updatedMap = new Map(this.hiddenChildrenIdsByParentId)
+        const hiddenChildrenIds = this.hiddenChildrenIdsByParentId.get(action.nodeId) || []
+        updatedMap.set(action.nodeId, [])
+        return this.copy({
+          hiddenNodeIds: this.hiddenNodeIds.filter(id => !hiddenChildrenIds.includes(id)),
+          hiddenChildrenIdsByParentId: updatedMap
+        })
+      }
+      case action instanceof ToggleInteractionMode:
+        return this.copy({
+          isInteractive: !this.isInteractive
+        })
+      case action instanceof ToggleUsageTypeMode:
+        return this.copy({
+          isUsageShown: !this.isUsageShown
+        })
+      case action instanceof EnterMultiselectMode:
+        // This event is emitted multiple times while the shift key is pressed.
+        return this.copy({
+          multiselectMode: true
+        })
+      case action instanceof LeaveMultiselectMode:
+        return this.copy({
+          multiselectMode: false,
+          selectedNodeIds: []
+        })
+      case action instanceof ToggleNodeSelection:
+        return this.copy({
+          selectedNodeIds: this.selectedNodeIds.includes(action.nodeId)
+            ? this.selectedNodeIds.filter(id => id !== action.nodeId)
+            : [...this.selectedNodeIds, action.nodeId]
+        })
+      default:
+        return this
+    }
+  }
 }
-
-State.prototype.copy = function (overrides: Partial<State> = {}): State {
-  return new State(
-    overrides.allNodes ?? this.allNodes,
-    overrides.hiddenNodeIds ?? this.hiddenNodeIds,
-    overrides.hiddenChildrenIdsByParentId ?? this.hiddenChildrenIdsByParentId,
-    overrides.expandedNodeIds ?? this.expandedNodeIds,
-    overrides.hoveredNodeId ?? this.hoveredNodeId,
-    overrides.selectedNodeIds ?? this.selectedNodeIds,
-    overrides.pinnedNodeIds ?? this.pinnedNodeIds,
-    overrides.selectedPinnedNodeIds ?? this.selectedPinnedNodeIds,
-    overrides.showLabels ?? this.showLabels,
-    overrides.selectedFilter ?? this.selectedFilter,
-    overrides.isInteractive ?? this.isInteractive,
-    overrides.isUsageShown ?? this.isUsageShown,
-    overrides.multiselectMode ?? this.multiselectMode
-  )
-}
-
 
 export const initialState = () => new State(
   [],
@@ -112,119 +215,6 @@ export function findGraphNode(nodeId: string, state: State): VisibleGraphNode {
     throw new Error(`Node with id ${nodeId} not found`)
   }
   return toVisibleGraphNode(graphNode, state)
-}
-
-export function reduce(state: State, action: Action): State {
-  switch (true) {
-    case action instanceof InitializeState:
-      return state.copy({
-        allNodes: action.rootNodes.flatMap(expand)
-      })
-    case action instanceof ExpandNode:
-      return state.copy({
-        expandedNodeIds: [...state.expandedNodeIds, action.nodeId]
-      })
-    case action instanceof CollapseNode:
-      return state.copy({
-        expandedNodeIds: state.expandedNodeIds.filter(id => !isDescendantOf([action.nodeId])(id))
-      })
-    case action instanceof ChangeFilter:
-      return state.copy({
-        selectedFilter: action.edgeFilter
-      })
-    case action instanceof ShowAllEdgesOfNode:
-      return state.copy({
-        hoveredNodeId: action.nodeId
-      })
-    case action instanceof HideAllEdgesOfNode:
-      return state.copy({
-        hoveredNodeId: ''
-      })
-    case action instanceof ToggleEdgeLabels:
-      return state.copy({
-        showLabels: !state.showLabels
-      })
-    case action instanceof HideNode: {
-      const node = findGraphNode(action.nodeId, state)
-      const hiddenChildrenIdsByParentId = state.hiddenChildrenIdsByParentId
-      if (node.parent) {
-        const previousHiddenChildren = hiddenChildrenIdsByParentId.get(node.parent.id) || []
-        hiddenChildrenIdsByParentId.set(node.parent.id, [...previousHiddenChildren, node.id])
-      }
-      return state.copy({
-        hiddenNodeIds: [...state.hiddenNodeIds, node.id],
-        hiddenChildrenIdsByParentId: hiddenChildrenIdsByParentId,
-        pinnedNodeIds: state.pinnedNodeIds.filter(id => id !== action.nodeId)
-      })
-    }
-    case action instanceof PinNode: {
-      const descendants = [...getDescendants(findGraphNode(action.nodeId, state))]
-      const unpinnedDescendants = descendants.filter(node => !state.pinnedNodeIds.includes(node.id))
-      return state.copy({
-        pinnedNodeIds: [...state.pinnedNodeIds, ...(unpinnedDescendants.map(node => node.id))],
-        selectedPinnedNodeIds: [...state.selectedPinnedNodeIds, action.nodeId]
-      })
-    }
-    case action instanceof UnpinNode: {
-      const newSelectedPinnedNodeIds = state.selectedPinnedNodeIds.filter(id => id !== action.nodeId)
-      return state.copy({
-        pinnedNodeIds: state.pinnedNodeIds.filter(isDescendantOf(newSelectedPinnedNodeIds)),
-        selectedPinnedNodeIds: newSelectedPinnedNodeIds
-      })
-    }
-    case action instanceof RestoreNodes:
-      return state.copy({
-        hiddenNodeIds: [],
-        pinnedNodeIds: [],
-        selectedPinnedNodeIds: [],
-        hiddenChildrenIdsByParentId: new Map()
-      })
-    case action instanceof RestoreNode: {
-      const updatedMap = new Map(state.hiddenChildrenIdsByParentId)
-      const newChildrenIds = (updatedMap.get(action.parentNodeId) || [])
-        .filter(id => id !== action.nodeIdToBeRestored)
-      updatedMap.set(action.parentNodeId, newChildrenIds)
-      return state.copy({
-        hiddenNodeIds: state.hiddenNodeIds.filter(id => id !== action.nodeIdToBeRestored),
-        hiddenChildrenIdsByParentId: updatedMap
-      })
-    }
-    case action instanceof RestoreAllChildren: {
-      const updatedMap = new Map(state.hiddenChildrenIdsByParentId)
-      const hiddenChildrenIds = state.hiddenChildrenIdsByParentId.get(action.nodeId) || []
-      updatedMap.set(action.nodeId, [])
-      return state.copy({
-        hiddenNodeIds: state.hiddenNodeIds.filter(id => !hiddenChildrenIds.includes(id)),
-        hiddenChildrenIdsByParentId: updatedMap
-      })
-    }
-    case action instanceof ToggleInteractionMode:
-      return state.copy({
-        isInteractive: !state.isInteractive
-      })
-    case action instanceof ToggleUsageTypeMode:
-      return state.copy({
-        isUsageShown: !state.isUsageShown
-      })
-    case action instanceof EnterMultiselectMode:
-      // This event is emitted multiple times while the shift key is pressed.
-      return state.copy({
-        multiselectMode: true
-      })
-    case action instanceof LeaveMultiselectMode:
-      return state.copy({
-        multiselectMode: false,
-        selectedNodeIds: []
-      })
-    case action instanceof ToggleNodeSelection:
-      return state.copy({
-        selectedNodeIds: state.selectedNodeIds.includes(action.nodeId)
-          ? state.selectedNodeIds.filter(id => id !== action.nodeId)
-          : [...state.selectedNodeIds, action.nodeId]
-      })
-    default:
-      return state
-  }
 }
 
 // TODO move to an appropriate utility collection
