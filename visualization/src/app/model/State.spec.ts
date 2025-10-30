@@ -185,7 +185,7 @@ describe('State', () => {
 
     describe('INITIALIZE_STATE action', () => {
       it('should initialize state with new root nodes', () => {
-        const action: Action = new InitializeState('', [mockParentNode]);
+        const action = new InitializeState('', [mockParentNode]);
 
         const newState = initialState.reduce(action);
 
@@ -196,7 +196,7 @@ describe('State', () => {
 
     describe('EXPAND_NODE action', () => {
       it('should add a node to the expanded nodes list', () => {
-        const action: Action = new ExpandNode('test-node');
+        const action = new ExpandNode('test-node');
 
         const newState = initialState.reduce(action);
 
@@ -211,7 +211,7 @@ describe('State', () => {
           expandedNodeIds: [parent1Id, child1Id, grandchild1Id]
         });
 
-        const action: Action = new CollapseNode(child1Id);
+        const action = new CollapseNode(child1Id);
 
         // Mock expandDescendants for this test
         spyOn({ expandDescendants: expand }, 'expandDescendants').and.returnValue([
@@ -227,7 +227,7 @@ describe('State', () => {
 
     describe('CHANGE_FILTER action', () => {
       it('should change the selected filter', () => {
-        const action: Action = new ChangeFilter(EdgeFilterType.ALL);
+        const action = new ChangeFilter(EdgeFilterType.ALL);
 
         const newState = initialState.reduce(action);
 
@@ -237,7 +237,7 @@ describe('State', () => {
 
     describe('SHOW_ALL_EDGES_OF_NODE action', () => {
       it('should set the hoveredNodeId', () => {
-        const action: Action = new ShowAllEdgesOfNode('hover-node');
+        const action = new ShowAllEdgesOfNode('hover-node');
 
         const newState = initialState.reduce(action);
 
@@ -250,7 +250,7 @@ describe('State', () => {
         const stateWithHover = initialState.copy({
           hoveredNodeId: 'some-node'
         });
-        const action: Action = new HideAllEdgesOfNode('some-node');
+        const action = new HideAllEdgesOfNode('some-node');
 
         const newState = stateWithHover.reduce(action);
 
@@ -260,7 +260,7 @@ describe('State', () => {
 
     describe('TOGGLE_EDGE_LABELS action', () => {
       it('should toggle showLabels', () => {
-        const action: Action = new ToggleEdgeLabels();
+        const action = new ToggleEdgeLabels();
 
         const newState = initialState.reduce(action);
 
@@ -270,7 +270,7 @@ describe('State', () => {
 
     describe('HIDE_NODE action', () => {
       it('should add a node to the hidden list', () => {
-        const action: Action = new HideNode(child1Id);
+        const action = new HideNode(child1Id);
 
         const newState = initialState.reduce(action);
 
@@ -282,7 +282,7 @@ describe('State', () => {
           pinnedNodeIds: [child1Id]
         });
 
-        const action: Action = new HideNode(child1Id);
+        const action = new HideNode(child1Id);
 
         const newState = stateWithPinnedNode.reduce(action);
 
@@ -294,7 +294,7 @@ describe('State', () => {
           allNodes: [GraphNodeTest.GraphNode.build({ id: 'root', children: [] })]
         })
 
-        const action: Action = new HideNode('root')
+        const action = new HideNode('root')
 
         const newState = rootNodeState.reduce(action)
 
@@ -305,7 +305,7 @@ describe('State', () => {
 
     describe('PIN_NODE action', () => {
       it('should add a node to the pinned list', () => {
-        const action: Action = new PinNode(child1Id);
+        const action = new PinNode(child1Id);
 
         const newState = initialState.reduce(action);
 
@@ -317,7 +317,7 @@ describe('State', () => {
           pinnedNodeIds: [child1Id]
         });
 
-        const action: Action = new PinNode(child1Id);
+        const action = new PinNode(child1Id);
 
         const newState = stateWithPinnedNode.reduce(action);
 
@@ -332,7 +332,7 @@ describe('State', () => {
           selectedPinnedNodeIds: [child1Id, child2Id]
         })
 
-        const action: Action = new UnpinNode(child1Id)
+        const action = new UnpinNode(child1Id)
 
         const newState = stateWithPinnedNode.reduce(action);
 
@@ -346,7 +346,7 @@ describe('State', () => {
           selectedPinnedNodeIds: [parent1Id]
         });
 
-        const action: Action = new UnpinNode(child1Id);
+        const action = new UnpinNode(child1Id);
 
         const newState = stateWithPinnedNodes.reduce(action);
 
@@ -359,7 +359,7 @@ describe('State', () => {
           selectedPinnedNodeIds: [parent1Id, 'other-node']
         });
 
-        const action: Action = new UnpinNode(parent1Id);
+        const action = new UnpinNode(parent1Id);
 
         const newState =stateWithPinnedNodes.reduce(action);
 
@@ -375,7 +375,7 @@ describe('State', () => {
           selectedPinnedNodeIds: [parent1Id, child1Id]
         });
 
-        const action: Action = new UnpinNode(parent1Id);
+        const action = new UnpinNode(parent1Id);
 
         const newState = stateWithPinnedNodes.reduce(action);
 
@@ -392,7 +392,7 @@ describe('State', () => {
           hiddenChildrenIdsByParentId: new Map([['parent', ['child1']]])
         });
 
-        const action: Action = new RestoreNodes();
+        const action = new RestoreNodes();
 
         const newState = stateWithHiddenAndPinned.reduce(action);
 
@@ -412,7 +412,7 @@ describe('State', () => {
           ])
         });
 
-        const action: Action = new RestoreNode(child1Id, parent1Id);
+        const action = new RestoreNode(child1Id, parent1Id);
 
         const newState = stateWithHiddenNode.reduce(action);
 
@@ -430,7 +430,7 @@ describe('State', () => {
           ])
         });
 
-        const action: Action = new RestoreNode(child1Id, parent1Id);
+        const action = new RestoreNode(child1Id, parent1Id);
 
         const newState = stateWithHiddenNode.reduce(action);
 
@@ -444,7 +444,7 @@ describe('State', () => {
           hiddenChildrenIdsByParentId: new Map([[parent1Id, []]])
         });
 
-        const action: Action = new RestoreNode(child1Id, parent1Id);
+        const action = new RestoreNode(child1Id, parent1Id);
 
         const newState = stateWithEmptyHiddenChildren.reduce(action);
 
@@ -463,7 +463,7 @@ describe('State', () => {
           ])
         });
 
-        const action: Action = new RestoreAllChildren(parent1Id);
+        const action = new RestoreAllChildren(parent1Id);
 
         const newState = stateWithHiddenChildren.reduce(action);
 
@@ -482,7 +482,7 @@ describe('State', () => {
           ])
         });
 
-        const action: Action = new RestoreAllChildren(parent1Id);
+        const action = new RestoreAllChildren(parent1Id);
 
         const newState = stateWithHiddenChildren.reduce(action);
 
@@ -494,7 +494,7 @@ describe('State', () => {
 
     describe('TOGGLE_INTERACTION_MODE action', () => {
       it('should toggle interaction mode', () => {
-        const action: Action = new ToggleInteractionMode()
+        const action = new ToggleInteractionMode()
 
         const newState = initialState.reduce(action)
 
@@ -504,7 +504,7 @@ describe('State', () => {
 
     describe('TOGGLE_USAGE_TYPE_MODE action', () => {
       it('should toggle usage type mode', () => {
-        const action: Action = new ToggleUsageTypeMode()
+        const action = new ToggleUsageTypeMode()
 
         const newState = initialState.reduce(action)
 
@@ -514,7 +514,7 @@ describe('State', () => {
 
     describe('ENTER_MULTISELECT_MODE action', () => {
       it('should activate multiselect mode', () => {
-        const action: Action = new EnterMultiselectMode()
+        const action = new EnterMultiselectMode()
 
         const newState = initialState.reduce(action)
 
@@ -529,7 +529,7 @@ describe('State', () => {
           selectedNodeIds: ['node1', 'node2']
         });
 
-        const action: Action = new LeaveMultiselectMode();
+        const action = new LeaveMultiselectMode();
 
         const newState = stateWithMultiselect.reduce(action);
 
@@ -540,7 +540,7 @@ describe('State', () => {
 
     describe('TOGGLE_NODE_SELECTION action', () => {
       it('should add a non-selected node to selection', () => {
-        const action: Action = new ToggleNodeSelection('toggle-node');
+        const action = new ToggleNodeSelection('toggle-node');
 
         const newState = initialState.reduce(action);
 
@@ -552,7 +552,7 @@ describe('State', () => {
           selectedNodeIds: ['selected-node']
         });
 
-        const action: Action = new ToggleNodeSelection('selected-node');
+        const action = new ToggleNodeSelection('selected-node');
 
         const newState = stateWithSelection.reduce(action);
 
@@ -571,7 +571,7 @@ describe('State', () => {
       });
 
       // Try to unpin a child when parent is pinned
-      const action: Action = new UnpinNode('com.example.service.UserService.method');
+      const action = new UnpinNode('com.example.service.UserService.method');
 
       const newState = initialState.reduce(action);
 
@@ -585,7 +585,7 @@ describe('State', () => {
         selectedPinnedNodeIds: ['com.other']
       });
 
-      const action: Action = new UnpinNode('com.example.service.UserService');
+      const action = new UnpinNode('com.example.service.UserService');
 
       const newState = initialState.reduce(action);
 
