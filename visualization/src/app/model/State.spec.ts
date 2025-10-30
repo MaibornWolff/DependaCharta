@@ -46,7 +46,7 @@ describe('State', () => {
 
   describe('State.build', () => {
     it('should create a State with default values', () => {
-      const state = State.build()
+      const state = new State()
 
       expect(state.allNodes).toEqual([])
       expect(state.hiddenNodeIds).toEqual([])
@@ -68,7 +68,7 @@ describe('State', () => {
         expandedNodeIds: ['test-id']
       };
 
-      const state = State.build(overrides);
+      const state = new State(overrides);
 
       expect(state.showLabels).toBe(false);
       expect(state.isInteractive).toBe(false);
@@ -94,7 +94,7 @@ describe('State', () => {
     let baseState: State;
 
     beforeEach(() => {
-      baseState = State.build({
+      baseState = new State({
         allNodes: [
           mockParentNode,
           mockChildNode1,
@@ -116,7 +116,7 @@ describe('State', () => {
     });
 
     it('should show grandchild nodes when their parent is also expanded', () => {
-      baseState = State.build({ allNodes: baseState.allNodes, expandedNodeIds: [parent1Id, child1Id] });
+      baseState = new State({ allNodes: baseState.allNodes, expandedNodeIds: [parent1Id, child1Id] });
 
       const visibleNodes = getVisibleNodes(baseState);
       const visibleIds = visibleNodes.map(node => node.id);
@@ -125,7 +125,7 @@ describe('State', () => {
     });
 
     it('should filter out hidden nodes', () => {
-      baseState = State.build({ allNodes: baseState.allNodes, expandedNodeIds: baseState.expandedNodeIds, hiddenNodeIds: [child1Id] });
+      baseState = new State({ allNodes: baseState.allNodes, expandedNodeIds: baseState.expandedNodeIds, hiddenNodeIds: [child1Id] });
 
       const visibleNodes = getVisibleNodes(baseState);
       const visibleIds = visibleNodes.map(node => node.id);
@@ -135,7 +135,7 @@ describe('State', () => {
     });
 
     it('should also filter out children of hidden nodes', () => {
-      baseState = State.build({
+      baseState = new State({
         allNodes: baseState.allNodes,
         expandedNodeIds: [parent1Id, child1Id],
         hiddenNodeIds: [child1Id]
@@ -153,7 +153,7 @@ describe('State', () => {
     let state: State;
 
     beforeEach(() => {
-      state = State.build({
+      state = new State({
         allNodes: [mockParentNode],
         selectedNodeIds: [mockParentNode.id],
       })
@@ -175,7 +175,7 @@ describe('State', () => {
     let initialState: State;
 
     beforeEach(() => {
-      initialState = State.build({
+      initialState = new State({
         allNodes: [
           mockParentNode,
           mockChildNode1
@@ -290,7 +290,7 @@ describe('State', () => {
       });
 
       it('should handle HIDE_NODE action when node has no parent', () => {
-        const rootNodeState = State.build({
+        const rootNodeState = new State({
           allNodes: [GraphNodeTest.GraphNode.build({ id: 'root', children: [] })]
         })
 
@@ -439,7 +439,7 @@ describe('State', () => {
       });
 
       it('should handle RESTORE_NODE with empty hidden children list', () => {
-        const stateWithEmptyHiddenChildren = State.build({
+        const stateWithEmptyHiddenChildren = new State({
           hiddenNodeIds: [child1Id],
           hiddenChildrenIdsByParentId: new Map([[parent1Id, []]])
         });
@@ -565,7 +565,7 @@ describe('State', () => {
     // Since hasPinnedAncestor is not exported, we test it through the UNPIN_NODE action
 
     it('should detect pinned ancestor in hierarchical node IDs', () => {
-      const initialState = State.build({
+      const initialState = new State({
         pinnedNodeIds: ['com.example', 'com.example.service.UserService'],
         selectedPinnedNodeIds: ['com.example']
       });
@@ -580,7 +580,7 @@ describe('State', () => {
     });
 
     it('should not detect pinned ancestor when none exists', () => {
-      const initialState = State.build({
+      const initialState = new State({
         pinnedNodeIds: ['com.other', 'com.example.service.UserService'],
         selectedPinnedNodeIds: ['com.other']
       });
@@ -649,7 +649,7 @@ describe('median function', () => {
 });
 
 export function buildFromRootNodes(rootNodes: GraphNode[] = []): State {
-  return State.build({
+  return new State({
     allNodes: rootNodes.flatMap(expand)
   })
 }

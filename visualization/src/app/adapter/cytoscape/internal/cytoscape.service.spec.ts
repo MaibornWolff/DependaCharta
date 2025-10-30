@@ -133,7 +133,7 @@ describe('CytoscapeService', async () => {
 
   it(`should reset cytoscape when initializing state`, () => {
     // given + when
-    cytoscapeService.apply(State.build(), new InitializeState('', []))
+    cytoscapeService.apply(new State(), new InitializeState('', []))
 
     // then
     const newNodes = cytoscapeService.get().nodes()

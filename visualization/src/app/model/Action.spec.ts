@@ -21,7 +21,7 @@ describe('State Handler', () => {
       })
 
       // when
-      const newState = State.build().reduce(new InitializeState('', [rootNode]))
+      const newState = new State().reduce(new InitializeState('', [rootNode]))
 
       // then
       expect(newState.showLabels).toEqual(true)
@@ -105,7 +105,7 @@ describe('State Handler', () => {
         isSelected: true
       })
       const base = buildFromRootNodes([rootNode])
-      const state = State.build({ allNodes: base.allNodes, selectedNodeIds: [rootId] })
+      const state = new State({ allNodes: base.allNodes, selectedNodeIds: [rootId] })
 
       // when
       const newState = state.reduce(new ToggleNodeSelection(rootId))
@@ -118,7 +118,7 @@ describe('State Handler', () => {
       // given
       const rootNode = GraphNode.build()
       const base = buildFromRootNodes([rootNode])
-      const state = State.build({ allNodes: base.allNodes, multiselectMode: false })
+      const state = new State({ allNodes: base.allNodes, multiselectMode: false })
 
       // when
       const newState = state.reduce(new EnterMultiselectMode())
@@ -132,7 +132,7 @@ describe('State Handler', () => {
       // given
       const rootNode = GraphNode.build()
       const base = buildFromRootNodes([rootNode])
-      const state = State.build({ allNodes: base.allNodes, multiselectMode: true })
+      const state = new State({ allNodes: base.allNodes, multiselectMode: true })
 
       // when
       const newState = state.reduce(new LeaveMultiselectMode())
@@ -145,7 +145,7 @@ describe('State Handler', () => {
       // given
       const rootNode = GraphNode.build()
       const base = buildFromRootNodes([rootNode])
-      const state = State.build({ allNodes: base.allNodes, multiselectMode: true, selectedNodeIds: [rootNode.id] })
+      const state = new State({ allNodes: base.allNodes, multiselectMode: true, selectedNodeIds: [rootNode.id] })
 
       // when
       const newState = state.reduce(new LeaveMultiselectMode())
@@ -281,7 +281,7 @@ describe('State Handler', () => {
 
     it('should throw an error if the node does not exist', () => {
       // given
-      const state = State.build()
+      const state = new State()
 
       // when + then
       expect(() => findGraphNode("some random id", state)).toThrowError()
