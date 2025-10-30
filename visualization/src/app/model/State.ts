@@ -25,11 +25,6 @@ export class State {
 export interface State {
   reduce(action: Action): State
   copy(overrides: Partial<State>): State
-  foo(): void
-}
-
-State.prototype.foo = function() {
-  // throw new Error('H!')
 }
 
 State.prototype.reduce = function(action: Action) {
