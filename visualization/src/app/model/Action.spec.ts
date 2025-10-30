@@ -3,7 +3,6 @@ import {buildVisibleGraphNode} from './ModelBuilders.spec'
 import {EdgeFilterType} from './EdgeFilter'
 import {findGraphNode, getVisibleNodes, State} from './State'
 import {GraphNode} from './GraphNode.spec'
-import { buildFromRootNodes } from './State.spec'
 
 describe('State Handler', () => {
   describe('Graph State Reducer', () => {
@@ -45,7 +44,7 @@ describe('State Handler', () => {
         id: rootId,
         children: [childNode]
       })
-      const state = buildFromRootNodes([rootNode])
+      const state = State.buildFromRootNodes([rootNode])
 
       // when
       const newState = state.reduce(new ExpandNode(rootId))
@@ -70,7 +69,7 @@ describe('State Handler', () => {
         id: rootId,
         children: [childNode]
       })
-      const state = buildFromRootNodes([rootNode]).copy({
+      const state = State.buildFromRootNodes([rootNode]).copy({
         expandedNodeIds: [rootId]
       })
 
@@ -88,7 +87,7 @@ describe('State Handler', () => {
         id: rootId,
         isSelected: false
       })
-      const state = buildFromRootNodes([rootNode])
+      const state = State.buildFromRootNodes([rootNode])
 
       // when
       const newState = state.reduce(new ToggleNodeSelection(rootId))
@@ -104,7 +103,7 @@ describe('State Handler', () => {
         id: rootId,
         isSelected: true
       })
-      const base = buildFromRootNodes([rootNode])
+      const base = State.buildFromRootNodes([rootNode])
       const state = new State({ allNodes: base.allNodes, selectedNodeIds: [rootId] })
 
       // when
@@ -117,7 +116,7 @@ describe('State Handler', () => {
     it('should enter multiselect mode', () => {
       // given
       const rootNode = GraphNode.build()
-      const base = buildFromRootNodes([rootNode])
+      const base = State.buildFromRootNodes([rootNode])
       const state = new State({ allNodes: base.allNodes, multiselectMode: false })
 
       // when
@@ -131,7 +130,7 @@ describe('State Handler', () => {
     it('should leave multiselect mode', () => {
       // given
       const rootNode = GraphNode.build()
-      const base = buildFromRootNodes([rootNode])
+      const base = State.buildFromRootNodes([rootNode])
       const state = new State({ allNodes: base.allNodes, multiselectMode: true })
 
       // when
@@ -144,7 +143,7 @@ describe('State Handler', () => {
     it('should clear selected nodes when leaving multiselect mode', () => {
       // given
       const rootNode = GraphNode.build()
-      const base = buildFromRootNodes([rootNode])
+      const base = State.buildFromRootNodes([rootNode])
       const state = new State({ allNodes: base.allNodes, multiselectMode: true, selectedNodeIds: [rootNode.id] })
 
       // when
@@ -157,7 +156,7 @@ describe('State Handler', () => {
     it('should change filter', () => {
       // given
       const rootNode = GraphNode.build()
-      const state = buildFromRootNodes([rootNode])
+      const state = State.buildFromRootNodes([rootNode])
       const newFilter = EdgeFilterType.ALL
 
       // when
@@ -170,7 +169,7 @@ describe('State Handler', () => {
     it('should toggle showLabels', () => {
       // given
       const rootNode = GraphNode.build()
-      const state = buildFromRootNodes([rootNode])
+      const state = State.buildFromRootNodes([rootNode])
       const showLabelsBefore = state.showLabels
 
       // when
@@ -197,7 +196,7 @@ describe('State Handler', () => {
         children: [childNode]
       })
       childNode.parent = rootNode
-      const state = buildFromRootNodes([rootNode])
+      const state = State.buildFromRootNodes([rootNode])
 
       // when
       const newState = state.reduce(new HideNode(childId))
@@ -223,7 +222,7 @@ describe('State Handler', () => {
         id: rootId,
         children: [childNode]
       })
-      const state: State = buildFromRootNodes([rootNode]).copy({
+      const state: State = State.buildFromRootNodes([rootNode]).copy({
         hiddenNodeIds: [rootId, childId, grandchildId]
       })
 
@@ -249,7 +248,7 @@ describe('State Handler', () => {
         hiddenChildrenIds: [childId],
         visibleChildren: []
       })
-      const state: State = buildFromRootNodes([rootNode]).copy({
+      const state: State = State.buildFromRootNodes([rootNode]).copy({
         expandedNodeIds: [rootId],
         hiddenNodeIds: [childId],
         hiddenChildrenIdsByParentId: new Map().set(rootId, [childId])
@@ -271,7 +270,7 @@ describe('State Handler', () => {
       const rootNode = buildVisibleGraphNode({
         id: rootId
       })
-      const state = buildFromRootNodes([rootNode])
+      const state = State.buildFromRootNodes([rootNode])
       // when
       const foundNode = findGraphNode(rootId, state)
 

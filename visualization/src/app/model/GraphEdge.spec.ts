@@ -1,7 +1,6 @@
 import {buildShallowGraphEdge, buildVisibleGraphNode} from './ModelBuilders.spec';
 import {createEdges, GraphEdge} from './GraphEdge';
 import {EdgeFilterType} from './EdgeFilter';
-import {buildFromRootNodes} from './State.spec';
 import {State} from './State';
 
 describe('GraphEdge', () => {
@@ -20,7 +19,7 @@ describe('GraphEdge', () => {
           target: leafNode1Id
         })]
       })
-      const state = buildFromRootNodes([leafNode1, leafNode2]);
+      const state = State.buildFromRootNodes([leafNode1, leafNode2]);
 
       // when
       const edges = createEdges([leafNode1, leafNode2], state);
@@ -55,7 +54,7 @@ describe('GraphEdge', () => {
           source: leafNode3Id,
           target: target}))
       })
-      const state = buildFromRootNodes([leafNode1, leafNode2, leafNode3]);
+      const state = State.buildFromRootNodes([leafNode1, leafNode2, leafNode3]);
 
       // when
       const edges = createEdges([leafNode1, leafNode2, leafNode3], state)
@@ -85,7 +84,7 @@ describe('GraphEdge', () => {
         })]
       })
 
-      const base = buildFromRootNodes([parentNode, collapsedLeaf, expandedLeaf])
+      const base = State.buildFromRootNodes([parentNode, collapsedLeaf, expandedLeaf])
       const state = new State({ allNodes: base.allNodes, expandedNodeIds: [] })
 
       // when
@@ -128,7 +127,7 @@ describe('GraphEdge', () => {
       })
 
       const allNodes = [parentNode, childNode, otherNode1, otherNode2];
-      const base = buildFromRootNodes(allNodes);
+      const base = State.buildFromRootNodes(allNodes);
       const state = new State({ allNodes: base.allNodes, expandedNodeIds: [parentNodeId] })
 
       // when
@@ -161,7 +160,7 @@ describe('GraphEdge', () => {
       })
       parentNode.visibleChildren = [childNode]
 
-      const state = buildFromRootNodes([parentNode, childNode]);
+      const state = State.buildFromRootNodes([parentNode, childNode]);
 
       // when
       const edges = createEdges([parentNode, childNode], state)
@@ -182,7 +181,7 @@ describe('GraphEdge', () => {
           target: nonExistentNodeId
         })]
       })
-      const state = buildFromRootNodes([leafNode])
+      const state = State.buildFromRootNodes([leafNode])
 
       // when
       const edges = createEdges([leafNode], state)
@@ -215,7 +214,7 @@ describe('GraphEdge', () => {
       const leafNode2 = buildVisibleGraphNode({
         id: leafNodeId2
       })
-      const state = buildFromRootNodes([leafNode1, leafNode2])
+      const state = State.buildFromRootNodes([leafNode1, leafNode2])
 
       // when
       const edges = createEdges([leafNode1, leafNode2], state)
@@ -249,7 +248,7 @@ describe('GraphEdge', () => {
       })
 
       const allNodes = [leafNode, parentNode, hiddenChildNode];
-      const base = buildFromRootNodes(allNodes);
+      const base = State.buildFromRootNodes(allNodes);
       const state = new State({ allNodes: base.allNodes, hiddenNodeIds: [hiddenChildNodeId] })
 
       // when
@@ -283,7 +282,7 @@ describe('GraphEdge', () => {
       const leafNode2 = buildVisibleGraphNode({
         id: leafNodeId2
       })
-      const state = buildFromRootNodes([leafNode1, leafNode2])
+      const state = State.buildFromRootNodes([leafNode1, leafNode2])
 
       // when
       const edges = createEdges([leafNode1, leafNode2], state)
@@ -319,7 +318,7 @@ describe('GraphEdge', () => {
              id: leafNodeId2
            })
 
-           const base = buildFromRootNodes([leafNode1, leafNode2]);
+           const base = State.buildFromRootNodes([leafNode1, leafNode2]);
            const state = new State({ allNodes: base.allNodes, selectedFilter: EdgeFilterType.FEEDBACK_EDGES_AND_TWISTED_EDGES });
 
            // when

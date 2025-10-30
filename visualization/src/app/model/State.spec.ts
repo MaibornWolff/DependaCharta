@@ -80,7 +80,7 @@ describe('State', () => {
   describe('State.build', () => {
     it('should create a State from root nodes', () => {
       const rootNodes = [mockParentNode];
-      const state = buildFromRootNodes(rootNodes);
+      const state = State.buildFromRootNodes(rootNodes);
 
       expect(state.allNodes.length).toBe(4) // parent, 2 children, 1 grandchild
       expect(state.allNodes.find(node => node.id == parent1Id)).toBe(mockParentNode)
@@ -648,20 +648,15 @@ describe('median function', () => {
   });
 });
 
-export function buildFromRootNodes(rootNodes: GraphNode[] = []): State {
+declare module './State' {
+  namespace State {
+    function buildFromRootNodes(overrides?: GraphNode[]): State
+  }
+}
+
+State.buildFromRootNodes = function(rootNodes: GraphNode[] = []): State {
   return new State({
     allNodes: rootNodes.flatMap(expand)
   })
 }
 
-declare module './State' {
-  namespace State {
-    function build(overrides?: Partial<State>): State
-  }
-}
-
-State.build = function(overrides: Partial<State> = {}): State {
-  return new State(overrides)
-}
-
-export { State }
