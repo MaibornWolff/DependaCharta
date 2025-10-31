@@ -23,6 +23,33 @@ export class Edge extends ValueObject<Edge> {
     const [sourceNode, targetNode] = findSiblingsUnderLowestCommonAncestor(this.source, this.target)
     return sourceNode.level <= targetNode.level
   }
+
+  static aggregateEdges(edges: Edge[], shouldAggregateEdges: boolean): Edge[] {
+    const aggregatedEdges = new Map<string, Edge>()
+
+    edges.forEach(edge => {
+      const key = shouldAggregateEdges
+        ? edge.id
+        : `${(edge.id)}-${(edge.isCyclic)}`
+      const duplicateEdge = aggregatedEdges.get(key)
+
+      let aggregatedEdge: Edge
+      if (duplicateEdge) {
+        aggregatedEdge = duplicateEdge.copy({
+          weight: duplicateEdge.weight + edge.weight,
+          isCyclic: shouldAggregateEdges
+            ? duplicateEdge.isCyclic || edge.isCyclic
+            : edge.isCyclic,
+        })
+      } else {
+        aggregatedEdge = edge.copy({id: key})
+      }
+
+      aggregatedEdges.set(key, aggregatedEdge)
+    });
+
+    return [...aggregatedEdges.values()];    
+  }
 }
 
 /*
