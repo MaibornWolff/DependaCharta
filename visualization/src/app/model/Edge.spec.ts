@@ -1,4 +1,3 @@
-import {createEdges} from './Edge';
 import {Edge} from './Edge';
 import {EdgeFilterType} from './EdgeFilter';
 import {State} from './State';
@@ -24,7 +23,7 @@ describe('Edge', () => {
       const state = State.buildFromRootNodes([leafNode1, leafNode2]);
 
       // when
-      const edges = createEdges([leafNode1, leafNode2], state);
+      const edges = state.createEdges([leafNode1, leafNode2]);
 
       // then
       const expectedEdge = Edge.build({
@@ -59,7 +58,7 @@ describe('Edge', () => {
       const state = State.buildFromRootNodes([leafNode1, leafNode2, leafNode3]);
 
       // when
-      const edges = createEdges([leafNode1, leafNode2, leafNode3], state)
+      const edges = state.createEdges([leafNode1, leafNode2, leafNode3])
 
       // then
       expect(edges.length).toEqual(2)
@@ -89,7 +88,7 @@ describe('Edge', () => {
       const state = State.buildFromRootNodes([parentNode, collapsedLeaf, expandedLeaf]).copy({ expandedNodeIds: [] })
 
       // when
-      const edges = createEdges([parentNode, collapsedLeaf, expandedLeaf], state)
+      const edges = state.createEdges([parentNode, collapsedLeaf, expandedLeaf])
 
       // then
       expect(edges.length).toEqual(1)
@@ -131,7 +130,7 @@ describe('Edge', () => {
       const state = State.buildFromRootNodes(allNodes).copy({ expandedNodeIds: [parentNodeId] });
 
       // when
-      const edges = createEdges(allNodes, state)
+      const edges = state.createEdges(allNodes)
 
       // then
       expect(edges.length).toEqual(1)
@@ -163,7 +162,7 @@ describe('Edge', () => {
       const state = State.buildFromRootNodes([parentNode, childNode]);
 
       // when
-      const edges = createEdges([parentNode, childNode], state)
+      const edges = state.createEdges([parentNode, childNode])
 
       // then
       expect(edges.length).toEqual(0)
@@ -184,7 +183,7 @@ describe('Edge', () => {
       const state = State.buildFromRootNodes([leafNode])
 
       // when
-      const edges = createEdges([leafNode], state)
+      const edges = state.createEdges([leafNode])
 
       // then
       expect(edges.length).toEqual(0)
@@ -217,7 +216,7 @@ describe('Edge', () => {
       const state = State.buildFromRootNodes([leafNode1, leafNode2])
 
       // when
-      const edges = createEdges([leafNode1, leafNode2], state)
+      const edges = state.createEdges([leafNode1, leafNode2])
 
       // then
       expect(edges.length).toEqual(1)
@@ -251,7 +250,7 @@ describe('Edge', () => {
       const state = State.buildFromRootNodes(allNodes).copy({ hiddenNodeIds: [hiddenChildNodeId] });
 
       // when
-      const edges = createEdges([leafNode, hiddenChildNode], state)
+      const edges = state.createEdges([leafNode, hiddenChildNode])
 
       // then
       expect(edges.length).toEqual(0)
@@ -284,7 +283,7 @@ describe('Edge', () => {
       const state = State.buildFromRootNodes([leafNode1, leafNode2])
 
       // when
-      const edges = createEdges([leafNode1, leafNode2], state)
+      const edges = state.createEdges([leafNode1, leafNode2])
 
       // then
       expect(edges.length).toEqual(1)
@@ -320,7 +319,7 @@ describe('Edge', () => {
            const state = State.buildFromRootNodes([leafNode1, leafNode2]).copy({ selectedFilter: EdgeFilterType.FEEDBACK_EDGES_AND_TWISTED_EDGES });
 
            // when
-           const edges = createEdges([leafNode1, leafNode2], state);
+           const edges = state.createEdges([leafNode1, leafNode2]);
 
            // then
            expect(edges.length).toEqual(1);

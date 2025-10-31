@@ -5,7 +5,6 @@ import {toCytoscapeEdges, toCytoscapeNodes} from './converter/elementDefinitionC
 import {Action, InitializeState, ChangeFilter, ShowAllEdgesOfNode, HideAllEdgesOfNode, ResetView} from '../../../model/Action';
 import {EdgeFilter} from '../../../model/EdgeFilter';
 import {State} from "../../../model/State";
-import {createEdges} from '../../../model/Edge';
 import {HighlightService} from './highlight.service';
 import {lsmLayout} from './CyLsmLayout';
 import {cytoscape_style, cytoscape_options} from './cytoscapeConfig';
@@ -110,7 +109,7 @@ export class CytoscapeService {
     const flattenedGraphNodes = allNodeIdsToRerender
       .map(nodeId => state.findGraphNode(nodeId))
       .filter(node => node.visibleChildren.length === 0) // Only render edges on unexpanded/leaf nodes
-    const graphEdges = createEdges(flattenedGraphNodes, state)
+    const graphEdges = state.createEdges(flattenedGraphNodes)
     return toCytoscapeEdges(graphEdges, state.showLabels, state.isUsageShown)
   }
 

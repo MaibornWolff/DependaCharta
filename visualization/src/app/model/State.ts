@@ -1,6 +1,7 @@
 import {expand, getDescendants, GraphNode, VisibleGraphNode} from "./GraphNode";
 import {EdgeFilterType} from "./EdgeFilter";
 import {Action, InitializeState, ExpandNode, CollapseNode, ChangeFilter, ShowAllEdgesOfNode, HideAllEdgesOfNode, ToggleEdgeLabels, HideNode, RestoreNode, RestoreNodes, RestoreAllChildren, ToggleInteractionMode, ToggleUsageTypeMode, ResetView, ToggleNodeSelection, EnterMultiselectMode, LeaveMultiselectMode, PinNode, UnpinNode} from './Action';
+import {Edge} from "./Edge";
 
 // TODO avoid Maps (→ (de-)serialization issues)
 export class State {
@@ -158,6 +159,16 @@ export class State {
     return this.toVisibleGraphNode(graphNode)    
   }
 
+  createEdges(nodes: VisibleGraphNode[]): Edge[] {
+    const visibleNodes = this.getVisibleNodes()
+    const edges: Edge[] = nodes
+      .filter(node => node.visibleChildren.length === 0) // Only render edges on unexpanded/leaf nodes
+      .flatMap(node => {
+        return VisibleGraphNodeUtils.createEdgesForNode(node, visibleNodes, this.hiddenNodeIds)
+      })
+    return EdgeUtils.aggregateEdges(edges, EdgeFilterTypeUtils.isFilterForcesEdgesAggregation(this.selectedFilter))
+  }
+
   private toVisibleGraphNode(graphNode: GraphNode): VisibleGraphNode {
     const hiddenChildrenIds = this.hiddenChildrenIdsByParentId.get(graphNode.id) || []
     const isExpanded = this.expandedNodeIds.includes(graphNode.id)
@@ -174,6 +185,108 @@ export class State {
       isExpanded: isExpanded,
       isSelected: isSelected,
     }
+  }
+}
+
+// TODO move
+class EdgeFilterTypeUtils {
+  static isFilterForcesEdgesAggregation(edgeFilterType: EdgeFilterType): boolean {
+    return edgeFilterType !== EdgeFilterType.CYCLES_ONLY && edgeFilterType !== EdgeFilterType.FEEDBACK_EDGES_ONLY
+  }
+}
+
+// TODO move
+class EdgeUtils {
+  static aggregateEdges(edges: Edge[], shouldAggregateEdges: boolean): Edge[] {
+    const aggregatedEdges = new Map<string, Edge>()
+
+    edges.forEach(edge => {
+      const key = shouldAggregateEdges
+        ? edge.id
+        : `${(edge.id)}-${(edge.isCyclic)}`
+      const duplicateEdge = aggregatedEdges.get(key)
+
+      let aggregatedEdge: Edge
+      if (duplicateEdge) {
+        aggregatedEdge = duplicateEdge.copy({
+          weight: duplicateEdge.weight + edge.weight,
+          isCyclic: shouldAggregateEdges
+            ? duplicateEdge.isCyclic || edge.isCyclic
+            : edge.isCyclic,
+        })
+      } else {
+        aggregatedEdge = edge.copy({id: key})
+      }
+
+      aggregatedEdges.set(key, aggregatedEdge)
+    });
+
+    return [...aggregatedEdges.values()];
+  }
+}
+
+// TODO move
+class VisibleGraphNodeUtils {
+  static findBestDependencyTarget(dependencyId: string, visibleNodes: VisibleGraphNode[], hiddenNodeIds: string[]): VisibleGraphNode | null {
+    if (hiddenNodeIds.includes(dependencyId)) {
+      return null
+    }
+
+    const visibleNode = visibleNodes.find(visibleNode => dependencyId === visibleNode.id);
+    if (visibleNode) {
+      return visibleNode
+    }
+
+    const dependencyParent = IdUtils.getParent(dependencyId)
+    if (!dependencyParent) {
+      return null
+    }
+    return VisibleGraphNodeUtils.findBestDependencyTarget(dependencyParent, visibleNodes, hiddenNodeIds)
+  }
+
+  static createEdgesForNode(node: VisibleGraphNode, visibleNodes: VisibleGraphNode[], hiddenNodeIds: string[]): Edge[] {
+    return node.dependencies.flatMap(dependency => {
+      const bestTarget = VisibleGraphNodeUtils.findBestDependencyTarget(dependency.target, visibleNodes, hiddenNodeIds)
+      if (bestTarget && !IdUtils.isIncludedIn(bestTarget.id, node.id)) {
+        return new Edge({
+          id: node.id + "-" + bestTarget.id,
+          source: node,
+          target: bestTarget,
+          isCyclic: dependency.isCyclic,
+          weight: dependency.weight,
+          type: dependency.type
+        })
+      }
+      return []
+    })
+  }
+}
+
+// TODO move
+class IdUtils {
+  static getParent(nodeId: string): string | null {
+    const parent = nodeId.substring(0, nodeId.lastIndexOf('.'))
+    if (parent.length === 0) {
+      return null
+    }
+    return parent
+  }
+
+  static isIncludedIn(includingId: string, id: string) {
+    if (includingId === id) {
+      return true
+    }
+    const includingIdParts = includingId.split(".")
+    const idParts = id.split(".")
+    if (includingIdParts.length >= idParts.length) {
+      return false
+    }
+    for (let i = 0; i < includingIdParts.length; i++) {
+      if (includingIdParts[i] !== idParts[i]) {
+        return false
+      }
+    }
+    return true
   }
 }
 

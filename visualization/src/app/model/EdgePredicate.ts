@@ -1,4 +1,4 @@
-import {Edge, isPointingUpwards} from './Edge';
+import {Edge} from './Edge';
 import {EdgeType} from './EdgeType';
 
 type EdgePredicate = (edge: Edge) => boolean
