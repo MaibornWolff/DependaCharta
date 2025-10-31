@@ -1,5 +1,5 @@
 import {createEdges} from './GraphEdge';
-import type {GraphEdge} from './GraphEdge';
+import {GraphEdge} from './GraphEdge';
 import {EdgeFilterType} from './EdgeFilter';
 import {State} from './State';
 import {VisibleGraphNode} from './GraphNode.spec';
@@ -331,21 +331,27 @@ describe('GraphEdge', () => {
   })
 });
 
-namespace GraphEdge {
-  export function build(overrides: Partial<GraphEdge> = {}): GraphEdge {
-    const defaultTarget = VisibleGraphNode.build()
-    const defaultSource = VisibleGraphNode.build()
 
-    const defaults: GraphEdge = {
-      id: defaultSource + "-" + defaultTarget,
-      isCyclic: false,
-      source: defaultSource,
-      target: defaultTarget,
-      weight: 1,
-      type: 'usage'
-    }
-
-    return {...defaults, ...overrides}
+declare module './GraphEdge' {
+  namespace GraphEdge {
+    function build(overrides?: Partial<GraphEdge>): GraphEdge
   }
 }
+
+GraphEdge.build = function(overrides: Partial<GraphEdge> = {}): GraphEdge {
+  const defaultTarget = VisibleGraphNode.build()
+  const defaultSource = VisibleGraphNode.build()
+
+  const defaults: GraphEdge = new GraphEdge({
+    id: defaultSource + "-" + defaultTarget,
+    isCyclic: false,
+    source: defaultSource,
+    target: defaultTarget,
+    weight: 1,
+    type: 'usage'
+  })
+
+  return defaults.copy(overrides)
+}
+
 export { GraphEdge }

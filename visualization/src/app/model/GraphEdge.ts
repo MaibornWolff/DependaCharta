@@ -1,14 +1,15 @@
 import {getAncestors, GraphNode, VisibleGraphNode} from './GraphNode';
 import {EdgeFilterType} from './EdgeFilter';
 import {State} from './State';
+import {ValueObject} from '../common/ValueObject';
 
-export interface GraphEdge {
-  source: VisibleGraphNode
-  target: VisibleGraphNode
-  id: string
-  weight: number
-  isCyclic: boolean
-  type: string
+export class GraphEdge extends ValueObject<GraphEdge> {
+  declare readonly source: VisibleGraphNode
+  declare readonly target: VisibleGraphNode
+  declare readonly id: string
+  declare readonly weight: number
+  declare readonly isCyclic: boolean
+  declare readonly type: string
 }
 
 // TODO `GraphEdge` should have a property `isPointingUpwards: boolean`
@@ -59,14 +60,14 @@ function createEdgesForNode(node: VisibleGraphNode, visibleNodes: VisibleGraphNo
   return node.dependencies.flatMap(dependency => {
     const bestTarget = findBestDependencyTarget(dependency.target, visibleNodes, hiddenNodeIds)
     if (bestTarget && !isIncludedIn(bestTarget.id, node.id)) {
-      return {
+      return new GraphEdge({
         id: node.id + "-" + bestTarget.id,
         source: node,
         target: bestTarget,
         isCyclic: dependency.isCyclic,
         weight: dependency.weight,
         type: dependency.type
-      }
+      })
     }
     return []
   })
@@ -129,16 +130,14 @@ function aggregateEdges(edges: GraphEdge[], shouldAggregateEdges: boolean): Grap
 
     let aggregatedEdge: GraphEdge
     if (duplicateEdge) {
-      aggregatedEdge = {
-        ...duplicateEdge,
+      aggregatedEdge = duplicateEdge.copy({
         weight: duplicateEdge.weight + edge.weight,
         isCyclic: shouldAggregateEdges
           ? duplicateEdge.isCyclic || edge.isCyclic
           : edge.isCyclic,
-      }
+      })
     } else {
-      edge.id = key
-      aggregatedEdge = edge
+      aggregatedEdge = edge.copy({id: key})
     }
 
     aggregatedEdges.set(key, aggregatedEdge)
