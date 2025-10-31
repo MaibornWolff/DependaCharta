@@ -147,7 +147,7 @@ export class State {
     const expandedNodes = this.allNodes.filter(node => this.expandedNodeIds.includes(node.id))
     return this.allNodes
       .filter(node => !node.parent || expandedNodes.includes(node.parent))
-      .filter(node => !isNodeOrAncestorHidden(this.hiddenNodeIds, node))
+      .filter(node => !GraphNodeUtils.isNodeOrAncestorHidden(this.hiddenNodeIds, node))
       .map(node => this.toVisibleGraphNode(node))
   }
 
@@ -176,7 +176,7 @@ export class State {
     const visibleChildren = isExpanded ?
       graphNode.children
         .map(child => this.toVisibleGraphNode(child))
-        .filter(child => !isNodeOrAncestorHidden(hiddenChildrenIds, child))
+        .filter(child => !GraphNodeUtils.isNodeOrAncestorHidden(hiddenChildrenIds, child))
       : [];
     return {
       ...graphNode,
@@ -259,16 +259,20 @@ class IdUtils {
 
 }
 
-function isNodeOrAncestorHidden(hiddenChildrenIds: string[], child: GraphNode): boolean {
-  if (hiddenChildrenIds.includes(child.id)) {
-    return true;
-  }
-  let parent = child.parent;
-  while (parent) {
-    if (hiddenChildrenIds.includes(parent.id)) {
+// TODO move
+class GraphNodeUtils {
+  static isNodeOrAncestorHidden(hiddenChildrenIds: string[], child: GraphNode): boolean {
+    if (hiddenChildrenIds.includes(child.id)) {
       return true;
     }
-    parent = parent.parent;
+    let parent = child.parent;
+    while (parent) {
+      if (hiddenChildrenIds.includes(parent.id)) {
+        return true;
+      }
+      parent = parent.parent;
+    }
+    return false;
   }
-  return false;
 }
+
