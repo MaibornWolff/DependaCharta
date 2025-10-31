@@ -43,7 +43,7 @@ describe('InteractionMenuComponent', () => {
     fixture = TestBed.createComponent(InteractionMenuComponent);
     component = fixture.componentInstance;
     component.node = VisibleGraphNode.build()
-    component.state = new State({
+    component.state = State.build({
       isInteractive: true
     })
     fixture.detectChanges();

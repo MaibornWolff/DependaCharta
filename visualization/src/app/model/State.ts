@@ -5,26 +5,28 @@ import {Edge} from "./Edge";
 
 // TODO avoid Maps (→ (de-)serialization issues)
 export class State {
-  public readonly allNodes: GraphNode[] = []
-  public readonly hiddenNodeIds: string[] = []
-  public readonly hiddenChildrenIdsByParentId: Map<string, string[]> = new Map<string, string[]>()
-  public readonly expandedNodeIds: string[] = []
-  public readonly hoveredNodeId: string = ''
-  public readonly selectedNodeIds: string[] = []
-  public readonly pinnedNodeIds: string[] = []
-  public readonly selectedPinnedNodeIds: string[] = []
-  public readonly showLabels: boolean = true
-  public readonly selectedFilter: EdgeFilterType = EdgeFilterType.FEEDBACK_EDGES_AND_TWISTED_EDGES
-  public readonly isInteractive: boolean = true
-  public readonly isUsageShown: boolean = true
-  public readonly multiselectMode: boolean = false
+  constructor(
+    readonly allNodes: GraphNode[] = [],
+    readonly hiddenNodeIds: string[] = [],
+    readonly hiddenChildrenIdsByParentId: Map<string, string[]> = new Map<string, string[]>(),
+    readonly expandedNodeIds: string[] = [],
+    readonly hoveredNodeId: string = '',
+    readonly selectedNodeIds: string[] = [],
+    readonly pinnedNodeIds: string[] = [],
+    readonly selectedPinnedNodeIds: string[] = [],
+    readonly showLabels: boolean = true,
+    readonly selectedFilter: EdgeFilterType = EdgeFilterType.FEEDBACK_EDGES_AND_TWISTED_EDGES,
+    readonly isInteractive: boolean = true,
+    readonly isUsageShown: boolean = true,
+    readonly multiselectMode: boolean = false
+  ) {}
 
-  constructor(from: Partial<State> = {}) {
-    Object.assign(this, from)
+  static build(overrides: Partial<State> = {}) {
+    return Object.assign(new State(), overrides)
   }
 
   copy(overrides: Partial<State> = {}): State {
-    return new State(Object.assign({}, this, overrides))
+    return State.build(Object.assign({}, this, overrides))
   }
 
   reduce(action: Action): State {
