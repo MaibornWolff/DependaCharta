@@ -10,19 +10,19 @@ export class Edge extends ValueObject<Edge> {
   declare readonly weight: number
   declare readonly isCyclic: boolean
   declare readonly type: string
-}
 
-// TODO `Edge` should have a property `isPointingUpwards: boolean`
-// It should be set when when Edge is created in `toGraphEdges`
-// TODO `Edge` should have a function `getType(): EdgeType`
-// !isCyclic && !isPointingUpwards => REGULAR
-// isCyclic && !isPointingUpwards => CYCLIC
-// !isCyclic && isPointingUpwards => TWISTED
-// isCyclic && isPointingUpwards => FEEDBACK
-// TODO (next) `EdgePredicate`, `EdgeFilter`, `EdgeFilterResult` can be removed
-export function isPointingUpwards(edge: Edge): boolean {
-  const [sourceNode, targetNode] = findSiblingsUnderLowestCommonAncestor(edge.source, edge.target)
-  return sourceNode.level <= targetNode.level
+  // TODO `Edge` should have a property `isPointingUpwards: boolean`
+  // It should be set when when Edge is created in `toGraphEdges`
+  // TODO `Edge` should have a function `getType(): EdgeType`
+  // !isCyclic && !isPointingUpwards => REGULAR
+  // isCyclic && !isPointingUpwards => CYCLIC
+  // !isCyclic && isPointingUpwards => TWISTED
+  // isCyclic && isPointingUpwards => FEEDBACK
+  // TODO (next) `EdgePredicate`, `EdgeFilter`, `EdgeFilterResult` can be removed
+  isPointingUpwards(): boolean {
+    const [sourceNode, targetNode] = findSiblingsUnderLowestCommonAncestor(this.source, this.target)
+    return sourceNode.level <= targetNode.level
+  }
 }
 
 /*
