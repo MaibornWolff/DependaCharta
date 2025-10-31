@@ -39,7 +39,7 @@ export class State {
         })
       case action instanceof CollapseNode:
         return this.copy({
-          expandedNodeIds: this.expandedNodeIds.filter(id => !isDescendantOf([action.nodeId])(id))
+          expandedNodeIds: this.expandedNodeIds.filter(id => !IdUtils.isDescendantOf([action.nodeId])(id))
         })
       case action instanceof ChangeFilter:
         return this.copy({
@@ -81,7 +81,7 @@ export class State {
       case action instanceof UnpinNode: {
         const newSelectedPinnedNodeIds = this.selectedPinnedNodeIds.filter(id => id !== action.nodeId)
         return this.copy({
-          pinnedNodeIds: this.pinnedNodeIds.filter(isDescendantOf(newSelectedPinnedNodeIds)),
+          pinnedNodeIds: this.pinnedNodeIds.filter(IdUtils.isDescendantOf(newSelectedPinnedNodeIds)),
           selectedPinnedNodeIds: newSelectedPinnedNodeIds
         })
       }
@@ -281,6 +281,12 @@ class IdUtils {
     }
     return true
   }
+
+  static isDescendantOf = (ancestorNodeIds: string[]) => (descendantNodeId: string) =>
+    ancestorNodeIds
+      .filter(id => descendantNodeId.startsWith(id))
+      .length > 0
+
 }
 
 function isNodeOrAncestorHidden(hiddenChildrenIds: string[], child: GraphNode): boolean {
@@ -296,9 +302,3 @@ function isNodeOrAncestorHidden(hiddenChildrenIds: string[], child: GraphNode): 
   }
   return false;
 }
-
-// TODO move to an appropriate utility collection
-const isDescendantOf = (ancestorNodeIds: string[]) => (descendantNodeId: string) =>
-  ancestorNodeIds
-    .filter(id => descendantNodeId.startsWith(id))
-    .length > 0
