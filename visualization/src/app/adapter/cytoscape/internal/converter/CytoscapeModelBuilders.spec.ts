@@ -1,4 +1,4 @@
-import {GraphEdge} from '../../../../model/GraphEdge';
+import {Edge} from '../../../../model/Edge';
 import cytoscape, {ElementDefinition} from 'cytoscape';
 import {buildUniqueId} from '../../../../common/test/TestUtils.spec';
 import {VisibleGraphNode} from '../../../../model/GraphNode.spec';
@@ -53,7 +53,7 @@ export class EdgeCollectionBuilder {
   private nodes: ElementDefinition[] = []
   private edges: ElementDefinition[] = []
 
-  addGraphEdge(graphEdge: GraphEdge) {
+  addGraphEdge(graphEdge: Edge) {
     this.nodes.push(
       createNodeDefinition(graphEdge.source),
       createNodeDefinition(graphEdge.target)

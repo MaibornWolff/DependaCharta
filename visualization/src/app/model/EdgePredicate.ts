@@ -1,7 +1,7 @@
-import {GraphEdge, isPointingUpwards} from './GraphEdge';
+import {Edge, isPointingUpwards} from './Edge';
 import {EdgeType} from './EdgeType';
 
-type EdgePredicate = (edge: GraphEdge) => boolean
+type EdgePredicate = (edge: Edge) => boolean
 
 export namespace EdgePredicate {
   export function fromEnum(edgeType: EdgeType): EdgePredicate {

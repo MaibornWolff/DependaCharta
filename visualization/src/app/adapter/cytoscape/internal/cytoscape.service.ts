@@ -5,7 +5,7 @@ import {toCytoscapeEdges, toCytoscapeNodes} from './converter/elementDefinitionC
 import {Action, InitializeState, ChangeFilter, ShowAllEdgesOfNode, HideAllEdgesOfNode, ResetView} from '../../../model/Action';
 import {EdgeFilter} from '../../../model/EdgeFilter';
 import {State} from "../../../model/State";
-import {createEdges} from '../../../model/GraphEdge';
+import {createEdges} from '../../../model/Edge';
 import {HighlightService} from './highlight.service';
 import {lsmLayout} from './CyLsmLayout';
 import {cytoscape_style, cytoscape_options} from './cytoscapeConfig';

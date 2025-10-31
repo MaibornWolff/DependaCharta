@@ -1,11 +1,11 @@
-import {createEdges} from './GraphEdge';
-import {GraphEdge} from './GraphEdge';
+import {createEdges} from './Edge';
+import {Edge} from './Edge';
 import {EdgeFilterType} from './EdgeFilter';
 import {State} from './State';
 import {VisibleGraphNode} from './GraphNode.spec';
 import {ShallowGraphEdge} from './ShallowGraphEdge.spec';
 
-describe('GraphEdge', () => {
+describe('Edge', () => {
   describe('createEdges', () => {
     it('should create edge between two leaves', () => {
       // given
@@ -27,7 +27,7 @@ describe('GraphEdge', () => {
       const edges = createEdges([leafNode1, leafNode2], state);
 
       // then
-      const expectedEdge = GraphEdge.build({
+      const expectedEdge = Edge.build({
         id: leafNode2Id + '-' + leafNode1Id,
         source: leafNode2,
         target: leafNode1,
@@ -332,17 +332,17 @@ describe('GraphEdge', () => {
 });
 
 
-declare module './GraphEdge' {
-  namespace GraphEdge {
-    function build(overrides?: Partial<GraphEdge>): GraphEdge
+declare module './Edge' {
+  namespace Edge {
+    function build(overrides?: Partial<Edge>): Edge
   }
 }
 
-GraphEdge.build = function(overrides: Partial<GraphEdge> = {}): GraphEdge {
+Edge.build = function(overrides: Partial<Edge> = {}): Edge {
   const defaultTarget = VisibleGraphNode.build()
   const defaultSource = VisibleGraphNode.build()
 
-  const defaults: GraphEdge = new GraphEdge({
+  const defaults = new Edge({
     id: defaultSource + "-" + defaultTarget,
     isCyclic: false,
     source: defaultSource,
@@ -354,4 +354,4 @@ GraphEdge.build = function(overrides: Partial<GraphEdge> = {}): GraphEdge {
   return defaults.copy(overrides)
 }
 
-export { GraphEdge }
+export { Edge }

@@ -2,7 +2,7 @@ import {toCytoscapeEdges, toCytoscapeNodes, toGraphEdges, toVisibleGraphNodes} f
 import {EdgeCollectionBuilder, NodeCollectionBuilder} from './CytoscapeModelBuilders.spec'
 import {convertTypeOfUsage} from './UsageTypeConverter'
 import {GraphNode, VisibleGraphNode} from '../../../../model/GraphNode.spec'
-import {GraphEdge} from '../../../../model/GraphEdge.spec'
+import {Edge} from '../../../../model/Edge.spec'
 import {ShallowGraphEdge} from '../../../../model/ShallowGraphEdge.spec'
 
 describe('ElementDefinitionConverter', () => {
@@ -145,7 +145,7 @@ describe('ElementDefinitionConverter', () => {
   })
 
   describe('Edge Conversion', () => {
-    it('Should convert GraphEdge to ElementDefiniton', () => {
+    it('Should convert Edge to ElementDefiniton', () => {
       // given
       const source = VisibleGraphNode.build({
         id: 'source'
@@ -153,7 +153,7 @@ describe('ElementDefinitionConverter', () => {
       const target = VisibleGraphNode.build({
         id: 'target',
       })
-      const graphEdge = GraphEdge.build({
+      const graphEdge = Edge.build({
         source: source,
         target: target,
         isCyclic: true,
@@ -185,7 +185,7 @@ describe('ElementDefinitionConverter', () => {
         const target = VisibleGraphNode.build({
           id: 'target'
         })
-        const graphEdge = GraphEdge.build({
+        const graphEdge = Edge.build({
           source: source,
           target: target,
           isCyclic: true,
@@ -206,7 +206,7 @@ describe('ElementDefinitionConverter', () => {
 
     it('Should not label ElementDefiniton if showLabels is false', () => {
       // given
-      const graphEdge = GraphEdge.build({
+      const graphEdge = Edge.build({
         weight: 2
       })
 
@@ -219,7 +219,7 @@ describe('ElementDefinitionConverter', () => {
 
     it('Should label ElementDefiniton with type if showLabels is true and weight is 1', () => {
       // given
-      const graphEdge = GraphEdge.build({
+      const graphEdge = Edge.build({
         weight: 1,
         type: 'inheritance'
       })
@@ -233,7 +233,7 @@ describe('ElementDefinitionConverter', () => {
 
     it('Should label ElementDefiniton if showLabels is true and weight is greater than 1', () => {
       // given
-      const graphEdge = GraphEdge.build({
+      const graphEdge = Edge.build({
         weight: 5
       })
 
@@ -247,7 +247,7 @@ describe('ElementDefinitionConverter', () => {
     it('Converts edgeCollection to graphEdges', () => {
       const target = VisibleGraphNode.build()
       const source = VisibleGraphNode.build()
-      const expectedEdge = GraphEdge.build({
+      const expectedEdge = Edge.build({
         source: source,
         target: target,
         isCyclic: true,
@@ -264,7 +264,7 @@ describe('ElementDefinitionConverter', () => {
     })
 
     it('Returns no GraphEdges if there are no suitable GraphNodes', () => {
-      const expectedEdge = GraphEdge.build()
+      const expectedEdge = Edge.build()
       const cyEdges = new EdgeCollectionBuilder()
         .addGraphEdge(expectedEdge)
         .build()

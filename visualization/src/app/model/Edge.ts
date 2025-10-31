@@ -3,7 +3,7 @@ import {EdgeFilterType} from './EdgeFilter';
 import {State} from './State';
 import {ValueObject} from '../common/ValueObject';
 
-export class GraphEdge extends ValueObject<GraphEdge> {
+export class Edge extends ValueObject<Edge> {
   declare readonly source: VisibleGraphNode
   declare readonly target: VisibleGraphNode
   declare readonly id: string
@@ -12,15 +12,15 @@ export class GraphEdge extends ValueObject<GraphEdge> {
   declare readonly type: string
 }
 
-// TODO `GraphEdge` should have a property `isPointingUpwards: boolean`
-// It should be set when when GraphEdge is created in `toGraphEdges`
-// TODO `GraphEdge` should have a function `getType(): EdgeType`
+// TODO `Edge` should have a property `isPointingUpwards: boolean`
+// It should be set when when Edge is created in `toGraphEdges`
+// TODO `Edge` should have a function `getType(): EdgeType`
 // !isCyclic && !isPointingUpwards => REGULAR
 // isCyclic && !isPointingUpwards => CYCLIC
 // !isCyclic && isPointingUpwards => TWISTED
 // isCyclic && isPointingUpwards => FEEDBACK
 // TODO (next) `EdgePredicate`, `EdgeFilter`, `EdgeFilterResult` can be removed
-export function isPointingUpwards(edge: GraphEdge): boolean {
+export function isPointingUpwards(edge: Edge): boolean {
   const [sourceNode, targetNode] = findSiblingsUnderLowestCommonAncestor(edge.source, edge.target)
   return sourceNode.level <= targetNode.level
 }
@@ -46,9 +46,9 @@ function findSiblingsUnderLowestCommonAncestor(source: GraphNode, target: GraphN
   throw new Error("No common ancestor found")
 }
 
-export function createEdges(nodes: VisibleGraphNode[], state: State): GraphEdge[] {
+export function createEdges(nodes: VisibleGraphNode[], state: State): Edge[] {
   const visibleNodes = state.getVisibleNodes()
-  const edges: GraphEdge[] = nodes
+  const edges: Edge[] = nodes
     .filter(node => node.visibleChildren.length === 0) // Only render edges on unexpanded/leaf nodes
     .flatMap(node => {
       return createEdgesForNode(node, visibleNodes, state.hiddenNodeIds)
@@ -56,11 +56,11 @@ export function createEdges(nodes: VisibleGraphNode[], state: State): GraphEdge[
   return aggregateEdges(edges, isFilterForcesEdgesAggregation(state.selectedFilter))
 }
 
-function createEdgesForNode(node: VisibleGraphNode, visibleNodes: VisibleGraphNode[], hiddenNodeIds: string[]): GraphEdge[] {
+function createEdgesForNode(node: VisibleGraphNode, visibleNodes: VisibleGraphNode[], hiddenNodeIds: string[]): Edge[] {
   return node.dependencies.flatMap(dependency => {
     const bestTarget = findBestDependencyTarget(dependency.target, visibleNodes, hiddenNodeIds)
     if (bestTarget && !isIncludedIn(bestTarget.id, node.id)) {
-      return new GraphEdge({
+      return new Edge({
         id: node.id + "-" + bestTarget.id,
         source: node,
         target: bestTarget,
@@ -119,8 +119,8 @@ function isFilterForcesEdgesAggregation(edgeFilterType: EdgeFilterType): boolean
   return edgeFilterType !== EdgeFilterType.CYCLES_ONLY && edgeFilterType !== EdgeFilterType.FEEDBACK_EDGES_ONLY
 }
 
-function aggregateEdges(edges: GraphEdge[], shouldAggregateEdges: boolean): GraphEdge[] {
-  const aggregatedEdges = new Map<string, GraphEdge>()
+function aggregateEdges(edges: Edge[], shouldAggregateEdges: boolean): Edge[] {
+  const aggregatedEdges = new Map<string, Edge>()
 
   edges.forEach(edge => {
     const key = shouldAggregateEdges
@@ -128,7 +128,7 @@ function aggregateEdges(edges: GraphEdge[], shouldAggregateEdges: boolean): Grap
       : `${(edge.id)}-${(edge.isCyclic)}`
     const duplicateEdge = aggregatedEdges.get(key)
 
-    let aggregatedEdge: GraphEdge
+    let aggregatedEdge: Edge
     if (duplicateEdge) {
       aggregatedEdge = duplicateEdge.copy({
         weight: duplicateEdge.weight + edge.weight,
