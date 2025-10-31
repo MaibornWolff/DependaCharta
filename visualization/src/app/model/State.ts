@@ -1,5 +1,5 @@
 import {expand, getDescendants, GraphNode, VisibleGraphNode} from "./GraphNode";
-import {EdgeFilterType} from "./EdgeFilter";
+import {EdgeFilter, EdgeFilterType} from "./EdgeFilter";
 import {Action, InitializeState, ExpandNode, CollapseNode, ChangeFilter, ShowAllEdgesOfNode, HideAllEdgesOfNode, ToggleEdgeLabels, HideNode, RestoreNode, RestoreNodes, RestoreAllChildren, ToggleInteractionMode, ToggleUsageTypeMode, ResetView, ToggleNodeSelection, EnterMultiselectMode, LeaveMultiselectMode, PinNode, UnpinNode} from './Action';
 import {Edge} from "./Edge";
 
@@ -166,7 +166,7 @@ export class State {
       .flatMap(node => {
         return VisibleGraphNodeUtils.createEdgesForNode(node, visibleNodes, this.hiddenNodeIds)
       })
-    return EdgeUtils.aggregateEdges(edges, EdgeFilterTypeUtils.isFilterForcesEdgesAggregation(this.selectedFilter))
+    return EdgeUtils.aggregateEdges(edges, EdgeFilter.isFilterForcesEdgesAggregation(this.selectedFilter))
   }
 
   private toVisibleGraphNode(graphNode: GraphNode): VisibleGraphNode {
@@ -185,13 +185,6 @@ export class State {
       isExpanded: isExpanded,
       isSelected: isSelected,
     }
-  }
-}
-
-// TODO move
-class EdgeFilterTypeUtils {
-  static isFilterForcesEdgesAggregation(edgeFilterType: EdgeFilterType): boolean {
-    return edgeFilterType !== EdgeFilterType.CYCLES_ONLY && edgeFilterType !== EdgeFilterType.FEEDBACK_EDGES_ONLY
   }
 }
 

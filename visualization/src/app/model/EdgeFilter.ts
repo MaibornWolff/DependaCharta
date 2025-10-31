@@ -43,6 +43,10 @@ export namespace EdgeFilter {
     const allEdgeTypes = EdgeType.fromEnum(EdgeFilterType.ALL)
     return EdgeFilter.fromEnums(allEdgeTypes, id)
   }
+
+  export function isFilterForcesEdgesAggregation(edgeFilterType: EdgeFilterType): boolean {
+    return edgeFilterType !== EdgeFilterType.CYCLES_ONLY && edgeFilterType !== EdgeFilterType.FEEDBACK_EDGES_ONLY
+  }
 }
 
 export type EdgeId = string
