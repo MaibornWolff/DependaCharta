@@ -1,5 +1,5 @@
 export abstract class ValueObject<T> {
-  constructor(from: Total<T>) {
+  protected constructor(from: Total<T>) {
     Object.assign(this, from)
   }
 
