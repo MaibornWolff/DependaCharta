@@ -9,10 +9,6 @@ export class Edge extends ValueObject<Edge> {
   declare readonly isCyclic: boolean
   declare readonly type: string
 
-  static new(overrides: Total<Edge>): Edge {
-    return new Edge(overrides)
-  }
-
   // TODO `Edge` should have a property `isPointingUpwards: boolean`
   // It should be set when when Edge is created in `toGraphEdges`
   // TODO `Edge` should have a function `getType(): EdgeType`

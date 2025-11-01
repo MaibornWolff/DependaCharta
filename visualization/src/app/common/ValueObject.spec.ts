@@ -5,10 +5,6 @@ describe('ValueObject', () => {
         declare readonly a: string
         declare readonly b: number
 
-        static new(overrides: Total<Foo>): Foo {
-            return new Foo(overrides)
-        }
-
         foo() { return 'Hello World!' }
     }
 

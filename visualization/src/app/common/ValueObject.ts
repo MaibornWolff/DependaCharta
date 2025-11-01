@@ -1,6 +1,10 @@
 export abstract class ValueObject<T> {
-  protected constructor(from: Total<T>) {
+  public constructor(from: Total<T>) {
     Object.assign(this, from)
+  }
+
+  static new<T>(this: new (from: Total<T>) => T, overrides: Total<T>): T {
+    return new this(overrides)
   }
 
   copy(overrides: Partial<T> = {}): T {
