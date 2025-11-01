@@ -1,17 +1,21 @@
-import {ValueObject} from "./ValueObject";
+import {Total, ValueObject} from "./ValueObject";
 
 describe('ValueObject', () => {
     class Foo extends ValueObject<Foo> {
         declare readonly a: string
         declare readonly b: number
 
+        static make(overrides: Total<Foo>): Foo {
+            return new Foo(overrides)
+        }
+
         foo() { return 'Hello World!' }
     }
 
-    const foo = new Foo({a: 'Hi!', b: 42})
+    const foo = Foo.make({a: 'Hi!', b: 42})
 
     it('should create', () => {
-        expect(new Foo({a: 'Hi!', b: 42})).toEqual(foo)
+        expect(Foo.make({a: 'Hi!', b: 42})).toEqual(foo)
     });
 
     it('should copy', () => {
