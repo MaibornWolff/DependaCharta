@@ -1,6 +1,4 @@
 import {getAncestors, GraphNode, VisibleGraphNode} from './GraphNode';
-import {EdgeFilterType} from './EdgeFilter';
-import {State} from './State';
 import {ValueObject} from '../common/ValueObject';
 
 export class Edge extends ValueObject<Edge> {
