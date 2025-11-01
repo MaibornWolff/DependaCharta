@@ -18,7 +18,7 @@ describe('CompoundNodeComponent', () => {
     component = fixture.componentInstance
     component.node = VisibleGraphNode.build()
     component.stateChange = {
-      state: new State(),
+      state: State.build(),
       action: new ToggleEdgeLabels()
     }
     fixture.detectChanges()

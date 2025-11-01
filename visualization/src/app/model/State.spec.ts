@@ -46,7 +46,7 @@ describe('State', () => {
 
   describe('State.build', () => {
     it('should create a State with default values', () => {
-      const state = new State()
+      const state = State.build()
 
       expect(state.allNodes).toEqual([])
       expect(state.hiddenNodeIds).toEqual([])

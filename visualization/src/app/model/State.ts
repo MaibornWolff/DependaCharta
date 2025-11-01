@@ -2,31 +2,42 @@ import {expand, getDescendants, GraphNode, VisibleGraphNode} from "./GraphNode";
 import {EdgeFilter, EdgeFilterType} from "./EdgeFilter";
 import {Action, InitializeState, ExpandNode, CollapseNode, ChangeFilter, ShowAllEdgesOfNode, HideAllEdgesOfNode, ToggleEdgeLabels, HideNode, RestoreNode, RestoreNodes, RestoreAllChildren, ToggleInteractionMode, ToggleUsageTypeMode, ResetView, ToggleNodeSelection, EnterMultiselectMode, LeaveMultiselectMode, PinNode, UnpinNode} from './Action';
 import {Edge} from "./Edge";
+import {ValueObject} from "../common/ValueObject";
 
 // TODO avoid Maps (→ (de-)serialization issues)
-export class State {
-  constructor(
-    readonly allNodes: GraphNode[] = [],
-    readonly hiddenNodeIds: string[] = [],
-    readonly hiddenChildrenIdsByParentId: Map<string, string[]> = new Map<string, string[]>(),
-    readonly expandedNodeIds: string[] = [],
-    readonly hoveredNodeId: string = '',
-    readonly selectedNodeIds: string[] = [],
-    readonly pinnedNodeIds: string[] = [],
-    readonly selectedPinnedNodeIds: string[] = [],
-    readonly showLabels: boolean = true,
-    readonly selectedFilter: EdgeFilterType = EdgeFilterType.FEEDBACK_EDGES_AND_TWISTED_EDGES,
-    readonly isInteractive: boolean = true,
-    readonly isUsageShown: boolean = true,
-    readonly multiselectMode: boolean = false
-  ) {}
+export class State extends ValueObject<State> {
+  declare readonly allNodes: GraphNode[]
+  declare readonly hiddenNodeIds: string[]
+  declare readonly hiddenChildrenIdsByParentId: Map<string, string[]>
+  declare readonly expandedNodeIds: string[]
+  declare readonly hoveredNodeId: string
+  declare readonly selectedNodeIds: string[]
+  declare readonly pinnedNodeIds: string[]
+  declare readonly selectedPinnedNodeIds: string[]
+  declare readonly showLabels: boolean
+  declare readonly selectedFilter: EdgeFilterType
+  declare readonly isInteractive: boolean
+  declare readonly isUsageShown: boolean
+  declare readonly multiselectMode: boolean
 
   static build(overrides: Partial<State> = {}) {
-    return Object.assign(new State(), overrides)
-  }
+    const defaults = State.new({
+      allNodes: [],
+      hiddenNodeIds: [],
+      hiddenChildrenIdsByParentId: new Map<string, string[]>(),
+      expandedNodeIds: [],
+      hoveredNodeId: '',
+      selectedNodeIds: [],
+      pinnedNodeIds: [],
+      selectedPinnedNodeIds: [],
+      showLabels: true,
+      selectedFilter: EdgeFilterType.FEEDBACK_EDGES_AND_TWISTED_EDGES,
+      isInteractive: true,
+      isUsageShown: true,
+      multiselectMode: false
+    })
 
-  copy(overrides: Partial<State> = {}): State {
-    return State.build(Object.assign({}, this, overrides))
+    return Object.assign(defaults, overrides)
   }
 
   reduce(action: Action): State {

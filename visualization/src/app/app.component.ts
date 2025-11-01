@@ -30,7 +30,7 @@ export class AppComponent {
   private changeDetector = inject(ChangeDetectorRef)
   isLoading: boolean = false
   cytoscapeInitialized: boolean = true
-  state: State = new State()
+  state: State = State.build()
   stateChange!: StateChange
 
   apply(action: Action) {
