@@ -1,4 +1,4 @@
-import {Total, ValueObject} from "./ValueObject";
+import {ValueObject} from "./ValueObject";
 
 describe('ValueObject', () => {
     class Foo extends ValueObject<Foo> {
