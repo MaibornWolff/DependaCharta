@@ -1,5 +1,5 @@
 import {getAncestors, GraphNode, VisibleGraphNode} from './GraphNode';
-import {ValueObject} from '../common/ValueObject';
+import {Total, ValueObject} from '../common/ValueObject';
 
 export class Edge extends ValueObject<Edge> {
   declare readonly source: VisibleGraphNode
@@ -8,6 +8,10 @@ export class Edge extends ValueObject<Edge> {
   declare readonly weight: number
   declare readonly isCyclic: boolean
   declare readonly type: string
+
+  static make(overrides: Total<Edge>): Edge {
+    return new Edge(overrides)
+  }
 
   // TODO `Edge` should have a property `isPointingUpwards: boolean`
   // It should be set when when Edge is created in `toGraphEdges`
