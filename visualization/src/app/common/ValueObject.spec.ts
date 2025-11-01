@@ -5,17 +5,17 @@ describe('ValueObject', () => {
         declare readonly a: string
         declare readonly b: number
 
-        static make(overrides: Total<Foo>): Foo {
+        static new(overrides: Total<Foo>): Foo {
             return new Foo(overrides)
         }
 
         foo() { return 'Hello World!' }
     }
 
-    const foo = Foo.make({a: 'Hi!', b: 42})
+    const foo = Foo.new({a: 'Hi!', b: 42})
 
     it('should create', () => {
-        expect(Foo.make({a: 'Hi!', b: 42})).toEqual(foo)
+        expect(Foo.new({a: 'Hi!', b: 42})).toEqual(foo)
     });
 
     it('should copy', () => {

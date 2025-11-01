@@ -341,7 +341,7 @@ Edge.build = function(overrides: Partial<Edge> = {}): Edge {
   const defaultTarget = VisibleGraphNode.build()
   const defaultSource = VisibleGraphNode.build()
 
-  const defaults = Edge.make({
+  const defaults = Edge.new({
     id: defaultSource + "-" + defaultTarget,
     isCyclic: false,
     source: defaultSource,

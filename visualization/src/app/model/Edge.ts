@@ -9,7 +9,7 @@ export class Edge extends ValueObject<Edge> {
   declare readonly isCyclic: boolean
   declare readonly type: string
 
-  static make(overrides: Total<Edge>): Edge {
+  static new(overrides: Total<Edge>): Edge {
     return new Edge(overrides)
   }
 
