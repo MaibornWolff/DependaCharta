@@ -1,20 +1,21 @@
-import {buildShallowGraphEdge, buildVisibleGraphNode} from './ModelBuilders.spec';
-import {createEdges, GraphEdge} from './GraphEdge';
+import {Edge} from './Edge';
 import {EdgeFilterType} from './EdgeFilter';
 import {State} from './State';
+import {VisibleGraphNode} from './GraphNode.spec';
+import {ShallowGraphEdge} from './ShallowGraphEdge.spec';
 
-describe('GraphEdge', () => {
+describe('Edge', () => {
   describe('createEdges', () => {
     it('should create edge between two leaves', () => {
       // given
       const leafNode1Id = 'leafNode1';
       const leafNode2Id = 'leafNode2';
-      const leafNode1 = buildVisibleGraphNode({
+      const leafNode1 = VisibleGraphNode.build({
         id: leafNode1Id
       })
-      const leafNode2 = buildVisibleGraphNode({
+      const leafNode2 = VisibleGraphNode.build({
         id: leafNode2Id,
-        dependencies: [buildShallowGraphEdge({
+        dependencies: [ShallowGraphEdge.build({
           source: leafNode2Id,
           target: leafNode1Id
         })]
@@ -22,17 +23,17 @@ describe('GraphEdge', () => {
       const state = State.buildFromRootNodes([leafNode1, leafNode2]);
 
       // when
-      const edges = createEdges([leafNode1, leafNode2], state);
+      const edges = state.createEdges([leafNode1, leafNode2]);
 
       // then
-      const expectedEdge: GraphEdge = {
+      const expectedEdge = Edge.build({
         id: leafNode2Id + '-' + leafNode1Id,
         source: leafNode2,
         target: leafNode1,
         isCyclic: false,
         weight: 1,
         type: 'usage'
-      }
+      })
       expect(edges.length).toEqual(1);
       expect(edges[0]).toEqual(expectedEdge);
     })
@@ -42,22 +43,22 @@ describe('GraphEdge', () => {
       const leafNode1Id = 'leafNode1';
       const leafNode2Id = 'leafNode2';
       const leafNode3Id = "leafNode3"
-      const leafNode1 = buildVisibleGraphNode({
+      const leafNode1 = VisibleGraphNode.build({
         id: leafNode1Id
       })
-      const leafNode2 = buildVisibleGraphNode({
+      const leafNode2 = VisibleGraphNode.build({
         id: leafNode2Id
       })
-      const leafNode3 = buildVisibleGraphNode({
+      const leafNode3 = VisibleGraphNode.build({
         id: leafNode3Id,
-        dependencies: [leafNode1Id, leafNode2Id].map(target => buildShallowGraphEdge({
+        dependencies: [leafNode1Id, leafNode2Id].map(target => ShallowGraphEdge.build({
           source: leafNode3Id,
           target: target}))
       })
       const state = State.buildFromRootNodes([leafNode1, leafNode2, leafNode3]);
 
       // when
-      const edges = createEdges([leafNode1, leafNode2, leafNode3], state)
+      const edges = state.createEdges([leafNode1, leafNode2, leafNode3])
 
       // then
       expect(edges.length).toEqual(2)
@@ -68,17 +69,17 @@ describe('GraphEdge', () => {
       const parentNodeId = 'parentNode';
       const collapsedLeafNodeId = parentNodeId + '.collapsedLeaf';
       const expandedLeafNodeId = "expandedLeaf"
-      const parentNode = buildVisibleGraphNode({
+      const parentNode = VisibleGraphNode.build({
         id: parentNodeId,
         visibleChildren: []
       })
-      const collapsedLeaf = buildVisibleGraphNode({
+      const collapsedLeaf = VisibleGraphNode.build({
         id: collapsedLeafNodeId,
         parent: parentNode
       })
-      const expandedLeaf = buildVisibleGraphNode({
+      const expandedLeaf = VisibleGraphNode.build({
         id: expandedLeafNodeId,
-        dependencies: [buildShallowGraphEdge({
+        dependencies: [ShallowGraphEdge.build({
           source: expandedLeafNodeId,
           target: collapsedLeafNodeId
         })]
@@ -87,7 +88,7 @@ describe('GraphEdge', () => {
       const state = State.buildFromRootNodes([parentNode, collapsedLeaf, expandedLeaf]).copy({ expandedNodeIds: [] })
 
       // when
-      const edges = createEdges([parentNode, collapsedLeaf, expandedLeaf], state)
+      const edges = state.createEdges([parentNode, collapsedLeaf, expandedLeaf])
 
       // then
       expect(edges.length).toEqual(1)
@@ -102,26 +103,26 @@ describe('GraphEdge', () => {
       const otherNode1Id = "otherNode1"
       const otherNode2Id = "otherNode2"
 
-      const parentNode = buildVisibleGraphNode({
+      const parentNode = VisibleGraphNode.build({
         id: parentNodeId,
-        dependencies: [buildShallowGraphEdge({
+        dependencies: [ShallowGraphEdge.build({
           source: parentNodeId,
           target: otherNode2Id
         })]
       })
-      const childNode = buildVisibleGraphNode({
+      const childNode = VisibleGraphNode.build({
         id: childNodeId,
         parent: parentNode,
-        dependencies: [buildShallowGraphEdge({
+        dependencies: [ShallowGraphEdge.build({
           source: childNodeId,
           target: otherNode1Id
         })]
       })
       parentNode.visibleChildren = [childNode]
-      const otherNode1 = buildVisibleGraphNode({
+      const otherNode1 = VisibleGraphNode.build({
         id: otherNode1Id
       })
-      const otherNode2 = buildVisibleGraphNode({
+      const otherNode2 = VisibleGraphNode.build({
         id: otherNode2Id
       })
 
@@ -129,7 +130,7 @@ describe('GraphEdge', () => {
       const state = State.buildFromRootNodes(allNodes).copy({ expandedNodeIds: [parentNodeId] });
 
       // when
-      const edges = createEdges(allNodes, state)
+      const edges = state.createEdges(allNodes)
 
       // then
       expect(edges.length).toEqual(1)
@@ -145,13 +146,13 @@ describe('GraphEdge', () => {
       // does not find it and then tries again with the parent of the nonexistent child node which is our parent node
       const nonExistentChildNodeId = parentNodeId + '.child2'
 
-      const parentNode = buildVisibleGraphNode({
+      const parentNode = VisibleGraphNode.build({
         id: parentNodeId
       })
-      const childNode = buildVisibleGraphNode({
+      const childNode = VisibleGraphNode.build({
         id: childNodeId,
         parent: parentNode,
-        dependencies: [buildShallowGraphEdge({
+        dependencies: [ShallowGraphEdge.build({
           source: childNodeId,
           target: nonExistentChildNodeId
         })]
@@ -161,7 +162,7 @@ describe('GraphEdge', () => {
       const state = State.buildFromRootNodes([parentNode, childNode]);
 
       // when
-      const edges = createEdges([parentNode, childNode], state)
+      const edges = state.createEdges([parentNode, childNode])
 
       // then
       expect(edges.length).toEqual(0)
@@ -172,9 +173,9 @@ describe('GraphEdge', () => {
       const nonExistentNodeId = 'nonexistent node'
       const leafNodeId = 'leafNode'
 
-      const leafNode = buildVisibleGraphNode({
+      const leafNode = VisibleGraphNode.build({
         id: leafNodeId,
-        dependencies: [buildShallowGraphEdge({
+        dependencies: [ShallowGraphEdge.build({
           source: leafNodeId,
           target: nonExistentNodeId
         })]
@@ -182,7 +183,7 @@ describe('GraphEdge', () => {
       const state = State.buildFromRootNodes([leafNode])
 
       // when
-      const edges = createEdges([leafNode], state)
+      const edges = state.createEdges([leafNode])
 
       // then
       expect(edges.length).toEqual(0)
@@ -192,30 +193,30 @@ describe('GraphEdge', () => {
       // given
       const leafNodeId1 = "leafNode1"
       const leafNodeId2 = "leafNode2"
-      const dependency1 = buildShallowGraphEdge({
+      const dependency1 = ShallowGraphEdge.build({
         source: leafNodeId1,
         target: leafNodeId2,
         isCyclic: true,
         weight: 2
       })
-      const dependency2 = buildShallowGraphEdge({
+      const dependency2 = ShallowGraphEdge.build({
         source: leafNodeId1,
         target: leafNodeId2,
         isCyclic: true,
         weight: 1
       })
 
-      const leafNode1 = buildVisibleGraphNode({
+      const leafNode1 = VisibleGraphNode.build({
         id: leafNodeId1,
         dependencies: [dependency1, dependency2]
       })
-      const leafNode2 = buildVisibleGraphNode({
+      const leafNode2 = VisibleGraphNode.build({
         id: leafNodeId2
       })
       const state = State.buildFromRootNodes([leafNode1, leafNode2])
 
       // when
-      const edges = createEdges([leafNode1, leafNode2], state)
+      const edges = state.createEdges([leafNode1, leafNode2])
 
       // then
       expect(edges.length).toEqual(1)
@@ -228,19 +229,19 @@ describe('GraphEdge', () => {
       const leafNodeId = 'leafNode'
       const parentNodeId = 'parentNode'
       const hiddenChildNodeId = parentNodeId + '.hiddenChildNode'
-      const leafNode = buildVisibleGraphNode({
+      const leafNode = VisibleGraphNode.build({
         id: leafNodeId,
-        dependencies: [buildShallowGraphEdge({
+        dependencies: [ShallowGraphEdge.build({
           source: leafNodeId,
           target: hiddenChildNodeId
         })]
       })
-      const parentNode = buildVisibleGraphNode({
+      const parentNode = VisibleGraphNode.build({
         id: parentNodeId,
         hiddenChildrenIds: [hiddenChildNodeId],
         visibleChildren: []
       })
-      const hiddenChildNode = buildVisibleGraphNode({
+      const hiddenChildNode = VisibleGraphNode.build({
         id: hiddenChildNodeId,
         parent: parentNode
       })
@@ -249,7 +250,7 @@ describe('GraphEdge', () => {
       const state = State.buildFromRootNodes(allNodes).copy({ hiddenNodeIds: [hiddenChildNodeId] });
 
       // when
-      const edges = createEdges([leafNode, hiddenChildNode], state)
+      const edges = state.createEdges([leafNode, hiddenChildNode])
 
       // then
       expect(edges.length).toEqual(0)
@@ -259,30 +260,30 @@ describe('GraphEdge', () => {
       // given
       const leafNodeId1 = "leafNode1"
       const leafNodeId2 = "leafNode2"
-      const dependency1 = buildShallowGraphEdge({
+      const dependency1 = ShallowGraphEdge.build({
         source: leafNodeId1,
         target: leafNodeId2,
         isCyclic: false,
         weight: 2
       })
-      const dependency2 = buildShallowGraphEdge({
+      const dependency2 = ShallowGraphEdge.build({
         source: leafNodeId1,
         target: leafNodeId2,
         isCyclic: true,
         weight: 1
       })
 
-      const leafNode1 = buildVisibleGraphNode({
+      const leafNode1 = VisibleGraphNode.build({
         id: leafNodeId1,
         dependencies: [dependency1, dependency2]
       })
-      const leafNode2 = buildVisibleGraphNode({
+      const leafNode2 = VisibleGraphNode.build({
         id: leafNodeId2
       })
       const state = State.buildFromRootNodes([leafNode1, leafNode2])
 
       // when
-      const edges = createEdges([leafNode1, leafNode2], state)
+      const edges = state.createEdges([leafNode1, leafNode2])
 
       // then
       expect(edges.length).toEqual(1)
@@ -294,31 +295,31 @@ describe('GraphEdge', () => {
            // given
            const leafNodeId1 = "leafNode1";
            const leafNodeId2 = "leafNode2";
-           const feedbackEdge = buildShallowGraphEdge({
+           const feedbackEdge = ShallowGraphEdge.build({
              source: leafNodeId1,
              target: leafNodeId2,
              isCyclic: true,
              weight: 2
            })
-           const twistedEdge = buildShallowGraphEdge({
+           const twistedEdge = ShallowGraphEdge.build({
              source: leafNodeId1,
              target: leafNodeId2,
              isCyclic: false,
              weight: 3
            })
 
-           const leafNode1 = buildVisibleGraphNode({
+           const leafNode1 = VisibleGraphNode.build({
              id: leafNodeId1,
              dependencies: [feedbackEdge, twistedEdge]
            })
-           const leafNode2 = buildVisibleGraphNode({
+           const leafNode2 = VisibleGraphNode.build({
              id: leafNodeId2
            })
 
            const state = State.buildFromRootNodes([leafNode1, leafNode2]).copy({ selectedFilter: EdgeFilterType.FEEDBACK_EDGES_AND_TWISTED_EDGES });
 
            // when
-           const edges = createEdges([leafNode1, leafNode2], state);
+           const edges = state.createEdges([leafNode1, leafNode2]);
 
            // then
            expect(edges.length).toEqual(1);
@@ -328,3 +329,28 @@ describe('GraphEdge', () => {
 
   })
 });
+
+
+declare module './Edge' {
+  namespace Edge {
+    function build(overrides?: Partial<Edge>): Edge
+  }
+}
+
+Edge.build = function(overrides: Partial<Edge> = {}): Edge {
+  const defaultTarget = VisibleGraphNode.build()
+  const defaultSource = VisibleGraphNode.build()
+
+  const defaults = Edge.new({
+    id: defaultSource + "-" + defaultTarget,
+    isCyclic: false,
+    source: defaultSource,
+    target: defaultTarget,
+    weight: 1,
+    type: 'usage'
+  })
+
+  return defaults.copy(overrides)
+}
+
+export { Edge }

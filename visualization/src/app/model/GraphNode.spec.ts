@@ -1,22 +1,7 @@
-import {buildVisibleGraphNode} from './ModelBuilders.spec'
-import {countParents, expand, getNodeDepth, isPackage, recursiveFind, VisibleGraphNode} from './GraphNode'
+import {countParents, expand, getNodeDepth, isPackage, recursiveFind} from './GraphNode'
+import type {VisibleGraphNode} from './GraphNode'
 import type {GraphNode} from './GraphNode';
 import {buildUniqueId} from '../common/test/TestUtils.spec';
-
-namespace GraphNode {
-  export function build(overrides: Partial<GraphNode> = {}): GraphNode {
-    const defaults: GraphNode = {
-      children: [],
-      id: buildUniqueId(),
-      label: 'id1',
-      dependencies: [],
-      level: 0
-    }
-
-    return { ...defaults, ...overrides }
-  }
-}
-export { GraphNode }
 
 describe('GraphNode', () => {
   describe('recursiveFind', () => {
@@ -26,23 +11,23 @@ describe('GraphNode', () => {
     let grandChildNode: VisibleGraphNode
 
     beforeEach(() => {
-      grandChildNode = buildVisibleGraphNode({
+      grandChildNode = VisibleGraphNode.build({
         id: 'grandChild',
         level: 2,
         label: 'GrandChild'
       })
-      childNode1 = buildVisibleGraphNode({
+      childNode1 = VisibleGraphNode.build({
         id: 'child1',
         level: 1,
         label: 'Child1',
         visibleChildren: [grandChildNode]
       })
-      childNode2 = buildVisibleGraphNode({
+      childNode2 = VisibleGraphNode.build({
         id: 'child2',
         level: 1,
         label: 'Child2'
       })
-      rootNode = buildVisibleGraphNode({
+      rootNode = VisibleGraphNode.build({
         id: 'root',
         level: 0,
         label: 'Root',
@@ -130,3 +115,36 @@ describe('GraphNode', () => {
   })
 })
 
+namespace GraphNode {
+  export function build(overrides: Partial<GraphNode> = {}): GraphNode {
+    const defaults: GraphNode = {
+      children: [],
+      id: buildUniqueId(),
+      label: 'id1',
+      dependencies: [],
+      level: 0
+    }
+
+    return { ...defaults, ...overrides }
+  }
+}
+export { GraphNode }
+
+namespace VisibleGraphNode {
+  export function build(overrides: Partial<VisibleGraphNode> = {}): VisibleGraphNode {
+    const defaults: VisibleGraphNode = {
+      children: [],
+      id: buildUniqueId(),
+      label: 'id1',
+      dependencies: [],
+      level: 0,
+      visibleChildren: [],
+      hiddenChildrenIds: [],
+      isExpanded: false,
+      isSelected: false
+    }
+
+    return { ...defaults, ...overrides }
+  }
+}
+export { VisibleGraphNode }

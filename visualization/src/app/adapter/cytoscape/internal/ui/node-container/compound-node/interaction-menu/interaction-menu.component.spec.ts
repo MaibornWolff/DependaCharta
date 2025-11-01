@@ -1,9 +1,9 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {InteractionMenuComponent} from './interaction-menu.component';
-import {buildVisibleGraphNode} from '../../../../../../../model/ModelBuilders.spec';
 import { By } from '@angular/platform-browser';
 import {State} from '../../../../../../../model/State';
+import { VisibleGraphNode } from '../../../../../../../model/GraphNode.spec';
 
 describe('InteractionMenuComponent', () => {
   let component: InteractionMenuComponent;
@@ -42,8 +42,8 @@ describe('InteractionMenuComponent', () => {
 
     fixture = TestBed.createComponent(InteractionMenuComponent);
     component = fixture.componentInstance;
-    component.node = buildVisibleGraphNode()
-    component.state = new State({
+    component.node = VisibleGraphNode.build()
+    component.state = State.build({
       isInteractive: true
     })
     fixture.detectChanges();

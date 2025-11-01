@@ -1,15 +1,16 @@
-import {buildProjectNode} from './ProjectReportBuilders';
 import {getChildren, getNodeId} from './ProjectReport';
+import {buildUniqueId} from '../../../common/test/TestUtils.spec';
+import type {ProjectNode} from './ProjectReport';
 
 describe('ProjectReport', () => {
   describe('getChildren', () => {
     it('returns children if node is root node', () => {
-      const childrenOfNode1 = buildProjectNode()
-      const node1 = buildProjectNode({
+      const childrenOfNode1 = ProjectNode.build()
+      const node1 = ProjectNode.build({
         name: 'name1',
         children: [childrenOfNode1]
       })
-      const node2 = buildProjectNode({
+      const node2 = ProjectNode.build({
         name: 'name2'
       })
       const nodesToCheck = [node1, node2]
@@ -18,7 +19,7 @@ describe('ProjectReport', () => {
     })
 
     it('returns empty array if nodeId is not found', () => {
-      const node = buildProjectNode({
+      const node = ProjectNode.build({
         name: 'node'
       })
       const nodesToCheck = [node]
@@ -27,12 +28,12 @@ describe('ProjectReport', () => {
     })
 
     it('recursively search children', () => {
-      const grandChild = buildProjectNode()
-      const child = buildProjectNode({
+      const grandChild = ProjectNode.build()
+      const child = ProjectNode.build({
         name: 'childName',
         children: [grandChild]
       })
-      const node = buildProjectNode({
+      const node = ProjectNode.build({
         name: 'parentName',
         children: [child]
       })
@@ -51,7 +52,7 @@ describe('ProjectReport', () => {
           type: 'usage'
         }
       }
-      const projectNode = buildProjectNode({
+      const projectNode = ProjectNode.build({
         leafId: 'leafId',
         containedInternalDependencies: containedInternalDependencies
       })
@@ -68,7 +69,7 @@ describe('ProjectReport', () => {
 
         }
       }
-      const projectNode = buildProjectNode({
+      const projectNode = ProjectNode.build({
         containedInternalDependencies: containedInternalDependencies
       })
       const nodeId = getNodeId(projectNode, '')
@@ -85,7 +86,7 @@ describe('ProjectReport', () => {
         }
       }
       const parentPath = 'parentPath'
-      const projectNode = buildProjectNode({
+      const projectNode = ProjectNode.build({
         containedInternalDependencies: containedInternalDependencies
       })
       const nodeId = getNodeId(projectNode, parentPath)
@@ -95,3 +96,18 @@ describe('ProjectReport', () => {
     });
   })
 })
+
+namespace ProjectNode {
+  export function build(overrides: Partial<ProjectNode> = {}): ProjectNode {
+    const defaults: ProjectNode = {
+      name: buildUniqueId(),
+      level: 0,
+      children: [],
+      containedLeaves: [],
+      containedInternalDependencies: {},
+    }
+
+    return { ...defaults, ...overrides }
+  }
+}
+export { ProjectNode }

@@ -1,9 +1,9 @@
-import {buildProjectNode} from './internal/ProjectReportBuilders'
 import {convertToGraphNodes, convertToGraphNodesWithLightEdges} from './ProjectNodeConverter'
 import {EdgeMetaInformation} from './internal/ProjectReport'
-import {buildShallowGraphEdge} from '../../model/ModelBuilders.spec'
 import {exampleJson} from '../../common/test/exampleJson.spec'
 import {GraphNode} from '../../model/GraphNode.spec'
+import {ShallowGraphEdge} from '../../model/ShallowGraphEdge.spec'
+import {ProjectNode} from './internal/ProjectReport.spec'
 
 describe('ProjectNodeConverter', () => {
   it('should convert json to GraphNodes', () => {
@@ -30,7 +30,7 @@ describe('ProjectNodeConverter', () => {
         type: type
       }
     }
-    const projectNode = buildProjectNode({
+    const projectNode = ProjectNode.build({
       leafId: id,
       name: name,
       level: level,
@@ -41,7 +41,7 @@ describe('ProjectNodeConverter', () => {
     const graphNodes = convertToGraphNodesWithLightEdges([projectNode])
 
     // then
-    const expectedDependency = buildShallowGraphEdge({
+    const expectedDependency = ShallowGraphEdge.build({
       id: id + ":leaf" + "-" + dependencyTargetId + ":leaf",
       source: id + ":leaf",
       target: dependencyTargetId + ":leaf",
@@ -65,11 +65,11 @@ describe('ProjectNodeConverter', () => {
     // given
     const parentName = "some name"
     const childName = "childId"
-    const child = buildProjectNode({
+    const child = ProjectNode.build({
       leafId: parentName + "." + childName,
       name: childName
     })
-    const parent = buildProjectNode({
+    const parent = ProjectNode.build({
       children: [child],
       name: parentName
     })
