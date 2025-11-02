@@ -2,7 +2,7 @@ import {Edge} from '../../../../model/Edge';
 import cytoscape, {ElementDefinition} from 'cytoscape';
 import {buildUniqueId} from '../../../../common/test/TestUtils.spec';
 import {VisibleGraphNode} from '../../../../model/GraphNode.spec';
-import {ShallowGraphEdge} from '../../../../model/ShallowGraphEdge.spec';
+import {ShallowEdge} from '../../../../model/ShallowEdge.spec';
 
 export class ElementDefinitionBuilder {
   private elementId = buildUniqueId()
@@ -10,9 +10,9 @@ export class ElementDefinitionBuilder {
   private label = this.elementId
   private parent = ''
   private level = 0
-  private containedDependencies: ShallowGraphEdge[] = []
+  private containedDependencies: ShallowEdge[] = []
 
-  setContainedDependencies(dependencies: ShallowGraphEdge[]) {
+  setContainedDependencies(dependencies: ShallowEdge[]) {
     this.containedDependencies = dependencies
     return this
   }
@@ -113,7 +113,7 @@ export class CytoscapeGraphBuilder {
     const targetNode = new ElementDefinitionBuilder()
       .setId(target)
       .build();
-    const dependency = ShallowGraphEdge.build({
+    const dependency = ShallowEdge.build({
       source: source,
       target: target
     })

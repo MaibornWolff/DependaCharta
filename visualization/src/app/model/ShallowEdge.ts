@@ -1,4 +1,4 @@
-export interface ShallowGraphEdge {
+export interface ShallowEdge {
   source: string,
   target: string,
   id: string,

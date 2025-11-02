@@ -1,6 +1,6 @@
 import {EdgeMetaInformation, getNodeId, ProjectNode} from './internal/ProjectReport';
 import {GraphNode} from '../../model/GraphNode';
-import {ShallowGraphEdge} from '../../model/ShallowGraphEdge';
+import {ShallowEdge} from '../../model/ShallowEdge';
 import {LeafIdCreator} from './internal/LeafIdCreator';
 
 export function convertToGraphNodes(json: any): GraphNode[] {
@@ -20,7 +20,7 @@ function convertToGraphNodeWithoutEdge(node: ProjectNode, parentNode: GraphNode 
     children: [],
     label: node.name,
     level: node.level,
-    dependencies: toShallowGraphEdge(id, node.containedInternalDependencies)
+    dependencies: toShallowEdge(id, node.containedInternalDependencies)
   }
 
   if (!isRootNode) {
@@ -32,8 +32,8 @@ function convertToGraphNodeWithoutEdge(node: ProjectNode, parentNode: GraphNode 
   return graphNode
 }
 
-function toShallowGraphEdge(nodeId: string, rawDependencies: Record<string, EdgeMetaInformation>): ShallowGraphEdge[] {
-  const edges: ShallowGraphEdge[] = []
+function toShallowEdge(nodeId: string, rawDependencies: Record<string, EdgeMetaInformation>): ShallowEdge[] {
+  const edges: ShallowEdge[] = []
   for (const targetNodeId in rawDependencies) {
     const edgeMetaInformation = rawDependencies[targetNodeId]
     const leafId = LeafIdCreator.createFrom(targetNodeId);

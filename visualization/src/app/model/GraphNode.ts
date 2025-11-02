@@ -1,4 +1,4 @@
-import {ShallowGraphEdge} from './ShallowGraphEdge';
+import {ShallowEdge} from './ShallowEdge';
 
 export interface GraphNode {
   id: string
@@ -6,7 +6,7 @@ export interface GraphNode {
   level: number
   parent?: GraphNode
   children: GraphNode[],
-  dependencies: ShallowGraphEdge[]
+  dependencies: ShallowEdge[]
 }
 
 export type VisibleGraphNode = GraphNode & {
