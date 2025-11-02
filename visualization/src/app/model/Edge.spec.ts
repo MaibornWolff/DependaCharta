@@ -20,7 +20,7 @@ describe('Edge', () => {
           target: leafNode1Id
         })]
       })
-      const state = State.buildFromRootNodes([leafNode1, leafNode2]);
+      const state = State.build().withRootNodes([leafNode1, leafNode2]);
 
       // when
       const edges = state.createEdges([leafNode1, leafNode2]);
@@ -55,7 +55,7 @@ describe('Edge', () => {
           source: leafNode3Id,
           target: target}))
       })
-      const state = State.buildFromRootNodes([leafNode1, leafNode2, leafNode3]);
+      const state = State.build().withRootNodes([leafNode1, leafNode2, leafNode3]);
 
       // when
       const edges = state.createEdges([leafNode1, leafNode2, leafNode3])
@@ -85,7 +85,7 @@ describe('Edge', () => {
         })]
       })
 
-      const state = State.buildFromRootNodes([parentNode, collapsedLeaf, expandedLeaf]).copy({ expandedNodeIds: [] })
+      const state = State.build().withRootNodes([parentNode, collapsedLeaf, expandedLeaf]).copy({ expandedNodeIds: [] })
 
       // when
       const edges = state.createEdges([parentNode, collapsedLeaf, expandedLeaf])
@@ -127,7 +127,7 @@ describe('Edge', () => {
       })
 
       const allNodes = [parentNode, childNode, otherNode1, otherNode2];
-      const state = State.buildFromRootNodes(allNodes).copy({ expandedNodeIds: [parentNodeId] });
+      const state = State.build().withRootNodes(allNodes).copy({ expandedNodeIds: [parentNodeId] });
 
       // when
       const edges = state.createEdges(allNodes)
@@ -159,7 +159,7 @@ describe('Edge', () => {
       })
       parentNode.visibleChildren = [childNode]
 
-      const state = State.buildFromRootNodes([parentNode, childNode]);
+      const state = State.build().withRootNodes([parentNode, childNode]);
 
       // when
       const edges = state.createEdges([parentNode, childNode])
@@ -180,7 +180,7 @@ describe('Edge', () => {
           target: nonExistentNodeId
         })]
       })
-      const state = State.buildFromRootNodes([leafNode])
+      const state = State.build().withRootNodes([leafNode])
 
       // when
       const edges = state.createEdges([leafNode])
@@ -213,7 +213,7 @@ describe('Edge', () => {
       const leafNode2 = VisibleGraphNode.build({
         id: leafNodeId2
       })
-      const state = State.buildFromRootNodes([leafNode1, leafNode2])
+      const state = State.build().withRootNodes([leafNode1, leafNode2])
 
       // when
       const edges = state.createEdges([leafNode1, leafNode2])
@@ -247,7 +247,7 @@ describe('Edge', () => {
       })
 
       const allNodes = [leafNode, parentNode, hiddenChildNode];
-      const state = State.buildFromRootNodes(allNodes).copy({ hiddenNodeIds: [hiddenChildNodeId] });
+      const state = State.build().withRootNodes(allNodes).copy({ hiddenNodeIds: [hiddenChildNodeId] });
 
       // when
       const edges = state.createEdges([leafNode, hiddenChildNode])
@@ -280,7 +280,7 @@ describe('Edge', () => {
       const leafNode2 = VisibleGraphNode.build({
         id: leafNodeId2
       })
-      const state = State.buildFromRootNodes([leafNode1, leafNode2])
+      const state = State.build().withRootNodes([leafNode1, leafNode2])
 
       // when
       const edges = state.createEdges([leafNode1, leafNode2])
@@ -316,7 +316,7 @@ describe('Edge', () => {
              id: leafNodeId2
            })
 
-           const state = State.buildFromRootNodes([leafNode1, leafNode2]).copy({ selectedFilter: EdgeFilterType.FEEDBACK_EDGES_AND_TWISTED_EDGES });
+           const state = State.build().withRootNodes([leafNode1, leafNode2]).copy({ selectedFilter: EdgeFilterType.FEEDBACK_EDGES_AND_TWISTED_EDGES });
 
            // when
            const edges = state.createEdges([leafNode1, leafNode2]);

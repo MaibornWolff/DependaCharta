@@ -80,7 +80,7 @@ describe('State', () => {
   describe('State.build', () => {
     it('should create a State from root nodes', () => {
       const rootNodes = [mockParentNode];
-      const state = State.buildFromRootNodes(rootNodes);
+      const state = State.build().withRootNodes(rootNodes);
 
       expect(state.allNodes.length).toBe(4) // parent, 2 children, 1 grandchild
       expect(state.allNodes.find(node => node.id == parent1Id)).toBe(mockParentNode)
@@ -647,16 +647,3 @@ describe('median function', () => {
     expect(typeof component.touchpadConfidenceMedian).toBe('number');
   });
 });
-
-declare module './State' {
-  namespace State {
-    function buildFromRootNodes(overrides?: GraphNode[]): State
-  }
-}
-
-State.buildFromRootNodes = function(rootNodes: GraphNode[] = []): State {
-  return State.build({
-    allNodes: rootNodes.flatMap(expand)
-  })
-}
-

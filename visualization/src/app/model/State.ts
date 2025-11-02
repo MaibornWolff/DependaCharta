@@ -40,12 +40,16 @@ export class State extends ValueObject<State> {
     return Object.assign(defaults, overrides)
   }
 
+  withRootNodes(rootNodes: GraphNode[]) {
+    return this.copy({
+      allNodes: rootNodes.flatMap(expand)
+    })
+  }
+
   reduce(action: Action): State {
     switch (true) {
       case action instanceof InitializeState:
-        return this.copy({
-          allNodes: action.rootNodes.flatMap(expand)
-        })
+        return this.withRootNodes(action.rootNodes)
       case action instanceof ExpandNode:
         return this.copy({
           expandedNodeIds: [...this.expandedNodeIds, action.nodeId]
