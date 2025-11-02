@@ -1,17 +1,22 @@
-import type {ShallowEdge} from './ShallowEdge';
+import {ShallowEdge} from "./ShallowEdge"
 
-namespace ShallowEdge {
-  export function build(overrides: Partial<ShallowEdge> = {}): ShallowEdge {
-    const defaults: ShallowEdge = {
-      id: "source-target",
-      isCyclic: false,
-      source: "source",
-      target: "target",
-      weight: 1,
-      type: 'usage'
-    }
-
-    return { ...defaults, ...overrides }
+declare module './ShallowEdge' {
+  namespace ShallowEdge {
+    function build(overrides?: Partial<ShallowEdge>): ShallowEdge
   }
 }
+
+ShallowEdge.build = function(overrides: Partial<ShallowEdge> = {}): ShallowEdge {
+  const defaults = ShallowEdge.new({
+    id: "source-target",
+    isCyclic: false,
+    source: "source",
+    target: "target",
+    weight: 1,
+    type: 'usage'
+  })
+
+  return defaults.copy(overrides)
+}
+
 export { ShallowEdge }
