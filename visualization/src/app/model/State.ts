@@ -224,14 +224,14 @@ class VisibleGraphNodeUtils {
     return node.dependencies.flatMap(dependency => {
       const bestTarget = VisibleGraphNodeUtils.findBestDependencyTarget(dependency.target, visibleNodes, hiddenNodeIds)
       if (bestTarget && !IdUtils.isIncludedIn(bestTarget.id, node.id)) {
-        return Edge.make({
-          id: node.id + "-" + bestTarget.id,
-          source: node,
-          target: bestTarget,
-          isCyclic: dependency.isCyclic,
-          weight: dependency.weight,
-          type: dependency.type
-        })
+        return new Edge(
+          node, // source
+          bestTarget, // target
+          node.id + "-" + bestTarget.id, // id
+          dependency.weight, // weight
+          dependency.isCyclic, // isCyclic
+          dependency.type // type
+        )
       }
       return []
     })

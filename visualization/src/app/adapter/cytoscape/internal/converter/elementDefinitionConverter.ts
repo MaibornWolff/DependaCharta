@@ -25,14 +25,14 @@ export function toGraphEdges(cyEdges: EdgeCollection, graphNodes: VisibleGraphNo
       return null
     }
 
-    return Edge.make({
-      id: edge.data().id,
-      weight: edge.data().weight,
-      isCyclic: edge.data().isCyclic,
-      source: source,
-      target: target,
-      type: edge.data().type
-    });
+    return new Edge(
+      source, // source
+      target, // target
+      edge.data().id, // id
+      edge.data().weight, // weight
+      edge.data().isCyclic, // isCyclic
+      edge.data().type // type
+    );
   }).filter(edge => edge !== null)
 }
 
