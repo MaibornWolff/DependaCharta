@@ -1,7 +1,7 @@
-import {ValueObject} from "./ValueObject";
+import {DataClass} from "./DataClass";
 
-describe('ValueObject', () => {
-    class Foo extends ValueObject<Foo> {
+describe('DataClass', () => {
+    class Foo extends DataClass<Foo> {
         declare readonly a: string
         declare readonly b: number
 

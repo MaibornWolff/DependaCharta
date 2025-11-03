@@ -1,7 +1,7 @@
 import {getAncestors, GraphNode, VisibleGraphNode} from './GraphNode';
-import {ValueObject} from '../common/ValueObject';
+import {DataClass} from '../common/DataClass';
 
-export class Edge extends ValueObject<Edge> {
+export class Edge extends DataClass<Edge> {
   declare readonly source: VisibleGraphNode
   declare readonly target: VisibleGraphNode
   declare readonly id: string

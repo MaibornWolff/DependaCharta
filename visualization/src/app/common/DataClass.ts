@@ -1,4 +1,4 @@
-export abstract class ValueObject<T> {
+export abstract class DataClass<T> {
   public constructor(from: Total<T>) {
     Object.assign(this, from)
   }
