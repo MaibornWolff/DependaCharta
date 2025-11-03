@@ -7,14 +7,14 @@ declare module './ShallowEdge' {
 }
 
 ShallowEdge.build = function(overrides: Partial<ShallowEdge> = {}): ShallowEdge {
-  const defaults = ShallowEdge.new({
-    id: "source-target",
-    isCyclic: false,
-    source: "source",
-    target: "target",
-    weight: 1,
-    type: 'usage'
-  })
+  const defaults = new ShallowEdge(
+    "source", // source
+    "target", // target
+    "source-target", // id
+    1, // weight
+    false, // isCyclic
+    'usage' // type
+  )
 
   return defaults.copy(overrides)
 }

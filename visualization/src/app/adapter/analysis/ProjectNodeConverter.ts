@@ -37,14 +37,14 @@ function toShallowEdge(nodeId: string, rawDependencies: Record<string, EdgeMetaI
   for (const targetNodeId in rawDependencies) {
     const edgeMetaInformation = rawDependencies[targetNodeId]
     const leafId = LeafIdCreator.createFrom(targetNodeId);
-    edges.push(ShallowEdge.new({
-      id: nodeId + "-" + leafId,
-      source: nodeId,
-      target: leafId,
-      isCyclic: edgeMetaInformation.isCyclic,
-      weight: edgeMetaInformation.weight,
-      type: edgeMetaInformation.type
-    }))
+    edges.push(new ShallowEdge(
+      nodeId, // source
+      leafId, // target
+      nodeId + "-" + leafId, // id
+      edgeMetaInformation.weight, // weight
+      edgeMetaInformation.isCyclic, // isCyclic
+      edgeMetaInformation.type // type
+    ))
   }
   return edges
 }

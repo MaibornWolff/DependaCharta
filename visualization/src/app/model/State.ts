@@ -37,7 +37,7 @@ export class State extends DataClass<State> {
       multiselectMode: false
     })
 
-    return Object.assign(defaults, overrides)
+    return defaults.copy(overrides)
   }
 
   reduce(action: Action): State {

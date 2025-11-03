@@ -1,10 +1,14 @@
-import {ValueObject} from "../common/ValueObject"
+export class ShallowEdge {
+  constructor(
+    readonly source: string,
+    readonly target: string,
+    readonly id: string,
+    readonly weight: number,
+    readonly isCyclic: boolean,
+    readonly type: string
+  ) {}
 
-export class ShallowEdge extends ValueObject<ShallowEdge> {
-  declare source: string
-  declare target: string
-  declare id: string
-  declare weight: number
-  declare isCyclic: boolean
-  declare type: string
+  copy(overrides: Partial<ShallowEdge>) {
+    return Object.assign(this, overrides)
+  }  
 }
