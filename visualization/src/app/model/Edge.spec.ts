@@ -1,11 +1,10 @@
-import {createEdges} from './GraphEdge';
-import type {GraphEdge} from './GraphEdge';
+import {Edge} from './Edge';
 import {EdgeFilterType} from './EdgeFilter';
 import {State} from './State';
 import {VisibleGraphNode} from './GraphNode.spec';
 import {ShallowGraphEdge} from './ShallowGraphEdge.spec';
 
-describe('GraphEdge', () => {
+describe('Edge', () => {
   describe('createEdges', () => {
     it('should create edge between two leaves', () => {
       // given
@@ -24,10 +23,10 @@ describe('GraphEdge', () => {
       const state = State.buildFromRootNodes([leafNode1, leafNode2]);
 
       // when
-      const edges = createEdges([leafNode1, leafNode2], state);
+      const edges = state.createEdges([leafNode1, leafNode2]);
 
       // then
-      const expectedEdge = GraphEdge.build({
+      const expectedEdge = Edge.build({
         id: leafNode2Id + '-' + leafNode1Id,
         source: leafNode2,
         target: leafNode1,
@@ -59,7 +58,7 @@ describe('GraphEdge', () => {
       const state = State.buildFromRootNodes([leafNode1, leafNode2, leafNode3]);
 
       // when
-      const edges = createEdges([leafNode1, leafNode2, leafNode3], state)
+      const edges = state.createEdges([leafNode1, leafNode2, leafNode3])
 
       // then
       expect(edges.length).toEqual(2)
@@ -89,7 +88,7 @@ describe('GraphEdge', () => {
       const state = State.buildFromRootNodes([parentNode, collapsedLeaf, expandedLeaf]).copy({ expandedNodeIds: [] })
 
       // when
-      const edges = createEdges([parentNode, collapsedLeaf, expandedLeaf], state)
+      const edges = state.createEdges([parentNode, collapsedLeaf, expandedLeaf])
 
       // then
       expect(edges.length).toEqual(1)
@@ -131,7 +130,7 @@ describe('GraphEdge', () => {
       const state = State.buildFromRootNodes(allNodes).copy({ expandedNodeIds: [parentNodeId] });
 
       // when
-      const edges = createEdges(allNodes, state)
+      const edges = state.createEdges(allNodes)
 
       // then
       expect(edges.length).toEqual(1)
@@ -163,7 +162,7 @@ describe('GraphEdge', () => {
       const state = State.buildFromRootNodes([parentNode, childNode]);
 
       // when
-      const edges = createEdges([parentNode, childNode], state)
+      const edges = state.createEdges([parentNode, childNode])
 
       // then
       expect(edges.length).toEqual(0)
@@ -184,7 +183,7 @@ describe('GraphEdge', () => {
       const state = State.buildFromRootNodes([leafNode])
 
       // when
-      const edges = createEdges([leafNode], state)
+      const edges = state.createEdges([leafNode])
 
       // then
       expect(edges.length).toEqual(0)
@@ -217,7 +216,7 @@ describe('GraphEdge', () => {
       const state = State.buildFromRootNodes([leafNode1, leafNode2])
 
       // when
-      const edges = createEdges([leafNode1, leafNode2], state)
+      const edges = state.createEdges([leafNode1, leafNode2])
 
       // then
       expect(edges.length).toEqual(1)
@@ -251,7 +250,7 @@ describe('GraphEdge', () => {
       const state = State.buildFromRootNodes(allNodes).copy({ hiddenNodeIds: [hiddenChildNodeId] });
 
       // when
-      const edges = createEdges([leafNode, hiddenChildNode], state)
+      const edges = state.createEdges([leafNode, hiddenChildNode])
 
       // then
       expect(edges.length).toEqual(0)
@@ -284,7 +283,7 @@ describe('GraphEdge', () => {
       const state = State.buildFromRootNodes([leafNode1, leafNode2])
 
       // when
-      const edges = createEdges([leafNode1, leafNode2], state)
+      const edges = state.createEdges([leafNode1, leafNode2])
 
       // then
       expect(edges.length).toEqual(1)
@@ -320,7 +319,7 @@ describe('GraphEdge', () => {
            const state = State.buildFromRootNodes([leafNode1, leafNode2]).copy({ selectedFilter: EdgeFilterType.FEEDBACK_EDGES_AND_TWISTED_EDGES });
 
            // when
-           const edges = createEdges([leafNode1, leafNode2], state);
+           const edges = state.createEdges([leafNode1, leafNode2]);
 
            // then
            expect(edges.length).toEqual(1);
@@ -331,21 +330,26 @@ describe('GraphEdge', () => {
   })
 });
 
-namespace GraphEdge {
-  export function build(overrides: Partial<GraphEdge> = {}): GraphEdge {
-    const defaultTarget = VisibleGraphNode.build()
-    const defaultSource = VisibleGraphNode.build()
-
-    const defaults: GraphEdge = {
-      id: defaultSource + "-" + defaultTarget,
-      isCyclic: false,
-      source: defaultSource,
-      target: defaultTarget,
-      weight: 1,
-      type: 'usage'
-    }
-
-    return {...defaults, ...overrides}
+declare module './Edge' {
+  namespace Edge {
+    function build(overrides?: Partial<Edge>): Edge
   }
 }
-export { GraphEdge }
+
+Edge.build = function(overrides: Partial<Edge> = {}): Edge {
+  const defaultTarget = VisibleGraphNode.build()
+  const defaultSource = VisibleGraphNode.build()
+
+  const defaults = new Edge(
+    defaultSource, // source
+    defaultTarget, // target
+    defaultSource + "-" + defaultTarget, // id
+    1, // weight
+    false, // isCyclic
+    'usage' // type
+  )
+
+  return defaults.copy(overrides)
+}
+
+export { Edge }

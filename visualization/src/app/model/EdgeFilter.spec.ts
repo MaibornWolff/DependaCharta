@@ -1,12 +1,12 @@
 import {EdgeFilter, EdgeFilterResult, EdgeFilterType} from './EdgeFilter';
 import {EdgeType} from './EdgeType';
-import {GraphEdge} from './GraphEdge.spec';
+import {Edge} from './Edge.spec';
 import {VisibleGraphNode} from './GraphNode.spec';
 
 describe('New Graph Filter', () => {
   it('showNoEdges should not return any edges', () => {
     // given
-    const edge = GraphEdge.build()
+    const edge = Edge.build()
 
     // when
     const edges = [edge]
@@ -27,12 +27,12 @@ describe('New Graph Filter', () => {
       level: 1
     })
 
-    const feedbackEdge = GraphEdge.build({
+    const feedbackEdge = Edge.build({
       source: level0Node,
       target: level1Node,
       isCyclic: true
     })
-    const nonFeedbackEdge = GraphEdge.build({
+    const nonFeedbackEdge = Edge.build({
       source: level1Node,
       target: level0Node,
       isCyclic: true
@@ -59,12 +59,12 @@ describe('New Graph Filter', () => {
     })
 
 
-    const feedbackEdge = GraphEdge.build({
+    const feedbackEdge = Edge.build({
       source: level0Node,
       target: level1Node,
       isCyclic: true
     })
-    const twistedEdge = GraphEdge.build({
+    const twistedEdge = Edge.build({
       source: level0Node,
       target: level1Node,
       isCyclic: false
@@ -83,7 +83,7 @@ describe('New Graph Filter', () => {
 
   it('showOnlyFeedbackEdges should not return any non-cyclic edges', () => {
     // given
-    const edge = GraphEdge.build({
+    const edge = Edge.build({
       source: VisibleGraphNode.build({
         level: 0
       }),
@@ -112,14 +112,14 @@ describe('New Graph Filter', () => {
       level: 1
     })
 
-    const twistedEdge = GraphEdge.build({
+    const twistedEdge = Edge.build({
       id: '1',
       source: level0Node,
       target: level1Node,
       isCyclic: false
     })
 
-    const feedbackEdge = GraphEdge.build({
+    const feedbackEdge = Edge.build({
       id: '2',
       source: level0Node,
       target: level1Node,
@@ -147,13 +147,13 @@ describe('New Graph Filter', () => {
       level: 1
     })
 
-    const regularEdge = GraphEdge.build({
+    const regularEdge = Edge.build({
       source: level1Node,
       target: level0Node,
       isCyclic: false
     })
 
-    const regularCyclicEdge = GraphEdge.build({
+    const regularCyclicEdge = Edge.build({
       source: level1Node,
       target: level0Node,
       isCyclic: true
@@ -178,14 +178,14 @@ describe('New Graph Filter', () => {
       level: 1
     })
 
-    const feedbackEdge = GraphEdge.build({
+    const feedbackEdge = Edge.build({
       id: '1',
       source: level0Node,
       target: level1Node,
       isCyclic: true
     })
 
-    const regularCyclicEdge = GraphEdge.build({
+    const regularCyclicEdge = Edge.build({
       id: '2',
       source: level1Node,
       target: level0Node,
@@ -213,13 +213,13 @@ describe('New Graph Filter', () => {
       level: 1
     })
 
-    const regularEdge = GraphEdge.build({
+    const regularEdge = Edge.build({
       source: level1Node,
       target: level0Node,
       isCyclic: false
     })
 
-    const twistedEdge = GraphEdge.build({
+    const twistedEdge = Edge.build({
       source: level0Node,
       target: level1Node,
       isCyclic: false
@@ -244,28 +244,28 @@ describe('New Graph Filter', () => {
       level: 1
     })
 
-    const regularEdge = GraphEdge.build({
+    const regularEdge = Edge.build({
       id: '1',
       source: level1Node,
       target: level0Node,
       isCyclic: false
     })
 
-    const twistedEdge = GraphEdge.build({
+    const twistedEdge = Edge.build({
       id: '2',
       source: level0Node,
       target: level1Node,
       isCyclic: false
     })
 
-    const feedbackEdge = GraphEdge.build({
+    const feedbackEdge = Edge.build({
       id: '3',
       source: level0Node,
       target: level1Node,
       isCyclic: true
     })
 
-    const regularCyclicEdge = GraphEdge.build({
+    const regularCyclicEdge = Edge.build({
       id: '4',
       source: level1Node,
       target: level0Node,

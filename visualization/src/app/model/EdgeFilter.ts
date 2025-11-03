@@ -1,4 +1,4 @@
-import {GraphEdge} from './GraphEdge';
+import {Edge} from './Edge';
 import {EdgePredicate} from './EdgePredicate';
 import {EdgeType} from './EdgeType';
 
@@ -10,7 +10,7 @@ export enum EdgeFilterType {
   FEEDBACK_EDGES_AND_TWISTED_EDGES = "FEEDBACK_EDGES_AND_TWISTED_EDGES",
 }
 
-export type EdgeFilter = (edges: GraphEdge[]) => EdgeFilterResult
+export type EdgeFilter = (edges: Edge[]) => EdgeFilterResult
 
 export namespace EdgeFilter {
   export function fromEnum(edgeFilterType: EdgeFilterType): EdgeFilter {
@@ -18,7 +18,7 @@ export namespace EdgeFilter {
   }
 
   export function fromEnums(edgeTypes: EdgeType[], graphNodeId: string = ""): EdgeFilter {
-    return (edgesIn: GraphEdge[]) => {
+    return (edgesIn: Edge[]) => {
       let edges = edgesIn
 
       if (graphNodeId !== "") {
@@ -42,6 +42,10 @@ export namespace EdgeFilter {
   export function forAllEdgeTypes(id: string): EdgeFilter {
     const allEdgeTypes = EdgeType.fromEnum(EdgeFilterType.ALL)
     return EdgeFilter.fromEnums(allEdgeTypes, id)
+  }
+
+  export function isFilterForcesEdgesAggregation(edgeFilterType: EdgeFilterType): boolean {
+    return edgeFilterType !== EdgeFilterType.CYCLES_ONLY && edgeFilterType !== EdgeFilterType.FEEDBACK_EDGES_ONLY
   }
 }
 

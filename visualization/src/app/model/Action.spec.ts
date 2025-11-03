@@ -19,7 +19,7 @@ describe('State Handler', () => {
       })
 
       // when
-      const newState = new State().reduce(new InitializeState('', [rootNode]))
+      const newState = State.build().reduce(new InitializeState('', [rootNode]))
 
       // then
       expect(newState.showLabels).toEqual(true)
@@ -275,7 +275,7 @@ describe('State Handler', () => {
 
     it('should throw an error if the node does not exist', () => {
       // given
-      const state = new State()
+      const state = State.build()
 
       // when + then
       expect(() => state.findGraphNode("some random id")).toThrowError()

@@ -1,13 +1,13 @@
 import {recursiveFind, VisibleGraphNode} from '../../../../model/GraphNode';
 import {EdgeCollection, ElementDefinition, NodeCollection} from 'cytoscape';
-import {GraphEdge} from '../../../../model/GraphEdge';
+import {Edge} from '../../../../model/Edge';
 import {convertTypeOfUsage} from './UsageTypeConverter';
 
 export function toCytoscapeNodes(graphNodes: VisibleGraphNode[]): ElementDefinition[] {
   return graphNodes.map(node => toCytoscapeNode(node))
 }
 
-export function toCytoscapeEdges(graphEdges: GraphEdge[], showLabels: boolean, usageTypeMode: boolean): ElementDefinition[] {
+export function toCytoscapeEdges(graphEdges: Edge[], showLabels: boolean, usageTypeMode: boolean): ElementDefinition[] {
   return graphEdges.map(edge => toCytoscapeEdge(edge, showLabels, usageTypeMode))
 }
 
@@ -16,7 +16,7 @@ export function toVisibleGraphNodes(nodeCollection: NodeCollection): VisibleGrap
   return rawRootNodes.map(node => node.data().visibleGraphNode)
 }
 
-export function toGraphEdges(cyEdges: EdgeCollection, graphNodes: VisibleGraphNode[]): GraphEdge[] {
+export function toGraphEdges(cyEdges: EdgeCollection, graphNodes: VisibleGraphNode[]): Edge[] {
   return cyEdges.map(edge => {
     const target = recursiveFind(graphNodes, edge.data().target)
     const source = recursiveFind(graphNodes, edge.data().source)
@@ -25,14 +25,14 @@ export function toGraphEdges(cyEdges: EdgeCollection, graphNodes: VisibleGraphNo
       return null
     }
 
-    return {
-      id: edge.data().id,
-      weight: edge.data().weight,
-      isCyclic: edge.data().isCyclic,
-      source: source,
-      target: target,
-      type: edge.data().type
-    };
+    return new Edge(
+      source, // source
+      target, // target
+      edge.data().id, // id
+      edge.data().weight, // weight
+      edge.data().isCyclic, // isCyclic
+      edge.data().type // type
+    );
   }).filter(edge => edge !== null)
 }
 
@@ -53,7 +53,7 @@ function toCytoscapeNode(visibleGraphNode: VisibleGraphNode): ElementDefinition 
   return result
 }
 
-function toCytoscapeEdge(graphEdge: GraphEdge, showLabels: boolean, usageTypeMode: boolean): ElementDefinition {
+function toCytoscapeEdge(graphEdge: Edge, showLabels: boolean, usageTypeMode: boolean): ElementDefinition {
   const elementDefinition : ElementDefinition = {
     data: {
       id: graphEdge.id,
