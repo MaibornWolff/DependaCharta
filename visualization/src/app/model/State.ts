@@ -2,10 +2,10 @@ import {expand, getDescendants, GraphNode, VisibleGraphNode} from "./GraphNode";
 import {EdgeFilter, EdgeFilterType} from "./EdgeFilter";
 import {Action, InitializeState, ExpandNode, CollapseNode, ChangeFilter, ShowAllEdgesOfNode, HideAllEdgesOfNode, ToggleEdgeLabels, HideNode, RestoreNode, RestoreNodes, RestoreAllChildren, ToggleInteractionMode, ToggleUsageTypeMode, ResetView, ToggleNodeSelection, EnterMultiselectMode, LeaveMultiselectMode, PinNode, UnpinNode} from './Action';
 import {Edge} from "./Edge";
-import {ValueObject} from "../common/ValueObject";
+import {DataClass} from "../common/DataClass";
 
 // TODO avoid Maps (→ (de-)serialization issues)
-export class State extends ValueObject<State> {
+export class State extends DataClass<State> {
   declare readonly allNodes: GraphNode[]
   declare readonly hiddenNodeIds: string[]
   declare readonly hiddenChildrenIdsByParentId: Map<string, string[]>
@@ -21,7 +21,7 @@ export class State extends ValueObject<State> {
   declare readonly multiselectMode: boolean
 
   static build(overrides: Partial<State> = {}) {
-    const defaults = State.new({
+    const defaults = State.make({
       allNodes: [],
       hiddenNodeIds: [],
       hiddenChildrenIdsByParentId: new Map<string, string[]>(),
@@ -224,14 +224,14 @@ class VisibleGraphNodeUtils {
     return node.dependencies.flatMap(dependency => {
       const bestTarget = VisibleGraphNodeUtils.findBestDependencyTarget(dependency.target, visibleNodes, hiddenNodeIds)
       if (bestTarget && !IdUtils.isIncludedIn(bestTarget.id, node.id)) {
-        return Edge.new({
-          id: node.id + "-" + bestTarget.id,
-          source: node,
-          target: bestTarget,
-          isCyclic: dependency.isCyclic,
-          weight: dependency.weight,
-          type: dependency.type
-        })
+        return new Edge(
+          node, // source
+          bestTarget, // target
+          node.id + "-" + bestTarget.id, // id
+          dependency.weight, // weight
+          dependency.isCyclic, // isCyclic
+          dependency.type // type
+        )
       }
       return []
     })

@@ -1,13 +1,18 @@
 import {getAncestors, GraphNode, VisibleGraphNode} from './GraphNode';
-import {ValueObject} from '../common/ValueObject';
 
-export class Edge extends ValueObject<Edge> {
-  declare readonly source: VisibleGraphNode
-  declare readonly target: VisibleGraphNode
-  declare readonly id: string
-  declare readonly weight: number
-  declare readonly isCyclic: boolean
-  declare readonly type: string
+export class Edge {
+  constructor(
+    readonly source: VisibleGraphNode,
+    readonly target: VisibleGraphNode,
+    readonly id: string,
+    readonly weight: number,
+    readonly isCyclic: boolean,
+    readonly type: string
+  ) {}
+
+  copy(overrides: Partial<Edge>) {
+    return Object.assign(this, overrides)
+  }
 
   // TODO `Edge` should have a property `isPointingUpwards: boolean`
   // It should be set when when Edge is created in `toGraphEdges`
