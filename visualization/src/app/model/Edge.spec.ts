@@ -330,7 +330,6 @@ describe('Edge', () => {
   })
 });
 
-
 declare module './Edge' {
   namespace Edge {
     function build(overrides?: Partial<Edge>): Edge

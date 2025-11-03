@@ -1,9 +1,9 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {InteractionMenuComponent} from './interaction-menu.component';
-import { By } from '@angular/platform-browser';
+import {By} from '@angular/platform-browser';
 import {State} from '../../../../../../../model/State';
-import { VisibleGraphNode } from '../../../../../../../model/GraphNode.spec';
+import {VisibleGraphNode} from '../../../../../../../model/GraphNode.spec';
 
 describe('InteractionMenuComponent', () => {
   let component: InteractionMenuComponent;
