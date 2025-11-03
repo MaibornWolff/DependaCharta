@@ -40,6 +40,12 @@ export class State extends DataClass<State> {
     return Object.assign(defaults, overrides)
   }
 
+  static fromRootNodes(rootNodes: GraphNode[]) {
+    return State.build({
+      allNodes: rootNodes.flatMap(expand)
+    })
+  }
+
   reduce(action: Action): State {
     switch (true) {
       case action instanceof InitializeState:
