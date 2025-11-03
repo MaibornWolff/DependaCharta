@@ -10,7 +10,7 @@ import {
 import {buildUniqueId} from '../../../../common/test/TestUtils.spec';
 import {CytoscapeGraphBuilder, ElementDefinitionBuilder} from '../converter/CytoscapeModelBuilders.spec';
 import {EdgeFilter, EdgeFilterType} from '../../../../model/EdgeFilter';
-import {buildShallowGraphEdge} from '../../../../model/ModelBuilders.spec';
+import {ShallowGraphEdge} from '../../../../model/ShallowGraphEdge.spec';
 
 describe('EdgeDisplayService', () => {
   let service: EdgeDisplayService;
@@ -24,7 +24,7 @@ describe('EdgeDisplayService', () => {
     //given
     const sourceNodeId = buildUniqueId()
     const regularEdgeNodeId = buildUniqueId()
-    const dependency = buildShallowGraphEdge({
+    const dependency = ShallowGraphEdge.build({
       source: sourceNodeId,
       target: sourceNodeId
     })
@@ -55,7 +55,7 @@ describe('EdgeDisplayService', () => {
     //given
     const sourceNodeId = buildUniqueId()
     const cyclicEdgeNodeId = buildUniqueId()
-    const dependency = buildShallowGraphEdge({
+    const dependency = ShallowGraphEdge.build({
       source: sourceNodeId,
       target: cyclicEdgeNodeId,
       isCyclic: true
@@ -87,7 +87,7 @@ describe('EdgeDisplayService', () => {
     //given
     const sourceNodeId = buildUniqueId()
     const twistedEdgeNodeId = buildUniqueId()
-    const dependency = buildShallowGraphEdge({
+    const dependency = ShallowGraphEdge.build({
       source: sourceNodeId,
       target: twistedEdgeNodeId
     })
@@ -118,7 +118,7 @@ describe('EdgeDisplayService', () => {
     //given
     const sourceNodeId = buildUniqueId()
     const feedbackEdgeNodeId = buildUniqueId()
-    const dependency = buildShallowGraphEdge({
+    const dependency = ShallowGraphEdge.build({
       source: sourceNodeId,
       target: feedbackEdgeNodeId,
       isCyclic: true

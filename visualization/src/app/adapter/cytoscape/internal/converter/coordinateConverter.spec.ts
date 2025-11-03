@@ -1,11 +1,11 @@
 import {toAbsoluteCoordinates} from './coordinateConverter';
-import {buildVisibleGraphNode} from '../../../../model/ModelBuilders.spec';
+import {VisibleGraphNode} from '../../../../model/GraphNode.spec';
 
 describe('CoordinateConverter', () => {
   // We negate it to flip the graph to achieve the look of a LSM
   it('relative coordinates of a single root node without children, are only negated', () => {
     // given
-    const visibleGraphNode = buildVisibleGraphNode()
+    const visibleGraphNode = VisibleGraphNode.build()
     const positionOfNode = {
       nodeId: visibleGraphNode.id,
       x: 100,
@@ -25,11 +25,11 @@ describe('CoordinateConverter', () => {
 
   it('the calculation of coordinates of a node, depend on the ancestors coordinates', () => {
     // given
-    const parent = buildVisibleGraphNode()
-    const child = buildVisibleGraphNode({
+    const parent = VisibleGraphNode.build()
+    const child = VisibleGraphNode.build({
       parent: parent
     })
-    const grandChild = buildVisibleGraphNode({
+    const grandChild = VisibleGraphNode.build({
       parent: child
     })
 
@@ -69,8 +69,8 @@ describe('CoordinateConverter', () => {
 
   it('calculated coordinates of node are smaller in relation to parent node', () => {
     // given
-    const parent = buildVisibleGraphNode()
-    const child = buildVisibleGraphNode({
+    const parent = VisibleGraphNode.build()
+    const child = VisibleGraphNode.build({
       parent: parent
     })
 
