@@ -21,7 +21,7 @@ export class State extends DataClass<State> {
   declare readonly multiselectMode: boolean
 
   static build(overrides: Partial<State> = {}) {
-    const defaults = State.new({
+    const defaults = State.make({
       allNodes: [],
       hiddenNodeIds: [],
       hiddenChildrenIdsByParentId: new Map<string, string[]>(),
@@ -224,7 +224,7 @@ class VisibleGraphNodeUtils {
     return node.dependencies.flatMap(dependency => {
       const bestTarget = VisibleGraphNodeUtils.findBestDependencyTarget(dependency.target, visibleNodes, hiddenNodeIds)
       if (bestTarget && !IdUtils.isIncludedIn(bestTarget.id, node.id)) {
-        return Edge.new({
+        return Edge.make({
           id: node.id + "-" + bestTarget.id,
           source: node,
           target: bestTarget,

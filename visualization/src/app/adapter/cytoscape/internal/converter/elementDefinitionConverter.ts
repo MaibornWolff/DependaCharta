@@ -25,7 +25,7 @@ export function toGraphEdges(cyEdges: EdgeCollection, graphNodes: VisibleGraphNo
       return null
     }
 
-    return Edge.new({
+    return Edge.make({
       id: edge.data().id,
       weight: edge.data().weight,
       isCyclic: edge.data().isCyclic,

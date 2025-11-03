@@ -8,10 +8,10 @@ describe('DataClass', () => {
         foo() { return 'Hello World!' }
     }
 
-    const foo = Foo.new({a: 'Hi!', b: 42})
+    const foo = Foo.make({a: 'Hi!', b: 42})
 
     it('should create', () => {
-        expect(Foo.new({a: 'Hi!', b: 42})).toEqual(foo)
+        expect(Foo.make({a: 'Hi!', b: 42})).toEqual(foo)
     });
 
     it('should copy', () => {

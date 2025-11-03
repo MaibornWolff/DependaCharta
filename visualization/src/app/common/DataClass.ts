@@ -3,7 +3,7 @@ export abstract class DataClass<T> {
     Object.assign(this, from)
   }
 
-  static new<T>(this: new (from: Total<T>) => T, overrides: Total<T>): T {
+  static make<T>(this: new (from: Total<T>) => T, overrides: Total<T>): T {
     return new this(overrides)
   }
 
@@ -16,4 +16,3 @@ export abstract class DataClass<T> {
 type Total<T> = {
   [K in keyof T as T[K] extends Function ? never : K]: T[K]
 }
-
