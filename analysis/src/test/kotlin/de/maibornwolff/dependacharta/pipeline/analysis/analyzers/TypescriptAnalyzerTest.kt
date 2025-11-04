@@ -913,4 +913,110 @@ class TypescriptAnalyzerTest {
         val node = report.nodes[0]
         assertThat(node.usedTypes).containsAll(expectedTypes)
     }
+
+    @Test
+    fun `should analyze TSX file with React component`() {
+        // given
+        val tsxCode = """
+            import React from 'react';
+
+            export const MyComponent: React.FC = () => {
+                return <div>Hello World</div>;
+            }
+        """.trimIndent()
+
+        // when
+        val report = TypescriptAnalyzer(
+            FileInfo(
+                SupportedLanguage.TYPESCRIPT,
+                "MyComponent.tsx",
+                tsxCode
+            )
+        ).analyze()
+
+        // then
+        assertThat(report.nodes)
+            .extracting("nodeType", "pathWithName")
+            .containsExactly(
+                tuple(NodeType.VARIABLE, Path(listOf("MyComponent", "MyComponent")))
+            )
+    }
+
+    @Test
+    fun `should handle TSX file path correctly`() {
+        // given
+        val tsxCode = """
+            export class MyReactClass {}
+        """.trimIndent()
+        val physicalPath = File("MyExample/Path/MyComponent.tsx").path
+
+        // when
+        val report = TypescriptAnalyzer(
+            FileInfo(
+                SupportedLanguage.TYPESCRIPT,
+                physicalPath,
+                tsxCode
+            )
+        ).analyze()
+
+        // then
+        assertThat(report.nodes).extracting("pathWithName").containsExactly(
+            Path(listOf("MyExample", "Path", "MyComponent", "MyReactClass"))
+        )
+    }
+
+    @Test
+    fun `should handle imports in TSX files`() {
+        // given
+        val tsxCode = """
+            import { MyInterface } from './MyInterface';
+
+            export const MyComponent: MyInterface = () => {
+                return <div>Hello</div>;
+            }
+        """.trimIndent()
+
+        // when
+        val report = TypescriptAnalyzer(
+            FileInfo(
+                SupportedLanguage.TYPESCRIPT,
+                "MyDirectory/MyComponent.tsx",
+                tsxCode
+            )
+        ).analyze()
+
+        // then
+        val expectedDependency = Dependency(
+            path = Path(listOf("MyDirectory", "MyInterface", "MyInterface")),
+        )
+        val node = report.nodes[0]
+        assertThat(node.dependencies).contains(expectedDependency)
+        assertThat(node.usedTypes).contains(Type.simple("MyInterface"))
+    }
+
+    @Test
+    fun `should handle index tsx reexports`() {
+        // given
+        val tsxCode = """
+             export { MyReactComponent } from './MyReactComponent'
+        """.trimIndent()
+
+        // when
+        val report = TypescriptAnalyzer(
+            FileInfo(
+                SupportedLanguage.TYPESCRIPT,
+                "MyDirectory/index.tsx",
+                tsxCode
+            )
+        ).analyze()
+
+        // then
+        val expectedDependency = Dependency(
+            path = Path(listOf("MyDirectory", "MyReactComponent", "MyReactComponent")),
+        )
+        val node = report.nodes[0]
+        assertThat(node.pathWithName).isEqualTo(Path(listOf("MyDirectory", "index", "MyReactComponent")))
+        assertThat(node.dependencies).contains(expectedDependency)
+        assertThat(node.usedTypes).containsExactly(Type.simple("MyReactComponent"))
+    }
 }
