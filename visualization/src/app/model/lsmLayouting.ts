@@ -119,7 +119,7 @@ function calculateSpaceRequirementsOfChildren(node: VisibleGraphNode): RelativeP
 
 function layoutSubgraph(node: VisibleGraphNode): RelativePositionOfNode[] {
   const spaceRequirementsOfDirectChildren = calculateSpaceRequirementsOfChildren(node);
-  const spaceRequirementsOfGrandChildren = node.visibleChildren.flatMap(child => layoutSubgraph(child))
+  const spaceRequirementsOfGrandChildren = node.visibleChildren.flatMap(layoutSubgraph)
   return spaceRequirementsOfDirectChildren.concat(spaceRequirementsOfGrandChildren)
 }
 
