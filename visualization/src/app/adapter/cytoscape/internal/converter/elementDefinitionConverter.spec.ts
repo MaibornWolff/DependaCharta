@@ -3,7 +3,7 @@ import {EdgeCollectionBuilder, NodeCollectionBuilder} from './CytoscapeModelBuil
 import {convertTypeOfUsage} from './UsageTypeConverter'
 import {GraphNode, VisibleGraphNode} from '../../../../model/GraphNode.spec'
 import {Edge} from '../../../../model/Edge.spec'
-import {ShallowGraphEdge} from '../../../../model/ShallowGraphEdge.spec'
+import {ShallowEdge} from '../../../../model/ShallowEdge.spec'
 
 describe('ElementDefinitionConverter', () => {
   describe('GraphNode Conversion', () => {
@@ -12,7 +12,7 @@ describe('ElementDefinitionConverter', () => {
       const id = "nodeId"
       const label = "some label"
       const parent = GraphNode.build()
-      const dependency = ShallowGraphEdge.build({
+      const dependency = ShallowEdge.build({
         id: id,
       })
       const graphNode = VisibleGraphNode.build({

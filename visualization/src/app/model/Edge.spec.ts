@@ -2,7 +2,7 @@ import {Edge} from './Edge';
 import {EdgeFilterType} from './EdgeFilter';
 import {State} from './State';
 import {VisibleGraphNode} from './GraphNode.spec';
-import {ShallowGraphEdge} from './ShallowGraphEdge.spec';
+import {ShallowEdge} from './ShallowEdge.spec';
 
 describe('Edge', () => {
   describe('createEdges', () => {
@@ -15,7 +15,7 @@ describe('Edge', () => {
       })
       const leafNode2 = VisibleGraphNode.build({
         id: leafNode2Id,
-        dependencies: [ShallowGraphEdge.build({
+        dependencies: [ShallowEdge.build({
           source: leafNode2Id,
           target: leafNode1Id
         })]
@@ -51,7 +51,7 @@ describe('Edge', () => {
       })
       const leafNode3 = VisibleGraphNode.build({
         id: leafNode3Id,
-        dependencies: [leafNode1Id, leafNode2Id].map(target => ShallowGraphEdge.build({
+        dependencies: [leafNode1Id, leafNode2Id].map(target => ShallowEdge.build({
           source: leafNode3Id,
           target: target}))
       })
@@ -79,7 +79,7 @@ describe('Edge', () => {
       })
       const expandedLeaf = VisibleGraphNode.build({
         id: expandedLeafNodeId,
-        dependencies: [ShallowGraphEdge.build({
+        dependencies: [ShallowEdge.build({
           source: expandedLeafNodeId,
           target: collapsedLeafNodeId
         })]
@@ -105,7 +105,7 @@ describe('Edge', () => {
 
       const parentNode = VisibleGraphNode.build({
         id: parentNodeId,
-        dependencies: [ShallowGraphEdge.build({
+        dependencies: [ShallowEdge.build({
           source: parentNodeId,
           target: otherNode2Id
         })]
@@ -113,7 +113,7 @@ describe('Edge', () => {
       const childNode = VisibleGraphNode.build({
         id: childNodeId,
         parent: parentNode,
-        dependencies: [ShallowGraphEdge.build({
+        dependencies: [ShallowEdge.build({
           source: childNodeId,
           target: otherNode1Id
         })]
@@ -152,7 +152,7 @@ describe('Edge', () => {
       const childNode = VisibleGraphNode.build({
         id: childNodeId,
         parent: parentNode,
-        dependencies: [ShallowGraphEdge.build({
+        dependencies: [ShallowEdge.build({
           source: childNodeId,
           target: nonExistentChildNodeId
         })]
@@ -175,7 +175,7 @@ describe('Edge', () => {
 
       const leafNode = VisibleGraphNode.build({
         id: leafNodeId,
-        dependencies: [ShallowGraphEdge.build({
+        dependencies: [ShallowEdge.build({
           source: leafNodeId,
           target: nonExistentNodeId
         })]
@@ -193,13 +193,13 @@ describe('Edge', () => {
       // given
       const leafNodeId1 = "leafNode1"
       const leafNodeId2 = "leafNode2"
-      const dependency1 = ShallowGraphEdge.build({
+      const dependency1 = ShallowEdge.build({
         source: leafNodeId1,
         target: leafNodeId2,
         isCyclic: true,
         weight: 2
       })
-      const dependency2 = ShallowGraphEdge.build({
+      const dependency2 = ShallowEdge.build({
         source: leafNodeId1,
         target: leafNodeId2,
         isCyclic: true,
@@ -231,7 +231,7 @@ describe('Edge', () => {
       const hiddenChildNodeId = parentNodeId + '.hiddenChildNode'
       const leafNode = VisibleGraphNode.build({
         id: leafNodeId,
-        dependencies: [ShallowGraphEdge.build({
+        dependencies: [ShallowEdge.build({
           source: leafNodeId,
           target: hiddenChildNodeId
         })]
@@ -260,13 +260,13 @@ describe('Edge', () => {
       // given
       const leafNodeId1 = "leafNode1"
       const leafNodeId2 = "leafNode2"
-      const dependency1 = ShallowGraphEdge.build({
+      const dependency1 = ShallowEdge.build({
         source: leafNodeId1,
         target: leafNodeId2,
         isCyclic: false,
         weight: 2
       })
-      const dependency2 = ShallowGraphEdge.build({
+      const dependency2 = ShallowEdge.build({
         source: leafNodeId1,
         target: leafNodeId2,
         isCyclic: true,
@@ -295,13 +295,13 @@ describe('Edge', () => {
            // given
            const leafNodeId1 = "leafNode1";
            const leafNodeId2 = "leafNode2";
-           const feedbackEdge = ShallowGraphEdge.build({
+           const feedbackEdge = ShallowEdge.build({
              source: leafNodeId1,
              target: leafNodeId2,
              isCyclic: true,
              weight: 2
            })
-           const twistedEdge = ShallowGraphEdge.build({
+           const twistedEdge = ShallowEdge.build({
              source: leafNodeId1,
              target: leafNodeId2,
              isCyclic: false,
