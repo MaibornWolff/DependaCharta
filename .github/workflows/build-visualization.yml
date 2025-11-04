@@ -60,6 +60,15 @@ jobs:
         env:
           CHROME_BIN: /usr/bin/google-chrome
 
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-${{ github.run_id }}
+          path: visualization/coverage
+          retention-days: 1
+          if-no-files-found: error
+
       - name: Create version file
         run: |
           if [ "${{ github.ref_type }}" == "tag" ]; then
@@ -155,3 +164,29 @@ jobs:
           path: visualization/cypress/videos
           retention-days: 7
           if-no-files-found: ignore
+
+  sonarcloud:
+    name: SonarCloud Analysis
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    needs: build
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for better analysis relevancy
+
+      - name: Download coverage artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-${{ github.run_id }}
+          path: visualization/coverage
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v5.0.0
+        with:
+          projectBaseDir: visualization
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
