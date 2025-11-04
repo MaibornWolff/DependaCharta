@@ -5,7 +5,7 @@ enum class SupportedLanguage(
 ) {
     PHP(listOf("php")),
     C_SHARP(listOf("cs")),
-    TYPESCRIPT(listOf("ts")),
+    TYPESCRIPT(listOf("ts", "tsx")),
     JAVA(listOf("java")),
     GO(listOf("go")),
     PYTHON(listOf("py")),

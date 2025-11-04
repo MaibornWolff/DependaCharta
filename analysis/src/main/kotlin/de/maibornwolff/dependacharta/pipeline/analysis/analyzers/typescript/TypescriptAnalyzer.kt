@@ -16,6 +16,7 @@ const val DEFAULT_EXPORT_NODE_NAME = "DEFAULT_EXPORT"
 class TypescriptAnalyzer(
     private val fileInfo: FileInfo
 ) : LanguageAnalyzer {
+    private val isTsxFile = fileInfo.physicalPath.endsWith(".tsx")
     private val typescript = TreeSitterTypescript()
     private val declarationsQuery = TypescriptDeclarationsQuery(typescript)
     private val defaultExportQuery = TypescriptDefaultExportQuery(typescript)
@@ -33,9 +34,10 @@ class TypescriptAnalyzer(
 
         val pathFromInfo = fileInfo.physicalPathAsPath()
         val fileName = pathFromInfo.getName()
-        val path = pathFromInfo.withoutFileSuffix("ts")
+        val fileSuffix = if (isTsxFile) "tsx" else "ts"
+        val path = pathFromInfo.withoutFileSuffix(fileSuffix)
 
-        val nodes = if (fileName == "index.ts") {
+        val nodes = if (fileName == "index.ts" || fileName == "index.tsx") {
             extractExportsOfIndexTs(rootNode, fileInfo.content, path)
         } else {
             val fileLevelDependencies = importStatementQuery.execute(rootNode, fileInfo.content, path)
