@@ -2,7 +2,7 @@ import {convertToGraphNodes, convertToGraphNodesWithLightEdges} from './ProjectN
 import {EdgeMetaInformation} from './internal/ProjectReport'
 import {exampleJson} from '../../common/test/exampleJson.spec'
 import {GraphNode} from '../../model/GraphNode.spec'
-import {ShallowGraphEdge} from '../../model/ShallowGraphEdge.spec'
+import {ShallowEdge} from '../../model/ShallowEdge.spec'
 import {ProjectNode} from './internal/ProjectReport.spec'
 
 describe('ProjectNodeConverter', () => {
@@ -41,7 +41,7 @@ describe('ProjectNodeConverter', () => {
     const graphNodes = convertToGraphNodesWithLightEdges([projectNode])
 
     // then
-    const expectedDependency = ShallowGraphEdge.build({
+    const expectedDependency = ShallowEdge.build({
       id: id + ":leaf" + "-" + dependencyTargetId + ":leaf",
       source: id + ":leaf",
       target: dependencyTargetId + ":leaf",

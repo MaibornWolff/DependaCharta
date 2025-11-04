@@ -1,6 +1,6 @@
 import {EdgeMetaInformation, getNodeId, ProjectNode} from './internal/ProjectReport';
 import {GraphNode} from '../../model/GraphNode';
-import {ShallowGraphEdge} from '../../model/ShallowGraphEdge';
+import {ShallowEdge} from '../../model/ShallowEdge';
 import {LeafIdCreator} from './internal/LeafIdCreator';
 
 export function convertToGraphNodes(json: any): GraphNode[] {
@@ -20,7 +20,7 @@ function convertToGraphNodeWithoutEdge(node: ProjectNode, parentNode: GraphNode 
     children: [],
     label: node.name,
     level: node.level,
-    dependencies: toShallowGraphEdge(id, node.containedInternalDependencies)
+    dependencies: toShallowEdge(id, node.containedInternalDependencies)
   }
 
   if (!isRootNode) {
@@ -32,19 +32,19 @@ function convertToGraphNodeWithoutEdge(node: ProjectNode, parentNode: GraphNode 
   return graphNode
 }
 
-function toShallowGraphEdge(nodeId: string, rawDependencies: Record<string, EdgeMetaInformation>): ShallowGraphEdge[] {
-  const edges: ShallowGraphEdge[] = []
+function toShallowEdge(nodeId: string, rawDependencies: Record<string, EdgeMetaInformation>): ShallowEdge[] {
+  const edges: ShallowEdge[] = []
   for (const targetNodeId in rawDependencies) {
     const edgeMetaInformation = rawDependencies[targetNodeId]
     const leafId = LeafIdCreator.createFrom(targetNodeId);
-    edges.push({
-      id: nodeId + "-" + leafId,
-      source: nodeId,
-      target: leafId,
-      isCyclic: edgeMetaInformation.isCyclic,
-      weight: edgeMetaInformation.weight,
-      type: edgeMetaInformation.type
-    })
+    edges.push(new ShallowEdge(
+      nodeId, // source
+      leafId, // target
+      nodeId + "-" + leafId, // id
+      edgeMetaInformation.weight, // weight
+      edgeMetaInformation.isCyclic, // isCyclic
+      edgeMetaInformation.type // type
+    ))
   }
   return edges
 }

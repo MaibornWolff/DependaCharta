@@ -37,7 +37,13 @@ export class State extends DataClass<State> {
       multiselectMode: false
     })
 
-    return Object.assign(defaults, overrides)
+    return defaults.copy(overrides)
+  }
+
+  static fromRootNodes(rootNodes: GraphNode[]) {
+    return State.build({
+      allNodes: rootNodes.flatMap(expand)
+    })
   }
 
   reduce(action: Action): State {
