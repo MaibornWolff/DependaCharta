@@ -13,7 +13,7 @@ describe('CytoscapeService', async () => {
   let cytoscapeService: CytoscapeService;
 
   const graphNodes = convertToGraphNodes(exampleJson)
-  const state = State.buildFromRootNodes(graphNodes)
+  const state = State.fromRootNodes(graphNodes)
 
   beforeEach(() => {
     TestBed.configureTestingModule({
