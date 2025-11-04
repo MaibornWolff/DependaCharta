@@ -46,6 +46,10 @@ export class State extends DataClass<State> {
     })
   }
 
+  getParent(child: GraphNode): GraphNode | undefined {
+    return this.allNodes.find(node => node.children.includes(child))
+  }
+
   reduce(action: Action): State {
     switch (true) {
       case action instanceof InitializeState:
