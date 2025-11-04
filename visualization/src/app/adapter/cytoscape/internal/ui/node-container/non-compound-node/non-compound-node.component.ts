@@ -2,7 +2,7 @@ import {Component, inject, Input} from '@angular/core';
 import {countParents, isPackage, VisibleGraphNode} from '../../../../../../model/GraphNode';
 import {InteractionBarComponent} from './interaction-bar/interaction-bar.component';
 import {CytoscapeService} from '../../../cytoscape.service';
-import {Action, UnpinNode, PinNode, ToggleNodeSelection, ShowAllEdgesOfNode, HideAllEdgesOfNode, ExpandNode, HideNode} from '../../../../../../model/Action';
+import {Action} from '../../../../../../model/Action';
 import {RenderInformation} from '../node-container.component';
 import {StateChange} from '../../../../../../app.component';
 
@@ -29,9 +29,9 @@ export class NonCompoundNodeComponent {
 
   togglePin() {
     if (this.isPinned()) {
-      this.stateService.graphActionHappened.emit(new UnpinNode(this.node.id))
+      this.stateService.graphActionHappened.emit(new Action.UnpinNode(this.node.id))
     } else {
-      this.stateService.graphActionHappened.emit(new PinNode(this.node.id))
+      this.stateService.graphActionHappened.emit(new Action.PinNode(this.node.id))
     }
   }
 
@@ -42,7 +42,7 @@ export class NonCompoundNodeComponent {
   onMouseUp(event: MouseEvent) {
     if (this.clickCoordinates.x === event.clientX && this.clickCoordinates.y === event.clientY) {
       if (this.stateChange.state.multiselectMode) {
-        this.stateService.graphActionHappened.emit(new ToggleNodeSelection(this.node.id))
+        this.stateService.graphActionHappened.emit(new Action.ToggleNodeSelection(this.node.id))
       } else {
         this.expandNode()
       }
@@ -50,21 +50,21 @@ export class NonCompoundNodeComponent {
   }
 
   onMouseEnter() {
-    this.stateService.graphActionHappened.emit(new ShowAllEdgesOfNode(this.node.id))
+    this.stateService.graphActionHappened.emit(new Action.ShowAllEdgesOfNode(this.node.id))
   }
 
   onMouseLeave() {
-    this.stateService.graphActionHappened.emit(new HideAllEdgesOfNode(this.node.id))
+    this.stateService.graphActionHappened.emit(new Action.HideAllEdgesOfNode(this.node.id))
   }
 
   expandNode() {
     if (this.node.children.length > 0) {
-      this.stateService.graphActionHappened.emit(new ExpandNode(this.node.id))
+      this.stateService.graphActionHappened.emit(new Action.ExpandNode(this.node.id))
     }
   }
 
   hideNode() {
-    this.stateService.graphActionHappened.emit(new HideNode(this.node.id))
+    this.stateService.graphActionHappened.emit(new Action.HideNode(this.node.id))
   }
 
   calculatedNodeStyle(): Partial<CSSStyleDeclaration> {

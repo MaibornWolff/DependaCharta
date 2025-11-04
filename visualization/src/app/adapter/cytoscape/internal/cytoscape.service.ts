@@ -2,7 +2,7 @@ import {EventEmitter, inject, Injectable, Output} from '@angular/core';
 import cytoscape, {AbstractEventObject, BoundingBox12, Core, ElementDefinition, NodeCollection, Position} from 'cytoscape';
 import {EdgeDisplayService} from './ui/edge-display.service';
 import {toCytoscapeEdges, toCytoscapeNodes} from './converter/elementDefinitionConverter';
-import {Action, InitializeState, ChangeFilter, ShowAllEdgesOfNode, HideAllEdgesOfNode, ResetView} from '../../../model/Action';
+import {Action} from '../../../model/Action';
 import {EdgeFilter} from '../../../model/EdgeFilter';
 import {State} from "../../../model/State";
 import {HighlightService} from './highlight.service';
@@ -32,23 +32,23 @@ export class CytoscapeService {
   @Output() changeCursor = new EventEmitter<string>()
 
   apply(state: State, action: Action) {
-    if (action instanceof InitializeState) {
+    if (action instanceof Action.InitializeState) {
       this.initialize()
     }
     const cy = this.get()
     switch (true) {
-      case action instanceof ChangeFilter: {
+      case action instanceof Action.ChangeFilter: {
         this.updateGraph(cy, state, cy.nodes());
         break;
       }
-      case action instanceof ShowAllEdgesOfNode:
-      case action instanceof HideAllEdgesOfNode:
+      case action instanceof Action.ShowAllEdgesOfNode:
+      case action instanceof Action.HideAllEdgesOfNode:
         this.applyFilters(cy, state)
         break
-      case action instanceof InitializeState:
+      case action instanceof Action.InitializeState:
         this.initializeGraphFromState(cy, state)
         break
-      case action instanceof ResetView:
+      case action instanceof Action.ResetView:
         cy.centre()
         break
       default:

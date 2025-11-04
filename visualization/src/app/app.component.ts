@@ -4,7 +4,7 @@ import {FilterComponent} from './ui/filter/filter.component'
 import {JsonLoaderComponent} from './ui/json.loader/json.loader.component'
 import {VersionComponent} from './ui/version/version.component'
 import {convertToGraphNodes} from './adapter/analysis'
-import {Action, InitializeState, EnterMultiselectMode, LeaveMultiselectMode, RestoreNodes, ToggleEdgeLabels, ResetView, ToggleInteractionMode, ToggleUsageTypeMode} from './model/Action'
+import {Action} from './model/Action'
 import {CytoscapeComponent} from './adapter/cytoscape'
 import {MouseInaccuracyDetectorComponent} from './mouse-inaccuracy-detector.component'
 import {ProjectReport} from './adapter/analysis/internal/ProjectReport'
@@ -42,23 +42,23 @@ export class AppComponent {
 
   // Button handlers (template cannot use `new` directly)
   onRestoreNodesClick() {
-    this.apply(new RestoreNodes())
+    this.apply(new Action.RestoreNodes())
   }
 
   onToggleEdgeLabelsClick() {
-    this.apply(new ToggleEdgeLabels())
+    this.apply(new Action.ToggleEdgeLabels())
   }
 
   onResetViewClick() {
-    this.apply(new ResetView())
+    this.apply(new Action.ResetView())
   }
 
   onToggleInteraction() {
-    this.apply(new ToggleInteractionMode())
+    this.apply(new Action.ToggleInteractionMode())
   }
 
   onToggleUsage() {
-    this.apply(new ToggleUsageTypeMode())
+    this.apply(new Action.ToggleUsageTypeMode())
   }
 
   onFileLoadStart() {
@@ -72,7 +72,7 @@ export class AppComponent {
   }
 
   async initializeCytoscape(jsonData: ProjectReport) {
-    this.apply(new InitializeState(
+    this.apply(new Action.InitializeState(
       jsonData.filename,
       convertToGraphNodes(jsonData)
     ))
@@ -80,11 +80,12 @@ export class AppComponent {
 
   @HostListener('document:keydown.shift', [])
   enterMultiselectMode() {
-    this.apply(new EnterMultiselectMode())
+    this.apply(new Action.EnterMultiselectMode())
   }
 
   @HostListener('document:keyup.shift', [])
   leaveMultiselectMode() {
-    this.apply(new LeaveMultiselectMode())
+    this.apply(new Action.LeaveMultiselectMode())
+    this.apply(new Action.ResetMultiselection())
   }
 }
