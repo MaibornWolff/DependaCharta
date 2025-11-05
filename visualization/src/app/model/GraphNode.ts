@@ -1,6 +1,5 @@
-import { Edge } from './Edge';
+import { Edge, ShallowEdge } from './Edge';
 import { IdUtils } from './Id';
-import {ShallowEdge} from './ShallowEdge';
 
 export interface GraphNode {
   id: string

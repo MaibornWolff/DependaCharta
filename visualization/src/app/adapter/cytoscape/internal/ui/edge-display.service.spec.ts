@@ -10,7 +10,7 @@ import {
 import {buildUniqueId} from '../../../../common/test/TestUtils.spec';
 import {CytoscapeGraphBuilder, ElementDefinitionBuilder} from '../converter/CytoscapeModelBuilders.spec';
 import {EdgeFilter, EdgeFilterType} from '../../../../model/EdgeFilter';
-import {ShallowEdge} from '../../../../model/ShallowEdge.spec';
+import {ShallowEdge} from '../../../../model/Edge.spec';
 
 describe('EdgeDisplayService', () => {
   let service: EdgeDisplayService;

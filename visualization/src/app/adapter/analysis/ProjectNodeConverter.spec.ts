@@ -2,7 +2,7 @@ import {convertToGraphNodes, convertToGraphNodesWithLightEdges} from './ProjectN
 import {EdgeMetaInformation} from './internal/ProjectReport'
 import {exampleJson} from '../../common/test/exampleJson.spec'
 import {GraphNode} from '../../model/GraphNode.spec'
-import {ShallowEdge} from '../../model/ShallowEdge.spec'
+import {ShallowEdge} from '../../model/Edge.spec'
 import {ProjectNode} from './internal/ProjectReport.spec'
 
 describe('ProjectNodeConverter', () => {
