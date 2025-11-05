@@ -166,7 +166,7 @@ describe('ElementDefinitionConverter', () => {
 
       // then
       const expected = {
-        data: {id: graphEdge.id, source: "source", target: "target", weight: 1, isCyclic: true, type: 'inheritance'},
+        data: {id: graphEdge.id, source: "source", target: "target", weight: 1, isCyclic: true, type: 'inheritance', isPointingUpwards: graphEdge.isPointingUpwards},
         style: {
           label : `${convertTypeOfUsage(graphEdge.type)}\n‎ `,
           'text-rotation': 'autorotate',
@@ -198,7 +198,7 @@ describe('ElementDefinitionConverter', () => {
 
         // then
         const expected = {
-          data: {id: graphEdge.id, source: "source", target: "target", weight: 1, isCyclic: true, type: 'inheritance'},
+          data: {id: graphEdge.id, source: "source", target: "target", weight: 1, isCyclic: true, type: 'inheritance', isPointingUpwards: graphEdge.isPointingUpwards},
 
         }
         expect(edge).toEqual(expected)

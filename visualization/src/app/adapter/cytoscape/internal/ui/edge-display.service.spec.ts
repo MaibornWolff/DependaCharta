@@ -89,7 +89,8 @@ describe('EdgeDisplayService', () => {
     const twistedEdgeNodeId = buildUniqueId()
     const dependency = ShallowEdge.build({
       source: sourceNodeId,
-      target: twistedEdgeNodeId
+      target: twistedEdgeNodeId,
+      isPointingUpwards: true
     })
     const sourceNode = new ElementDefinitionBuilder()
       .setId(sourceNodeId)
@@ -112,6 +113,7 @@ describe('EdgeDisplayService', () => {
     expect(twistedEdge.hidden()).toEqual(false)
     expect(twistedEdge.style('line-color')).toEqual(TWISTED_EDGE_COLOR)
     expect(twistedEdge.style('target-arrow-color')).toEqual(TWISTED_EDGE_COLOR)
+    expect(twistedEdge.style('line-style')).toEqual('dotted')
   });
 
   it('should color feedback edge correctly', () => {
@@ -121,7 +123,8 @@ describe('EdgeDisplayService', () => {
     const dependency = ShallowEdge.build({
       source: sourceNodeId,
       target: feedbackEdgeNodeId,
-      isCyclic: true
+      isCyclic: true,
+      isPointingUpwards: true
     })
     const sourceNode = new ElementDefinitionBuilder()
       .setId(sourceNodeId)
