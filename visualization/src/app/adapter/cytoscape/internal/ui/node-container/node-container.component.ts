@@ -58,17 +58,17 @@ export class NodeContainerComponent {
 // TODO make this part of VisibleGraphNode, or remove VisibleGraphNode entirely (moving its information to State)
 export class RenderableNode {
   constructor(
-    public readonly node: VisibleGraphNode,
-    public readonly renderInformation: RenderInformation
+    readonly node: VisibleGraphNode,
+    readonly renderInformation: RenderInformation
   ) {}
 }
 
 export class RenderInformation {
   constructor(
-    public readonly positionX: number,
-    public readonly positionY: number,
-    public readonly outerWidth: number,
-    public readonly outerHeight: number
+    readonly positionX: number,
+    readonly positionY: number,
+    readonly outerWidth: number,
+    readonly outerHeight: number
   ) {}
 
   getCoordinates(): Position {

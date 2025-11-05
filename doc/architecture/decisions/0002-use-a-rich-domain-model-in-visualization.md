@@ -25,8 +25,8 @@ Increased usage of "class" might come with syntax overhead.
 // production code
 class Foo {
     constructor(
-        public readonly answer: number,
-        public readonly label: string
+        readonly answer: number,
+        readonly label: string
     ) {}
 
     inc(): number {
