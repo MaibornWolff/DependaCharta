@@ -36,9 +36,10 @@ class ReportServiceTest {
         )
 
         // then
+        val levelsByNodeId = mapOf("de.maibornwolff.main" to 0, "de.maibornwolff.helper" to 1)
         val expected = ProjectReportDto(
             setOf(graphNode.toProjectNodeDto(cyclicEdges)),
-            mapOf("de.maibornwolff.main" to resolvedNodes[0].toLeafInformationDto(cyclicEdges))
+            mapOf("de.maibornwolff.main" to resolvedNodes[0].toLeafInformationDto(cyclicEdges, levelsByNodeId))
         )
         assertThat(report).isEqualTo(expected)
     }

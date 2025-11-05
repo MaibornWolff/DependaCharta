@@ -23,14 +23,14 @@ class ReportService {
 
         private fun buildLevelMap(nodes: List<GraphNode>): Map<String, Int> {
             val levelMap = mutableMapOf<String, Int>()
-            
+
             fun collectLevels(node: GraphNode) {
                 if (node.level != null) {
                     levelMap[node.id] = node.level
                 }
                 node.children.forEach { collectLevels(it) }
             }
-            
+
             nodes.forEach { collectLevels(it) }
             return levelMap
         }

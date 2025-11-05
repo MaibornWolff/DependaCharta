@@ -1,0 +1,40 @@
+[INFO] [⏳] 'Executing Analysis' started
+[INFO] [⌛] 'Executing Analysis' took 570.058845ms
+[INFO] [⏳] 'Resolving dependencies' started
+[INFO] [⌛] 'Resolving dependencies' took 6.035374ms
+[INFO] [⏳] 'Analyzing cycles' started
+[INFO] Found a total of 0 cycles
+[INFO] [⌛] 'Analyzing cycles' took 5.151954ms
+[INFO] [⏳] 'Leveling graph nodes' started
+[DEBUG] Levelizing package src.de.sots.cellarsandcentaurs.domain.service.CreatureService
+[DEBUG] Levelizing package src.de.sots.cellarsandcentaurs.domain.service.Creatures
+[DEBUG] Levelizing package src.de.sots.cellarsandcentaurs.domain.service
+[DEBUG] Levelizing package src.de.sots.cellarsandcentaurs.domain.model.NoSuchCreatureException
+[DEBUG] Levelizing package src.de.sots.cellarsandcentaurs.domain.model.Creature
+[DEBUG] Levelizing package src.de.sots.cellarsandcentaurs.domain.model.Fightable
+[DEBUG] Levelizing package src.de.sots.cellarsandcentaurs.domain.model.CreatureId
+[DEBUG] Levelizing package src.de.sots.cellarsandcentaurs.domain.model.CreatureType
+[DEBUG] Levelizing package src.de.sots.cellarsandcentaurs.domain.model.SpeedType
+[DEBUG] Levelizing package src.de.sots.cellarsandcentaurs.domain.model.Speed
+[DEBUG] Levelizing package src.de.sots.cellarsandcentaurs.domain.model.HitPoints
+[DEBUG] Levelizing package src.de.sots.cellarsandcentaurs.domain.model.ArmorClass
+[DEBUG] Levelizing package src.de.sots.cellarsandcentaurs.domain.model
+[DEBUG] Levelizing package src.de.sots.cellarsandcentaurs.domain
+[DEBUG] Levelizing package src.de.sots.cellarsandcentaurs.adapter.persistence.CreatureRepository
+[DEBUG] Levelizing package src.de.sots.cellarsandcentaurs.adapter.persistence.PersistedCreatures
+[DEBUG] Levelizing package src.de.sots.cellarsandcentaurs.adapter.persistence.CreatureEntity
+[DEBUG] Levelizing package src.de.sots.cellarsandcentaurs.adapter.persistence
+[DEBUG] Levelizing package src.de.sots.cellarsandcentaurs.adapter
+[DEBUG] Levelizing package src.de.sots.cellarsandcentaurs.application.CreatureUtil
+[DEBUG] Levelizing package src.de.sots.cellarsandcentaurs.application.CreatureFacade
+[DEBUG] Levelizing package src.de.sots.cellarsandcentaurs.application.index
+[DEBUG] Levelizing package src.de.sots.cellarsandcentaurs.application
+[DEBUG] Levelizing package src.de.sots.cellarsandcentaurs
+[DEBUG] Levelizing package src.de.sots
+[DEBUG] Levelizing package src.de
+[DEBUG] Levelizing package src
+[DEBUG] Levelizing package my_root_node_id
+[INFO] [⌛] 'Leveling graph nodes' took 29.640315ms
+[INFO] Assembling project report from 1 files...
+[INFO] Project report saved successfully as typescript-example.cg.json in directory 'exampleProjects/TypescriptExample'
+[INFO] Deleting temporary analysis files...

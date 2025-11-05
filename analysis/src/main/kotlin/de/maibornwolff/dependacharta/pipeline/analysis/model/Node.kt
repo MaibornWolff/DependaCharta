@@ -22,7 +22,7 @@ data class Node(
         val nodeId = pathWithName.withDots()
         val cyclicEdges = cyclicEdgesByLeaf[nodeId] ?: setOf()
         val sourceLevel = levelsByNodeId[nodeId] ?: 0
-        
+
         return LeafInformationDto(
             id = nodeId,
             name = name(),
@@ -35,7 +35,7 @@ data class Node(
                 ).mapValues { (targetId, values) ->
                     val targetLevel = levelsByNodeId[targetId] ?: 0
                     val isPointingUpwards = sourceLevel <= targetLevel
-                    
+
                     EdgeInfoDto(
                         isCyclic = values.any { cyclicEdges.contains(it.withDots()) },
                         weight = 1,
