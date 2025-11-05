@@ -1,8 +1,9 @@
-import {expand, getDescendants, GraphNode, VisibleGraphNode} from "./GraphNode";
+import {expand, getDescendants, GraphNode, GraphNodeUtils, VisibleGraphNode, VisibleGraphNodeUtils} from "./GraphNode";
 import {EdgeFilter, EdgeFilterType} from "./EdgeFilter";
 import {Action, InitializeState, ExpandNode, CollapseNode, ChangeFilter, ShowAllEdgesOfNode, HideAllEdgesOfNode, ToggleEdgeLabels, HideNode, RestoreNode, RestoreNodes, RestoreAllChildren, ToggleInteractionMode, ToggleUsageTypeMode, ResetView, ToggleNodeSelection, EnterMultiselectMode, LeaveMultiselectMode, PinNode, UnpinNode} from './Action';
 import {Edge} from "./Edge";
 import {DataClass} from "../common/DataClass";
+import { IdUtils } from "./Id";
 
 // TODO avoid Maps (→ (de-)serialization issues)
 export class State extends DataClass<State> {
@@ -210,92 +211,3 @@ export class State extends DataClass<State> {
     }
   }
 }
-
-// TODO move
-class VisibleGraphNodeUtils {
-  static findBestDependencyTarget(dependencyId: string, visibleNodes: VisibleGraphNode[], hiddenNodeIds: string[]): VisibleGraphNode | null {
-    if (hiddenNodeIds.includes(dependencyId)) {
-      return null
-    }
-
-    const visibleNode = visibleNodes.find(visibleNode => dependencyId === visibleNode.id);
-    if (visibleNode) {
-      return visibleNode
-    }
-
-    const dependencyParent = IdUtils.getParent(dependencyId)
-    if (!dependencyParent) {
-      return null
-    }
-    return VisibleGraphNodeUtils.findBestDependencyTarget(dependencyParent, visibleNodes, hiddenNodeIds)
-  }
-
-  static createEdgesForNode(node: VisibleGraphNode, visibleNodes: VisibleGraphNode[], hiddenNodeIds: string[]): Edge[] {
-    return node.dependencies.flatMap(dependency => {
-      const bestTarget = VisibleGraphNodeUtils.findBestDependencyTarget(dependency.target, visibleNodes, hiddenNodeIds)
-      if (bestTarget && !IdUtils.isIncludedIn(bestTarget.id, node.id)) {
-        return new Edge(
-          node, // source
-          bestTarget, // target
-          node.id + "-" + bestTarget.id, // id
-          dependency.weight, // weight
-          dependency.isCyclic, // isCyclic
-          dependency.type // type
-        )
-      }
-      return []
-    })
-  }
-}
-
-// TODO move
-class IdUtils {
-  static getParent(nodeId: string): string | null {
-    const parent = nodeId.substring(0, nodeId.lastIndexOf('.'))
-    if (parent.length === 0) {
-      return null
-    }
-    return parent
-  }
-
-  static isIncludedIn(includingId: string, id: string) {
-    if (includingId === id) {
-      return true
-    }
-    const includingIdParts = includingId.split(".")
-    const idParts = id.split(".")
-    if (includingIdParts.length >= idParts.length) {
-      return false
-    }
-    for (let i = 0; i < includingIdParts.length; i++) {
-      if (includingIdParts[i] !== idParts[i]) {
-        return false
-      }
-    }
-    return true
-  }
-
-  static isDescendantOf = (ancestorNodeIds: string[]) => (descendantNodeId: string) =>
-    ancestorNodeIds
-      .filter(id => descendantNodeId.startsWith(id))
-      .length > 0
-
-}
-
-// TODO move
-class GraphNodeUtils {
-  static isNodeOrAncestorHidden(hiddenChildrenIds: string[], child: GraphNode): boolean {
-    if (hiddenChildrenIds.includes(child.id)) {
-      return true;
-    }
-    let parent = child.parent;
-    while (parent) {
-      if (hiddenChildrenIds.includes(parent.id)) {
-        return true;
-      }
-      parent = parent.parent;
-    }
-    return false;
-  }
-}
-

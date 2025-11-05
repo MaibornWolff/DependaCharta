@@ -1,3 +1,5 @@
+import { Edge } from './Edge';
+import { IdUtils } from './Id';
 import {ShallowEdge} from './ShallowEdge';
 
 export interface GraphNode {
@@ -68,4 +70,56 @@ export function* getDescendants(node: GraphNode): Generator<GraphNode> {
 
 export function countParents(node: GraphNode): number {
   return Array.from(getAncestors(node)).length - 1
+}
+
+export class GraphNodeUtils {
+  static isNodeOrAncestorHidden(hiddenChildrenIds: string[], child: GraphNode): boolean {
+    if (hiddenChildrenIds.includes(child.id)) {
+      return true;
+    }
+    let parent = child.parent;
+    while (parent) {
+      if (hiddenChildrenIds.includes(parent.id)) {
+        return true;
+      }
+      parent = parent.parent;
+    }
+    return false;
+  }
+}
+
+export class VisibleGraphNodeUtils {
+  static findBestDependencyTarget(dependencyId: string, visibleNodes: VisibleGraphNode[], hiddenNodeIds: string[]): VisibleGraphNode | null {
+    if (hiddenNodeIds.includes(dependencyId)) {
+      return null
+    }
+
+    const visibleNode = visibleNodes.find(visibleNode => dependencyId === visibleNode.id);
+    if (visibleNode) {
+      return visibleNode
+    }
+
+    const dependencyParent = IdUtils.getParent(dependencyId)
+    if (!dependencyParent) {
+      return null
+    }
+    return VisibleGraphNodeUtils.findBestDependencyTarget(dependencyParent, visibleNodes, hiddenNodeIds)
+  }
+
+  static createEdgesForNode(node: VisibleGraphNode, visibleNodes: VisibleGraphNode[], hiddenNodeIds: string[]): Edge[] {
+    return node.dependencies.flatMap(dependency => {
+      const bestTarget = VisibleGraphNodeUtils.findBestDependencyTarget(dependency.target, visibleNodes, hiddenNodeIds)
+      if (bestTarget && !IdUtils.isIncludedIn(bestTarget.id, node.id)) {
+        return new Edge(
+          node, // source
+          bestTarget, // target
+          node.id + "-" + bestTarget.id, // id
+          dependency.weight, // weight
+          dependency.isCyclic, // isCyclic
+          dependency.type // type
+        )
+      }
+      return []
+    })
+  }
 }
