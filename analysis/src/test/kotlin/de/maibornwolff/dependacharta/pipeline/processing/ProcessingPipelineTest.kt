@@ -40,7 +40,10 @@ class ProcessingPipelineTest {
         ProcessingPipeline.run(outputFileName, outputDirectoryName, fileReports, false)
 
         // then
-        val customJsonSerializer = Json { explicitNulls = false }
+        val customJsonSerializer = Json {
+            explicitNulls = false
+            encodeDefaults = true
+        }
         val projectReport = getResult(customJsonSerializer)
 
         val expectedProjectReportFile = File("src/test/resources/pipeline/projectreport/java-example.cg.json")
@@ -130,7 +133,10 @@ class ProcessingPipelineTest {
         ProcessingPipeline.run(outputFileName, outputDirectoryName, fileReports, false)
 
         // then
-        val result = getResult(Json { explicitNulls = false })
+        val result = getResult(Json {
+            explicitNulls = false
+            encodeDefaults = true
+        })
 
         val leaves = result.leaves
         assertThat(leaves).hasSize(3)
@@ -187,7 +193,10 @@ class ProcessingPipelineTest {
         ProcessingPipeline.run(outputFileName, outputDirectoryName, fileReports, false)
 
         // then
-        val result = getResult(Json { explicitNulls = false })
+        val result = getResult(Json {
+            explicitNulls = false
+            encodeDefaults = true
+        })
 
         val leaves = result.leaves
         assertTrue(leaves["de.mw.A"]!!.dependencies["de.mw.B"]!!.isCyclic)

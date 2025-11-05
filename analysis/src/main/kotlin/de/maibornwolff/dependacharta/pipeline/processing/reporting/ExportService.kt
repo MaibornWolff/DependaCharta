@@ -5,7 +5,10 @@ import kotlinx.serialization.json.Json
 
 class ExportService {
     companion object {
-        private val compactJson = Json { explicitNulls = false }
+        private val compactJson = Json {
+            explicitNulls = false
+            encodeDefaults = true
+        }
 
         fun toJson(projectReport: ProjectReportDto) = compactJson.encodeToString(value = projectReport)
     }

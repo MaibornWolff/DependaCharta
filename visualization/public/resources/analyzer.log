@@ -1,0 +1,23 @@
+[INFO] [⏳] 'Executing Analysis' started
+[INFO] [⌛] 'Executing Analysis' took 405.971202ms
+[INFO] [⏳] 'Resolving dependencies' started
+[INFO] [⌛] 'Resolving dependencies' took 10.121557ms
+[INFO] [⏳] 'Analyzing cycles' started
+[INFO] Found 1 strongly connected components
+[INFO] Found a total of 3 cycles
+[INFO] [⌛] 'Analyzing cycles' took 8.834309ms
+[INFO] [⏳] 'Leveling graph nodes' started
+[DEBUG] Levelizing package de.sots.cellarsandcentaurs.domain.service
+[DEBUG] Levelizing package de.sots.cellarsandcentaurs.domain.model
+[DEBUG] Levelizing package de.sots.cellarsandcentaurs.domain
+[DEBUG] Levelizing package de.sots.cellarsandcentaurs.adapter.persistence
+[DEBUG] Levelizing package de.sots.cellarsandcentaurs.adapter
+[DEBUG] Levelizing package de.sots.cellarsandcentaurs.application
+[DEBUG] Levelizing package de.sots.cellarsandcentaurs
+[DEBUG] Levelizing package de.sots
+[DEBUG] Levelizing package de
+[DEBUG] Levelizing package my_root_node_id
+[INFO] [⌛] 'Leveling graph nodes' took 38.042642ms
+[INFO] Assembling project report from 1 files...
+[INFO] Project report saved successfully as java-example.cg.json in directory 'visualization/public/resources'
+[INFO] Deleting temporary analysis files...

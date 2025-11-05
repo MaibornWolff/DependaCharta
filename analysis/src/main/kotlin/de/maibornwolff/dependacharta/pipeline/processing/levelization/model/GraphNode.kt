@@ -14,9 +14,12 @@ data class GraphNode(
 ) {
     companion object
 
-    fun toProjectNodeDto(cyclicEdgesByLeaf: Map<String, Set<String>>): ProjectNodeDto {
+    fun toProjectNodeDto(
+        cyclicEdgesByLeaf: Map<String, Set<String>>,
+        allNodes: Map<String, GraphNode> = emptyMap()
+    ): ProjectNodeDto {
         val isLeaf = children.isEmpty()
-        val childDtos = children.map { it.toProjectNodeDto(cyclicEdgesByLeaf) }.toSet()
+        val childDtos = children.map { it.toProjectNodeDto(cyclicEdgesByLeaf, allNodes) }.toSet()
 
         val internalDependencies = if (isLeaf) {
             dependencies.associateWith { dependency ->
@@ -25,14 +28,16 @@ data class GraphNode(
                 dependency.toEdgeInfoDto(
                     cyclicEdgesByLeaf[id],
                     if (edgeTypes.isEmpty()) TypeOfUsage.USAGE.rawValue else edgeTypesJoined,
-                    children
+                    allNodes
                 )
             }
         } else {
             childDtos
                 .flatMap { it.containedInternalDependencies.entries }
                 .groupBy({ it.key }, { it.value })
-                .mapValues { it.value.sum() }
+                .mapValues { (targetId, edgeInfos) ->
+                    edgeInfos.sum(level ?: 0, allNodes[targetId]?.level ?: 0)
+                }
         }
 
         return ProjectNodeDto(
@@ -48,10 +53,10 @@ data class GraphNode(
     private fun String.toEdgeInfoDto(
         cyclicEdges: Set<String>?,
         type: String,
-        siblings: List<GraphNode>
+        allNodes: Map<String, GraphNode>
     ): EdgeInfoDto {
         val sourceLevel = level ?: 0
-        val targetNode = siblings.find { it.id == this }
+        val targetNode = allNodes[this]
         val targetLevel = targetNode?.level ?: 0
         val isPointingUpwards = sourceLevel <= targetLevel
 
@@ -63,11 +68,13 @@ data class GraphNode(
         )
     }
 
-    private fun List<EdgeInfoDto>.sum() =
-        EdgeInfoDto(
-            isCyclic = any { it.isCyclic },
-            weight = sumOf { it.weight },
-            type = map { it.type }.toSet().joinToString(","),
-            isPointingUpwards = any { it.isPointingUpwards }
-        )
+    private fun List<EdgeInfoDto>.sum(
+        sourceLevel: Int,
+        targetLevel: Int
+    ) = EdgeInfoDto(
+        isCyclic = any { it.isCyclic },
+        weight = sumOf { it.weight },
+        type = map { it.type }.toSet().joinToString(","),
+        isPointingUpwards = sourceLevel <= targetLevel
+    )
 }
