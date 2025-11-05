@@ -119,9 +119,7 @@ export class CytoscapeService {
 
   initialize(): Core {
     cytoscape.use(lsmLayout)
-    if (!this.cy) {
-      this.cy = this.createCytoscape()
-    }
+    this.cy = this.createCytoscape()
     this.registerEventListeners(this.cy)
     return this.cy
   }

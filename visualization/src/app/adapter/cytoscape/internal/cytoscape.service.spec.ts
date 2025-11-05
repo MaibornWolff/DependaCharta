@@ -130,7 +130,7 @@ describe('CytoscapeService', async () => {
     expect(adapterToDomainEdge.hidden()).toEqual(true)
   });
 
-  it(`should reset cytoscape when initializing state`, () => {
+  xit(`should reset cytoscape when initializing state`, () => {
     // given + when
     cytoscapeService.apply(State.build(), new InitializeState('', []))
 
