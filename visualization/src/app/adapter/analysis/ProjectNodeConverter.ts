@@ -43,7 +43,8 @@ function toShallowEdge(nodeId: string, rawDependencies: Record<string, EdgeMetaI
       nodeId + "-" + leafId, // id
       edgeMetaInformation.weight, // weight
       edgeMetaInformation.isCyclic, // isCyclic
-      edgeMetaInformation.type // type
+      edgeMetaInformation.type, // type
+      edgeMetaInformation.isPointingUpwards // isPointingUpwards
     ))
   }
   return edges

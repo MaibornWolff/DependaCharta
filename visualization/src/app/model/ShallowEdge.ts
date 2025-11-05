@@ -5,10 +5,11 @@ export class ShallowEdge {
     readonly id: string,
     readonly weight: number,
     readonly isCyclic: boolean,
-    readonly type: string
+    readonly type: string,
+    readonly isPointingUpwards: boolean
   ) {}
 
   copy(overrides: Partial<ShallowEdge>) {
     return Object.assign(this, overrides)
-  }  
+  }
 }

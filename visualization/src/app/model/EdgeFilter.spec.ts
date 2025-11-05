@@ -30,12 +30,14 @@ describe('New Graph Filter', () => {
     const feedbackEdge = Edge.build({
       source: level0Node,
       target: level1Node,
-      isCyclic: true
+      isCyclic: true,
+      isPointingUpwards: true
     })
     const nonFeedbackEdge = Edge.build({
       source: level1Node,
       target: level0Node,
-      isCyclic: true
+      isCyclic: true,
+      isPointingUpwards: false
     })
 
     // when
@@ -62,12 +64,14 @@ describe('New Graph Filter', () => {
     const feedbackEdge = Edge.build({
       source: level0Node,
       target: level1Node,
-      isCyclic: true
+      isCyclic: true,
+      isPointingUpwards: true
     })
     const twistedEdge = Edge.build({
       source: level0Node,
       target: level1Node,
-      isCyclic: false
+      isCyclic: false,
+      isPointingUpwards: true
     })
 
     // when
@@ -90,7 +94,8 @@ describe('New Graph Filter', () => {
       target: VisibleGraphNode.build({
         level: 1
       }),
-      isCyclic: false
+      isCyclic: false,
+      isPointingUpwards: true
     })
 
     // when
@@ -116,14 +121,16 @@ describe('New Graph Filter', () => {
       id: '1',
       source: level0Node,
       target: level1Node,
-      isCyclic: false
+      isCyclic: false,
+      isPointingUpwards: true
     })
 
     const feedbackEdge = Edge.build({
       id: '2',
       source: level0Node,
       target: level1Node,
-      isCyclic: true
+      isCyclic: true,
+      isPointingUpwards: true
     })
 
     // when
@@ -150,13 +157,15 @@ describe('New Graph Filter', () => {
     const regularEdge = Edge.build({
       source: level1Node,
       target: level0Node,
-      isCyclic: false
+      isCyclic: false,
+      isPointingUpwards: false
     })
 
     const regularCyclicEdge = Edge.build({
       source: level1Node,
       target: level0Node,
-      isCyclic: true
+      isCyclic: true,
+      isPointingUpwards: false
     })
 
     // when
@@ -182,14 +191,16 @@ describe('New Graph Filter', () => {
       id: '1',
       source: level0Node,
       target: level1Node,
-      isCyclic: true
+      isCyclic: true,
+      isPointingUpwards: true
     })
 
     const regularCyclicEdge = Edge.build({
       id: '2',
       source: level1Node,
       target: level0Node,
-      isCyclic: true
+      isCyclic: true,
+      isPointingUpwards: false
     })
 
     // when
@@ -216,13 +227,15 @@ describe('New Graph Filter', () => {
     const regularEdge = Edge.build({
       source: level1Node,
       target: level0Node,
-      isCyclic: false
+      isCyclic: false,
+      isPointingUpwards: false
     })
 
     const twistedEdge = Edge.build({
       source: level0Node,
       target: level1Node,
-      isCyclic: false
+      isCyclic: false,
+      isPointingUpwards: true
     })
 
     // when
@@ -248,28 +261,32 @@ describe('New Graph Filter', () => {
       id: '1',
       source: level1Node,
       target: level0Node,
-      isCyclic: false
+      isCyclic: false,
+      isPointingUpwards: false
     })
 
     const twistedEdge = Edge.build({
       id: '2',
       source: level0Node,
       target: level1Node,
-      isCyclic: false
+      isCyclic: false,
+      isPointingUpwards: true
     })
 
     const feedbackEdge = Edge.build({
       id: '3',
       source: level0Node,
       target: level1Node,
-      isCyclic: true
+      isCyclic: true,
+      isPointingUpwards: true
     })
 
     const regularCyclicEdge = Edge.build({
       id: '4',
       source: level1Node,
       target: level0Node,
-      isCyclic: true
+      isCyclic: true,
+      isPointingUpwards: false
     })
 
     // when

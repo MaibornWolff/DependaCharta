@@ -22,7 +22,7 @@ data class GraphNode(
             dependencies.associateWith { dependency ->
                 val edgeTypes = edges.filter { it.target == dependency }.map { it.type }.toSet()
                 val edgeTypesJoined = edgeTypes.joinToString(",")
-                dependency.toEdgeInfoDto(cyclicEdgesByLeaf[id], if (edgeTypes.isEmpty()) TypeOfUsage.USAGE.rawValue else edgeTypesJoined)
+                dependency.toEdgeInfoDto(cyclicEdgesByLeaf[id], if (edgeTypes.isEmpty()) TypeOfUsage.USAGE.rawValue else edgeTypesJoined, children)
             }
         } else {
             childDtos
@@ -43,17 +43,27 @@ data class GraphNode(
 
     private fun String.toEdgeInfoDto(
         cyclicEdges: Set<String>?,
-        type: String
-    ) = EdgeInfoDto(
-        isCyclic = cyclicEdges?.contains(this) ?: false,
-        weight = 1,
-        type = type
-    )
+        type: String,
+        siblings: List<GraphNode>
+    ): EdgeInfoDto {
+        val sourceLevel = level ?: 0
+        val targetNode = siblings.find { it.id == this }
+        val targetLevel = targetNode?.level ?: 0
+        val isPointingUpwards = sourceLevel <= targetLevel
+        
+        return EdgeInfoDto(
+            isCyclic = cyclicEdges?.contains(this) ?: false,
+            weight = 1,
+            type = type,
+            isPointingUpwards = isPointingUpwards
+        )
+    }
 
     private fun List<EdgeInfoDto>.sum() =
         EdgeInfoDto(
             isCyclic = any { it.isCyclic },
             weight = sumOf { it.weight },
-            type = map { it.type }.toSet().joinToString(",")
+            type = map { it.type }.toSet().joinToString(","),
+            isPointingUpwards = any { it.isPointingUpwards }
         )
 }

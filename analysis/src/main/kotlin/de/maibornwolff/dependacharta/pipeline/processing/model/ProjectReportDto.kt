@@ -32,5 +32,6 @@ data class LeafInformationDto(
 data class EdgeInfoDto(
     val isCyclic: Boolean,
     val weight: Int,
-    val type: String
+    val type: String,
+    val isPointingUpwards: Boolean = false
 )

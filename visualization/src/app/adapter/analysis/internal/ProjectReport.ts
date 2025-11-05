@@ -19,6 +19,7 @@ export interface EdgeMetaInformation {
   weight: number
   isCyclic: boolean
   type: string
+  isPointingUpwards: boolean
 }
 
 export interface NodeInformation {

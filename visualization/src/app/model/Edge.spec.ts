@@ -346,7 +346,8 @@ Edge.build = function(overrides: Partial<Edge> = {}): Edge {
     defaultSource + "-" + defaultTarget, // id
     1, // weight
     false, // isCyclic
-    'usage' // type
+    'usage', // type
+    false // isPointingUpwards
   )
 
   return defaults.copy(overrides)
