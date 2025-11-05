@@ -1,8 +1,7 @@
-import {Edge} from './Edge';
+import {Edge, ShallowEdge} from './Edge';
 import {EdgeFilterType} from './EdgeFilter';
 import {State} from './State';
 import {VisibleGraphNode} from './GraphNode.spec';
-import {ShallowEdge} from './ShallowEdge.spec';
 
 describe('Edge', () => {
   describe('createEdges', () => {
@@ -334,6 +333,9 @@ declare module './Edge' {
   namespace Edge {
     function build(overrides?: Partial<Edge>): Edge
   }
+  namespace ShallowEdge {
+    function build(overrides?: Partial<ShallowEdge>): ShallowEdge
+  }
 }
 
 Edge.build = function(overrides: Partial<Edge> = {}): Edge {
@@ -353,3 +355,18 @@ Edge.build = function(overrides: Partial<Edge> = {}): Edge {
 }
 
 export { Edge }
+
+ShallowEdge.build = function(overrides: Partial<ShallowEdge> = {}): ShallowEdge {
+  const defaults = new ShallowEdge(
+    "source", // source
+    "target", // target
+    "source-target", // id
+    1, // weight
+    false, // isCyclic
+    'usage' // type
+  )
+
+  return defaults.copy(overrides)
+}
+
+export { ShallowEdge }

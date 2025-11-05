@@ -2,7 +2,7 @@ import {Edge} from '../../../../model/Edge';
 import cytoscape, {ElementDefinition} from 'cytoscape';
 import {buildUniqueId} from '../../../../common/test/TestUtils.spec';
 import {VisibleGraphNode} from '../../../../model/GraphNode.spec';
-import {ShallowEdge} from '../../../../model/ShallowEdge.spec';
+import {ShallowEdge} from '../../../../model/Edge.spec';
 
 export class ElementDefinitionBuilder {
   private elementId = buildUniqueId()

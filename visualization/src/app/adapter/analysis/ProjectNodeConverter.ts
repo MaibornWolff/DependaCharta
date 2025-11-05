@@ -1,6 +1,6 @@
 import {EdgeMetaInformation, getNodeId, ProjectNode} from './internal/ProjectReport';
 import {GraphNode} from '../../model/GraphNode';
-import {ShallowEdge} from '../../model/ShallowEdge';
+import {ShallowEdge} from '../../model/Edge';
 import {LeafIdCreator} from './internal/LeafIdCreator';
 
 export function convertToGraphNodes(json: any): GraphNode[] {

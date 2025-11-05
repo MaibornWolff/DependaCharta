@@ -2,8 +2,7 @@ import {toCytoscapeEdges, toCytoscapeNodes, toGraphEdges, toVisibleGraphNodes} f
 import {EdgeCollectionBuilder, NodeCollectionBuilder} from './CytoscapeModelBuilders.spec'
 import {convertTypeOfUsage} from './UsageTypeConverter'
 import {GraphNode, VisibleGraphNode} from '../../../../model/GraphNode.spec'
-import {Edge} from '../../../../model/Edge.spec'
-import {ShallowEdge} from '../../../../model/ShallowEdge.spec'
+import {Edge, ShallowEdge} from '../../../../model/Edge.spec'
 
 describe('ElementDefinitionConverter', () => {
   describe('GraphNode Conversion', () => {
