@@ -10,7 +10,7 @@ export class Edge {
     readonly type: string
   ) {}
 
-  copy(overrides: Partial<Edge>) {
+  copy(overrides: Partial<Edge>): Edge {
     return Object.assign(this, overrides)
   }
 
@@ -65,7 +65,7 @@ export class ShallowEdge {
     readonly type: string
   ) {}
 
-  copy(overrides: Partial<ShallowEdge>) {
+  copy(overrides: Partial<ShallowEdge>): ShallowEdge {
     return Object.assign(this, overrides)
   }  
 }
