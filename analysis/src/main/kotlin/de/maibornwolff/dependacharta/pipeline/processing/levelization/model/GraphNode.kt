@@ -33,10 +33,20 @@ data class GraphNode(
                 )
             }
         } else {
+            // For parent nodes, we need to find which child nodes have dependencies to the target
+            // and calculate isPointingUpwards based on the relationship between THIS node and the target node
             childDtos
                 .flatMap { it.containedInternalDependencies.entries }
                 .groupBy({ it.key }, { it.value })
-                .mapValues { it.value.sum() }
+                .mapValues { (targetId, edgeInfos) ->
+                    // Find the target node to get its level
+                    val targetNode = allNodesMap[targetId]
+                    // Calculate isPointingUpwards based on THIS node's level vs target's level
+                    edgeInfos.sum(
+                        sourceLevel = level ?: 0,
+                        targetLevel = targetNode?.level ?: 0
+                    )
+                }
         }
 
         return ProjectNodeDto(
@@ -61,11 +71,13 @@ data class GraphNode(
         isPointingUpwards = sourceLevel <= targetLevel
     )
 
-    private fun List<EdgeInfoDto>.sum() =
-        EdgeInfoDto(
-            isCyclic = any { it.isCyclic },
-            weight = sumOf { it.weight },
-            type = map { it.type }.toSet().joinToString(","),
-            isPointingUpwards = any { it.isPointingUpwards }
-        )
+    private fun List<EdgeInfoDto>.sum(
+        sourceLevel: Int,
+        targetLevel: Int
+    ) = EdgeInfoDto(
+        isCyclic = any { it.isCyclic },
+        weight = sumOf { it.weight },
+        type = map { it.type }.toSet().joinToString(","),
+        isPointingUpwards = sourceLevel <= targetLevel
+    )
 }
