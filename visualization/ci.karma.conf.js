@@ -27,7 +27,7 @@ module.exports = function (config) {
     coverageReporter: {
       dir: 'coverage',
       reporters: [
-        { type: 'lcovonly', subdir: '.', file: 'lcov.txt' },
+        { type: 'lcovonly', subdir: '.', file: 'lcov.info' },
       ]
     },
     junitReporter: {
