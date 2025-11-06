@@ -49,7 +49,8 @@ describe('ProjectReport', () => {
         '': {
           weight: 1,
           isCyclic: false,
-          type: 'usage'
+          type: 'usage',
+          isPointingUpwards: false
         }
       }
       const projectNode = ProjectNode.build({
@@ -65,8 +66,8 @@ describe('ProjectReport', () => {
         '': {
           weight: 1,
           isCyclic: false,
-          type: 'usage'
-
+          type: 'usage',
+          isPointingUpwards: false
         }
       }
       const projectNode = ProjectNode.build({
@@ -81,8 +82,8 @@ describe('ProjectReport', () => {
         '': {
           weight: 1,
           isCyclic: false,
-          type: 'usage'
-
+          type: 'usage',
+          isPointingUpwards: false
         }
       }
       const parentPath = 'parentPath'

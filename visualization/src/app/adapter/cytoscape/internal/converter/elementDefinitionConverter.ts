@@ -25,13 +25,17 @@ export function toGraphEdges(cyEdges: EdgeCollection, graphNodes: VisibleGraphNo
       return null
     }
 
+    // Calculate isPointingUpwards based on source and target levels
+    const isPointingUpwards = source.level <= target.level;
+    
     return new Edge(
       source, // source
       target, // target
       edge.data().id, // id
       edge.data().weight, // weight
       edge.data().isCyclic, // isCyclic
-      edge.data().type // type
+      edge.data().type, // type
+      isPointingUpwards // isPointingUpwards - calculated from levels
     );
   }).filter(edge => edge !== null)
 }

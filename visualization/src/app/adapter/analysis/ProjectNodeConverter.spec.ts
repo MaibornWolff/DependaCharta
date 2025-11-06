@@ -27,7 +27,8 @@ describe('ProjectNodeConverter', () => {
       [dependencyTargetId]: {
         isCyclic: isCyclic,
         weight: weight,
-        type: type
+        type: type,
+        isPointingUpwards: false
       }
     }
     const projectNode = ProjectNode.build({

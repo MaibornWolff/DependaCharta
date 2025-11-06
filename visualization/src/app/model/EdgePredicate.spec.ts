@@ -134,7 +134,8 @@ describe('Layout', () => {
       }),
       target: VisibleGraphNode.build({
         level: 1
-      })
+      }),
+      isPointingUpwards: false // Override the calculated value for this test
     })
 
     const predicate = EdgePredicate.fromEnum(EdgeType.TWISTED)

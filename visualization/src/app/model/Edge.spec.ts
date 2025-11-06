@@ -17,7 +17,8 @@ describe('Edge', () => {
         id: leafNode2Id,
         dependencies: [ShallowEdge.build({
           source: leafNode2Id,
-          target: leafNode1Id
+          target: leafNode1Id,
+          isPointingUpwards: true // Both nodes at level 0, so 0 <= 0 = true
         })]
       })
       const state = State.fromRootNodes([leafNode1, leafNode2]);
@@ -32,7 +33,8 @@ describe('Edge', () => {
         target: leafNode1,
         isCyclic: false,
         weight: 1,
-        type: 'usage'
+        type: 'usage',
+        isPointingUpwards: true // Both nodes at level 0, so 0 <= 0 = true
       })
       expect(edges.length).toEqual(1);
       expect(edges[0]).toEqual(expectedEdge);
@@ -340,13 +342,21 @@ Edge.build = function(overrides: Partial<Edge> = {}): Edge {
   const defaultTarget = VisibleGraphNode.build()
   const defaultSource = VisibleGraphNode.build()
 
+  // Calculate isPointingUpwards based on source and target levels if not explicitly provided
+  const source = overrides.source || defaultSource
+  const target = overrides.target || defaultTarget
+  const isPointingUpwards = overrides.isPointingUpwards !== undefined
+    ? overrides.isPointingUpwards
+    : source.level <= target.level
+
   const defaults = new Edge(
     defaultSource, // source
     defaultTarget, // target
     defaultSource + "-" + defaultTarget, // id
     1, // weight
     false, // isCyclic
-    'usage' // type
+    'usage', // type
+    isPointingUpwards // isPointingUpwards - calculated from levels
   )
 
   return defaults.copy(overrides)

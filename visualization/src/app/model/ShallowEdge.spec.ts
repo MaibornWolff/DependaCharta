@@ -13,7 +13,8 @@ ShallowEdge.build = function(overrides: Partial<ShallowEdge> = {}): ShallowEdge 
     "source-target", // id
     1, // weight
     false, // isCyclic
-    'usage' // type
+    'usage', // type
+    false // isPointingUpwards
   )
 
   return defaults.copy(overrides)
