@@ -97,7 +97,7 @@ jobs:
 
       - name: Publish test results
         uses: dorny/test-reporter@v1
-        if: always()
+        if: always() && github.event.pull_request.head.repo.full_name == github.repository
         with:
           name: Visualization Unit Tests
           path: visualization/test-results/*.xml
