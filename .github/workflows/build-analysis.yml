@@ -113,11 +113,33 @@ jobs:
     timeout-minutes: 15
     needs: build
 
+    defaults:
+      run:
+        working-directory: analysis
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Shallow clones should be disabled for better analysis relevancy
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: wrapper
+
+      - name: Build project (for bytecode analysis)
+        run: ./gradlew compileKotlin compileTestKotlin --no-daemon
 
       - name: Download coverage artifact
         uses: actions/download-artifact@v4
