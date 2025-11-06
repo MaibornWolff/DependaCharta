@@ -15,9 +15,14 @@ data class Node(
     val usedTypes: Set<Type>,
     val resolvedNodeDependencies: NodeDependencies = NodeDependencies(setOf(), setOf()),
 ) {
-    fun toLeafInformationDto(cyclicEdgesByLeaf: Map<String, Set<String>>): LeafInformationDto {
+    fun toLeafInformationDto(
+        cyclicEdgesByLeaf: Map<String, Set<String>>,
+        levelsByNodeId: Map<String, Int>
+    ): LeafInformationDto {
         val nodeId = pathWithName.withDots()
         val cyclicEdges = cyclicEdgesByLeaf[nodeId] ?: setOf()
+        val sourceLevel = levelsByNodeId[nodeId] ?: 0
+
         return LeafInformationDto(
             id = nodeId,
             name = name(),
@@ -27,11 +32,15 @@ data class Node(
             dependencies = resolvedNodeDependencies.internalDependencies
                 .groupBy(
                     { it.withDots() }
-                ).mapValues { (_, values) ->
+                ).mapValues { (targetId, values) ->
+                    val targetLevel = levelsByNodeId[targetId] ?: 0
+                    val isPointingUpwards = sourceLevel <= targetLevel
+
                     EdgeInfoDto(
                         isCyclic = values.any { cyclicEdges.contains(it.withDots()) },
                         weight = 1,
-                        type = values.map { it.type }.toSet().joinToString(",") { it.rawValue }
+                        type = values.map { it.type }.toSet().joinToString(",") { it.rawValue },
+                        isPointingUpwards = isPointingUpwards
                     )
                 }
         )

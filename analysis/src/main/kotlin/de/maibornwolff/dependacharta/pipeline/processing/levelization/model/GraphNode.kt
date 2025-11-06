@@ -14,15 +14,23 @@ data class GraphNode(
 ) {
     companion object
 
-    fun toProjectNodeDto(cyclicEdgesByLeaf: Map<String, Set<String>>): ProjectNodeDto {
+    fun toProjectNodeDto(
+        cyclicEdgesByLeaf: Map<String, Set<String>>,
+        allNodesMap: Map<String, GraphNode>
+    ): ProjectNodeDto {
         val isLeaf = children.isEmpty()
-        val childDtos = children.map { it.toProjectNodeDto(cyclicEdgesByLeaf) }.toSet()
+        val childDtos = children.map { it.toProjectNodeDto(cyclicEdgesByLeaf, allNodesMap) }.toSet()
 
         val internalDependencies = if (isLeaf) {
             dependencies.associateWith { dependency ->
                 val edgeTypes = edges.filter { it.target == dependency }.map { it.type }.toSet()
                 val edgeTypesJoined = edgeTypes.joinToString(",")
-                dependency.toEdgeInfoDto(cyclicEdgesByLeaf[id], if (edgeTypes.isEmpty()) TypeOfUsage.USAGE.rawValue else edgeTypesJoined)
+                dependency.toEdgeInfoDto(
+                    cyclicEdges = cyclicEdgesByLeaf[id],
+                    type = if (edgeTypes.isEmpty()) TypeOfUsage.USAGE.rawValue else edgeTypesJoined,
+                    sourceLevel = level ?: 0,
+                    targetLevel = allNodesMap[dependency]?.level ?: 0
+                )
             }
         } else {
             childDtos
@@ -43,17 +51,21 @@ data class GraphNode(
 
     private fun String.toEdgeInfoDto(
         cyclicEdges: Set<String>?,
-        type: String
+        type: String,
+        sourceLevel: Int,
+        targetLevel: Int
     ) = EdgeInfoDto(
         isCyclic = cyclicEdges?.contains(this) ?: false,
         weight = 1,
-        type = type
+        type = type,
+        isPointingUpwards = sourceLevel <= targetLevel
     )
 
     private fun List<EdgeInfoDto>.sum() =
         EdgeInfoDto(
             isCyclic = any { it.isCyclic },
             weight = sumOf { it.weight },
-            type = map { it.type }.toSet().joinToString(",")
+            type = map { it.type }.toSet().joinToString(","),
+            isPointingUpwards = any { it.isPointingUpwards }
         )
 }

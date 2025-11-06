@@ -14,14 +14,14 @@ class GraphNodeTest {
         val graphNode = GraphNodeBuilder(id = "my.node", dependencies = setOf("de.maibornwolff.main")).build()
 
         // when
-        val projectNodeDto = graphNode.toProjectNodeDto(emptyMap())
+        val projectNodeDto = graphNode.toProjectNodeDto(emptyMap(), mapOf(graphNode.id to graphNode))
 
         // then
         val expected = ProjectNodeDto.build(
             leafId = graphNode.id,
             name = "node",
             containedLeaves = setOf(graphNode.id),
-            containedInternalDependencies = mapOf("de.maibornwolff.main" to EdgeInfoDto(false, 1, TypeOfUsage.USAGE.rawValue))
+            containedInternalDependencies = mapOf("de.maibornwolff.main" to EdgeInfoDto(false, 1, TypeOfUsage.USAGE.rawValue, true))
         )
 
         assertThat(projectNodeDto).isEqualTo(expected)
@@ -46,7 +46,12 @@ class GraphNodeTest {
             ).build()
 
         // when
-        val projectNodeDto = graphNode.toProjectNodeDto(emptyMap())
+        val allNodesMap = mapOf(
+            graphNode.id to graphNode,
+            "node.child1" to graphNode.children[0],
+            "node.child2" to graphNode.children[1]
+        )
+        val projectNodeDto = graphNode.toProjectNodeDto(emptyMap(), allNodesMap)
 
         // then
         val expected = ProjectNodeDto.build(
@@ -56,17 +61,17 @@ class GraphNodeTest {
                     leafId = "node.child1",
                     name = "child1",
                     containedLeaves = setOf("node.child1"),
-                    containedInternalDependencies = mapOf("de.maibornwolff.main" to EdgeInfoDto(false, 1, TypeOfUsage.USAGE.rawValue))
+                    containedInternalDependencies = mapOf("de.maibornwolff.main" to EdgeInfoDto(false, 1, TypeOfUsage.USAGE.rawValue, true))
                 ),
                 ProjectNodeDto.build(
                     leafId = "node.child2",
                     name = "child2",
                     containedLeaves = setOf("node.child2"),
-                    containedInternalDependencies = mapOf("de.maibornwolff.main" to EdgeInfoDto(false, 1, TypeOfUsage.USAGE.rawValue))
+                    containedInternalDependencies = mapOf("de.maibornwolff.main" to EdgeInfoDto(false, 1, TypeOfUsage.USAGE.rawValue, true))
                 )
             ),
             containedLeaves = setOf("node.child1", "node.child2"),
-            containedInternalDependencies = mapOf("de.maibornwolff.main" to EdgeInfoDto(false, 2, TypeOfUsage.USAGE.rawValue))
+            containedInternalDependencies = mapOf("de.maibornwolff.main" to EdgeInfoDto(false, 2, TypeOfUsage.USAGE.rawValue, true))
         )
 
         assertThat(projectNodeDto).isEqualTo(expected)
@@ -93,7 +98,12 @@ class GraphNodeTest {
         val cycles = mapOf("node.child2" to setOf("de.maibornwolff.main"))
 
         // when
-        val projectNodeDto = graphNode.toProjectNodeDto(cycles)
+        val allNodesMap = mapOf(
+            graphNode.id to graphNode,
+            "node.child1" to graphNode.children[0],
+            "node.child2" to graphNode.children[1]
+        )
+        val projectNodeDto = graphNode.toProjectNodeDto(cycles, allNodesMap)
 
         // then
         val expected = ProjectNodeDto.build(
@@ -103,17 +113,17 @@ class GraphNodeTest {
                     leafId = "node.child1",
                     name = "child1",
                     containedLeaves = setOf("node.child1"),
-                    containedInternalDependencies = mapOf("de.maibornwolff.main" to EdgeInfoDto(false, 1, TypeOfUsage.USAGE.rawValue))
+                    containedInternalDependencies = mapOf("de.maibornwolff.main" to EdgeInfoDto(false, 1, TypeOfUsage.USAGE.rawValue, true))
                 ),
                 ProjectNodeDto.build(
                     leafId = "node.child2",
                     name = "child2",
                     containedLeaves = setOf("node.child2"),
-                    containedInternalDependencies = mapOf("de.maibornwolff.main" to EdgeInfoDto(true, 1, TypeOfUsage.USAGE.rawValue))
+                    containedInternalDependencies = mapOf("de.maibornwolff.main" to EdgeInfoDto(true, 1, TypeOfUsage.USAGE.rawValue, true))
                 )
             ),
             containedLeaves = setOf("node.child1", "node.child2"),
-            containedInternalDependencies = mapOf("de.maibornwolff.main" to EdgeInfoDto(true, 2, TypeOfUsage.USAGE.rawValue))
+            containedInternalDependencies = mapOf("de.maibornwolff.main" to EdgeInfoDto(true, 2, TypeOfUsage.USAGE.rawValue, true))
         )
 
         assertThat(projectNodeDto).isEqualTo(expected)

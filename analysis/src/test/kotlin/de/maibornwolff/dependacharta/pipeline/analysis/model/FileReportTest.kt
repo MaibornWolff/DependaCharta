@@ -124,7 +124,7 @@ class FileReportTest {
         val cyclicEdges = emptyMap<String, Set<String>>()
 
         // when
-        val leafInformationDto = node.toLeafInformationDto(cyclicEdges)
+        val leafInformationDto = node.toLeafInformationDto(cyclicEdges, emptyMap())
 
         // then
         val expected = LeafInformationDto(
@@ -133,7 +133,7 @@ class FileReportTest {
             physicalPath = node.physicalPath,
             language = node.language.name,
             nodeType = node.nodeType.name,
-            dependencies = mapOf("de.maibornwolff.main" to EdgeInfoDto(false, 1, TypeOfUsage.USAGE.rawValue))
+            dependencies = mapOf("de.maibornwolff.main" to EdgeInfoDto(false, 1, TypeOfUsage.USAGE.rawValue, true))
         )
 
         assertThat(leafInformationDto).isEqualTo(expected)
@@ -157,10 +157,10 @@ class FileReportTest {
         val cyclicEdges = mapOf("de.maibornwolff.main" to setOf("de.maibornwolff.helper"))
 
         // when
-        val leafInformationDto = node.toLeafInformationDto(cyclicEdges)
+        val leafInformationDto = node.toLeafInformationDto(cyclicEdges, emptyMap())
 
         // then
-        val expected = mapOf("de.maibornwolff.helper" to EdgeInfoDto(true, 1, TypeOfUsage.USAGE.rawValue))
+        val expected = mapOf("de.maibornwolff.helper" to EdgeInfoDto(true, 1, TypeOfUsage.USAGE.rawValue, true))
 
         assertThat(leafInformationDto.dependencies).isEqualTo(expected)
     }
