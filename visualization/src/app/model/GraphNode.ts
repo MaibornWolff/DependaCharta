@@ -28,7 +28,7 @@ export function isPackage(node: GraphNode): boolean {
 
 export function expand(node: GraphNode): GraphNode[] {
   return node.children
-    .flatMap(child => expand(child))
+    .flatMap(expand)
     .concat(node)
 }
 
