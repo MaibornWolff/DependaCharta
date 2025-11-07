@@ -1,4 +1,11 @@
+# DependaCharta Analysis
+
+This is the analysis component of DependaCharta that analyzes source code and generates dependency graphs.
+
 # Installation
+
+## Prerequisites
+- Java 17 or higher (check with `java -version`)
 ## Build it yourself
 - Clone the repository
 - Download the gradle dependencies of the `analysis` project
@@ -52,7 +59,92 @@ The Docker image includes all necessary dependencies and Tree-sitter parsers, ma
 - During the analysis, a directory named `dependacharta_temp` is created in the current directory. This directory is used to store temporary files and will be deleted after the analysis is finished. **Do not delete it during a running analysis!**
 ## Result
 - The result is a `.cg.json` file that can be used in the [visualization](../visualization/README.md) tool
+- **Important**: The output file is always named `[filename].cg.json` (note the `.cg.json` extension, not just `.json`)
 - It is located in `[outputDirectory]/[filename].cg.json`
+- Example: `-f my-analysis -o output` creates `output/my-analysis.cg.json`
+
+# Development
+
+## Building from Source
+```bash
+cd analysis
+./gradlew build              # Build and test
+./gradlew build -x test      # Build without tests
+./gradlew ktlintFormat       # Auto-format code
+```
+
+The build creates two JAR files in `build/libs/`:
+- `dependacharta.jar` - Fat JAR (includes all dependencies, ~15MB)
+- `dependacharta-analysis.jar` - Thin JAR (no dependencies, ~600KB)
+
+**Always use the fat JAR** (`dependacharta.jar`) for distribution and running the tool. The thin JAR won't work standalone because it's missing the required libraries.
+
+## Updating the Distribution JAR
+After making code changes, copy the fat JAR to `bin/`:
+```bash
+cd analysis
+./gradlew clean build -x test
+cp build/libs/dependacharta.jar bin/dependacharta.jar
+```
+
+## Regenerating Example Files
+After modifying the output format, regenerate the example `.cg.json` files:
+
+```bash
+# Java example (used by visualization tests)
+java -jar analysis/bin/dependacharta.jar \
+  -d analysis/src/test/resources/analysis/contract/examples/java \
+  -f java-example \
+  -o visualization/public/resources \
+  -c
+
+# Go example
+java -jar analysis/bin/dependacharta.jar \
+  -d exampleProjects/GoExample \
+  -f go-example \
+  -o visualization/public/resources \
+  -c
+
+# Test expectations file
+java -jar analysis/bin/dependacharta.jar \
+  -d analysis/src/test/resources/analysis/contract/examples/java \
+  -f java-example \
+  -o analysis/src/test/resources/pipeline/projectreport \
+  -c
+```
+
+**Note**: The `-c` flag clears the temporary analysis cache, forcing a fresh analysis.
+
+## Adding New Fields to Output
+
+When adding a new field to the `.cg.json` output:
+
+1. **Update data model** in `ProjectReportDto.kt`
+2. **Configure JSON serialization** in `ExportService.kt`:
+   ```kotlin
+   private val json = Json {
+       prettyPrint = true
+       encodeDefaults = true  // Required for fields with default values
+   }
+   ```
+3. **Update calculation logic** where edges/nodes are created
+4. **Update tests** and regenerate test expectations
+5. **Rebuild JAR** and regenerate example files (see above)
+
+## Common Issues
+
+### Missing Fields in JSON Output
+- Ensure `encodeDefaults = true` in `ExportService.kt`
+- Check that fields don't have default values matching the type's default
+
+### Build Fails with ktlint Errors
+```bash
+./gradlew ktlintFormat  # Auto-fix formatting
+```
+
+### Tool Fails with ClassNotFoundException
+- You're using the thin JAR (`dependacharta-analysis.jar`) which doesn't include dependencies
+- Use the fat JAR (`dependacharta.jar`) instead
 
 # Extend the supported programming languages
 The programming language of your project is not yet supported but you would still like to analyze it?  
