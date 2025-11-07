@@ -2,7 +2,7 @@ import {Component, inject, Input} from '@angular/core';
 import {CytoscapeService} from '../../../cytoscape.service';
 import {getDescendants, VisibleGraphNode} from '../../../../../../model/GraphNode';
 import {MatDivider} from '@angular/material/divider';
-import {Action, UnpinNode, PinNode, HideNode, RestoreAllChildren, RestoreNode, CollapseNode} from '../../../../../../model/Action';
+import {Action} from '../../../../../../model/Action';
 import {InteractionMenuComponent} from './interaction-menu/interaction-menu.component';
 import {RenderInformation} from '../node-container.component';
 import {StateChange} from '../../../../../../app.component';
@@ -26,30 +26,30 @@ export class CompoundNodeComponent {
 
   togglePin() {
     if (this.isPinned()) {
-      this.stateService.graphActionHappened.emit(new UnpinNode(this.node.id))
+      this.stateService.graphActionHappened.emit(new Action.UnpinNode(this.node.id))
     } else {
-      this.stateService.graphActionHappened.emit(new PinNode(this.node.id))
+      this.stateService.graphActionHappened.emit(new Action.PinNode(this.node.id))
     }
   }
 
   hideNode() {
     for (const descendant of getDescendants(this.node)) {
-      this.stateService.graphActionHappened.emit(new UnpinNode(descendant.id))
+      this.stateService.graphActionHappened.emit(new Action.UnpinNode(descendant.id))
     }
 
-    this.stateService.graphActionHappened.emit(new HideNode(this.node.id))
+    this.stateService.graphActionHappened.emit(new Action.HideNode(this.node.id))
   }
 
   restoreAllChildren() {
-    this.stateService.graphActionHappened.emit(new RestoreAllChildren(this.node.id))
+    this.stateService.graphActionHappened.emit(new Action.RestoreAllChildren(this.node.id))
   }
 
   restoreNode(nodeRestored: string) {
-    this.stateService.graphActionHappened.emit(new RestoreNode(nodeRestored, this.node.id))
+    this.stateService.graphActionHappened.emit(new Action.RestoreNode(nodeRestored, this.node.id))
   }
 
   collapseNode() {
-    this.stateService.graphActionHappened.emit(new CollapseNode(this.node.id))
+    this.stateService.graphActionHappened.emit(new Action.CollapseNode(this.node.id))
   }
 
   calculatedStyle() {

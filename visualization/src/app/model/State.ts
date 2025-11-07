@@ -1,6 +1,6 @@
 import {expand, getDescendants, GraphNode, GraphNodeUtils, VisibleGraphNode, VisibleGraphNodeUtils} from "./GraphNode";
 import {EdgeFilter, EdgeFilterType} from "./EdgeFilter";
-import {Action, InitializeState, ExpandNode, CollapseNode, ChangeFilter, ShowAllEdgesOfNode, HideAllEdgesOfNode, ToggleEdgeLabels, HideNode, RestoreNode, RestoreNodes, RestoreAllChildren, ToggleInteractionMode, ToggleUsageTypeMode, ResetView, ToggleNodeSelection, EnterMultiselectMode, LeaveMultiselectMode, PinNode, UnpinNode} from './Action';
+import {Action} from './Action';
 import {Edge} from "./Edge";
 import {DataClass} from "../common/DataClass";
 import { IdUtils } from "./Id";
@@ -49,35 +49,35 @@ export class State extends DataClass<State> {
 
   reduce(action: Action): State {
     switch (true) {
-      case action instanceof InitializeState:
+      case action instanceof Action.InitializeState:
         return this.copy({
           allNodes: action.rootNodes.flatMap(expand)
         })
-      case action instanceof ExpandNode:
+      case action instanceof Action.ExpandNode:
         return this.copy({
           expandedNodeIds: [...this.expandedNodeIds, action.nodeId]
         })
-      case action instanceof CollapseNode:
+      case action instanceof Action.CollapseNode:
         return this.copy({
           expandedNodeIds: this.expandedNodeIds.filter(id => !IdUtils.isDescendantOf([action.nodeId])(id))
         })
-      case action instanceof ChangeFilter:
+      case action instanceof Action.ChangeFilter:
         return this.copy({
           selectedFilter: action.edgeFilter
         })
-      case action instanceof ShowAllEdgesOfNode:
+      case action instanceof Action.ShowAllEdgesOfNode:
         return this.copy({
           hoveredNodeId: action.nodeId
         })
-      case action instanceof HideAllEdgesOfNode:
+      case action instanceof Action.HideAllEdgesOfNode:
         return this.copy({
           hoveredNodeId: ''
         })
-      case action instanceof ToggleEdgeLabels:
+      case action instanceof Action.ToggleEdgeLabels:
         return this.copy({
           showLabels: !this.showLabels
         })
-      case action instanceof HideNode: {
+      case action instanceof Action.HideNode: {
         const node = this.findGraphNode(action.nodeId)
         const hiddenChildrenIdsByParentId = this.hiddenChildrenIdsByParentId
         if (node.parent) {
@@ -90,7 +90,7 @@ export class State extends DataClass<State> {
           pinnedNodeIds: this.pinnedNodeIds.filter(id => id !== action.nodeId)
         })
       }
-      case action instanceof PinNode: {
+      case action instanceof Action.PinNode: {
         const descendants = [...getDescendants(this.findGraphNode(action.nodeId))]
         const unpinnedDescendants = descendants.filter(node => !this.pinnedNodeIds.includes(node.id))
         return this.copy({
@@ -98,21 +98,21 @@ export class State extends DataClass<State> {
           selectedPinnedNodeIds: [...this.selectedPinnedNodeIds, action.nodeId]
         })
       }
-      case action instanceof UnpinNode: {
+      case action instanceof Action.UnpinNode: {
         const newSelectedPinnedNodeIds = this.selectedPinnedNodeIds.filter(id => id !== action.nodeId)
         return this.copy({
           pinnedNodeIds: this.pinnedNodeIds.filter(IdUtils.isDescendantOf(newSelectedPinnedNodeIds)),
           selectedPinnedNodeIds: newSelectedPinnedNodeIds
         })
       }
-      case action instanceof RestoreNodes:
+      case action instanceof Action.RestoreNodes:
         return this.copy({
           hiddenNodeIds: [],
           pinnedNodeIds: [],
           selectedPinnedNodeIds: [],
           hiddenChildrenIdsByParentId: new Map()
         })
-      case action instanceof RestoreNode: {
+      case action instanceof Action.RestoreNode: {
         const updatedMap = new Map(this.hiddenChildrenIdsByParentId)
         const newChildrenIds = (updatedMap.get(action.parentNodeId) || [])
           .filter(id => id !== action.nodeIdToBeRestored)
@@ -122,7 +122,7 @@ export class State extends DataClass<State> {
           hiddenChildrenIdsByParentId: updatedMap
         })
       }
-      case action instanceof RestoreAllChildren: {
+      case action instanceof Action.RestoreAllChildren: {
         const updatedMap = new Map(this.hiddenChildrenIdsByParentId)
         const hiddenChildrenIds = this.hiddenChildrenIdsByParentId.get(action.nodeId) || []
         updatedMap.set(action.nodeId, [])
@@ -131,31 +131,34 @@ export class State extends DataClass<State> {
           hiddenChildrenIdsByParentId: updatedMap
         })
       }
-      case action instanceof ToggleInteractionMode:
+      case action instanceof Action.ToggleInteractionMode:
         return this.copy({
           isInteractive: !this.isInteractive
         })
-      case action instanceof ToggleUsageTypeMode:
+      case action instanceof Action.ToggleUsageTypeMode:
         return this.copy({
           isUsageShown: !this.isUsageShown
         })
-      case action instanceof EnterMultiselectMode:
+      case action instanceof Action.EnterMultiselectMode:
         // This event is emitted multiple times while the shift key is pressed.
         return this.copy({
           multiselectMode: true
         })
-      case action instanceof LeaveMultiselectMode:
+      case action instanceof Action.LeaveMultiselectMode:
         return this.copy({
-          multiselectMode: false,
+          multiselectMode: false
+        })
+      case action instanceof Action.ResetMultiselection:
+        return this.copy({
           selectedNodeIds: []
         })
-      case action instanceof ToggleNodeSelection:
+      case action instanceof Action.ToggleNodeSelection:
         return this.copy({
           selectedNodeIds: this.selectedNodeIds.includes(action.nodeId)
             ? this.selectedNodeIds.filter(id => id !== action.nodeId)
             : [...this.selectedNodeIds, action.nodeId]
         })
-      case action instanceof ResetView:
+      case action instanceof Action.ResetView:
         return this
       default:
         action satisfies never

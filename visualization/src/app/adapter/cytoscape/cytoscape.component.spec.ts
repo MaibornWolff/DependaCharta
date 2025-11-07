@@ -4,7 +4,7 @@ import { Subject } from 'rxjs';
 import { CytoscapeComponent } from './cytoscape.component';
 import { CytoscapeService } from './internal/cytoscape.service';
 import { NodeContainerComponent, RenderInformation } from './internal/ui/node-container/node-container.component';
-import { Action, ExpandNode } from '../../model/Action';
+import { Action } from '../../model/Action';
 import { Core } from 'cytoscape';
 
 describe('CytoscapeComponent', () => {
@@ -114,7 +114,7 @@ describe('CytoscapeComponent', () => {
 
     describe('stateChangeRequested subscription', () => {
       it('should emit stateChangeRequested when cytoscapeService emits', () => {
-        const mockAction = new ExpandNode('test');
+        const mockAction = new Action.ExpandNode('test');
         spyOn(component.graphActionHappened, 'emit');
         
         graphActionHappenedSubject.next(mockAction);
