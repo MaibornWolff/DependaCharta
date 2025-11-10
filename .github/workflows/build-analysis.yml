@@ -76,7 +76,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: analysis-sbom-${{ github.run_id }}
-          path: analysis/build/reports/bom.json
+          path: analysis/build/reports/cyclonedx/bom.json
           retention-days: 1
           if-no-files-found: error
 

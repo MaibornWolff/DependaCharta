@@ -1,9 +1,11 @@
+import org.cyclonedx.model.Component
+
 plugins {
     application
     kotlin("jvm") version "2.2.21"
     kotlin("plugin.serialization") version "2.2.21"
     jacoco
-    id("org.cyclonedx.bom") version "2.4.1"
+    id("org.cyclonedx.bom") version "3.0.1"
     id("org.jlleitschuh.gradle.ktlint") version "13.1.0"
 }
 
@@ -40,10 +42,16 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
 }
 
+allprojects {
+    tasks.cyclonedxDirectBom {
+        includeConfigs = listOf("runtimeClasspath", "compileClasspath")
+        skipConfigs = listOf("testCompileClasspath")
+        projectType = Component.Type.APPLICATION
+    }
+}
+
 tasks.cyclonedxBom {
-    setIncludeConfigs(listOf("runtimeClasspath", "compileClasspath"))
-    setSkipConfigs(listOf("testCompileClasspath"))
-    setProjectType("application")
+    projectType = Component.Type.APPLICATION
 }
 
 tasks {
