@@ -129,7 +129,7 @@ The GitLab CI pipeline automatically:
 # PLAN MODE
 
 - When planning implementation tasks, never make assumptions silently.
-- You MUST ask the user, if anything is not clear.
+- **Always use the AskUserQuestion tool to clarify ambiguous requirements before finalizing the plan**
 - You MUST number your questions to make it easier to answer multiple questions at once.
 - You SHOULD provide your recommendation for every question, if you have a best guess or if you know a common solution for the question in discussion.
 - As soon as the plan is complete, write it to a markdown file in plans subdirectory.

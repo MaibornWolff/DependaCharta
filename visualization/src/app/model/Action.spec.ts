@@ -1,4 +1,4 @@
-import {InitializeState, ExpandNode, CollapseNode, ToggleNodeSelection, EnterMultiselectMode, LeaveMultiselectMode, ChangeFilter, ToggleEdgeLabels, HideNode, RestoreNodes} from './Action'
+import {Action} from './Action'
 import {EdgeFilterType} from './EdgeFilter'
 import {State} from './State'
 import {GraphNode, VisibleGraphNode} from './GraphNode.spec'
@@ -19,7 +19,7 @@ describe('State Handler', () => {
       })
 
       // when
-      const newState = State.build().reduce(new InitializeState('', [rootNode]))
+      const newState = State.build().reduce(new Action.InitializeState('', [rootNode]))
 
       // then
       expect(newState.showLabels).toEqual(true)
@@ -46,7 +46,7 @@ describe('State Handler', () => {
       const state = State.fromRootNodes([rootNode])
 
       // when
-      const newState = state.reduce(new ExpandNode(rootId))
+      const newState = state.reduce(new Action.ExpandNode(rootId))
 
       // then
       expect(newState.expandedNodeIds).toEqual([rootId])
@@ -73,7 +73,7 @@ describe('State Handler', () => {
       })
 
       // when
-      const newState = state.reduce(new CollapseNode(rootId))
+      const newState = state.reduce(new Action.CollapseNode(rootId))
 
       // then
       expect(newState.expandedNodeIds).toEqual([])
@@ -89,7 +89,7 @@ describe('State Handler', () => {
       const state = State.fromRootNodes([rootNode])
 
       // when
-      const newState = state.reduce(new ToggleNodeSelection(rootId))
+      const newState = state.reduce(new Action.ToggleNodeSelection(rootId))
 
       // then
       expect(newState.selectedNodeIds).toEqual([rootId])
@@ -105,7 +105,7 @@ describe('State Handler', () => {
       const state = State.fromRootNodes([rootNode]).copy({ selectedNodeIds: [rootId] })
 
       // when
-      const newState = state.reduce(new ToggleNodeSelection(rootId))
+      const newState = state.reduce(new Action.ToggleNodeSelection(rootId))
 
       // then
       expect(newState.selectedNodeIds).toEqual([])
@@ -117,7 +117,7 @@ describe('State Handler', () => {
       const state = State.fromRootNodes([rootNode]).copy({ multiselectMode: false })
 
       // when
-      const newState = state.reduce(new EnterMultiselectMode())
+      const newState = state.reduce(new Action.EnterMultiselectMode())
 
       // then
       expect(newState.multiselectMode).toEqual(true)
@@ -130,7 +130,7 @@ describe('State Handler', () => {
       const state = State.fromRootNodes([rootNode]).copy({ multiselectMode: true })
 
       // when
-      const newState = state.reduce(new LeaveMultiselectMode())
+      const newState = state.reduce(new Action.LeaveMultiselectMode())
 
       // then
       expect(newState.multiselectMode).toEqual(false)
@@ -142,7 +142,9 @@ describe('State Handler', () => {
       const state = State.fromRootNodes([rootNode]).copy({ multiselectMode: true, selectedNodeIds: [rootNode.id] })
 
       // when
-      const newState = state.reduce(new LeaveMultiselectMode())
+      const newState = state
+        .reduce(new Action.LeaveMultiselectMode())
+        .reduce(new Action.ResetMultiselection())
 
       // then
       expect(newState.selectedNodeIds).toEqual([])
@@ -155,7 +157,7 @@ describe('State Handler', () => {
       const newFilter = EdgeFilterType.ALL
 
       // when
-      const newState = state.reduce(new ChangeFilter(newFilter))
+      const newState = state.reduce(new Action.ChangeFilter(newFilter))
 
       // then
       expect(newState.selectedFilter).toEqual(newFilter)
@@ -168,7 +170,7 @@ describe('State Handler', () => {
       const showLabelsBefore = state.showLabels
 
       // when
-      const newState = state.reduce(new ToggleEdgeLabels())
+      const newState = state.reduce(new Action.ToggleEdgeLabels())
 
       // then
       expect(newState.showLabels).toEqual(!showLabelsBefore)
@@ -194,7 +196,7 @@ describe('State Handler', () => {
       const state = State.fromRootNodes([rootNode])
 
       // when
-      const newState = state.reduce(new HideNode(childId))
+      const newState = state.reduce(new Action.HideNode(childId))
 
       // then
       expect(newState.hiddenNodeIds).toContain(childId)
@@ -222,7 +224,7 @@ describe('State Handler', () => {
       })
 
       // when
-      const newState = state.reduce(new RestoreNodes())
+      const newState = state.reduce(new Action.RestoreNodes())
 
       // then
       expect(newState.hiddenNodeIds).toEqual([])

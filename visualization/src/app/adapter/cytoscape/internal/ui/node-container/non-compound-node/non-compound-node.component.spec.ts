@@ -1,7 +1,7 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {NonCompoundNodeComponent} from './non-compound-node.component';
 import {CytoscapeService} from '../../../cytoscape.service';
-import {UnpinNode, ShowAllEdgesOfNode, HideAllEdgesOfNode, ExpandNode, HideNode, ToggleEdgeLabels} from '../../../../../../model/Action';
+import {Action} from '../../../../../../model/Action';
 import {RenderInformation} from '../node-container.component';
 import {Subject} from 'rxjs';
 import {State} from '../../../../../../model/State';
@@ -34,7 +34,7 @@ describe('NonCompoundNodeComponent', () => {
     component = fixture.componentInstance;
 
     component.node = VisibleGraphNode.build();
-    component.stateChange = { state: State.build(), action: new ToggleEdgeLabels() }
+    component.stateChange = { state: State.build(), action: new Action.ToggleEdgeLabels() }
   });
 
   it('should create', () => {
@@ -44,10 +44,10 @@ describe('NonCompoundNodeComponent', () => {
   describe('togglePin', () => {
     it('should handle node pinning', () => {
       component.node = VisibleGraphNode.build();
-      component.stateChange = { state: State.build({ selectedPinnedNodeIds: [component.node.id] }), action: new ToggleEdgeLabels() }
+      component.stateChange = { state: State.build({ selectedPinnedNodeIds: [component.node.id] }), action: new Action.ToggleEdgeLabels() }
       component.togglePin();
 
-      expect(mockStateService.graphActionHappened.emit).toHaveBeenCalledWith(new UnpinNode(component.node.id));
+      expect(mockStateService.graphActionHappened.emit).toHaveBeenCalledWith(new Action.UnpinNode(component.node.id));
     });
   });
 
@@ -88,7 +88,7 @@ describe('NonCompoundNodeComponent', () => {
     it('should emit show edges action', () => {
       component.onMouseEnter();
 
-      expect(mockStateService.graphActionHappened.emit).toHaveBeenCalledWith(new ShowAllEdgesOfNode(component.node.id));
+      expect(mockStateService.graphActionHappened.emit).toHaveBeenCalledWith(new Action.ShowAllEdgesOfNode(component.node.id));
     });
   });
 
@@ -96,13 +96,13 @@ describe('NonCompoundNodeComponent', () => {
     it('should emit hide edges action when node is not pinned', () => {
       component.onMouseLeave();
 
-      expect(mockStateService.graphActionHappened.emit).toHaveBeenCalledWith(new HideAllEdgesOfNode(component.node.id));
+      expect(mockStateService.graphActionHappened.emit).toHaveBeenCalledWith(new Action.HideAllEdgesOfNode(component.node.id));
     });
 
     it('should emit hide edges action when node is pinned', () => {
       component.onMouseLeave();
 
-      expect(mockStateService.graphActionHappened.emit).toHaveBeenCalledWith(new HideAllEdgesOfNode(component.node.id));
+      expect(mockStateService.graphActionHappened.emit).toHaveBeenCalledWith(new Action.HideAllEdgesOfNode(component.node.id));
     });
   });
 
@@ -113,7 +113,7 @@ describe('NonCompoundNodeComponent', () => {
 
       component.expandNode();
 
-      expect(mockStateService.graphActionHappened.emit).toHaveBeenCalledWith(new ExpandNode(component.node.id));
+      expect(mockStateService.graphActionHappened.emit).toHaveBeenCalledWith(new Action.ExpandNode(component.node.id));
     });
 
     it('should not emit expand action when node has no children', () => {
@@ -130,7 +130,7 @@ describe('NonCompoundNodeComponent', () => {
     it('should remove node from pinned service and emit hide action', () => {
       component.hideNode();
 
-      expect(mockStateService.graphActionHappened.emit).toHaveBeenCalledWith(new HideNode(component.node.id));
+      expect(mockStateService.graphActionHappened.emit).toHaveBeenCalledWith(new Action.HideNode(component.node.id));
     });
   });
 
@@ -138,7 +138,7 @@ describe('NonCompoundNodeComponent', () => {
     beforeEach(() => {
       spyOn(component, 'calculateLightnessOfPackageNodes').and.returnValue(50);
       spyOn(component, 'calculateBorderWidth').and.returnValue(2);
-      component.stateChange = { state: State.build({ isInteractive: true }), action: new ToggleEdgeLabels() }
+      component.stateChange = { state: State.build({ isInteractive: true }), action: new Action.ToggleEdgeLabels() }
     });
 
     it('should not set cursor for non-package nodes', () => {
@@ -165,7 +165,7 @@ describe('NonCompoundNodeComponent', () => {
     });
 
     it('should use green border color for pinned nodes in interaction mode', () => {
-      component.stateChange = { state: State.build({ selectedPinnedNodeIds: [component.node.id], isInteractive: true }), action: new ToggleEdgeLabels() }
+      component.stateChange = { state: State.build({ selectedPinnedNodeIds: [component.node.id], isInteractive: true }), action: new Action.ToggleEdgeLabels() }
 
       const style = component.calculatedNodeStyle();
 
@@ -239,7 +239,7 @@ describe('NonCompoundNodeComponent', () => {
 
   describe('calculateBorderWidth', () => {
     it('should return thick border for pinned nodes in interaction mode', () => {
-      component.stateChange = { state: State.build({ selectedPinnedNodeIds: [component.node.id], isInteractive: true }), action: new ToggleEdgeLabels() }
+      component.stateChange = { state: State.build({ selectedPinnedNodeIds: [component.node.id], isInteractive: true }), action: new Action.ToggleEdgeLabels() }
       component.zoom = 2;
 
       expect(component.calculateBorderWidth()).toBe(1.5); // 3 / 2
@@ -252,7 +252,7 @@ describe('NonCompoundNodeComponent', () => {
     });
 
     it('should return normal border for pinned nodes not in interaction mode', () => {
-      component.stateChange = { state: State.build({ isInteractive: false }), action: new ToggleEdgeLabels() }
+      component.stateChange = { state: State.build({ isInteractive: false }), action: new Action.ToggleEdgeLabels() }
       component.zoom = 2;
 
       expect(component.calculateBorderWidth()).toBe(0.5); // 1 / 2

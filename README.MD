@@ -3,6 +3,8 @@
 | Visualization | Analysis |
 |---------------|----------|
 | [![Build Visualization](https://github.com/MaibornWolff/DependaCharta/actions/workflows/build-visualization.yml/badge.svg)](https://github.com/MaibornWolff/DependaCharta/actions/workflows/build-visualization.yml) | [![Build Analysis](https://github.com/MaibornWolff/DependaCharta/actions/workflows/build-analysis.yml/badge.svg)](https://github.com/MaibornWolff/DependaCharta/actions/workflows/build-analysis.yml) |
+| [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=maibornwolff-gmbh_DependaCharta_visualization&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=maibornwolff-gmbh_DependaCharta_visualization) | [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=maibornwolff-gmbh_DependaCharta_analysis&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=maibornwolff-gmbh_DependaCharta_analysis) |
+| [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=maibornwolff-gmbh_DependaCharta_visualization&metric=coverage)](https://sonarcloud.io/summary/new_code?id=maibornwolff-gmbh_DependaCharta_visualization) | [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=maibornwolff-gmbh_DependaCharta_analysis&metric=coverage)](https://sonarcloud.io/summary/new_code?id=maibornwolff-gmbh_DependaCharta_analysis) |
 
 # DependaCharta
 

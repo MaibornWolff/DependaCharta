@@ -106,3 +106,51 @@ jobs:
           path: analysis/build/test-results/*/*.xml
           reporter: java-junit
           fail-on-error: false
+
+  sonarcloud:
+    name: SonarCloud Analysis
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    needs: build
+
+    defaults:
+      run:
+        working-directory: analysis
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for better analysis relevancy
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: wrapper
+
+      - name: Build project (for bytecode analysis)
+        run: ./gradlew compileKotlin compileTestKotlin --no-daemon
+
+      - name: Download coverage artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: analysis-coverage-${{ github.run_id }}
+          path: analysis/build/reports/jacoco/test
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v5.0.0
+        with:
+          projectBaseDir: analysis
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_ANALYSIS }}

@@ -1,6 +1,5 @@
-import { Edge } from './Edge';
+import { Edge, ShallowEdge } from './Edge';
 import { IdUtils } from './Id';
-import {ShallowEdge} from './ShallowEdge';
 
 export interface GraphNode {
   id: string
@@ -28,7 +27,7 @@ export function isPackage(node: GraphNode): boolean {
 
 export function expand(node: GraphNode): GraphNode[] {
   return node.children
-    .flatMap(child => expand(child))
+    .flatMap(expand)
     .concat(node)
 }
 

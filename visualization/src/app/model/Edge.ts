@@ -10,7 +10,7 @@ export class Edge {
     readonly type: string
   ) {}
 
-  copy(overrides: Partial<Edge>) {
+  copy(overrides: Partial<Edge>): Edge {
     return Object.assign(this, overrides)
   }
 
@@ -53,6 +53,21 @@ export class Edge {
 
     return [...aggregatedEdges.values()];    
   }
+}
+
+export class ShallowEdge {
+  constructor(
+    readonly source: string,
+    readonly target: string,
+    readonly id: string,
+    readonly weight: number,
+    readonly isCyclic: boolean,
+    readonly type: string
+  ) {}
+
+  copy(overrides: Partial<ShallowEdge>): ShallowEdge {
+    return Object.assign(this, overrides)
+  }  
 }
 
 /*

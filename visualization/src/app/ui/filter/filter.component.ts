@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {NgForOf} from '@angular/common';
 import {EdgeFilterType} from '../../model/EdgeFilter';
-import {Action, ChangeFilter} from '../../model/Action';
+import {Action} from '../../model/Action';
 
 @Component({
   selector: 'filter',
@@ -37,7 +37,7 @@ export class FilterComponent {
   onFilterChange(event: Event) {
     const selectElement = event.target as HTMLSelectElement
     const selectedValue = selectElement.value as EdgeFilterType
-    this.filterSelected.emit(new ChangeFilter(selectedValue))
+    this.filterSelected.emit(new Action.ChangeFilter(selectedValue))
   }
 
 
