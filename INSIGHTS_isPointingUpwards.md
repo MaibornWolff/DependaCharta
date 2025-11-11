@@ -95,6 +95,32 @@ The backend works with a flat structure of nodes and edges, while the frontend h
 - **Location**: `analysis/src/test/resources/analysis/contract/examples/java/src/main/java/de/sots/cellarsandcentaurs/`
 - **NOT**: `exampleProjects/Test` (that's C# code)
 
+### Testing Commands
+
+#### Run all isPointingUpwards tests
+```bash
+cd analysis
+./gradlew test --tests IsPointingUpwardsTest
+```
+
+#### Run a specific test
+```bash
+cd analysis
+./gradlew test --tests "IsPointingUpwardsTest.should return false when source level is higher than target level - normal dependency flow"
+```
+
+#### Run tests with detailed output
+```bash
+cd analysis
+./gradlew test --tests IsPointingUpwardsTest --info
+```
+
+#### View test report
+```bash
+# After running tests, open:
+analysis/build/reports/tests/test/index.html
+```
+
 ### Generation Command
 ```bash
 cd analysis/bin
