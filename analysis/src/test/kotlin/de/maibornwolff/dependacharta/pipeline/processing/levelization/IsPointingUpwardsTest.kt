@@ -3,7 +3,6 @@ package de.maibornwolff.dependacharta.pipeline.processing.levelization
 import de.maibornwolff.dependacharta.pipeline.processing.levelization.model.GraphNode
 import de.maibornwolff.dependacharta.pipeline.processing.levelization.model.GraphNodeBuilder
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
@@ -20,12 +19,7 @@ import org.junit.jupiter.api.assertThrows
  *
  * The key insight: Find siblings under the lowest common ancestor and compare their levels.
  * An edge "points upwards" when it violates normal dependency flow (lower level → higher level).
- *
- * NOTE: These tests are currently disabled because the isPointingUpwards calculation logic
- * has not been implemented yet. They serve as specification and documentation for the
- * future implementation. Remove the @Disabled annotation when ready to implement.
  */
-@Disabled("isPointingUpwards calculation logic not yet implemented")
 class IsPointingUpwardsTest {
     @Test
     fun `should return false when source level is higher than target level - normal dependency flow`() {
@@ -375,53 +369,5 @@ class IsPointingUpwardsTest {
         source: GraphNode,
         target: GraphNode,
         root: GraphNode
-    ): Boolean {
-        val (sourceAncestor, targetAncestor) = findSiblingsUnderLowestCommonAncestor(source, target, root)
-        return sourceAncestor.level!! <= targetAncestor.level!!
-    }
-
-    /**
-     * Finds siblings under the lowest common ancestor.
-     * Returns a pair of (sourceAncestor, targetAncestor) that are siblings.
-     */
-    private fun findSiblingsUnderLowestCommonAncestor(
-        source: GraphNode,
-        target: GraphNode,
-        root: GraphNode
-    ): Pair<GraphNode, GraphNode> {
-        val sourceAncestors = getAncestors(source, root)
-        val targetAncestors = getAncestors(target, root)
-
-        for (sourceAncestor in sourceAncestors) {
-            for (targetAncestor in targetAncestors) {
-                // Check if they share the same parent
-                if (sourceAncestor.parent != null &&
-                    targetAncestor.parent != null &&
-                    sourceAncestor.parent == targetAncestor.parent
-                ) {
-                    return Pair(sourceAncestor, targetAncestor)
-                }
-            }
-        }
-
-        throw IllegalStateException("No common ancestor found for ${source.id} and ${target.id}")
-    }
-
-    /**
-     * Gets all ancestors of a node, including the node itself.
-     */
-    private fun getAncestors(
-        node: GraphNode,
-        root: GraphNode
-    ): List<GraphNode> {
-        val ancestors = mutableListOf(node)
-        var current = node
-        while (current.parent != null) {
-            val parent = findNodeById(root, current.parent!!)
-                ?: throw IllegalStateException("Parent ${current.parent} not found for node ${current.id}")
-            ancestors.add(parent)
-            current = parent
-        }
-        return ancestors
-    }
+    ): Boolean = GraphNode.calculateIsPointingUpwards(source.id, target.id, root)
 }

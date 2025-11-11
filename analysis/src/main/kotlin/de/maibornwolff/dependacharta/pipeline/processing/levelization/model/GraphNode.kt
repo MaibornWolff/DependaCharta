@@ -12,17 +12,104 @@ data class GraphNode(
     val dependencies: Set<String> = emptySet(),
     val edges: Set<GraphEdge> = emptySet()
 ) {
-    companion object
+    companion object {
+        /**
+         * Finds a node by its ID in the tree.
+         */
+        fun findNodeById(
+            root: GraphNode,
+            id: String
+        ): GraphNode? {
+            if (root.id == id) return root
+            for (child in root.children) {
+                val found = findNodeById(child, id)
+                if (found != null) return found
+            }
+            return null
+        }
 
-    fun toProjectNodeDto(cyclicEdgesByLeaf: Map<String, Set<String>>): ProjectNodeDto {
+        /**
+         * Gets all ancestors of a node, including the node itself.
+         * Returns a list starting with the node and ending with the root.
+         */
+        fun getAncestors(
+            node: GraphNode,
+            root: GraphNode
+        ): List<GraphNode> {
+            val ancestors = mutableListOf(node)
+            var current = node
+            while (current.parent != null) {
+                val parent = findNodeById(root, current.parent!!)
+                    ?: throw IllegalStateException("Parent ${current.parent} not found for node ${current.id}")
+                ancestors.add(parent)
+                current = parent
+            }
+            return ancestors
+        }
+
+        /**
+         * Finds siblings under the lowest common ancestor.
+         * Returns a pair of (sourceAncestor, targetAncestor) that are siblings.
+         */
+        fun findSiblingsUnderLowestCommonAncestor(
+            source: GraphNode,
+            target: GraphNode,
+            root: GraphNode
+        ): Pair<GraphNode, GraphNode> {
+            val sourceAncestors = getAncestors(source, root)
+            val targetAncestors = getAncestors(target, root)
+
+            for (sourceAncestor in sourceAncestors) {
+                for (targetAncestor in targetAncestors) {
+                    // Check if they share the same parent
+                    if (sourceAncestor.parent != null &&
+                        targetAncestor.parent != null &&
+                        sourceAncestor.parent == targetAncestor.parent
+                    ) {
+                        return Pair(sourceAncestor, targetAncestor)
+                    }
+                }
+            }
+
+            throw IllegalStateException("No common ancestor found for ${source.id} and ${target.id}")
+        }
+
+        /**
+         * Calculates if an edge points upwards (violates normal dependency flow).
+         * An edge points upwards when sourceLevel <= targetLevel under their lowest common ancestor.
+         */
+        fun calculateIsPointingUpwards(
+            sourceId: String,
+            targetId: String,
+            root: GraphNode
+        ): Boolean {
+            val source = findNodeById(root, sourceId)
+                ?: throw IllegalStateException("Source node $sourceId not found")
+            val target = findNodeById(root, targetId)
+                ?: throw IllegalStateException("Target node $targetId not found")
+
+            val (sourceAncestor, targetAncestor) = findSiblingsUnderLowestCommonAncestor(source, target, root)
+            return sourceAncestor.level!! <= targetAncestor.level!!
+        }
+    }
+
+    fun toProjectNodeDto(
+        cyclicEdgesByLeaf: Map<String, Set<String>>,
+        root: GraphNode = this
+    ): ProjectNodeDto {
         val isLeaf = children.isEmpty()
-        val childDtos = children.map { it.toProjectNodeDto(cyclicEdgesByLeaf) }.toSet()
+        val childDtos = children.map { it.toProjectNodeDto(cyclicEdgesByLeaf, root) }.toSet()
 
         val internalDependencies = if (isLeaf) {
             dependencies.associateWith { dependency ->
                 val edgeTypes = edges.filter { it.target == dependency }.map { it.type }.toSet()
                 val edgeTypesJoined = edgeTypes.joinToString(",")
-                dependency.toEdgeInfoDto(cyclicEdgesByLeaf[id], if (edgeTypes.isEmpty()) TypeOfUsage.USAGE.rawValue else edgeTypesJoined)
+                dependency.toEdgeInfoDto(
+                    cyclicEdges = cyclicEdgesByLeaf[id],
+                    type = if (edgeTypes.isEmpty()) TypeOfUsage.USAGE.rawValue else edgeTypesJoined,
+                    sourceId = id,
+                    root = root
+                )
             }
         } else {
             childDtos
@@ -43,12 +130,24 @@ data class GraphNode(
 
     private fun String.toEdgeInfoDto(
         cyclicEdges: Set<String>?,
-        type: String
-    ) = EdgeInfoDto(
-        isCyclic = cyclicEdges?.contains(this) ?: false,
-        weight = 1,
-        type = type
-    )
+        type: String,
+        sourceId: String,
+        root: GraphNode
+    ): EdgeInfoDto {
+        val isPointingUpwards = try {
+            calculateIsPointingUpwards(sourceId, this, root)
+        } catch (e: IllegalStateException) {
+            // If we can't calculate (e.g., no common ancestor), default to false
+            false
+        }
+
+        return EdgeInfoDto(
+            isCyclic = cyclicEdges?.contains(this) ?: false,
+            weight = 1,
+            type = type,
+            isPointingUpwards = isPointingUpwards
+        )
+    }
 
     private fun List<EdgeInfoDto>.sum() =
         EdgeInfoDto(

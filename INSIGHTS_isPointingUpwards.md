@@ -108,6 +108,20 @@ The test suite includes:
 7. **No common ancestor test**: Verifies proper error handling when nodes have no common ancestor
 8. **Real-world example test**: Uses the actual Java codebase structure to test architectural violations
 
+### Golden File Handling
+
+The project uses golden files for testing. When implementing `isPointingUpwards`, you'll need to update the golden file:
+
+1. **ProcessingPipelineTest**: This test compares generated output against a golden file at `src/test/resources/pipeline/projectreport/java-example.cg.json`
+2. **Updating the golden file**: After implementing `isPointingUpwards`, regenerate the golden file:
+   ```bash
+   cd analysis
+   ./gradlew jar
+   java -jar build/libs/dependacharta.jar --directory src/test/resources/analysis/contract/examples/java --outputDirectory src/test/resources/pipeline/projectreport --filename java-example
+   ```
+3. **Verify changes**: Check that the golden file now includes `isPointingUpwards` values
+4. **Run tests**: The tests should now pass with the updated golden file
+
 ### Test Implementation Notes
 
 The tests include helper functions that simulate the `isPointingUpwards` logic:
@@ -200,6 +214,26 @@ cat visualization/public/resources/java-example.cg.json | jq '.leaves | to_entri
 ```
 
 **Important**: You must rebuild the JAR after any code changes for them to take effect in the generated JSON. The field should appear with `"isPointingUpwards":false` for all edges until the calculation logic is implemented.
+
+## Implementation Status
+
+### ✅ Completed
+1. **Helper functions implemented**: Added to `GraphNode.kt` as companion object methods:
+   - `findNodeById`: Finds a node by its ID in the tree
+   - `getAncestors`: Gets all ancestors of a node, including the node itself
+   - `findSiblingsUnderLowestCommonAncestor`: Finds siblings under the lowest common ancestor
+   - `calculateIsPointingUpwards`: Implements the core algorithm
+
+2. **Edge creation updated**: Modified `toEdgeInfoDto` to calculate `isPointingUpwards`
+
+3. **Tests enabled and passing**: All 8 test cases in `IsPointingUpwardsTest` pass
+
+4. **Golden file updated**: The test golden file now includes `isPointingUpwards` values
+
+### 🔄 Verification
+1. **Generated JSON**: The `java-example.cg.json` file now includes `isPointingUpwards` values
+2. **Architectural violations**: Edges like `domain.model.ArmorClass → application.CreatureUtil` correctly show `"isPointingUpwards":true`
+3. **Normal dependencies**: Edges like `application.service → domain.model` correctly show `"isPointingUpwards":false`
 
 ## Next Steps After Reset
 
