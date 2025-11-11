@@ -49,6 +49,16 @@ Both dependencies point upwards, as (a leaf in a container in a container of) le
    - Fixed filename duplication bug where `.cg.json` was always appended
    - Now checks if filename already ends with `.cg.json` before appending
 
+## Current Status
+
+### ✅ Completed
+1. **DTO Field Added**: `isPointingUpwards: Boolean = false` added to `EdgeInfoDto` in [`ProjectReportDto.kt`](analysis/src/main/kotlin/de/maibornwolff/dependacharta/pipeline/processing/model/ProjectReportDto.kt:36)
+2. **JSON Serialization Configured**: `encodeDefaults = true` added to ensure boolean fields are serialized
+3. **Unit Tests Created**: Comprehensive test suite at [`IsPointingUpwardsTest.kt`](analysis/src/test/kotlin/de/maibornwolff/dependacharta/pipeline/processing/levelization/IsPointingUpwardsTest.kt)
+
+### ❌ Not Yet Implemented
+The actual calculation logic for `isPointingUpwards` has not been implemented yet. Currently, the field defaults to `false` for all edges.
+
 ## What Still Needs to Be Done
 
 The backend needs to implement the same logic as the frontend's `isPointingUpwards()` function:
@@ -60,12 +70,13 @@ The backend needs to implement the same logic as the frontend's `isPointingUpwar
 ### Files That Need Implementation:
 
 1. **`analysis/src/main/kotlin/de/maibornwolff/dependacharta/pipeline/analysis/model/Node.kt`** (around line 36-37)
-   - Currently has: `val isPointingUpwards = sourceLevel >= targetLevel`
-   - Needs: Logic to find common ancestor and compare sibling levels
+   - Currently: Field exists in DTO but calculation not implemented
+   - Needs: Logic to find common ancestor and compare sibling levels when creating `EdgeInfoDto`
 
-2. **`analysis/src/main/kotlin/de/maibornwolff/dependacharta/pipeline/processing/levelization/model/GraphNode.kt`** (lines 71 and 81)
-   - Currently has: `isPointingUpwards = sourceLevel >= targetLevel`
+2. **`analysis/src/main/kotlin/de/maibornwolff/dependacharta/pipeline/processing/levelization/model/GraphNode.kt`** (lines 44-51)
+   - Currently: Field exists in DTO but calculation not implemented
    - Needs: Same logic as above, but for aggregated parent nodes
+   - The `toEdgeInfoDto()` function needs to calculate `isPointingUpwards` based on the graph structure
 
 ### The Challenge:
 
@@ -82,8 +93,34 @@ The backend works with a flat structure of nodes and edges, while the frontend h
 
 ## Testing Strategy
 
+### Unit Tests Created
+A comprehensive test suite has been created at:
+`analysis/src/test/kotlin/de/maibornwolff/dependacharta/pipeline/processing/levelization/IsPointingUpwardsTest.kt`
+
+The test suite includes:
+
+1. **Normal dependency flow test**: Higher level → Lower level (should return false)
+2. **Same level dependency test**: Level 0 → Level 0 (should return true)
+3. **Architectural violation test**: Lower level → Higher level (should return true)
+4. **Sibling comparison test**: Verifies that levels are compared within the same container context, not absolute levels
+5. **Deeply nested structures test**: Ensures the algorithm works correctly with multiple nesting levels
+6. **Direct siblings test**: Tests edges between nodes that are direct siblings
+7. **No common ancestor test**: Verifies proper error handling when nodes have no common ancestor
+8. **Real-world example test**: Uses the actual Java codebase structure to test architectural violations
+
+### Test Implementation Notes
+
+The tests include helper functions that simulate the `isPointingUpwards` logic:
+- `findSiblingsUnderLowestCommonAncestor()`: Finds the siblings under the common ancestor
+- `getAncestors()`: Gets all ancestors of a node
+- `checkIsPointingUpwards()`: Implements the comparison logic (sourceLevel <= targetLevel)
+
+These helper functions serve as a reference implementation and demonstrate the expected behavior.
+
+### Integration Testing
+
 1. **Verify field presence**: Check that `isPointingUpwards` appears in generated JSON
-2. **Verify correct values**: 
+2. **Verify correct values**:
    - Find edges that should point upward (e.g., `domain` → `application`)
    - Verify they have `isPointingUpwards: true`
 3. **Test aggregation**: Check parent nodes have correct values based on their level, not children's
@@ -126,7 +163,7 @@ analysis/build/reports/tests/test/index.html
 cd analysis/bin
 ./dependacharta.sh --directory ../src/test/resources/analysis/contract/examples/java \
                    --outputDirectory ../../visualization/public/resources \
-                   --filename java-example.cg.json
+                   --filename java-example
 ```
 
 ### Build Command
