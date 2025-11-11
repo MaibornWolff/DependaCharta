@@ -1,88 +1,212 @@
-# Status
+<div align="center">
+  <!-- Logo -->
+  <!-- TODO: Add DependaCharta logo here -->
+  <!-- <a href="https://github.com/MaibornWolff/DependaCharta">
+    <img src="logo/dependacharta_logo.svg" alt="DependaCharta logo" width="200"/>
+  </a> -->
 
-| Visualization | Analysis |
-|---------------|----------|
-| [![Build Visualization](https://github.com/MaibornWolff/DependaCharta/actions/workflows/build-visualization.yml/badge.svg)](https://github.com/MaibornWolff/DependaCharta/actions/workflows/build-visualization.yml) | [![Build Analysis](https://github.com/MaibornWolff/DependaCharta/actions/workflows/build-analysis.yml/badge.svg)](https://github.com/MaibornWolff/DependaCharta/actions/workflows/build-analysis.yml) |
-| [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=maibornwolff-gmbh_DependaCharta_visualization&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=maibornwolff-gmbh_DependaCharta_visualization) | [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=maibornwolff-gmbh_DependaCharta_analysis&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=maibornwolff-gmbh_DependaCharta_analysis) |
-| [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=maibornwolff-gmbh_DependaCharta_visualization&metric=coverage)](https://sonarcloud.io/summary/new_code?id=maibornwolff-gmbh_DependaCharta_visualization) | [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=maibornwolff-gmbh_DependaCharta_analysis&metric=coverage)](https://sonarcloud.io/summary/new_code?id=maibornwolff-gmbh_DependaCharta_analysis) |
+  <h1>DependaCharta</h1>
 
-# DependaCharta
+  <!-- Links -->
+  <p>
+    <a href="#what-is-dependacharta">About</a> •
+    <a href="#features">Features</a> •
+    <a href="#getting-started">Getting Started</a> •
+    <a href="#get-involved">Get Involved</a> •
+    <a href="#links">Links</a>
+  </p>
 
-DependaCharta is a tool to help quickly understand structure and architecture of codebases, by analyzing and identifying disadvantageous dependencies and quality hotspots.  
-It runs locally, can handle non-compilable code and supports analyzing multiple programming languages.  
-It consists of two components: an analysis component and a visualization component.
-The analysis component is written in Kotlin and uses the library [Tree-sitter](https://tree-sitter.github.io/tree-sitter/).  
-The visualization component is based on the [Cytoscape](https://js.cytoscape.org/) library and is written in Angular/TypeScript.
+  <!-- Analysis -->
+  <div>
+    <a href="https://github.com/MaibornWolff/DependaCharta/actions/workflows/build-analysis.yml">
+      <img alt="Build Analysis" src="https://github.com/MaibornWolff/DependaCharta/actions/workflows/build-analysis.yml/badge.svg?style=plastic"></a>
+    <a href="https://sonarcloud.io/dashboard?id=maibornwolff-gmbh_DependaCharta_analysis">
+      <img alt="Quality Gate Analysis" src="https://img.shields.io/sonar/quality_gate/maibornwolff-gmbh_DependaCharta_analysis/main?server=https%3A%2F%2Fsonarcloud.io&label=Quality%20Gate%20Analysis&style=plastic"></a>
+    <a href="https://sonarcloud.io/project/activity?id=maibornwolff-gmbh_DependaCharta_analysis&graph=coverage">
+      <img alt="Sonar Analysis Coverage" src="https://img.shields.io/sonar/coverage/maibornwolff-gmbh_DependaCharta_analysis/main?server=https%3A%2F%2Fsonarcloud.io&label=Coverage%20Analysis&style=plastic"></a>
+  </div>
 
-Releases can be downloaded under https://github.com/MaibornWolff/DependaCharta/releases.
+  <!-- Visualization -->
+  <div>
+    <a href="https://github.com/MaibornWolff/DependaCharta/actions/workflows/build-visualization.yml">
+      <img alt="Build Visualization" src="https://github.com/MaibornWolff/DependaCharta/actions/workflows/build-visualization.yml/badge.svg?style=plastic"></a>
+    <a href="https://sonarcloud.io/dashboard?id=maibornwolff-gmbh_DependaCharta_visualization">
+      <img alt="Quality Gate Visualization" src="https://img.shields.io/sonar/quality_gate/maibornwolff-gmbh_DependaCharta_visualization/main?server=https%3A%2F%2Fsonarcloud.io&label=Quality%20Gate%20Visualization&style=plastic"></a>
+    <a href="https://sonarcloud.io/project/activity?id=maibornwolff-gmbh_DependaCharta_visualization&graph=coverage">
+      <img alt="Sonar Visualization Coverage" src="https://img.shields.io/sonar/coverage/maibornwolff-gmbh_DependaCharta_visualization/main?server=https%3A%2F%2Fsonarcloud.io&label=Coverage%20Visualization&style=plastic"></a>
+  </div>
 
-## Overview of linked Documentation
-All following linked documents are also linked in the respective sections.  
-For a better overview, they are listed here as well.
-### General
-- [A log of Architecture Decision Records](doc/architecture/decisions)
-- [Pipeline](Pipeline.md)
+</div>
 
-### Analysis
-- [Analysis Readme](analysis/README.md)
-- [How to add a new language](analysis/howto-add-new-language.md)
-- [Cycle Detection Algorithm](analysis/src/main/kotlin/de/maibornwolff/dependacharta/pipeline/processing/cycledetection/README.md)
-- [Levelization Algorithm](analysis/src/main/kotlin/de/maibornwolff/dependacharta/pipeline/processing/levelization/README.md)
+<!-- TODO: Add screenshot here -->
+<!-- ![Screenshot of DependaCharta](assets/promo_img.png) -->
 
-### Visualization
-- [Visualization Readme](visualization/README.md)
+## What is DependaCharta
 
+Having trouble understanding the structure and dependencies in your codebase? DependaCharta is a multi-language code analysis and visualization tool that helps you quickly identify disadvantageous dependencies, cyclic dependencies, and quality hotspots. It runs entirely locally, works with non-compilable code, and supports multiple programming languages. DependaCharta is an open source project developed by [MaibornWolff](https://www.maibornwolff.de/en).
 
-## Features/Components
+### Your Data Stays Local
 
-### CLI Tool (Analysis)
-Our command line tool (Analysis) enables you to analyze codebases and creates cg.json files containing structural information about your project. This among other things includes the hierarchy of files and packages, the dependencies of each file and package and information about whether the dependencies between files are cyclic.
-You can analyze multiple programming languages and in case your programming language is not supported, you can try to [extend the supported languages of DependaCharta](analysis/howto-add-new-language.md).  
-Take a look at the [analysis](analysis/README.md) for instructions on how to set everything up to create a cg.json.
+**All analysis and visualization happens entirely on your machine.** No data is ever uploaded, shared, or transmitted to any external service. Your code stays private and secure. DependaCharta has no analytics, tracking, or telemetry built-in.
 
-### Web App (Visualization)
-Our Web App (Visualization) allows you to navigate and visualize dependencies and hierarchies inside your codebase. There are a variety of filters to display potentially critical dependencies inside your code. 
-With the help of that, you can find quality hotspots and potential architecture violations to help you identify measures to resolve those problems.  
-To get started with the Web App, you first need to create a cg.json file and upload it.
-You can find more details about usage and installation instructions for our frontend in the [visualization](visualization/README.md).
+## Features
 
-## Quick Start with Just
+### DependaCharta CLI (Analysis)
 
-DependaCharta includes a `justfile` for convenient development workflows:
+The Analysis component is a command-line tool that analyzes codebases using [Tree-sitter](https://tree-sitter.github.io/tree-sitter/) parsers. It creates `.cg.json` files containing structural information about your project, including:
+
+- File and package hierarchies
+- Dependencies between files and packages
+- Cycle detection with detailed cycle information
+- Levelization for architectural insights
+- Support for multiple programming languages: **Java, C#, C++, TypeScript, PHP, Go, Python**
+
+Don't see your language? You can [extend the supported languages](analysis/howto-add-new-language.md) by adding a new parser!
+
+<!-- TODO: Add analysis overview screenshot -->
+<!-- ![Analysis overview](assets/analysis_overview.png) -->
+
+### DependaCharta Web (Visualization)
+
+The Visualization component is an Angular/TypeScript web application using [Cytoscape.js](https://js.cytoscape.org/) for interactive dependency graphs. Features include:
+
+- Interactive graph visualization of your codebase structure
+- Navigate through package and file dependencies
+- Filter and highlight critical dependencies
+- Identify cyclic dependencies and architecture violations
+- Find quality hotspots requiring attention
+- Multiple layout algorithms for optimal viewing
+- Available as both web app and Electron desktop application
+
+<!-- TODO: Add visualization overview screenshot -->
+<!-- ![Visualization overview](assets/visualization_overview.png) -->
+
+## Getting Started
+
+### Prerequisites
+
+- **Analysis**: Java 11 or higher
+- **Visualization**: Node.js 18 or higher
+- **Optional**: [just](https://github.com/casey/just) for convenient commands
+
+### Quick Start with Just
+
+DependaCharta includes a `justfile` for streamlined workflows:
 
 ```bash
+# Install just if you haven't already
+brew install just  # macOS
+# or: cargo install just
+# or: npm install -g just-install
+
 # Run unit tests
 just test
 
 # Build the analysis tool
 just build
 
-# Run analysis on a directory (builds first if needed)
-just run <directory-to-analyze>
-
-# Analyze a directory and starts the frontend directly defaulting to this analysis
+# Analyze a directory and view results (builds first if needed)
 just analyze <directory-to-analyze>
 
-# Start frontend development server (installs deps automatically)
+# Start frontend development server only
 just frontend
-
-# Docker commands
-just docker-build                    # Build Docker image for analyzer
-just docker-build-multi              # Build for multiple platforms
-just docker-run <directory-to-analyze>    # Run analysis with Docker
-just docker-analyze <directory-to-analyze> # Docker analysis + frontend
 ```
 
-**Note**: The `analyze` and `docker-analyze` commands output directly to the visualization directory, making it easy to analyze code and immediately view results in the frontend.
+**Note**: The `analyze` command runs the analysis and automatically opens the visualization with your results!
 
-## Development
-The team decided to not strangle the development workflow with to many rules.  
-However, we follow the Clean Code principles but it isn't a dogma. We try to keep the codebase clean and maintainable with common sense.  
-Tests are written before the actual implementation and we try to keep the test coverage as high as it makes sense.
+### Manual Setup
 
-### Versioning
-In general we use the [Semantic Versioning](https://semver.org) scheme.
-For DependaCharta we increase the patch version for bug fixes, the minor version for new features and the major version for reached milestones or breaking changes.
+#### Analysis Component (Kotlin)
 
-### CI/CD
-A more detailed description of the CI/CD pipeline can be found in the [Pipeline](Pipeline.md) documentation.
+```bash
+cd analysis
+
+# Build the analysis tool
+./gradlew fatJar
+
+# Run the analyzer
+java -jar build/libs/dependacharta.jar -d <directory-to-analyze>
+# Or use the convenience scripts:
+# bin/dependacharta.sh (Mac/Linux)
+# bin/dependacharta.bat (Windows)
+
+# Run tests
+./gradlew test
+```
+
+For detailed analysis documentation, see [analysis/README.md](analysis/README.md).
+
+#### Visualization Component (Angular)
+
+```bash
+cd visualization
+
+# Install dependencies
+npm ci
+
+# Development server (http://localhost:4200)
+npm run start
+
+# Run as Electron app
+npm run start-electron
+
+# Build for production
+npm run build
+
+# Run tests
+npm run test
+
+# Package for distribution
+npm run package-win         # Windows
+npm run package-mac-silicon # macOS ARM64
+npm run package-mac-intel   # macOS x64
+```
+
+For detailed visualization documentation, see [visualization/README.md](visualization/README.md).
+
+### Docker Support
+
+```bash
+# Build Docker image
+just docker-build
+
+# Run analysis with Docker
+just docker-run <directory-to-analyze>
+
+# Analyze and view results
+just docker-analyze <directory-to-analyze>
+```
+
+## Get Involved
+
+Do you have a **bug**, **feature request**, or question? Please open [a new issue](https://github.com/MaibornWolff/DependaCharta/issues/new).
+Feedback is always welcome.
+
+Want to **contribute**? Check out our [contributing guide](dev_docs/CONTRIBUTING.md) and [developer start guide](dev_docs/DEV_START_GUIDE.md).
+
+## Development Practices
+
+- Test-driven development with tests before implementation
+- Clean Code principles (pragmatic, not dogmatic)
+- [Semantic Versioning](https://semver.org) for releases
+- Automated CI/CD pipeline (see [Pipeline.md](Pipeline.md))
+
+## Links
+
+- [Releases](https://github.com/MaibornWolff/DependaCharta/releases)
+- [Analysis Documentation](analysis/README.md)
+- [Visualization Documentation](visualization/README.md)
+- [How to Add a New Language](analysis/howto-add-new-language.md)
+- [Cycle Detection Algorithm](analysis/src/main/kotlin/de/maibornwolff/dependacharta/pipeline/processing/cycledetection/README.md)
+- [Levelization Algorithm](analysis/src/main/kotlin/de/maibornwolff/dependacharta/pipeline/processing/levelization/README.md)
+- [Architecture Decision Records](doc/architecture/decisions)
+- [Pipeline Documentation](Pipeline.md)
+
+
+## License
+
+BSD-3-Clause License
+
+---
+
+Made with ❤ by [MaibornWolff](https://www.maibornwolff.de/en) &nbsp;&middot;&nbsp; GitHub [@MaibornWolff](https://github.com/maibornwolff)
