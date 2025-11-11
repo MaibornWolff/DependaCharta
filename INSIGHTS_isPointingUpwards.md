@@ -166,12 +166,33 @@ cd analysis/bin
                    --filename java-example
 ```
 
-### Build Command
+### Build and Test Sequence
+
+#### 1. Build the JAR (after making code changes)
 ```bash
 cd analysis
 ./gradlew clean build -x test
 cp build/libs/dependacharta.jar bin/dependacharta.jar
 ```
+
+#### 2. Generate the example JSON
+```bash
+cd analysis/bin
+./dependacharta.sh --directory ../src/test/resources/analysis/contract/examples/java \
+                   --outputDirectory ../../visualization/public/resources \
+                   --filename java-example
+```
+
+#### 3. Verify the output contains isPointingUpwards
+```bash
+# Check if isPointingUpwards field is present (should show count > 0)
+grep -o "isPointingUpwards" visualization/public/resources/java-example.cg.json | wc -l
+
+# Or view a sample edge with the field
+cat visualization/public/resources/java-example.cg.json | jq '.leaves | to_entries | .[0].value.dependencies | to_entries | .[0].value'
+```
+
+**Important**: You must rebuild the JAR after any code changes for them to take effect in the generated JSON. The field should appear with `"isPointingUpwards":false` for all edges until the calculation logic is implemented.
 
 ## Next Steps After Reset
 
