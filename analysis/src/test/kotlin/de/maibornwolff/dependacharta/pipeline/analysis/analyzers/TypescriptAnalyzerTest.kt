@@ -1098,4 +1098,85 @@ class TypescriptAnalyzerTest {
             .withFailMessage("Form should appear in usedTypes")
             .contains(Type.simple("Form"))
     }
+
+    @Test
+    fun `should detect Routes in JSX even with complex component structure`() {
+        // Arrange - Closer to the real App.tsx with useEffect and props destructuring
+        val tsxCode = """
+            import React, { useEffect } from 'react';
+            import { loadUser, logout } from 'src/components/Auth/Auth_thunks';
+            import { Routes } from 'src/routes';
+
+            const _App = (props: any) => {
+              useEffect(() => {
+                const { loadUser, logout } = props;
+                if (localStorage.user) {
+                  loadUser();
+                }
+                window.addEventListener('storage', () => {
+                  if (!localStorage.user) logout();
+                });
+              }, [props]);
+              return <Routes />;
+            };
+
+            export const App = _App;
+        """.trimIndent()
+
+        // Act
+        val report = TypescriptAnalyzer(
+            FileInfo(
+                SupportedLanguage.TYPESCRIPT,
+                "src/App/App.tsx",
+                tsxCode
+            )
+        ).analyze()
+
+        // Assert - Find the _App node
+        val appNode = report.nodes.find { it.pathWithName.toString().contains("_App") }
+        assertThat(appNode).isNotNull
+
+        // Routes should be detected as a dependency (currently FAILS in real analysis!)
+        val routesDep = Dependency(path = Path(listOf("src", "routes", "Routes")))
+        assertThat(appNode!!.dependencies)
+            .withFailMessage("Routes component used in JSX <Routes /> should be detected even with complex component")
+            .contains(routesDep)
+
+        assertThat(appNode.usedTypes)
+            .contains(Type.simple("Routes"))
+    }
+
+    @Test
+    fun `should extract regular exports from index tsx files`() {
+        // Arrange - Index file with regular export (not a re-export)
+        val tsxCode = """
+            import React from 'react';
+
+            export const Routes = () => {
+              return <div>Routes Component</div>;
+            };
+        """.trimIndent()
+
+        // Act
+        val report = TypescriptAnalyzer(
+            FileInfo(
+                SupportedLanguage.TYPESCRIPT,
+                "src/routes/index.tsx",
+                tsxCode
+            )
+        ).analyze()
+
+        // Assert - Regular exports from index files should create nodes
+        assertThat(report.nodes)
+            .withFailMessage("Index files with regular exports should create nodes for those exports")
+            .isNotEmpty()
+
+        val routesNode = report.nodes.find { it.pathWithName.getName() == "Routes" }
+        assertThat(routesNode)
+            .withFailMessage("Routes exported from index.tsx should create a node")
+            .isNotNull()
+
+        assertThat(routesNode!!.pathWithName)
+            .isEqualTo(Path(listOf("src", "routes", "index", "Routes")))
+    }
 }
