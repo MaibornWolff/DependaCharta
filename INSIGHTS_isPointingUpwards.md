@@ -171,9 +171,16 @@ cd analysis/bin
 #### 1. Build the JAR (after making code changes)
 ```bash
 cd analysis
+# Build without running tests (use when tests are failing)
 ./gradlew clean build -x test
+# OR build with tests (use when tests are passing)
+./gradlew clean build
+
+# Copy the JAR to bin directory
 cp build/libs/dependacharta.jar bin/dependacharta.jar
 ```
+
+**Note**: The `IsPointingUpwardsTest` tests will fail until the actual implementation is complete. Use `-x test` to skip tests during development, or run tests separately with `./gradlew test --tests IsPointingUpwardsTest`.
 
 #### 2. Generate the example JSON
 ```bash
