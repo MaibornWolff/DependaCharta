@@ -1019,4 +1019,83 @@ class TypescriptAnalyzerTest {
         assertThat(node.dependencies).contains(expectedDependency)
         assertThat(node.usedTypes).containsExactly(Type.simple("MyReactComponent"))
     }
+
+    @Test
+    fun `should detect JSX elements as dependencies in React components`() {
+        // Arrange - Simplified test case that shows the issue: Routes is used only in JSX, not in TS code
+        val tsxCode = """
+            import { loadUser, logout } from './Auth';
+            import { Routes } from './routes';
+
+            export const App = () => {
+              loadUser();
+              logout();
+              return <Routes />;
+            };
+        """.trimIndent()
+
+        // Act
+        val report = TypescriptAnalyzer(
+            FileInfo(
+                SupportedLanguage.TYPESCRIPT,
+                "App.tsx",
+                tsxCode
+            )
+        ).analyze()
+
+        // Assert - All three imports should be detected as dependencies
+        // loadUser and logout are detected because they are called as functions
+        // Routes should be detected because it's used as a JSX element, but currently it's NOT
+        val loadUserDep = Dependency(path = Path(listOf("Auth", "loadUser")))
+        val logoutDep = Dependency(path = Path(listOf("Auth", "logout")))
+        val routesDep = Dependency(path = Path(listOf("routes", "Routes")))
+
+        val appNode = report.nodes[0]
+
+        // These two pass because they're used as function calls
+        assertThat(appNode.dependencies).contains(loadUserDep, logoutDep)
+
+        // This should pass but currently FAILS because JSX elements aren't detected
+        assertThat(appNode.dependencies)
+            .withFailMessage("Routes component used in JSX should be detected as a dependency")
+            .contains(routesDep)
+
+        // Routes should also appear in usedTypes
+        assertThat(appNode.usedTypes)
+            .withFailMessage("Routes component used in JSX should appear in usedTypes")
+            .contains(Type.simple("Routes"))
+    }
+
+    @Test
+    fun `should detect JSX member expressions as dependencies`() {
+        // Arrange - Test JSX member expressions like <Form.Input />
+        val tsxCode = """
+            import { Form } from './Form';
+
+            export const MyComponent = () => {
+              return <Form.Input placeholder="test" />;
+            };
+        """.trimIndent()
+
+        // Act
+        val report = TypescriptAnalyzer(
+            FileInfo(
+                SupportedLanguage.TYPESCRIPT,
+                "MyComponent.tsx",
+                tsxCode
+            )
+        ).analyze()
+
+        // Assert - Form should be detected as a dependency
+        val formDep = Dependency(path = Path(listOf("Form", "Form")))
+        val componentNode = report.nodes[0]
+
+        assertThat(componentNode.dependencies)
+            .withFailMessage("Form component used in JSX member expression <Form.Input /> should be detected")
+            .contains(formDep)
+
+        assertThat(componentNode.usedTypes)
+            .withFailMessage("Form should appear in usedTypes")
+            .contains(Type.simple("Form"))
+    }
 }
