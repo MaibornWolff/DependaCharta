@@ -17,6 +17,7 @@ exampleProjects/TypescriptExample/node_modules
 **/dist
 
 output
+analyzer.log
 
 /analysis/bin/dependacharta_temp
 /analysis/bin/dependacharta_temp_backup

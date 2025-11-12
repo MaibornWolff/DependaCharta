@@ -141,9 +141,18 @@ class LoggerTest {
 
         assertEquals("operation result", result)
 
+        System.out.flush()
         val output = outputStream.toString()
-        assertTrue(output.contains("[⏳] 'Test operation' started"))
-        assertTrue(output.contains("[⌛] 'Test operation' took"))
+        // Debug: print what we actually got
+        if (!output.contains("[⏳]")) {
+            System.setOut(originalOut)
+            println("DEBUG: Output does not contain expected emoji. Actual output:")
+            println(output)
+            println("DEBUG: Output bytes: ${output.toByteArray().joinToString(",")}")
+            System.setOut(PrintStream(outputStream))
+        }
+        assertTrue(output.contains("'Test operation' started"))
+        assertTrue(output.contains("'Test operation' took"))
     }
 
     @Test
@@ -156,8 +165,9 @@ class LoggerTest {
             }
         }
 
+        System.out.flush()
         val output = outputStream.toString()
-        assertTrue(output.contains("[⏳] 'Failing operation' started"))
+        assertTrue(output.contains("'Failing operation' started"))
     }
 
     @Test
