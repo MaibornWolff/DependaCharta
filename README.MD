@@ -9,6 +9,7 @@
 
   <!-- Links -->
   <p>
+    <a href="https://maibornwolff.github.io/DependaCharta/"><strong>🚀 Try Web Studio</strong></a> •
     <a href="#what-is-dependacharta">About</a> •
     <a href="#features">Features</a> •
     <a href="#getting-started">Getting Started</a> •
@@ -37,6 +38,29 @@
   </div>
 
 </div>
+
+---
+
+<div align="center">
+
+### 🌐 Try the Web Studio Now!
+
+**No installation required • Instant visualization • Works in your browser**
+
+Analyze and visualize your codebase dependencies directly in your browser.
+Upload your `.cg.json` file or explore with sample data.
+
+<p>
+  <a href="https://maibornwolff.github.io/DependaCharta/">
+    <img src="https://img.shields.io/badge/🚀_Launch_Web_Studio-4A90E2?style=for-the-badge&labelColor=2C3E50" alt="Launch Web Studio" height="40">
+  </a>
+</p>
+
+*Fully client-side • Your data never leaves your machine • Privacy guaranteed*
+
+</div>
+
+---
 
 <!-- TODO: Add screenshot here -->
 <!-- ![Screenshot of DependaCharta](assets/promo_img.png) -->
