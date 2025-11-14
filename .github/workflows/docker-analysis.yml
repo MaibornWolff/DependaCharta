@@ -50,7 +50,7 @@ jobs:
           images: ${{ steps.vars.outputs.image }}
           tags: |
             # Manual dispatch: custom tag
-            type=raw,value=$${{ inputs.tag }},enable=$${{ github.event_name == 'workflow_dispatch' }}
+            type=raw,value=${{ inputs.tag }},enable=${{ github.event_name == 'workflow_dispatch' }}
             # Semver tags when pushing a semver tag (e.g., 1.2.3 or v1.2.3)
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
