@@ -67,21 +67,21 @@ The **weight** of an edge represents the number of individual dependencies it re
 
 Weight helps identify the strength of coupling between components.
 
-### Edge Colors
+### Edge Types and Colors
 
-Dependencies are visualized with two colors:
+Dependencies are classified into **4 edge types** based on two properties:
 
-| Cyclic? | Pointing Upward? | Color |
-|---------|------------------|-------|
-| Yes     | No               | **Blue** |
-| Yes     | Yes              | **Red** |
-| No      | Yes              | **Red** |
-| No      | No               | **Grey** |
+| Edge Type | Cyclic? | Pointing Upward? | Color | Description |
+|-----------|---------|------------------|-------|-------------|
+| **REGULAR** | No | No | **Grey** | Normal dependencies following architecture |
+| **CYCLIC** | Yes | No | **Blue** | Cyclic dependencies that follow architectural flow |
+| **TWISTED** | No | Yes | **Red** | Non-cyclic architectural violations |
+| **FEEDBACK** | Yes | Yes | **Red** | Cyclic dependencies that violate architecture |
 
-**Summary:**
-- **Blue edges**: Cyclic dependencies that point downward (OK-ish, but form cycles with red edges)
-- **Red edges**: Dependencies that point upward (architectural violations)
-- **Grey edges**: Normal dependencies (neither cyclic nor upward)
+**Color Summary:**
+- **Grey edges (REGULAR)**: Normal dependencies that follow the architectural flow (neither cyclic nor upward-pointing)
+- **Blue edges (CYCLIC)**: Cyclic dependencies that still respect the architectural direction (downward-pointing cycles)
+- **Red edges (TWISTED + FEEDBACK)**: Architectural violations - dependencies that point upward, whether cyclic or not
 
 ## Visualization Features
 
@@ -154,9 +154,10 @@ Frontend Visualization (Angular + Cytoscape.js)
 | **Weight** | The number of individual dependencies an edge represents |
 | **Collapsed Namespace** | A namespace that is visually shrunk to hide its contents |
 | **Edge Aggregation** | Combining multiple leaf-to-leaf edges into namespace-level edges |
-| **Blue Edge** | Cyclic dependency pointing downward (follows architecture) |
-| **Red Edge** | Dependency pointing upward (violates architecture) |
-| **Grey Edge** | Normal dependency (neither cyclic nor upward) |
+| **REGULAR Edge** | Normal dependency (grey) - neither cyclic nor upward-pointing |
+| **CYCLIC Edge** | Cyclic dependency (blue) - forms a cycle but follows architectural direction |
+| **TWISTED Edge** | Non-cyclic architectural violation (red) - points upward but not cyclic |
+| **FEEDBACK Edge** | Cyclic architectural violation (red) - both cyclic and upward-pointing |
 
 ## Related Documentation
 
