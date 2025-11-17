@@ -53,6 +53,30 @@ export const cytoscape_style: StylesheetStyle[] =
         'z-index':8,
       }
     },
+    {
+      selector: 'edge.show-labels[weight > 1]',
+      style: {
+        'label': 'data(weight)',
+        'font-size': 20,
+        'color': '#000000',
+        'text-background-color': '#ffffff',
+        'text-background-opacity': 0.8,
+        'text-background-padding': '3px'
+      }
+    },
+    {
+      selector: 'edge.show-labels.show-type[weight = 1][type][type != "usage"]',
+      style: {
+        'label': 'data(typeLabel)',
+        'text-rotation': 'autorotate',
+        'text-wrap': 'wrap',
+        'font-size': 12,
+        'color': '#000000',
+        'text-background-color': '#ffffff',
+        'text-background-opacity': 0.8,
+        'text-background-padding': '3px'
+      }
+    },
     // only loop edges (source = target)
     {
       selector: ':loop',

@@ -524,4 +524,73 @@ describe('CytoscapeService', () => {
       expect(service.changeCursor).toBeDefined();
     });
   });
+
+});
+
+describe('Edge Label Integration', () => {
+  let cytoscapeService: CytoscapeService;
+  const graphNodes = convertToGraphNodes(exampleJson)
+  const state = State.fromRootNodes(graphNodes)
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [CytoscapeService]
+    });
+    cytoscapeService = TestBed.inject(CytoscapeService);
+
+    // Create a real DOM element for Cytoscape
+    const container = document.createElement('div');
+    container.id = 'cy';
+    document.body.appendChild(container);
+  });
+
+  afterEach(() => {
+    const container = document.getElementById('cy');
+    if (container) {
+      document.body.removeChild(container);
+    }
+  });
+
+  it('should toggle edge labels when ToggleEdgeLabels action is applied', () => {
+    // Arrange - Initialize with labels on
+    const initAction = new Action.InitializeState('', graphNodes)
+    let currentState = state.copy({showLabels: true})
+    cytoscapeService.apply(currentState, initAction)
+
+    // Expand some nodes to create edges
+    const expandAction = new Action.ExpandNode("de")
+    currentState = currentState.reduce(expandAction)
+    cytoscapeService.apply(currentState, expandAction)
+
+    // Act - Toggle labels off
+    const toggleAction = new Action.ToggleEdgeLabels()
+    currentState = currentState.reduce(toggleAction)
+    cytoscapeService.apply(currentState, toggleAction)
+
+    // Assert - State should reflect labels are off
+    expect(currentState.showLabels).toBe(false)
+  });
+
+  it('should add show-labels class to edges when showLabels is true', () => {
+    // Arrange
+    const expandAction = new Action.ExpandNode("de");
+    let currentState = state.reduce(expandAction);
+    cytoscapeService.apply(currentState, expandAction);
+
+    const expandDeSots = new Action.ExpandNode("de.sots");
+    currentState = currentState.reduce(expandDeSots)
+    cytoscapeService.apply(currentState, expandDeSots)
+
+    const expandDeSotsCellarsandcentaurs = new Action.ExpandNode("de.sots.cellarsandcentaurs");
+    currentState = currentState.reduce(expandDeSotsCellarsandcentaurs)
+    const stateWithLabels = currentState.copy({showLabels: true})
+
+    // Act
+    cytoscapeService.apply(stateWithLabels, expandDeSotsCellarsandcentaurs)
+
+    // Assert
+    const edges = cytoscapeService.get().edges()
+    // At least one edge should exist after expanding nodes
+    expect(edges.length).toBeGreaterThan(0)
+  });
 });

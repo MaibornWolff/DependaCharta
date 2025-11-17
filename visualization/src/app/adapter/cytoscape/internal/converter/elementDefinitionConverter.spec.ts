@@ -165,13 +165,16 @@ describe('ElementDefinitionConverter', () => {
 
       // then
       const expected = {
-        data: {id: graphEdge.id, source: "source", target: "target", weight: 1, isCyclic: true, type: 'inheritance'},
-        style: {
-          label : `${convertTypeOfUsage(graphEdge.type)}\n‎ `,
-          'text-rotation': 'autorotate',
-          'text-wrap': 'wrap',
-          'font-size':  12
-        }
+        data: {
+          id: graphEdge.id,
+          source: "source",
+          target: "target",
+          weight: 1,
+          isCyclic: true,
+          type: 'inheritance',
+          typeLabel: `${convertTypeOfUsage(graphEdge.type)}\n‎ `
+        },
+        classes: 'show-labels show-type'
       }
       expect(edge).toEqual(expected)
     })
@@ -198,7 +201,7 @@ describe('ElementDefinitionConverter', () => {
         // then
         const expected = {
           data: {id: graphEdge.id, source: "source", target: "target", weight: 1, isCyclic: true, type: 'inheritance'},
-
+          classes: 'show-labels'
         }
         expect(edge).toEqual(expected)
       })
@@ -213,7 +216,7 @@ describe('ElementDefinitionConverter', () => {
       const edge = toCytoscapeEdges([graphEdge], false, true)[0]
 
       // then
-      expect(edge.style).toBeUndefined()
+      expect(edge.classes).toEqual([])
     })
 
     it('Should label ElementDefiniton with type if showLabels is true and weight is 1', () => {
@@ -227,7 +230,8 @@ describe('ElementDefinitionConverter', () => {
       const edge = toCytoscapeEdges([graphEdge], true, true)[0]
 
       // then
-      expect(edge.style.label).toEqual(`Inherits\n‎ `)
+      expect(edge.data['typeLabel']).toEqual(`Inherits\n‎ `)
+      expect(edge.classes).toEqual('show-labels show-type')
     })
 
     it('Should label ElementDefiniton if showLabels is true and weight is greater than 1', () => {
@@ -240,7 +244,8 @@ describe('ElementDefinitionConverter', () => {
       const edge = toCytoscapeEdges([graphEdge], true, true)[0]
 
       // then
-      expect(edge.style.label).toEqual(5)
+      expect(edge.data['weight']).toEqual(5)
+      expect(edge.classes).toEqual('show-labels')
     })
 
     it('Converts edgeCollection to graphEdges', () => {

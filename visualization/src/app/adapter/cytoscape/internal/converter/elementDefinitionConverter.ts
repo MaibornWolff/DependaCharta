@@ -62,20 +62,18 @@ function toCytoscapeEdge(graphEdge: Edge, showLabels: boolean, usageTypeMode: bo
       weight: graphEdge.weight,
       isCyclic: graphEdge.isCyclic,
       type: graphEdge.type
-    }
+    },
+    classes: []
   }
 
-  if (showLabels && graphEdge.weight > 1) {
-    elementDefinition.style = {
-      label : graphEdge.weight,
-      'font-size':  20
-    }
-  } else if (showLabels && usageTypeMode && graphEdge.type && graphEdge.type !== 'usage') {
-    elementDefinition.style = {
-      label : `${convertTypeOfUsage(graphEdge.type)}\n‎ `,
-      'text-rotation': 'autorotate',
-      'text-wrap': 'wrap',
-      'font-size':  12
+  // Add classes to control label visibility via stylesheet
+  if (showLabels) {
+    elementDefinition.classes = 'show-labels'
+
+    if (usageTypeMode && graphEdge.type && graphEdge.type !== 'usage') {
+      elementDefinition.classes = 'show-labels show-type'
+      // Add typeLabel to data for stylesheet to use
+      elementDefinition.data['typeLabel'] = `${convertTypeOfUsage(graphEdge.type)}\n‎ `
     }
   }
 

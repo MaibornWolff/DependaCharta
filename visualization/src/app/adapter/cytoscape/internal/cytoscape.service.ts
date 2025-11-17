@@ -96,10 +96,9 @@ export class CytoscapeService {
     const newEdges = this.createNewEdges(nodesToAddEdgesFor, state)
     cy.remove(cy.edges())
 
-    // remove style to get rid of browser warning in console:
-    // "Setting a `style` bypass at element creation should be done only when absolutely necessary.  Try to use the stylesheet instead."
-    const newEdgesWithoutStyle: ElementDefinition[] = newEdges.map(({style, ...rest}) => rest)
-    cy.add(newEdgesWithoutStyle)
+    // Edges now use classes and data attributes for styling via stylesheet
+    // instead of inline styles, eliminating the need to strip styles
+    cy.add(newEdges)
     cy.layout({name: 'lsmLayout'}).run()
     this.applyFilters(cy, state)
   }
