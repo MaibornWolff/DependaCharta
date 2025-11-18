@@ -170,7 +170,10 @@ describe('ElementDefinitionConverter', () => {
           label : `${convertTypeOfUsage(graphEdge.type)}\n‎ `,
           'text-rotation': 'autorotate',
           'text-wrap': 'wrap',
-          'font-size':  12
+          'font-size':  12,
+          'color': '#000000',
+          'text-background-color': '#ffffff',
+          'text-background-opacity': 0.8
         }
       }
       expect(edge).toEqual(expected)
@@ -241,6 +244,9 @@ describe('ElementDefinitionConverter', () => {
 
       // then
       expect(edge.style.label).toEqual(5)
+      expect(edge.style['color']).toEqual('#000000')
+      expect(edge.style['text-background-color']).toEqual('#ffffff')
+      expect(edge.style['text-background-opacity']).toEqual(0.8)
     })
 
     it('Converts edgeCollection to graphEdges', () => {
