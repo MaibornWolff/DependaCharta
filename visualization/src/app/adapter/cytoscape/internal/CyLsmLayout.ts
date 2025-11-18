@@ -23,21 +23,38 @@ class CyLsmLayout{
     }
     cyNodes.layoutPositions(layouting, layoutOptions, (currentNode: NodeSingular) => {
       const nodeId = currentNode.data().id
-
-      // Check if node has a manual position first
-      const manualPosition = manuallyPositionedNodes.get(nodeId)
-      if (manualPosition) {
-        return manualPosition
-      }
-
-      // Fall back to computed position
-      const coordinates = nodesWithAbsoluteCoordinates.get(nodeId)
-      if (coordinates) {
-        return coordinates
-      } else {
-        return { x: 0, y: 0 }
-      }
+      return this.resolveNodePosition(nodeId, manuallyPositionedNodes, nodesWithAbsoluteCoordinates)
     })
+  }
+
+  private resolveNodePosition(
+    nodeId: string,
+    manualPositions: Map<string, Coordinates>,
+    computedPositions: Map<string, Coordinates>
+  ): Coordinates {
+    const manualPosition = this.getManualPosition(nodeId, manualPositions)
+    if (manualPosition) {
+      return manualPosition
+    }
+
+    const computedPosition = this.getComputedPosition(nodeId, computedPositions)
+    if (computedPosition) {
+      return computedPosition
+    }
+
+    return this.getDefaultPosition()
+  }
+
+  private getManualPosition(nodeId: string, manualPositions: Map<string, Coordinates>): Coordinates | undefined {
+    return manualPositions.get(nodeId)
+  }
+
+  private getComputedPosition(nodeId: string, computedPositions: Map<string, Coordinates>): Coordinates | undefined {
+    return computedPositions.get(nodeId)
+  }
+
+  private getDefaultPosition(): Coordinates {
+    return { x: 0, y: 0 }
   }
 
   run(layouting: any) {

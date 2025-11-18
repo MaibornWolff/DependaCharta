@@ -101,11 +101,19 @@ export class CytoscapeService {
     // "Setting a `style` bypass at element creation should be done only when absolutely necessary.  Try to use the stylesheet instead."
     const newEdgesWithoutStyle: ElementDefinition[] = newEdges.map(({style, ...rest}) => rest)
     cy.add(newEdgesWithoutStyle)
-    const layout = cy.layout({name: 'lsmLayout'})
-    const currentOptions = (layout as {options?: object}).options || {}
-    Object.assign(layout, {options: {...currentOptions, manuallyPositionedNodes: state.manuallyPositionedNodes}})
-    layout.run()
+    this.runLayoutWithManualPositions(cy, state)
     this.applyFilters(cy, state)
+  }
+
+  private runLayoutWithManualPositions(cy: Core, state: State) {
+    const layout = cy.layout({name: 'lsmLayout'})
+    this.configureLayoutOptions(layout, state.manuallyPositionedNodes)
+    layout.run()
+  }
+
+  private configureLayoutOptions(layout: any, manuallyPositionedNodes: Map<string, any>) {
+    const currentOptions = layout.options || {}
+    Object.assign(layout, {options: {...currentOptions, manuallyPositionedNodes}})
   }
 
   private createNewEdges(nodesToRerender: NodeCollection, state: State) {
