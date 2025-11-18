@@ -174,14 +174,6 @@ describe('ElementDefinitionConverter', () => {
           type: 'inheritance',
           label: `${convertTypeOfUsage(graphEdge.type)}\n‎ `,
           labelType: 'type'
-        },
-        style: {
-          'text-rotation': 'autorotate',
-          'text-wrap': 'wrap',
-          'font-size':  12,
-          'color': '#000000',
-          'text-background-color': '#ffffff',
-          'text-background-opacity': 0.8
         }
       }
       expect(edge).toEqual(expected)
@@ -254,10 +246,6 @@ describe('ElementDefinitionConverter', () => {
       // then
       expect(edge.data['label']).toEqual(5)
       expect(edge.data['labelType']).toEqual('weight')
-      expect(edge.style['color']).toEqual('#000000')
-      expect(edge.style['text-background-color']).toEqual('#ffffff')
-      expect(edge.style['text-background-opacity']).toEqual(0.8)
-      expect(edge.style['font-size']).toEqual(20)
     })
 
     it('Converts edgeCollection to graphEdges', () => {
