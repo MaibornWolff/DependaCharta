@@ -51,6 +51,24 @@ export const cytoscape_style: StylesheetStyle[] =
         'curve-style': 'bezier',
         'arrow-scale': 1.2,
         'z-index':8,
+        'label': 'data(label)',
+        'color': '#000000',
+        'text-background-color': '#ffffff',
+        'text-background-opacity': 0.8,
+      }
+    },
+    {
+      selector: 'edge[labelType="weight"]',
+      style: {
+        'font-size': 20
+      }
+    },
+    {
+      selector: 'edge[labelType="type"]',
+      style: {
+        'font-size': 12,
+        'text-rotation': 'autorotate',
+        'text-wrap': 'wrap'
       }
     },
     // only loop edges (source = target)
