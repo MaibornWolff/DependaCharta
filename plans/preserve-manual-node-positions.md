@@ -106,13 +106,44 @@ cyNodes.layoutPositions(layouting, layoutOptions, (currentNode: NodeSingular) =>
 
 **Why**: This preserves manual positions while allowing automatic layout for other nodes.
 
-#### 4. **Handle Edge Cases**
+#### 4. **Handle Edge Cases and Child Position Clearing**
 
-**Collapsed Nodes**: When a manually-positioned node is collapsed (hidden), should we:
-- **Option A**: Keep the position in state (recommended) - position restored when re-expanded
-- **Option B**: Clear the position - node gets re-laid out when shown again
+**Child Position Clearing on Collapse** (User Requirement):
+When a parent node is collapsed:
+- **Parent behavior**: Keep the parent node's manual position (it remains positioned where the user placed it)
+- **Children behavior**: Clear manual positions for ALL descendants (recursively)
+- **Trigger**: Only on `CollapseNode` action (not on expand)
+- **Rationale**: When children are hidden, their positions become irrelevant. When re-expanded, they should get fresh automatic layout positions relative to the parent.
 
-**Recommendation**: Option A - more intuitive user experience.
+**Implementation Details**:
+```typescript
+// In State reducer for Action.CollapseNode
+case action instanceof Action.CollapseNode:
+  // First find the node being collapsed
+  const collapsedNode = this.allNodes.find(node => node.id === action.nodeId)
+
+  // Get all descendant IDs (but not the collapsed node itself)
+  const descendantIds = collapsedNode
+    ? Array.from(getDescendants(collapsedNode))
+        .map(node => node.id)
+        .filter(id => id !== action.nodeId) // Exclude the parent
+    : []
+
+  // Remove descendant positions from manuallyPositionedNodes
+  const updatedManualPositions = new Map(this.manuallyPositionedNodes)
+  descendantIds.forEach(id => updatedManualPositions.delete(id))
+
+  return this.copy({
+    expandedNodeIds: this.expandedNodeIds.filter(id => !IdUtils.isDescendantOf([action.nodeId])(id)),
+    manuallyPositionedNodes: updatedManualPositions
+  })
+```
+
+**Why this approach**:
+- Uses existing `getDescendants()` utility function from GraphNode.ts
+- Preserves the parent node's position by filtering it out
+- Cleans up all nested children recursively in one operation
+- Maintains immutability by creating a new Map
 
 **Deleted/Hidden Nodes**: Clean up manual positions for nodes that no longer exist:
 - Add cleanup logic in state reducer when nodes are removed
@@ -145,6 +176,9 @@ For future consideration:
    - Test `ClearNodeManualPosition` action
    - Test `ClearAllManualPositions` action
    - Test position persistence through state updates
+   - **NEW**: Test `CollapseNode` clears all descendant positions but keeps parent position
+   - **NEW**: Test nested collapse clears all nested descendants
+   - **NEW**: Test `ExpandNode` does NOT clear positions
 
 2. **Layout Tests** (`CyLsmLayout.spec.ts`)
    - Test layout with no manual positions (existing behavior)
@@ -161,6 +195,8 @@ For future consideration:
 4. **E2E Tests** (Cypress)
    - Test: Drag node → expand another node → verify first node stayed in place
    - Test: Drag multiple nodes → collapse/expand → verify all manual positions preserved
+   - **NEW**: Test: Drag parent and children → collapse parent → verify parent position kept, children cleared
+   - **NEW**: Test: Expand parent with previously positioned children → verify children get new automatic layout
    - Test: Reset layout button → verify all positions cleared
 
 ## Open Questions
@@ -180,10 +216,15 @@ For future consideration:
 
 1. **Test 1**: State stores manual position for a node
 2. **Test 2**: State clears manual position for a node
-3. **Test 3**: Layout uses manual position when available
-4. **Test 4**: Cytoscape service detects drag event and updates state
-5. **Test 5**: E2E test - drag and expand scenario
-6. **Refactor**: Clean up, optimize, add reset functionality
+3. **Test 3**: State clears all manual positions
+4. **Test 4**: CollapseNode clears descendant positions but keeps parent position
+5. **Test 5**: Nested collapse clears all nested descendants
+6. **Test 6**: ExpandNode does NOT clear any positions
+7. **Test 7**: Layout uses manual position when available
+8. **Test 8**: Cytoscape service detects drag event and updates state
+9. **Test 9**: E2E test - drag and expand scenario
+10. **Test 10**: E2E test - collapse clears child positions
+11. **Refactor**: Clean up, optimize, add reset functionality
 
 ## Risk Assessment
 
@@ -211,5 +252,8 @@ For future consideration:
 ✅ Manually positioned node stays in place when other nodes are expanded/collapsed
 ✅ New nodes from expansion get automatic layout positions
 ✅ Multiple manually positioned nodes all retain their positions
+✅ **NEW**: When a parent node is collapsed, its own position is preserved but all children positions are cleared
+✅ **NEW**: Nested children positions are cleared recursively when ancestor is collapsed
+✅ **NEW**: Expanding a node does NOT clear any positions
 ✅ Reset functionality clears all manual positions
 ✅ All tests passing (unit + E2E)

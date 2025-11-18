@@ -204,6 +204,29 @@ describe('State', () => {
         expect(newState.expandedNodeIds).toContain('test-node');
         expect(newState.expandedNodeIds.length).toBe(1);
       });
+
+      it('should NOT clear any manual positions when expanding a node', () => {
+        // Arrange
+        const stateWithPositions = initialState.copy({
+          manuallyPositionedNodes: new Map([
+            [parent1Id, { x: 100, y: 100 }],
+            [child1Id, { x: 200, y: 200 }],
+            [grandchild1Id, { x: 300, y: 300 }]
+          ])
+        });
+        const action = new Action.ExpandNode(parent1Id);
+
+        // Act
+        const newState = stateWithPositions.reduce(action);
+
+        // Assert - all positions should be preserved
+        expect(newState.manuallyPositionedNodes.has(parent1Id)).toBe(true);
+        expect(newState.manuallyPositionedNodes.get(parent1Id)).toEqual({ x: 100, y: 100 });
+        expect(newState.manuallyPositionedNodes.has(child1Id)).toBe(true);
+        expect(newState.manuallyPositionedNodes.get(child1Id)).toEqual({ x: 200, y: 200 });
+        expect(newState.manuallyPositionedNodes.has(grandchild1Id)).toBe(true);
+        expect(newState.manuallyPositionedNodes.get(grandchild1Id)).toEqual({ x: 300, y: 300 });
+      });
     });
 
     describe('COLLAPSE_NODE action', () => {
@@ -223,6 +246,50 @@ describe('State', () => {
         const newState = stateWithExpandedNodes.reduce(action);
 
         expect(newState.expandedNodeIds).toEqual([parent1Id]);
+      });
+
+      it('should clear manual positions of all descendants but keep parent position', () => {
+        // Arrange
+        const stateWithPositions = initialState.copy({
+          manuallyPositionedNodes: new Map([
+            [parent1Id, { x: 100, y: 100 }],
+            [child1Id, { x: 200, y: 200 }],
+            [child2Id, { x: 300, y: 300 }]
+          ])
+        });
+        const action = new Action.CollapseNode(parent1Id);
+
+        // Act
+        const newState = stateWithPositions.reduce(action);
+
+        // Assert
+        expect(newState.manuallyPositionedNodes.has(parent1Id)).toBe(true);
+        expect(newState.manuallyPositionedNodes.get(parent1Id)).toEqual({ x: 100, y: 100 });
+        expect(newState.manuallyPositionedNodes.has(child1Id)).toBe(false);
+        expect(newState.manuallyPositionedNodes.has(child2Id)).toBe(false);
+      });
+
+      it('should clear all nested descendants when collapsing a parent', () => {
+        // Arrange
+        const stateWithPositions = initialState.copy({
+          manuallyPositionedNodes: new Map([
+            [parent1Id, { x: 100, y: 100 }],
+            [child1Id, { x: 200, y: 200 }],
+            [grandchild1Id, { x: 300, y: 300 }],
+            [child2Id, { x: 400, y: 400 }]
+          ])
+        });
+        const action = new Action.CollapseNode(parent1Id);
+
+        // Act
+        const newState = stateWithPositions.reduce(action);
+
+        // Assert
+        expect(newState.manuallyPositionedNodes.has(parent1Id)).toBe(true);
+        expect(newState.manuallyPositionedNodes.get(parent1Id)).toEqual({ x: 100, y: 100 });
+        expect(newState.manuallyPositionedNodes.has(child1Id)).toBe(false);
+        expect(newState.manuallyPositionedNodes.has(grandchild1Id)).toBe(false);
+        expect(newState.manuallyPositionedNodes.has(child2Id)).toBe(false);
       });
     });
 

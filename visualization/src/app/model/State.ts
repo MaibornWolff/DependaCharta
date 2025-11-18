@@ -60,10 +60,26 @@ export class State extends DataClass<State> {
         return this.copy({
           expandedNodeIds: [...this.expandedNodeIds, action.nodeId]
         })
-      case action instanceof Action.CollapseNode:
+      case action instanceof Action.CollapseNode: {
+        // Find the node being collapsed
+        const collapsedNode = this.allNodes.find(node => node.id === action.nodeId)
+
+        // Get all descendant IDs (but not the collapsed node itself)
+        const descendantIds = collapsedNode
+          ? Array.from(getDescendants(collapsedNode))
+              .map(node => node.id)
+              .filter(id => id !== action.nodeId) // Exclude the parent
+          : []
+
+        // Remove descendant positions from manuallyPositionedNodes
+        const updatedManualPositions = new Map(this.manuallyPositionedNodes)
+        descendantIds.forEach(id => updatedManualPositions.delete(id))
+
         return this.copy({
-          expandedNodeIds: this.expandedNodeIds.filter(id => !IdUtils.isDescendantOf([action.nodeId])(id))
+          expandedNodeIds: this.expandedNodeIds.filter(id => !IdUtils.isDescendantOf([action.nodeId])(id)),
+          manuallyPositionedNodes: updatedManualPositions
         })
+      }
       case action instanceof Action.ChangeFilter:
         return this.copy({
           selectedFilter: action.edgeFilter
