@@ -51,6 +51,11 @@ export const cytoscape_style: StylesheetStyle[] =
         'curve-style': 'bezier',
         'arrow-scale': 1.2,
         'z-index':8,
+      }
+    },
+    {
+      selector: 'edge[label]',
+      style: {
         'label': 'data(label)',
         'color': '#000000',
         'text-background-color': '#ffffff',
