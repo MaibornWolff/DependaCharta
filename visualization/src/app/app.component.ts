@@ -45,7 +45,7 @@ export class AppComponent {
     this.apply(new Action.RestoreNodes())
   }
 
-  onToggleEdgeLabelsClick() {
+  onToggleEdgeLabels() {
     this.apply(new Action.ToggleEdgeLabels())
   }
 
