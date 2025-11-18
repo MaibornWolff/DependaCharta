@@ -2,9 +2,9 @@ import {StylesheetStyle} from 'cytoscape';
 
 /*
 * For most of them the default are fine: https://js.cytoscape.org/#init-opts/
+* Using default wheelSensitivity (1.0) to ensure consistent zoom behavior across all hardware configurations
 * */
 export const cytoscape_options = {
-  wheelSensitivity: 5.0,
   // data: {...} could be useful for extra info
   // selectionType: 'additive' | 'single -> if the selection of a node should be added to a set of selections or if one node at a time should be selected (default is 'single')
 }
