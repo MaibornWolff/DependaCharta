@@ -49,6 +49,7 @@ export class CytoscapeService {
         this.initializeGraphFromState(cy, state)
         break
       case action instanceof Action.ResetView:
+        this.updateGraph(cy, state, cy.nodes())
         cy.centre()
         break
       default:
