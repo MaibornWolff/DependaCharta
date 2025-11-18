@@ -31,6 +31,7 @@ export function toGraphEdges(cyEdges: EdgeCollection, graphNodes: VisibleGraphNo
       edge.data().id, // id
       edge.data().weight, // weight
       edge.data().isCyclic, // isCyclic
+      edge.data().isPointingUpwards, // isPointingUpwards
       edge.data().type // type
     );
   }).filter(edge => edge !== null)
@@ -61,6 +62,7 @@ function toCytoscapeEdge(graphEdge: Edge, showLabels: boolean, usageTypeMode: bo
       target: graphEdge.target.id,
       weight: graphEdge.weight,
       isCyclic: graphEdge.isCyclic,
+      isPointingUpwards: graphEdge.isPointingUpwards,
       type: graphEdge.type
     }
   }

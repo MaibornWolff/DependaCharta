@@ -30,6 +30,7 @@ describe('Edge', () => {
         source: leafNode2,
         target: leafNode1,
         isCyclic: false,
+        isPointingUpwards: false,
         weight: 1,
         type: 'usage'
       })
@@ -93,6 +94,40 @@ describe('Edge', () => {
       expect(edges.length).toEqual(1)
       expect(edges[0].source.id).toEqual(expandedLeaf.id)
       expect(edges[0].target.id).toEqual(parentNode.id)
+    })
+
+    it('preserves isPointingUpwards when target node is collapsed', () => {
+      // given
+      const parentNodeId = 'parentNode';
+      const collapsedLeafNodeId = parentNodeId + '.collapsedLeaf';
+      const expandedLeafNodeId = "expandedLeaf"
+      const parentNode = VisibleGraphNode.build({
+        id: parentNodeId,
+        visibleChildren: []
+      })
+      const collapsedLeaf = VisibleGraphNode.build({
+        id: collapsedLeafNodeId,
+        parent: parentNode
+      })
+      const expandedLeaf = VisibleGraphNode.build({
+        id: expandedLeafNodeId,
+        dependencies: [ShallowEdge.build({
+          source: expandedLeafNodeId,
+          target: collapsedLeafNodeId,
+          isPointingUpwards: true  // Original edge points upwards
+        })]
+      })
+
+      const state = State.fromRootNodes([parentNode, collapsedLeaf, expandedLeaf]).copy({ expandedNodeIds: [] })
+
+      // when
+      const edges = state.createEdges([parentNode, collapsedLeaf, expandedLeaf])
+
+      // then
+      expect(edges.length).toEqual(1)
+      expect(edges[0].source.id).toEqual(expandedLeaf.id)
+      expect(edges[0].target.id).toEqual(parentNode.id)
+      expect(edges[0].isPointingUpwards).toEqual(true)  // Should be preserved
     })
 
     it('does not create edges for expanded packages', () => {
@@ -196,12 +231,14 @@ describe('Edge', () => {
         source: leafNodeId1,
         target: leafNodeId2,
         isCyclic: true,
+        isPointingUpwards: false,
         weight: 2
       })
       const dependency2 = ShallowEdge.build({
         source: leafNodeId1,
         target: leafNodeId2,
         isCyclic: true,
+        isPointingUpwards: false,
         weight: 1
       })
 
@@ -263,12 +300,14 @@ describe('Edge', () => {
         source: leafNodeId1,
         target: leafNodeId2,
         isCyclic: false,
+        isPointingUpwards: false,
         weight: 2
       })
       const dependency2 = ShallowEdge.build({
         source: leafNodeId1,
         target: leafNodeId2,
         isCyclic: true,
+        isPointingUpwards: false,
         weight: 1
       })
 
@@ -298,12 +337,14 @@ describe('Edge', () => {
              source: leafNodeId1,
              target: leafNodeId2,
              isCyclic: true,
+             isPointingUpwards: true,
              weight: 2
            })
            const twistedEdge = ShallowEdge.build({
              source: leafNodeId1,
              target: leafNodeId2,
              isCyclic: false,
+             isPointingUpwards: true,
              weight: 3
            })
 
@@ -348,6 +389,7 @@ Edge.build = function(overrides: Partial<Edge> = {}): Edge {
     defaultSource + "-" + defaultTarget, // id
     1, // weight
     false, // isCyclic
+    false, // isPointingUpwards
     'usage' // type
   )
 
@@ -363,6 +405,7 @@ ShallowEdge.build = function(overrides: Partial<ShallowEdge> = {}): ShallowEdge 
     "source-target", // id
     1, // weight
     false, // isCyclic
+    false, // isPointingUpwards
     'usage' // type
   )
 

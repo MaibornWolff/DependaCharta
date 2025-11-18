@@ -115,6 +115,7 @@ export class VisibleGraphNodeUtils {
           node.id + "-" + bestTarget.id, // id
           dependency.weight, // weight
           dependency.isCyclic, // isCyclic
+          dependency.isPointingUpwards, // isPointingUpwards
           dependency.type // type
         )
       }

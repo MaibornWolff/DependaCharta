@@ -26,6 +26,7 @@ describe('ProjectNodeConverter', () => {
     const dependencies: Record<string, EdgeMetaInformation> = {
       [dependencyTargetId]: {
         isCyclic: isCyclic,
+        isPointingUpwards: false,
         weight: weight,
         type: type
       }
@@ -46,6 +47,7 @@ describe('ProjectNodeConverter', () => {
       source: id + ":leaf",
       target: dependencyTargetId + ":leaf",
       isCyclic: isCyclic,
+      isPointingUpwards: false,
       weight: weight
     })
 

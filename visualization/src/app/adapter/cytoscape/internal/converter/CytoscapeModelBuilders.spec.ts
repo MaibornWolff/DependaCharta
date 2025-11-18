@@ -66,6 +66,7 @@ export class EdgeCollectionBuilder {
         target: graphEdge.target.id,
         weight: graphEdge.weight,
         isCyclic: graphEdge.isCyclic,
+        isPointingUpwards: graphEdge.isPointingUpwards,
         type: graphEdge.type
       }
     })
@@ -136,7 +137,8 @@ export class CytoscapeGraphBuilder {
         source: source.data.id,
         target: target.data.id,
         weight: containedDependency.weight,
-        isCyclic: containedDependency.isCyclic
+        isCyclic: containedDependency.isCyclic,
+        isPointingUpwards: containedDependency.isPointingUpwards
       }
     })
 

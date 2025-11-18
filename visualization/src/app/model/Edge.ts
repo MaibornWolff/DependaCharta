@@ -7,6 +7,7 @@ export class Edge {
     readonly id: string,
     readonly weight: number,
     readonly isCyclic: boolean,
+    readonly isPointingUpwards: boolean,
     readonly type: string
   ) {}
 
@@ -14,18 +15,12 @@ export class Edge {
     return Object.assign(this, overrides)
   }
 
-  // TODO `Edge` should have a property `isPointingUpwards: boolean`
-  // It should be set when when Edge is created in `toGraphEdges`
   // TODO `Edge` should have a function `getType(): EdgeType`
   // !isCyclic && !isPointingUpwards => REGULAR
   // isCyclic && !isPointingUpwards => CYCLIC
   // !isCyclic && isPointingUpwards => TWISTED
   // isCyclic && isPointingUpwards => FEEDBACK
   // TODO (next) `EdgePredicate`, `EdgeFilter`, `EdgeFilterResult` can be removed
-  isPointingUpwards(): boolean {
-    const [sourceNode, targetNode] = findSiblingsUnderLowestCommonAncestor(this.source, this.target)
-    return sourceNode.level <= targetNode.level
-  }
 
   static aggregateEdges(edges: Edge[], shouldAggregateEdges: boolean): Edge[] {
     const aggregatedEdges = new Map<string, Edge>()
@@ -43,6 +38,9 @@ export class Edge {
           isCyclic: shouldAggregateEdges
             ? duplicateEdge.isCyclic || edge.isCyclic
             : edge.isCyclic,
+          isPointingUpwards: shouldAggregateEdges
+            ? duplicateEdge.isPointingUpwards || edge.isPointingUpwards
+            : edge.isPointingUpwards,
         })
       } else {
         aggregatedEdge = edge.copy({id: key})
@@ -62,6 +60,7 @@ export class ShallowEdge {
     readonly id: string,
     readonly weight: number,
     readonly isCyclic: boolean,
+    readonly isPointingUpwards: boolean,
     readonly type: string
   ) {}
 
