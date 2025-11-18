@@ -1,10 +1,11 @@
 name: Docker Analysis Image
 
 on:
-  push:
-    tags:
-      - 'v*.*.*'
-      - '*.*.*'
+  # Disabled automatic tag triggers due to missing permissions
+  # push:
+  #   tags:
+  #     - 'v*.*.*'
+  #     - '*.*.*'
   workflow_dispatch:
     inputs:
       tag:
