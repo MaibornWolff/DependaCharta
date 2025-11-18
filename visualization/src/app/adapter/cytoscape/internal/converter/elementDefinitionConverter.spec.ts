@@ -165,9 +165,17 @@ describe('ElementDefinitionConverter', () => {
 
       // then
       const expected = {
-        data: {id: graphEdge.id, source: "source", target: "target", weight: 1, isCyclic: true, type: 'inheritance'},
+        data: {
+          id: graphEdge.id,
+          source: "source",
+          target: "target",
+          weight: 1,
+          isCyclic: true,
+          type: 'inheritance',
+          label: `${convertTypeOfUsage(graphEdge.type)}\n‎ `,
+          labelType: 'type'
+        },
         style: {
-          label : `${convertTypeOfUsage(graphEdge.type)}\n‎ `,
           'text-rotation': 'autorotate',
           'text-wrap': 'wrap',
           'font-size':  12,
@@ -230,7 +238,8 @@ describe('ElementDefinitionConverter', () => {
       const edge = toCytoscapeEdges([graphEdge], true, true)[0]
 
       // then
-      expect(edge.style.label).toEqual(`Inherits\n‎ `)
+      expect(edge.data['label']).toEqual(`Inherits\n‎ `)
+      expect(edge.data['labelType']).toEqual('type')
     })
 
     it('Should label ElementDefiniton if showLabels is true and weight is greater than 1', () => {
@@ -243,10 +252,12 @@ describe('ElementDefinitionConverter', () => {
       const edge = toCytoscapeEdges([graphEdge], true, true)[0]
 
       // then
-      expect(edge.style.label).toEqual(5)
+      expect(edge.data['label']).toEqual(5)
+      expect(edge.data['labelType']).toEqual('weight')
       expect(edge.style['color']).toEqual('#000000')
       expect(edge.style['text-background-color']).toEqual('#ffffff')
       expect(edge.style['text-background-opacity']).toEqual(0.8)
+      expect(edge.style['font-size']).toEqual(20)
     })
 
     it('Converts edgeCollection to graphEdges', () => {

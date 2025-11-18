@@ -66,16 +66,18 @@ function toCytoscapeEdge(graphEdge: Edge, showLabels: boolean, usageTypeMode: bo
   }
 
   if (showLabels && graphEdge.weight > 1) {
+    elementDefinition.data['label'] = graphEdge.weight
+    elementDefinition.data['labelType'] = 'weight'
     elementDefinition.style = {
-      label : graphEdge.weight,
       'font-size':  20,
       'color': '#000000',
       'text-background-color': '#ffffff',
       'text-background-opacity': 0.8
     }
   } else if (showLabels && usageTypeMode && graphEdge.type && graphEdge.type !== 'usage') {
+    elementDefinition.data['label'] = `${convertTypeOfUsage(graphEdge.type)}\n‎ `
+    elementDefinition.data['labelType'] = 'type'
     elementDefinition.style = {
-      label : `${convertTypeOfUsage(graphEdge.type)}\n‎ `,
       'text-rotation': 'autorotate',
       'text-wrap': 'wrap',
       'font-size':  12,
