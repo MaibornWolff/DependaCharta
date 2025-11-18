@@ -59,6 +59,7 @@ describe('State', () => {
       expect(state.isInteractive).toBe(true)
       expect(state.isUsageShown).toBe(true)
       expect(state.multiselectMode).toBe(false)
+      expect(state.manuallyPositionedNodes).toEqual(new Map())
     })
 
     it('should override default values with provided overrides', () => {
@@ -557,6 +558,118 @@ describe('State', () => {
         const newState = stateWithSelection.reduce(action);
 
         expect(newState.selectedNodeIds).not.toContain('selected-node');
+      });
+    });
+
+    describe('SET_NODE_MANUAL_POSITION action', () => {
+      it('should store manual position for a node', () => {
+        // Arrange
+        const action = new Action.SetNodeManualPosition('test-node', { x: 100, y: 200 });
+
+        // Act
+        const newState = initialState.reduce(action);
+
+        // Assert
+        expect(newState.manuallyPositionedNodes.get('test-node')).toEqual({ x: 100, y: 200 });
+      });
+
+      it('should update existing manual position for a node', () => {
+        // Arrange
+        const stateWithPosition = initialState.copy({
+          manuallyPositionedNodes: new Map([['test-node', { x: 50, y: 50 }]])
+        });
+        const action = new Action.SetNodeManualPosition('test-node', { x: 150, y: 250 });
+
+        // Act
+        const newState = stateWithPosition.reduce(action);
+
+        // Assert
+        expect(newState.manuallyPositionedNodes.get('test-node')).toEqual({ x: 150, y: 250 });
+      });
+    });
+
+    describe('CLEAR_NODE_MANUAL_POSITION action', () => {
+      it('should remove manual position for a specific node', () => {
+        // Arrange
+        const stateWithPositions = initialState.copy({
+          manuallyPositionedNodes: new Map([
+            ['node1', { x: 100, y: 200 }],
+            ['node2', { x: 300, y: 400 }]
+          ])
+        });
+        const action = new Action.ClearNodeManualPosition('node1');
+
+        // Act
+        const newState = stateWithPositions.reduce(action);
+
+        // Assert
+        expect(newState.manuallyPositionedNodes.has('node1')).toBe(false);
+        expect(newState.manuallyPositionedNodes.get('node2')).toEqual({ x: 300, y: 400 });
+      });
+
+      it('should handle clearing position for non-existent node', () => {
+        // Arrange
+        const stateWithPositions = initialState.copy({
+          manuallyPositionedNodes: new Map([['node1', { x: 100, y: 200 }]])
+        });
+        const action = new Action.ClearNodeManualPosition('non-existent');
+
+        // Act
+        const newState = stateWithPositions.reduce(action);
+
+        // Assert
+        expect(newState.manuallyPositionedNodes.get('node1')).toEqual({ x: 100, y: 200 });
+        expect(newState.manuallyPositionedNodes.size).toBe(1);
+      });
+    });
+
+    describe('CLEAR_ALL_MANUAL_POSITIONS action', () => {
+      it('should clear all manual positions', () => {
+        // Arrange
+        const stateWithPositions = initialState.copy({
+          manuallyPositionedNodes: new Map([
+            ['node1', { x: 100, y: 200 }],
+            ['node2', { x: 300, y: 400 }],
+            ['node3', { x: 500, y: 600 }]
+          ])
+        });
+        const action = new Action.ClearAllManualPositions();
+
+        // Act
+        const newState = stateWithPositions.reduce(action);
+
+        // Assert
+        expect(newState.manuallyPositionedNodes.size).toBe(0);
+      });
+
+      it('should handle clearing when no positions exist', () => {
+        // Arrange
+        const action = new Action.ClearAllManualPositions();
+
+        // Act
+        const newState = initialState.reduce(action);
+
+        // Assert
+        expect(newState.manuallyPositionedNodes.size).toBe(0);
+      });
+    });
+
+    describe('RESET_VIEW action', () => {
+      it('should clear all manual positions when resetting view', () => {
+        // Arrange
+        const stateWithPositions = initialState.copy({
+          manuallyPositionedNodes: new Map([
+            ['node1', { x: 100, y: 200 }],
+            ['node2', { x: 300, y: 400 }]
+          ])
+        });
+        const action = new Action.ResetView();
+
+        // Act
+        const newState = stateWithPositions.reduce(action);
+
+        // Assert
+        expect(newState.manuallyPositionedNodes.size).toBe(0);
       });
     });
   });

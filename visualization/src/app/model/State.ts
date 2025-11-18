@@ -4,6 +4,7 @@ import {Action} from './Action';
 import {Edge} from "./Edge";
 import {DataClass} from "../common/DataClass";
 import { IdUtils } from "./Id";
+import {Coordinates} from "./lsmLayouting";
 
 // TODO avoid Maps (→ (de-)serialization issues)
 export class State extends DataClass<State> {
@@ -20,6 +21,7 @@ export class State extends DataClass<State> {
   declare readonly isInteractive: boolean
   declare readonly isUsageShown: boolean
   declare readonly multiselectMode: boolean
+  declare readonly manuallyPositionedNodes: Map<string, Coordinates>
 
   static build(overrides: Partial<State> = {}) {
     const defaults = State.make({
@@ -35,7 +37,8 @@ export class State extends DataClass<State> {
       selectedFilter: EdgeFilterType.FEEDBACK_EDGES_AND_TWISTED_EDGES,
       isInteractive: true,
       isUsageShown: true,
-      multiselectMode: false
+      multiselectMode: false,
+      manuallyPositionedNodes: new Map<string, Coordinates>()
     })
 
     return defaults.copy(overrides)
@@ -158,8 +161,28 @@ export class State extends DataClass<State> {
             ? this.selectedNodeIds.filter(id => id !== action.nodeId)
             : [...this.selectedNodeIds, action.nodeId]
         })
+      case action instanceof Action.SetNodeManualPosition: {
+        const updatedMap = new Map(this.manuallyPositionedNodes)
+        updatedMap.set(action.nodeId, action.position)
+        return this.copy({
+          manuallyPositionedNodes: updatedMap
+        })
+      }
+      case action instanceof Action.ClearNodeManualPosition: {
+        const updatedMap = new Map(this.manuallyPositionedNodes)
+        updatedMap.delete(action.nodeId)
+        return this.copy({
+          manuallyPositionedNodes: updatedMap
+        })
+      }
+      case action instanceof Action.ClearAllManualPositions:
+        return this.copy({
+          manuallyPositionedNodes: new Map()
+        })
       case action instanceof Action.ResetView:
-        return this
+        return this.copy({
+          manuallyPositionedNodes: new Map()
+        })
       default:
         action satisfies never
         return this

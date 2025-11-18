@@ -17,11 +17,21 @@ class CyLsmLayout{
 
   draw(positionByNodeId: Map<string, Coordinates>, visibleNodes: VisibleGraphNode[], cyNodes: NodeCollection, layouting: any) {
     const nodesWithAbsoluteCoordinates = toAbsoluteCoordinates(positionByNodeId, visibleNodes)
+    const manuallyPositionedNodes = this.options.manuallyPositionedNodes || new Map<string, Coordinates>()
     const layoutOptions: LayoutPositionOptions = {
       eles: cyNodes
     }
     cyNodes.layoutPositions(layouting, layoutOptions, (currentNode: NodeSingular) => {
-      const coordinates = nodesWithAbsoluteCoordinates.get(currentNode.data().id)
+      const nodeId = currentNode.data().id
+
+      // Check if node has a manual position first
+      const manualPosition = manuallyPositionedNodes.get(nodeId)
+      if (manualPosition) {
+        return manualPosition
+      }
+
+      // Fall back to computed position
+      const coordinates = nodesWithAbsoluteCoordinates.get(nodeId)
       if (coordinates) {
         return coordinates
       } else {

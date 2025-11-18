@@ -242,7 +242,7 @@ describe('CytoscapeService', () => {
       // Call registerEventListeners directly
       (service as any).registerEventListeners(mockCore);
 
-      expect(mockCore.on).toHaveBeenCalledTimes(8);
+      expect(mockCore.on).toHaveBeenCalledTimes(9);
     });
   });
 

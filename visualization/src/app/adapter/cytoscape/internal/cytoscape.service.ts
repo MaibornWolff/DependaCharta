@@ -100,7 +100,10 @@ export class CytoscapeService {
     // "Setting a `style` bypass at element creation should be done only when absolutely necessary.  Try to use the stylesheet instead."
     const newEdgesWithoutStyle: ElementDefinition[] = newEdges.map(({style, ...rest}) => rest)
     cy.add(newEdgesWithoutStyle)
-    cy.layout({name: 'lsmLayout'}).run()
+    const layout = cy.layout({name: 'lsmLayout'})
+    const currentOptions = (layout as {options?: object}).options || {}
+    Object.assign(layout, {options: {...currentOptions, manuallyPositionedNodes: state.manuallyPositionedNodes}})
+    layout.run()
     this.applyFilters(cy, state)
   }
 
@@ -189,6 +192,12 @@ export class CytoscapeService {
       event.target.removeClass('no-overlay')
       this.changeCursor.emit('auto')
     });
+
+    cy.on('free', 'node', (event) => {
+      const node = event.target
+      const position = node.position()
+      this.graphActionHappened.emit(new Action.SetNodeManualPosition(node.id(), position))
+    })
   }
 
 }
