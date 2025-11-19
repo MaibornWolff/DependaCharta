@@ -106,7 +106,12 @@ export class VisibleGraphNodeUtils {
   }
 
   static createEdgesForNode(node: VisibleGraphNode, visibleNodes: VisibleGraphNode[], hiddenNodeIds: string[]): Edge[] {
-    return node.dependencies.flatMap(dependency => {
+    // If node is collapsed (has children but they're not visible), aggregate children's dependencies
+    const dependencies = node.isExpanded || node.children.length === 0
+      ? node.dependencies
+      : VisibleGraphNodeUtils.aggregateChildrenDependencies(node);
+    
+    return dependencies.flatMap(dependency => {
       const bestTarget = VisibleGraphNodeUtils.findBestDependencyTarget(dependency.target, visibleNodes, hiddenNodeIds)
       if (bestTarget && !IdUtils.isIncludedIn(bestTarget.id, node.id)) {
         return new Edge(
@@ -121,5 +126,47 @@ export class VisibleGraphNodeUtils {
       }
       return []
     })
+  }
+
+  static aggregateChildrenDependencies(node: GraphNode): ShallowEdge[] {
+    const dependencyMap = new Map<string, ShallowEdge>();
+    
+    // Recursively collect all dependencies from children
+    function collectDependencies(n: GraphNode) {
+      n.dependencies.forEach(dep => {
+        // Only include dependencies that point outside this node's subtree
+        if (!IdUtils.isIncludedIn(dep.target, node.id)) {
+          const existing = dependencyMap.get(dep.target);
+          if (existing) {
+            // Aggregate: sum weights, OR the boolean flags
+            dependencyMap.set(dep.target, new ShallowEdge(
+              node.id, // source is the collapsed parent
+              dep.target,
+              node.id + "-" + dep.target,
+              existing.weight + dep.weight,
+              existing.isCyclic || dep.isCyclic,
+              existing.isPointingUpwards || dep.isPointingUpwards,
+              dep.type
+            ));
+          } else {
+            dependencyMap.set(dep.target, new ShallowEdge(
+              node.id, // source is the collapsed parent
+              dep.target,
+              node.id + "-" + dep.target,
+              dep.weight,
+              dep.isCyclic,
+              dep.isPointingUpwards,
+              dep.type
+            ));
+          }
+        }
+      });
+      
+      // Recurse into children
+      n.children.forEach(child => collectDependencies(child));
+    }
+    
+    collectDependencies(node);
+    return Array.from(dependencyMap.values());
   }
 }

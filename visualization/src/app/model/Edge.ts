@@ -49,7 +49,7 @@ export class Edge {
       aggregatedEdges.set(key, aggregatedEdge)
     });
 
-    return [...aggregatedEdges.values()];    
+    return [...aggregatedEdges.values()];
   }
 }
 
