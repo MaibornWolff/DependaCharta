@@ -1,9 +1,4 @@
 <div align="center">
-  <!-- Logo -->
-  <a href="https://github.com/MaibornWolff/DependaCharta">
-    <img src="assets/dependacharta_logo.png" alt="DependaCharta logo"/>
-  </a>
-
   <h1>DependaCharta</h1>
 
   <!-- Links -->
