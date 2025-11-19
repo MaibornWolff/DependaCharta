@@ -96,7 +96,13 @@ The visualization prominently features **namespace collapsing**:
    - One **red edge** represents all other dependencies (sum of weights)
 3. **Expanding**: Clicking a collapsed namespace expands it to show its contents
 
-This allows you to explore the architecture at different levels of detail.
+**Aggregation Rules:**
+When collapsing a namespace, the frontend dynamically aggregates all dependencies from the namespace's children:
+- **Weight**: Sum of all constituent edge weights
+- **isCyclic**: Logical OR - true if ANY constituent edge is cyclic
+- **isPointingUpwards**: Logical OR - true if ANY constituent edge points upward
+
+This ensures architectural violations are preserved and visible even when namespaces are collapsed, allowing you to explore the architecture at different levels of detail.
 
 ### Edge Filtering
 
