@@ -1,5 +1,5 @@
 import {EventEmitter, inject, Injectable, Output} from '@angular/core';
-import cytoscape, {AbstractEventObject, BoundingBox12, Core, ElementDefinition, NodeCollection, Position} from 'cytoscape';
+import cytoscape, {AbstractEventObject, BaseLayoutOptions, BoundingBox12, Core, ElementDefinition, NodeCollection, Position} from 'cytoscape';
 import {EdgeDisplayService} from './ui/edge-display.service';
 import {toCytoscapeEdges, toCytoscapeNodes} from './converter/elementDefinitionConverter';
 import {Action} from '../../../model/Action';
@@ -8,6 +8,11 @@ import {State} from "../../../model/State";
 import {HighlightService} from './highlight.service';
 import {lsmLayout} from './CyLsmLayout';
 import {cytoscape_style, cytoscape_options} from './cytoscapeConfig';
+
+interface LsmLayoutOptions extends BaseLayoutOptions {
+  name: 'lsmLayout'
+  manuallyPositionedNodes: Map<string, Position>
+}
 
 @Injectable({
   providedIn: 'root'
@@ -106,14 +111,11 @@ export class CytoscapeService {
   }
 
   private runLayoutWithManualPositions(cy: Core, state: State) {
-    const layout = cy.layout({name: 'lsmLayout'})
-    this.configureLayoutOptions(layout, state.manuallyPositionedNodes)
+    const layout = cy.layout({
+      name: 'lsmLayout',
+      manuallyPositionedNodes: state.manuallyPositionedNodes
+    } as LsmLayoutOptions)
     layout.run()
-  }
-
-  private configureLayoutOptions(layout: any, manuallyPositionedNodes: Map<string, any>) {
-    const currentOptions = layout.options || {}
-    Object.assign(layout, {options: {...currentOptions, manuallyPositionedNodes}})
   }
 
   private createNewEdges(nodesToRerender: NodeCollection, state: State) {
