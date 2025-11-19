@@ -131,42 +131,50 @@ export class VisibleGraphNodeUtils {
   static aggregateChildrenDependencies(node: GraphNode): ShallowEdge[] {
     const dependencyMap = new Map<string, ShallowEdge>();
     
-    // Recursively collect all dependencies from children
-    function collectDependencies(n: GraphNode) {
-      n.dependencies.forEach(dep => {
-        // Only include dependencies that point outside this node's subtree
-        if (!IdUtils.isIncludedIn(dep.target, node.id)) {
-          const existing = dependencyMap.get(dep.target);
-          if (existing) {
-            // Aggregate: sum weights, OR the boolean flags
-            dependencyMap.set(dep.target, new ShallowEdge(
-              node.id, // source is the collapsed parent
-              dep.target,
-              node.id + "-" + dep.target,
-              existing.weight + dep.weight,
-              existing.isCyclic || dep.isCyclic,
-              existing.isPointingUpwards || dep.isPointingUpwards,
-              dep.type
-            ));
-          } else {
-            dependencyMap.set(dep.target, new ShallowEdge(
-              node.id, // source is the collapsed parent
-              dep.target,
-              node.id + "-" + dep.target,
-              dep.weight,
-              dep.isCyclic,
-              dep.isPointingUpwards,
-              dep.type
-            ));
-          }
+    // Helper function to add a dependency to the map
+    const addDependency = (dep: ShallowEdge) => {
+      // Only include dependencies that point outside this node's subtree
+      if (!IdUtils.isIncludedIn(dep.target, node.id)) {
+        const existing = dependencyMap.get(dep.target);
+        if (existing) {
+          // Aggregate: sum weights, OR the boolean flags
+          dependencyMap.set(dep.target, new ShallowEdge(
+            node.id, // source is the collapsed parent
+            dep.target,
+            node.id + "-" + dep.target,
+            existing.weight + dep.weight,
+            existing.isCyclic || dep.isCyclic,
+            existing.isPointingUpwards || dep.isPointingUpwards,
+            dep.type
+          ));
+        } else {
+          dependencyMap.set(dep.target, new ShallowEdge(
+            node.id, // source is the collapsed parent
+            dep.target,
+            node.id + "-" + dep.target,
+            dep.weight,
+            dep.isCyclic,
+            dep.isPointingUpwards,
+            dep.type
+          ));
         }
-      });
-      
-      // Recurse into children
-      n.children.forEach(child => collectDependencies(child));
-    }
+      }
+    };
     
-    collectDependencies(node);
+    // Recursively collect dependencies from all descendant LEAF nodes only
+    // Only leaf nodes (nodes with no children) have dependencies in the JSON
+    const collectFromLeaves = (n: GraphNode) => {
+      if (n.children.length === 0) {
+        // This is a leaf node - add its dependencies
+        n.dependencies.forEach(addDependency);
+      } else {
+        // This is a namespace - recurse into its children
+        n.children.forEach(child => collectFromLeaves(child));
+      }
+    };
+    
+    collectFromLeaves(node);
+    
     return Array.from(dependencyMap.values());
   }
 }

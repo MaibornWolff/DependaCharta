@@ -130,6 +130,53 @@ describe('Edge', () => {
       expect(edges[0].isPointingUpwards).toEqual(true)  // Should be preserved
     })
 
+    it('preserves isPointingUpwards when source node with nested children is collapsed', () => {
+      // given: grandparent.parent.child -> otherNode (with isPointingUpwards=true)
+      // when: grandparent is collapsed
+      // then: edge from grandparent -> otherNode should preserve isPointingUpwards=true
+      const grandparentId = 'grandparent';
+      const parentId = grandparentId + '.parent';
+      const childId = parentId + '.child';
+      const otherNodeId = 'otherNode';
+
+      const grandparent = VisibleGraphNode.build({
+        id: grandparentId,
+        visibleChildren: []
+      })
+      const parent = VisibleGraphNode.build({
+        id: parentId,
+        parent: grandparent
+      })
+      const child = VisibleGraphNode.build({
+        id: childId,
+        parent: parent,
+        dependencies: [ShallowEdge.build({
+          source: childId,
+          target: otherNodeId,
+          isPointingUpwards: true,  // Original edge points upwards
+          weight: 5
+        })]
+      })
+      parent.children = [child]
+      grandparent.children = [parent]
+      
+      const otherNode = VisibleGraphNode.build({
+        id: otherNodeId
+      })
+
+      const state = State.fromRootNodes([grandparent, parent, child, otherNode]).copy({ expandedNodeIds: [] })
+
+      // when
+      const edges = state.createEdges([grandparent, parent, child, otherNode])
+
+      // then
+      expect(edges.length).toEqual(1)
+      expect(edges[0].source.id).toEqual(grandparent.id)
+      expect(edges[0].target.id).toEqual(otherNode.id)
+      expect(edges[0].isPointingUpwards).toEqual(true)  // Should be preserved through multi-level collapse
+      expect(edges[0].weight).toEqual(5)  // Weight should be preserved
+    })
+
     it('does not create edges for expanded packages', () => {
       // given
       const parentNodeId = 'parentNode'
