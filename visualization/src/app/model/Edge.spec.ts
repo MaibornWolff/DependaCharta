@@ -166,8 +166,8 @@ describe('Edge', () => {
 
       const state = State.fromRootNodes([grandparent, parent, child, otherNode]).copy({ expandedNodeIds: [] })
 
-      // when
-      const edges = state.createEdges([grandparent, parent, child, otherNode])
+      // when - only pass visible nodes (grandparent and otherNode, not the collapsed children)
+      const edges = state.createEdges([grandparent, otherNode])
 
       // then
       expect(edges.length).toEqual(1)
