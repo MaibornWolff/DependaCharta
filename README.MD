@@ -1,9 +1,8 @@
 <div align="center">
   <!-- Logo -->
-  <!-- TODO: Add DependaCharta logo here -->
-  <!-- <a href="https://github.com/MaibornWolff/DependaCharta">
-    <img src="logo/dependacharta_logo.svg" alt="DependaCharta logo" width="200"/>
-  </a> -->
+  <a href="https://github.com/MaibornWolff/DependaCharta">
+    <img src="assets/dependacharta_logo.png" alt="DependaCharta logo"/>
+  </a>
 
   <h1>DependaCharta</h1>
 
