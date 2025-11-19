@@ -1,0 +1,34 @@
+---
+name: "\U0001F41E Bug report"
+about: Create a report to help us improve
+title: ''
+labels: bug
+assignees: ''
+
+---
+
+# Bug
+
+## Expected Behavior
+
+<GIVEN>
+
+WHEN
+
+THEN
+
+## Actual Behavior
+
+
+## Screenshots
+
+## Steps to Reproduce the Problem
+1.
+1.
+1.
+
+## Specifications
+- is released in [online-demo](https://maibornwolff.github.io/DependaCharta/): yes | no
+- DependaCharta Version:
+- OS:
+- Browser:
