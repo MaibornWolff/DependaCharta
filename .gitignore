@@ -2,7 +2,7 @@
 *.iml
 
 analysis/build
-
+analysis/bin
 **/.gradle
 
 **/*.class
