@@ -39,6 +39,7 @@
 
 </div>
 
+![Screenshot of CodeCharta](assets/promo_img.png)
 ---
 
 <div align="center">
