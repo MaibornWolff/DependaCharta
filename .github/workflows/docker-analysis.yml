@@ -1,10 +1,11 @@
 name: Docker Analysis Image
 
 on:
-  push:
-    tags:
-      - 'v*.*.*'
-      - '*.*.*'
+  # Disabled automatic tag triggers due to missing permissions
+  # push:
+  #   tags:
+  #     - 'v*.*.*'
+  #     - '*.*.*'
   workflow_dispatch:
     inputs:
       tag:
@@ -12,23 +13,18 @@ on:
         required: false
         default: 'latest-manual'
         type: string
-
-# Cancel in-progress runs on same PR
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-
-# Explicit permissions
 permissions:
   contents: read
   packages: write
-
+  id-token: write
 jobs:
   build-and-push:
     name: Build and Push Docker Image
     runs-on: ubuntu-24.04
     timeout-minutes: 30
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -43,22 +39,28 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # Ensure the image name is fully lowercase (GHCR requirement)
+      - name: Compute image name (lowercase)
+        id: vars
+        run: echo "image=ghcr.io/$${GITHUB_REPOSITORY_OWNER,,}/dependacharta-analysis" >> "$$GITHUB_OUTPUT"
+
       - name: Extract metadata for Docker
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository_owner }}/dependacharta-analysis
+          images: ${{ steps.vars.outputs.image }}
           tags: |
-            # For manual dispatch: use custom tag
+            # Manual dispatch: custom tag
             type=raw,value=${{ inputs.tag }},enable=${{ github.event_name == 'workflow_dispatch' }}
-            # Tag with semver version on release tags (e.g., 1.2.3, v1.2.3)
+            # Semver tags when pushing a semver tag (e.g., 1.2.3 or v1.2.3)
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
-            # Tag with 'latest' for releases
+            # Also tag 'latest' on tag pushes
             type=raw,value=latest,enable=${{ github.event_name == 'push' }}
 
       - name: Build and push Docker image
+        id: build
         uses: docker/build-push-action@v6
         with:
           context: ./analysis
@@ -73,6 +75,6 @@ jobs:
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@v2
         with:
-          subject-name: ghcr.io/${{ github.repository_owner }}/dependacharta-analysis
-          subject-digest: ${{ steps.build-push.outputs.digest }}
+          subject-name: ${{ steps.vars.outputs.image }}
+          subject-digest: ${{ steps.build.outputs.digest }}
           push-to-registry: true

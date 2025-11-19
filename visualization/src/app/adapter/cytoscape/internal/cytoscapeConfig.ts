@@ -2,9 +2,9 @@ import {StylesheetStyle} from 'cytoscape';
 
 /*
 * For most of them the default are fine: https://js.cytoscape.org/#init-opts/
+* Using default wheelSensitivity (1.0) to ensure consistent zoom behavior across all hardware configurations
 * */
 export const cytoscape_options = {
-  wheelSensitivity: 5.0,
   // data: {...} could be useful for extra info
   // selectionType: 'additive' | 'single -> if the selection of a node should be added to a set of selections or if one node at a time should be selected (default is 'single')
 }
@@ -51,6 +51,29 @@ export const cytoscape_style: StylesheetStyle[] =
         'curve-style': 'bezier',
         'arrow-scale': 1.2,
         'z-index':8,
+      }
+    },
+    {
+      selector: 'edge[label]',
+      style: {
+        'label': 'data(label)',
+        'color': '#000000',
+        'text-background-color': '#ffffff',
+        'text-background-opacity': 0.8,
+      }
+    },
+    {
+      selector: 'edge[labelType="weight"]',
+      style: {
+        'font-size': 20
+      }
+    },
+    {
+      selector: 'edge[labelType="type"]',
+      style: {
+        'font-size': 12,
+        'text-rotation': 'autorotate',
+        'text-wrap': 'wrap'
       }
     },
     // only loop edges (source = target)

@@ -6,7 +6,7 @@
     </json-loader>
     <filter [selectedFilter]="state.selectedFilter" (filterSelected)="apply($event)"></filter>
     <button (click)="onRestoreNodesClick()">Restore Nodes</button>
-    <button (click)="onToggleEdgeLabelsClick()">Toggle Edge Labels</button>
+    <toggle-button [isOn]="state.showLabels" (toggleChanged)="onToggleEdgeLabels()">Edge Labels</toggle-button>
     <button (click)="onResetViewClick()">Reset View</button>
     <app-version/>
     <toggle-button

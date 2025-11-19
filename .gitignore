@@ -24,3 +24,5 @@ analyzer.log
 /dependacharta_temp
 
 visualization/sbom
+
+.claude/settings.local.json
