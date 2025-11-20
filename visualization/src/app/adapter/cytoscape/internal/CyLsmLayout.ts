@@ -17,17 +17,44 @@ class CyLsmLayout{
 
   draw(positionByNodeId: Map<string, Coordinates>, visibleNodes: VisibleGraphNode[], cyNodes: NodeCollection, layouting: any) {
     const nodesWithAbsoluteCoordinates = toAbsoluteCoordinates(positionByNodeId, visibleNodes)
+    const manuallyPositionedNodes = this.options.manuallyPositionedNodes || new Map<string, Coordinates>()
     const layoutOptions: LayoutPositionOptions = {
       eles: cyNodes
     }
     cyNodes.layoutPositions(layouting, layoutOptions, (currentNode: NodeSingular) => {
-      const coordinates = nodesWithAbsoluteCoordinates.get(currentNode.data().id)
-      if (coordinates) {
-        return coordinates
-      } else {
-        return { x: 0, y: 0 }
-      }
+      const nodeId = currentNode.data().id
+      return this.resolveNodePosition(nodeId, manuallyPositionedNodes, nodesWithAbsoluteCoordinates)
     })
+  }
+
+  private resolveNodePosition(
+    nodeId: string,
+    manualPositions: Map<string, Coordinates>,
+    computedPositions: Map<string, Coordinates>
+  ): Coordinates {
+    const manualPosition = this.getManualPosition(nodeId, manualPositions)
+    if (manualPosition) {
+      return manualPosition
+    }
+
+    const computedPosition = this.getComputedPosition(nodeId, computedPositions)
+    if (computedPosition) {
+      return computedPosition
+    }
+
+    return this.getDefaultPosition()
+  }
+
+  private getManualPosition(nodeId: string, manualPositions: Map<string, Coordinates>): Coordinates | undefined {
+    return manualPositions.get(nodeId)
+  }
+
+  private getComputedPosition(nodeId: string, computedPositions: Map<string, Coordinates>): Coordinates | undefined {
+    return computedPositions.get(nodeId)
+  }
+
+  private getDefaultPosition(): Coordinates {
+    return { x: 0, y: 0 }
   }
 
   run(layouting: any) {

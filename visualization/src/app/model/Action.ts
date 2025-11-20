@@ -1,5 +1,6 @@
 import {GraphNode} from './GraphNode';
 import {EdgeFilterType} from './EdgeFilter';
+import {Coordinates} from './lsmLayouting';
 
 export namespace Action {
 
@@ -90,6 +91,21 @@ export namespace Action {
       readonly nodeId: string
     ) {}
   }
+
+  export class SetNodeManualPosition {
+    constructor(
+      readonly nodeId: string,
+      readonly position: Coordinates
+    ) {}
+  }
+
+  export class ClearNodeManualPosition {
+    constructor(
+      readonly nodeId: string
+    ) {}
+  }
+
+  export class ClearAllManualPositions {}
 }
 
 export type Action =
@@ -112,3 +128,6 @@ export type Action =
   | Action.ResetMultiselection
   | Action.PinNode
   | Action.UnpinNode
+  | Action.SetNodeManualPosition
+  | Action.ClearNodeManualPosition
+  | Action.ClearAllManualPositions

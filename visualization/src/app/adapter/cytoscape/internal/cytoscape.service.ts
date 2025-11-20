@@ -1,5 +1,5 @@
 import {EventEmitter, inject, Injectable, Output} from '@angular/core';
-import cytoscape, {AbstractEventObject, BoundingBox12, Core, ElementDefinition, NodeCollection, Position} from 'cytoscape';
+import cytoscape, {AbstractEventObject, BaseLayoutOptions, BoundingBox12, Core, ElementDefinition, NodeCollection, Position} from 'cytoscape';
 import {EdgeDisplayService} from './ui/edge-display.service';
 import {toCytoscapeEdges, toCytoscapeNodes} from './converter/elementDefinitionConverter';
 import {Action} from '../../../model/Action';
@@ -8,6 +8,11 @@ import {State} from "../../../model/State";
 import {HighlightService} from './highlight.service';
 import {lsmLayout} from './CyLsmLayout';
 import {cytoscape_style, cytoscape_options} from './cytoscapeConfig';
+
+interface LsmLayoutOptions extends BaseLayoutOptions {
+  name: 'lsmLayout'
+  manuallyPositionedNodes: Map<string, Position>
+}
 
 @Injectable({
   providedIn: 'root'
@@ -49,6 +54,7 @@ export class CytoscapeService {
         this.initializeGraphFromState(cy, state)
         break
       case action instanceof Action.ResetView:
+        this.updateGraph(cy, state, cy.nodes())
         cy.centre()
         break
       default:
@@ -100,8 +106,16 @@ export class CytoscapeService {
     // "Setting a `style` bypass at element creation should be done only when absolutely necessary.  Try to use the stylesheet instead."
     const newEdgesWithoutStyle: ElementDefinition[] = newEdges.map(({style, ...rest}) => rest)
     cy.add(newEdgesWithoutStyle)
-    cy.layout({name: 'lsmLayout'}).run()
+    this.runLayoutWithManualPositions(cy, state)
     this.applyFilters(cy, state)
+  }
+
+  private runLayoutWithManualPositions(cy: Core, state: State) {
+    const layout = cy.layout({
+      name: 'lsmLayout',
+      manuallyPositionedNodes: state.manuallyPositionedNodes
+    } as LsmLayoutOptions)
+    layout.run()
   }
 
   private createNewEdges(nodesToRerender: NodeCollection, state: State) {
@@ -189,6 +203,12 @@ export class CytoscapeService {
       event.target.removeClass('no-overlay')
       this.changeCursor.emit('auto')
     });
+
+    cy.on('free', 'node', (event) => {
+      const node = event.target
+      const position = node.position()
+      this.graphActionHappened.emit(new Action.SetNodeManualPosition(node.id(), position))
+    })
   }
 
 }
