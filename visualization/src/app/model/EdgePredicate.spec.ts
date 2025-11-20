@@ -12,7 +12,8 @@ describe('Layout', () => {
       target: VisibleGraphNode.build({
         level: 2
       }),
-      isCyclic: false
+      isCyclic: false,
+      isPointingUpwards: true
     })
 
     const predicate = EdgePredicate.fromEnum(EdgeType.FEEDBACK)
@@ -27,7 +28,8 @@ describe('Layout', () => {
       target: VisibleGraphNode.build({
         level: 1
       }),
-      isCyclic: true
+      isCyclic: true,
+      isPointingUpwards: false
     })
 
     const predicate = EdgePredicate.fromEnum(EdgeType.FEEDBACK)
@@ -42,7 +44,8 @@ describe('Layout', () => {
       target: VisibleGraphNode.build({
         level: 2
       }),
-      isCyclic: true
+      isCyclic: true,
+      isPointingUpwards: true
     })
 
     const predicate = EdgePredicate.fromEnum(EdgeType.FEEDBACK)
@@ -57,7 +60,8 @@ describe('Layout', () => {
       target: VisibleGraphNode.build({
         level: 1
       }),
-      isCyclic: true
+      isCyclic: true,
+      isPointingUpwards: false
     })
 
     const predicate = EdgePredicate.fromEnum(EdgeType.TWISTED)
@@ -72,7 +76,8 @@ describe('Layout', () => {
       target: VisibleGraphNode.build({
         level: 2
       }),
-      isCyclic: true
+      isCyclic: true,
+      isPointingUpwards: true
     })
 
     const predicate = EdgePredicate.fromEnum(EdgeType.TWISTED)
@@ -87,7 +92,8 @@ describe('Layout', () => {
       target: VisibleGraphNode.build({
         level: 1
       }),
-      isCyclic: false
+      isCyclic: false,
+      isPointingUpwards: false
     })
 
     const predicate = EdgePredicate.fromEnum(EdgeType.TWISTED)
@@ -102,7 +108,8 @@ describe('Layout', () => {
       target: VisibleGraphNode.build({
         level: 2
       }),
-      isCyclic: false
+      isCyclic: false,
+      isPointingUpwards: true
     })
 
     const predicate = EdgePredicate.fromEnum(EdgeType.TWISTED)
@@ -117,7 +124,8 @@ describe('Layout', () => {
       target: VisibleGraphNode.build({
         level: 1
       }),
-      isCyclic: false
+      isCyclic: false,
+      isPointingUpwards: true
     })
 
     const predicate = EdgePredicate.fromEnum(EdgeType.TWISTED)
@@ -134,7 +142,9 @@ describe('Layout', () => {
       }),
       target: VisibleGraphNode.build({
         level: 1
-      })
+      }),
+      isCyclic: false,
+      isPointingUpwards: false
     })
 
     const predicate = EdgePredicate.fromEnum(EdgeType.TWISTED)
@@ -151,7 +161,9 @@ describe('Layout', () => {
         parent: VisibleGraphNode.build({
           level: 2
         })
-      })
+      }),
+      isCyclic: false,
+      isPointingUpwards: true
     })
 
     const predicate = EdgePredicate.fromEnum(EdgeType.TWISTED)

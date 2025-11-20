@@ -156,6 +156,7 @@ describe('ElementDefinitionConverter', () => {
         source: source,
         target: target,
         isCyclic: true,
+        isPointingUpwards: false,
         weight: 1,
         type: 'inheritance'
       })
@@ -171,6 +172,7 @@ describe('ElementDefinitionConverter', () => {
           target: "target",
           weight: 1,
           isCyclic: true,
+          isPointingUpwards: false,
           type: 'inheritance',
           label: `${convertTypeOfUsage(graphEdge.type)}\n‎ `,
           labelType: 'type'
@@ -191,6 +193,7 @@ describe('ElementDefinitionConverter', () => {
           source: source,
           target: target,
           isCyclic: true,
+          isPointingUpwards: false,
           weight: 1,
           type: 'inheritance'
         })
@@ -200,7 +203,7 @@ describe('ElementDefinitionConverter', () => {
 
         // then
         const expected = {
-          data: {id: graphEdge.id, source: "source", target: "target", weight: 1, isCyclic: true, type: 'inheritance'},
+          data: {id: graphEdge.id, source: "source", target: "target", weight: 1, isCyclic: true, isPointingUpwards: false, type: 'inheritance'},
 
         }
         expect(edge).toEqual(expected)
@@ -255,6 +258,7 @@ describe('ElementDefinitionConverter', () => {
         source: source,
         target: target,
         isCyclic: true,
+        isPointingUpwards: false,
         weight: 1,
         type: 'usage'
       })

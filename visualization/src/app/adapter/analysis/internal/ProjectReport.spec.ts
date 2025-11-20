@@ -49,6 +49,7 @@ describe('ProjectReport', () => {
         '': {
           weight: 1,
           isCyclic: false,
+          isPointingUpwards: false,
           type: 'usage'
         }
       }
@@ -65,6 +66,7 @@ describe('ProjectReport', () => {
         '': {
           weight: 1,
           isCyclic: false,
+          isPointingUpwards: false,
           type: 'usage'
 
         }
@@ -81,6 +83,7 @@ describe('ProjectReport', () => {
         '': {
           weight: 1,
           isCyclic: false,
+          isPointingUpwards: false,
           type: 'usage'
 
         }

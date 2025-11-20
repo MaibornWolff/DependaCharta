@@ -26,7 +26,9 @@ describe('EdgeDisplayService', () => {
     const regularEdgeNodeId = buildUniqueId()
     const dependency = ShallowEdge.build({
       source: sourceNodeId,
-      target: sourceNodeId
+      target: sourceNodeId,
+      isCyclic: false,
+      isPointingUpwards: false
     })
     const sourceNode = new ElementDefinitionBuilder()
       .setId(sourceNodeId)
@@ -58,7 +60,8 @@ describe('EdgeDisplayService', () => {
     const dependency = ShallowEdge.build({
       source: sourceNodeId,
       target: cyclicEdgeNodeId,
-      isCyclic: true
+      isCyclic: true,
+      isPointingUpwards: false
     })
     const sourceNode = new ElementDefinitionBuilder()
       .setId(sourceNodeId)
@@ -89,7 +92,9 @@ describe('EdgeDisplayService', () => {
     const twistedEdgeNodeId = buildUniqueId()
     const dependency = ShallowEdge.build({
       source: sourceNodeId,
-      target: twistedEdgeNodeId
+      target: twistedEdgeNodeId,
+      isCyclic: false,
+      isPointingUpwards: true
     })
     const sourceNode = new ElementDefinitionBuilder()
       .setId(sourceNodeId)
@@ -121,7 +126,8 @@ describe('EdgeDisplayService', () => {
     const dependency = ShallowEdge.build({
       source: sourceNodeId,
       target: feedbackEdgeNodeId,
-      isCyclic: true
+      isCyclic: true,
+      isPointingUpwards: true
     })
     const sourceNode = new ElementDefinitionBuilder()
       .setId(sourceNodeId)

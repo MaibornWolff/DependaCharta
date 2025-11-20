@@ -64,6 +64,8 @@ Upload your `.cg.json` file or explore with sample data.
 
 Having trouble understanding the structure and dependencies in your codebase? DependaCharta is a multi-language code analysis and visualization tool that helps you quickly identify disadvantageous dependencies, cyclic dependencies, and quality hotspots. It runs entirely locally, works with non-compilable code, and supports multiple programming languages. DependaCharta is an open source project developed by [MaibornWolff](https://www.maibornwolff.de/en).
 
+For a detailed explanation of DependaCharta's domain concepts and visualization features, see our [Domain Model Documentation](DOMAIN.md).
+
 ### Your Data Stays Local
 
 **All analysis and visualization happens entirely on your machine.** No data is ever uploaded, shared, or transmitted to any external service. Your code stays private and secure. DependaCharta has no analytics, tracking, or telemetry built-in.
@@ -234,6 +236,7 @@ Want to **contribute**? Check out our [contributing guide](dev_docs/CONTRIBUTING
 ## Links
 
 - [Releases](https://github.com/MaibornWolff/DependaCharta/releases)
+- [Domain Model Documentation](DOMAIN.md)
 - [Analysis Documentation](analysis/README.md)
 - [Visualization Documentation](visualization/README.md)
 - [How to Add a New Language](analysis/howto-add-new-language.md)

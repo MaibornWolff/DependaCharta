@@ -85,6 +85,8 @@ npm run package-mac-intel   # macOS x64
 2. Creates dependency graph with cycle detection and levelization
 3. Outputs `.cg.json` files containing the analysis results
 
+For a detailed explanation of DependaCharta's domain concepts, see our [Domain Model Documentation](DOMAIN.md).
+
 ### Key Technologies
 - **Analysis**: Kotlin, Tree-sitter, Gradle, Clikt CLI framework
 - **Visualization**: Angular 20, TypeScript, Cytoscape.js, Electron
