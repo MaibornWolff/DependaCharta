@@ -187,18 +187,18 @@ For detailed visualization documentation, see [visualization/README.md](visualiz
 
 ### Docker Support
 
-DependaCharta provides official Docker images via GitHub Container Registry for easy deployment and CI/CD integration.
+DependaCharta provides official Docker images via Docker Hub for easy deployment and CI/CD integration.
 
 #### Using Pre-built Images
 
 ```bash
 # Pull the latest image
-docker pull ghcr.io/maibornwolff/dependacharta-analysis:latest
+docker pull maibornwolff/dependacharta-analysis:latest
 
 # Run analysis on a directory
 docker run --rm --user root \
   -v "$(pwd)/your-project:/workspace" \
-  ghcr.io/maibornwolff/dependacharta-analysis:latest \
+  maibornwolff/dependacharta-analysis:latest \
   -d /workspace
 
 # Output will be in your-project/output/analysis.cg.json
