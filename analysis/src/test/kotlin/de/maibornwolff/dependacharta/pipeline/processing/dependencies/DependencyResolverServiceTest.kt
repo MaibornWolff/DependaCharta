@@ -176,6 +176,50 @@ class DependencyResolverServiceTest {
     }
 
     @Test
+    fun `should resolve Kotlin node and filter out standard library types`() {
+        // given
+        val kotlinClass = Node.build(
+            pathWithName = Path(listOf("com", "example", "MyClass")),
+            physicalPath = "com/example/MyClass.kt",
+            nodeType = NodeType.CLASS,
+            language = SupportedLanguage.KOTLIN,
+            dependencies = setOf(
+                Dependency(Path(listOf("com", "example")), true),
+            ),
+            usedTypes = setOf(
+                Type("String", TypeOfUsage.USAGE, emptyList()),
+                Type("List", TypeOfUsage.USAGE, emptyList()),
+                Type("OtherClass", TypeOfUsage.USAGE, emptyList())
+            ),
+        )
+
+        val otherClass = Node.build(
+            pathWithName = Path(listOf("com", "example", "OtherClass")),
+            physicalPath = "com/example/OtherClass.kt",
+            nodeType = NodeType.CLASS,
+            language = SupportedLanguage.KOTLIN,
+            dependencies = setOf(
+                Dependency(Path(listOf("com", "example")), true),
+            ),
+            usedTypes = setOf(),
+        )
+
+        val report = FileReport(
+            nodes = listOf(kotlinClass, otherClass),
+        )
+
+        // when
+        val resolvedNodes = DependencyResolverService.resolveNodes(listOf(report))
+
+        // then
+        val myClassResolved = resolvedNodes.first { it.pathWithName.parts.last() == "MyClass" }
+        assertThat(myClassResolved.resolvedNodeDependencies.internalDependencies)
+            .containsExactly(Dependency(otherClass.pathWithName))
+        assertThat(myClassResolved.resolvedNodeDependencies.externalDependencies)
+            .isEmpty()
+    }
+
+    @Test
     fun `Maps Node to NodeInformation`() {
         // given
         val node = Node.build(
