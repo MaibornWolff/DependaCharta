@@ -8,13 +8,13 @@ build:
     cd analysis && ./gradlew fatJar
 
 run DIR: build
-    cd analysis && java -jar build/libs/dependacharta.jar -d {{DIR}}
+    cd analysis && java -jar build/libs/dependacharta.jar -d {{absolute_path(DIR)}}
 
 frontend:
     cd visualization && npm ci && npm run start
 
 analyze DIR: build
-    cd analysis && java -jar build/libs/dependacharta.jar -d {{DIR}} -o ../visualization/public/analysis -f analyzed-project
+    cd analysis && java -jar build/libs/dependacharta.jar -d {{absolute_path(DIR)}} -o ../visualization/public/analysis -f analyzed-project
     @echo "Analysis complete! Starting frontend..."
     @echo "Frontend will automatically load your analysis."
     @echo "You can also manually specify a file: http://localhost:4200?file=./path/to/file.cg.json"

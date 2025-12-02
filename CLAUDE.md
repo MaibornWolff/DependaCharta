@@ -121,75 +121,98 @@ The GitLab CI pipeline automatically:
 3. Creates releases on tags matching semantic versioning (e.g., 0.42.23)
 4. Deploys documentation to GitLab Pages
 
-## Development Practices
+## Development Workflow
 
-- Test-driven development with tests before implementation
-- Clean Code principles
-- Semantic versioning for releases
-- Automated dependency updates via Renovate
+### Planning
 
-# PLAN MODE
+**For every new instruction, create a plan** in the `plans/` folder using `template.md` as a base:
 
-- When planning implementation tasks, never make assumptions silently.
-- **Always use the AskUserQuestion tool to clarify ambiguous requirements before finalizing the plan**
-- You MUST number your questions to make it easier to answer multiple questions at once.
-- You SHOULD provide your recommendation for every question, if you have a best guess or if you know a common solution for the question in discussion.
-- As soon as the plan is complete, write it to a markdown file in plans subdirectory.
+- Plans act as high-level guidance for implementation
+- Focus on mandatory steps only, avoid excessive detail
+- keep plans simple and concise
+- avoid over-elaboration, detailed sections, or comprehensive documentation style
+- plans should be brief, actionable outlines rather than detailed specifications
+- Use checkable steps (markdown checkboxes) to track progress
+- Update `state` field as work progresses: `todo` → `progress` → `complete`
+- Always use the AskUserQuestion tool to clarify ambiguous requirements before finalizing the plan
 
-# CORE DEVELOPMENT PRINCIPLES
+### Branching Strategy
 
-- Always follow the TDD cycle: Red → Green → Refactor
-- Write the simplest failing test first
-- Implement the minimum code needed to make tests pass
-- Refactor only after tests are passing
-- Maintain high code quality throughout development
+- Main branch: `main`
+- Branch naming: `<type>/<issue-id>/<name>` (e.g., `feature/123/add-dark-mode`)
+- Types: `feature`, `fix`, `docs`, `revert`, `codestyle`, `tech`
+- Always rebase on main: `git rebase main`
+- After rebase: `git push --force-with-lease`
 
-# TDD METHODOLOGY GUIDANCE
+### Commit Message Format
 
-- Start by writing a failing test that defines a small increment of functionality
-- Make test failures clear and informative
-- Write just enough code to make the test pass - no more
-- Once tests pass, consider if refactoring is needed
-- Repeat the cycle for new functionality
-- Structure all unit tests following the Arrange-Act-Assert pattern and introduce each block with a comment
+```
+<type>(<scope?>): <subject>(#<issue-number?>)
 
-# TIDY FIRST APPROACH
+<body-description?>
+```
 
-- Separate all changes into two distinct types:
-  1. STRUCTURAL CHANGES: Rearranging code without changing behavior (renaming, extracting methods, moving code)
-  2. BEHAVIORAL CHANGES: Adding or modifying actual functionality
-- Never mix structural and behavioral changes in the same commit
-- Always make structural changes first when both are needed
-- Validate structural changes do not alter behavior by running tests before and after
+- Types: `build`, `chore`, `ci`, `docs`, `feat`, `fix`, `perf`, `refactor`, `revert`, `style`, `test`
+- Scopes: `analysis`, `visualization`, `docker`, `gh-pages`, `docs`, `readme`, `stg`, `config`
+- Use imperative mood: "Add feature" not "Added feature"
+- Limit subject line to 72 characters
+- Breaking changes: Use `!` before `:` (e.g., `feat!: breaking change`)
 
-# CODE QUALITY STANDARDS
+Example: `feat(visualization): add dark mode toggle (#123)`
 
-- Eliminate duplication ruthlessly
-- Express intent clearly through naming and structure
-- Make dependencies explicit
-- Keep methods small and focused on a single responsibility
-- Minimize state and side effects
-- Use the simplest solution that could possibly work
+### Pull Requests
 
-# REFACTORING GUIDELINES
+- Name PR like branch name
+- Follow PR template
+- Add appropriate labels
+- All tests must pass before merge
+- Prefer rebase over squash merge for clean history
+- Update CHANGELOG.md with changes (follow https://keepachangelog.com)
 
-- Refactor only when tests are passing (in the "Green" phase)
-- Use established refactoring patterns with their proper names
-- Make one refactoring change at a time
-- Run tests after each refactoring step
-- Prioritize refactorings that remove duplication or improve clarity
+### Code Style
 
-# EXAMPLE WORKFLOW
+**Analysis (Kotlin)**:
+- Based on official Kotlin Coding Conventions
+- Auto-formatted via `./gradlew ktlintFormat`
+- Rules defined in `.editorconfig`
+- **Function syntax**: Use block-body style with braces `{ }` consistently, not expression-body style with `=`
+- **Guard clauses**: Use early returns for error conditions and edge cases to reduce nesting
+- **If expressions**: Prefer concise single-line style when possible:
+    - ✅ `val x = if (condition) valueA else valueB`
+    - ❌ `val x = if (condition) { valueA } else { valueB }`
+    - Use multi-line only when branches contain multiple statements or complex logic
+- **Magic strings/numbers**: Extract repeated literals to constants in `companion object`
+- **Function organization**: Group related functions with section comments
+- **Parameter naming**: Use consistent, descriptive names across related functions
 
-When approaching a new feature:
-1. Write a simple failing test for a small part of the feature
-2. Implement the bare minimum to make it pass
-3. Run tests to confirm they pass (Green)
-4. Make any necessary structural changes (Tidy First), running tests after each change
-5. Commit structural changes separately
-6. Add another test for the next small increment of functionality
-7. Repeat until the feature is complete, committing behavioral changes separately from structural ones
+**Visualization (TypeScript)**:
+- Formatted with BiomeJS
+- Install Biome extension and format on save
+- Git hooks auto-format on commit via Husky
 
-Follow this process precisely, always prioritizing clean, well-tested code over quick implementation.
+**Commits**:
+- Husky runs pre-commit hooks automatically
+- Lint-staged formats files before commit
+- Analysis is NOT auto-linted on commit
 
-Always write one test at a time, make it run, then improve structure. Always run all the tests (except long-running tests) each time.
+### Code Quality Guidelines
+
+**General Principles**:
+- **DRY**: Extract repeated logic into reusable functions
+- **Clean Code**: Self-documenting code with clear intent
+- **SOLID**: Single responsibility, open/closed, dependency inversion
+- **Expressive Naming**: Descriptive names that reveal intent
+- **Fix Warnings**: Never suppress, always resolve
+- **Consistent Style**: Match existing patterns
+- **Comments**: Use sparingly for complex business logic rationale. Prefer clear function names over comments.
+- **Metric Accuracy**: All metrics must be deterministic and reproducible across runs
+- **Immutability**: Prefer immutable data structures, especially in the model layer
+- **Backward Compatibility**: Changes to `.cc.json` format require careful versioning
+
+**TDD Workflow** (Red → Green → Refactor):
+1. Write one failing test
+2. Write minimum code to pass
+3. Run all tests (must be green)
+4. Refactor if needed
+5. Commit
+6. Repeat
