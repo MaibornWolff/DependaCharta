@@ -36,6 +36,7 @@ class DependencyResolverService {
                 SupportedLanguage.GO -> GoDictionary()
                 SupportedLanguage.PYTHON -> PythonDictionary()
                 SupportedLanguage.CPP -> CppDictionary()
+                SupportedLanguage.KOTLIN -> KotlinDictionary()
             }
     }
 }

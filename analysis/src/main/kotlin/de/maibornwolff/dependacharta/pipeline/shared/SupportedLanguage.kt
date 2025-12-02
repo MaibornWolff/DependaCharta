@@ -10,6 +10,7 @@ enum class SupportedLanguage(
     GO(listOf("go")),
     PYTHON(listOf("py")),
     CPP(listOf("cpp", "c", "cc", "cxx", "h", "hpp", "hxx", "hh")),
+    KOTLIN(listOf("kt", "kts")),
 }
 
 fun languagesByExtension(languages: List<SupportedLanguage>) =
