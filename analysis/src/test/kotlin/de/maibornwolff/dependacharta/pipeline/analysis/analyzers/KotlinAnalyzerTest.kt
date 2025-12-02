@@ -615,4 +615,726 @@ class KotlinAnalyzerTest {
         assertThat(innerClass.pathWithName.parts.last()).isEqualTo("Inner")
         assertThat(innerClass.usedTypes).contains(Type.simple("Outer"))
     }
+
+    @Test
+    fun `should handle function type properties`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            class FunctionHolder {
+                val callback: (String) -> Int = { it.length }
+                val action: () -> Unit = {}
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+        assertEquals("FunctionHolder", nodes[0].pathWithName.parts.last())
+    }
+
+    @Test
+    fun `should handle file without package declaration`() {
+        val kotlinCode = """
+            class NoPackageClass {
+                val name: String = ""
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+        assertEquals("NoPackageClass", nodes[0].pathWithName.parts.last())
+        assertThat(nodes[0].usedTypes).contains(Type.simple("String"))
+    }
+
+    @Test
+    fun `should handle class with companion object`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            class WithCompanion {
+                companion object {
+                    const val CONSTANT: String = "value"
+                    fun create(): WithCompanion = WithCompanion()
+                }
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+        assertEquals("WithCompanion", nodes[0].pathWithName.parts.last())
+    }
+
+    @Test
+    fun `should handle function without return type`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            class NoReturnType {
+                fun doSomething() {
+                    println("hello")
+                }
+
+                fun withParam(value: String) {
+                    println(value)
+                }
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+        assertThat(nodes[0].usedTypes).contains(Type.simple("String"))
+    }
+
+    @Test
+    fun `should handle property without explicit type`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            class InferredType {
+                val name = "test"
+                val number = 42
+                val list = listOf(1, 2, 3)
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+    }
+
+    @Test
+    fun `should handle suspend functions`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            class SuspendClass {
+                suspend fun fetchData(): String {
+                    return "data"
+                }
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+        assertThat(nodes[0].usedTypes).contains(Type.simple("String"))
+    }
+
+    @Test
+    fun `should handle extension functions`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            class ExtensionHolder {
+                fun String.addPrefix(): String = "prefix_" + this
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+    }
+
+    @Test
+    fun `should handle class annotation without parameters`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            @Deprecated
+            class DeprecatedClass {
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+        assertThat(nodes[0].usedTypes).contains(Type.simple("Deprecated"))
+    }
+
+    @Test
+    fun `should handle class with init block`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            class WithInit {
+                val value: String
+
+                init {
+                    value = "initialized"
+                }
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+        assertThat(nodes[0].usedTypes).contains(Type.simple("String"))
+    }
+
+    @Test
+    fun `should handle lateinit property`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            class WithLateinit {
+                lateinit var name: String
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+        assertThat(nodes[0].usedTypes).contains(Type.simple("String"))
+    }
+
+    @Test
+    fun `should handle by lazy property`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            class WithLazy {
+                val name: String by lazy { "lazy value" }
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+        assertThat(nodes[0].usedTypes).contains(Type.simple("String"))
+    }
+
+    @Test
+    fun `should handle vararg parameter`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            class WithVararg {
+                fun process(vararg values: String) {}
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+        assertThat(nodes[0].usedTypes).contains(Type.simple("String"))
+    }
+
+    @Test
+    fun `should handle star projection in generics`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            class WithStarProjection {
+                val items: List<*> = emptyList<Any>()
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+    }
+
+    @Test
+    fun `should handle type alias usage`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            class WithTypeUsage {
+                val map: HashMap<String, Int> = hashMapOf()
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+        assertThat(nodes[0].usedTypes).contains(
+            Type.generic("HashMap", listOf(Type.simple("String"), Type.simple("Int")))
+        )
+    }
+
+    @Test
+    fun `should handle abstract class`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            abstract class AbstractClass {
+                abstract fun doSomething(): String
+                fun concreteMethod(): Int = 42
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+        assertEquals(NodeType.CLASS, nodes[0].nodeType)
+    }
+
+    @Test
+    fun `should handle interface with default implementation`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            interface DefaultInterface {
+                fun required(): String
+                fun optional(): Int = 42
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+        assertEquals(NodeType.INTERFACE, nodes[0].nodeType)
+    }
+
+    @Test
+    fun `should handle class with secondary constructor`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            class WithSecondaryConstructor(val name: String) {
+                var age: Int = 0
+
+                constructor(name: String, age: Int) : this(name) {
+                    this.age = age
+                }
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+        assertThat(nodes[0].usedTypes).containsAll(
+            listOf(Type.simple("String"), Type.simple("Int"))
+        )
+    }
+
+    @Test
+    fun `should handle value class`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            @JvmInline
+            value class Password(val value: String)
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+        assertThat(nodes[0].usedTypes).contains(Type.simple("String"))
+    }
+
+    @Test
+    fun `should handle operator overloading`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            class Vector(val x: Int, val y: Int) {
+                operator fun plus(other: Vector): Vector = Vector(x + other.x, y + other.y)
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+        assertThat(nodes[0].usedTypes).containsAll(
+            listOf(Type.simple("Int"), Type.simple("Vector"))
+        )
+    }
+
+    @Test
+    fun `should handle infix function`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            class Pair(val first: Int, val second: Int) {
+                infix fun and(other: Pair): Pair = Pair(first + other.first, second + other.second)
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+        assertThat(nodes[0].usedTypes).containsAll(
+            listOf(Type.simple("Int"), Type.simple("Pair"))
+        )
+    }
+
+    @Test
+    fun `should handle reified type parameter`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            class TypeChecker {
+                inline fun <reified T> isInstance(value: Any): Boolean = value is T
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+    }
+
+    @Test
+    fun `should handle expression body function`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            class ExpressionBody {
+                fun double(x: Int): Int = x * 2
+                fun greet(name: String): String = "Hello, " + name
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+        assertThat(nodes[0].usedTypes).containsAll(
+            listOf(Type.simple("Int"), Type.simple("String"))
+        )
+    }
+
+    @Test
+    fun `should handle generic class with constraints`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            class GenericClass<T : Comparable<T>>(val value: T) {
+                fun compare(other: T): Int = value.compareTo(other)
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+    }
+
+    @Test
+    fun `should handle delegation pattern`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            interface Base {
+                fun print()
+            }
+
+            class BaseImpl(val x: Int) : Base {
+                override fun print() {}
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(2, nodes.size)
+    }
+
+    @Test
+    fun `should handle multiple annotations on same element`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            class MultiAnnotated {
+                @Deprecated("old")
+                @Suppress("UNCHECKED_CAST")
+                @JvmField
+                val field: String = ""
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+        assertThat(nodes[0].usedTypes).containsAll(
+            listOf(Type.simple("Deprecated"), Type.simple("Suppress"), Type.simple("JvmField"))
+        )
+    }
+
+    @Test
+    fun `should handle class delegation with by keyword`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            interface Printable {
+                fun print()
+            }
+
+            class PrintableDelegate : Printable {
+                override fun print() {}
+            }
+
+            class DelegatingClass(delegate: Printable) : Printable by delegate
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(3, nodes.size)
+        assertThat(nodes.map { it.pathWithName.parts.last() })
+            .containsExactly("Printable", "PrintableDelegate", "DelegatingClass")
+    }
+
+    @Test
+    fun `should handle functional interface`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            interface Clickable {
+                fun onClick()
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+        assertEquals(NodeType.INTERFACE, nodes[0].nodeType)
+    }
+
+    @Test
+    fun `should handle annotation class`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            annotation class MyAnnotation(val message: String)
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+        assertEquals(NodeType.CLASS, nodes[0].nodeType)
+    }
+
+    @Test
+    fun `should handle open class`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            open class OpenClass {
+                open fun doSomething(): String = "base"
+            }
+
+            class ChildClass : OpenClass() {
+                override fun doSomething(): String = "child"
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(2, nodes.size)
+        assertThat(nodes[1].usedTypes).contains(Type.simple("OpenClass"))
+    }
+
+    @Test
+    fun `should handle property with getter and setter`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            class PropertyClass {
+                var name: String = ""
+                    get() = field.uppercase()
+                    set(value) {
+                        field = value.trim()
+                    }
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+        assertThat(nodes[0].usedTypes).contains(Type.simple("String"))
+    }
+
+    @Test
+    fun `should handle class with type parameters`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            class Container<T>(val item: T) {
+                fun get(): T = item
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+    }
+
+    @Test
+    fun `should handle crossinline and noinline lambdas`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            class LambdaClass {
+                inline fun execute(crossinline action: () -> Unit, noinline callback: () -> Unit) {
+                    action()
+                    callback()
+                }
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+    }
+
+    @Test
+    fun `should handle expect and actual declarations stub`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            class Platform {
+                val name: String = "JVM"
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+    }
+
+    @Test
+    fun `should handle out and in variance`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            interface Producer<out T> {
+                fun produce(): T
+            }
+
+            interface Consumer<in T> {
+                fun consume(item: T)
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(2, nodes.size)
+    }
+
+    @Test
+    fun `should handle where clause constraints`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            class Processor<T> where T : Comparable<T>, T : CharSequence {
+                fun process(item: T): Int = item.length
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+    }
+
+    @Test
+    fun `should handle destructuring declarations`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            data class Point(val x: Int, val y: Int)
+
+            class Processor {
+                fun process(p: Point) {
+                    val (x, y) = p
+                }
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(2, nodes.size)
+    }
+
+    @Test
+    fun `should handle context receivers`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            class ContextClass {
+                fun String.printWithLength(): Unit = println(this)
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+    }
+
+    @Test
+    fun `should handle typealias`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            class TypeUser {
+                val handler: (String) -> Int = { it.length }
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+    }
+
+    @Test
+    fun `should handle backing property pattern`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            class BackingProp {
+                private var _items: MutableList<String> = mutableListOf()
+                val items: List<String>
+                    get() = _items
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+        assertThat(nodes[0].usedTypes).containsAll(
+            listOf(
+                Type.generic("MutableList", listOf(Type.simple("String"))),
+                Type.generic("List", listOf(Type.simple("String")))
+            )
+        )
+    }
 }
