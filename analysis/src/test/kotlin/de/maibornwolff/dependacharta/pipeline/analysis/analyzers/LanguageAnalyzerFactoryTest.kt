@@ -2,6 +2,7 @@ package de.maibornwolff.dependacharta.pipeline.analysis.analyzers
 
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.csharp.CSharpAnalyzer
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.java.JavaAnalyzer
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.kotlin.KotlinAnalyzer
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.TypescriptAnalyzer
 import de.maibornwolff.dependacharta.pipeline.analysis.model.FileInfo
 import de.maibornwolff.dependacharta.pipeline.shared.SupportedLanguage
@@ -30,10 +31,16 @@ class LanguageAnalyzerFactoryTest {
                 physicalPath = "",
                 content = ""
             )
+            val kotlinFileInfo = FileInfo(
+                language = SupportedLanguage.KOTLIN,
+                physicalPath = "",
+                content = ""
+            )
             return listOf(
                 Arguments.of(javaFileInfo, JavaAnalyzer(javaFileInfo)),
                 Arguments.of(cSharpFileInfo, CSharpAnalyzer(cSharpFileInfo)),
-                Arguments.of(typescriptFileInfo, TypescriptAnalyzer(typescriptFileInfo))
+                Arguments.of(typescriptFileInfo, TypescriptAnalyzer(typescriptFileInfo)),
+                Arguments.of(kotlinFileInfo, KotlinAnalyzer(kotlinFileInfo))
             )
         }
     }
