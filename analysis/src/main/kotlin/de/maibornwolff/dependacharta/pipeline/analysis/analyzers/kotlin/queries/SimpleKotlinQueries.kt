@@ -37,11 +37,10 @@ class KotlinPropertyTypesQuery(
     fun execute(
         node: TSNode,
         bodyContainingNode: String
-    ): List<Type> {
-        return node
+    ): List<Type> =
+        node
             .execute(query)
             .mapNotNull { extractTypeFromMatch(it, bodyContainingNode) }
-    }
 }
 
 /**
@@ -113,11 +112,10 @@ class KotlinReturnTypesQuery(
     fun execute(
         node: TSNode,
         bodyContainingNode: String
-    ): List<Type> {
-        return node
+    ): List<Type> =
+        node
             .execute(query)
             .mapNotNull { extractTypeFromMatch(it, bodyContainingNode) }
-    }
 }
 
 /**
@@ -146,13 +144,15 @@ class KotlinAnnotationTypesQuery(
     fun execute(
         node: TSNode,
         bodyContainingNode: String
-    ): List<Type> {
-        return node
+    ): List<Type> =
+        node
             .execute(query)
             .map { extractAnnotationType(it, bodyContainingNode) }
-    }
 
-    private fun extractAnnotationType(match: TSQueryMatch, nodeBody: String): Type {
+    private fun extractAnnotationType(
+        match: TSQueryMatch,
+        nodeBody: String
+    ): Type {
         val capturedNode = match.captures[0].node
         val constructorInvocation = capturedNode.getNamedChild(0)
         if (constructorInvocation.isNull) return Type.unparsable()
@@ -192,12 +192,11 @@ class KotlinConstructorCallQuery(
     fun execute(
         node: TSNode,
         bodyContainingNode: String
-    ): List<Type> {
-        return node
+    ): List<Type> =
+        node
             .execute(query)
             .mapNotNull { extractSimpleType(it, bodyContainingNode) }
             .filter { it.isUppercase() }
-    }
 }
 
 /**
@@ -230,12 +229,11 @@ class KotlinCallExpressionQuery(
     fun execute(
         node: TSNode,
         bodyContainingNode: String
-    ): List<Type> {
-        return node
+    ): List<Type> =
+        node
             .execute(query)
             .mapNotNull { extractSimpleType(it, bodyContainingNode) }
             .filter { it.isUppercase() }
-    }
 }
 
 private fun extractTypeFromMatch(
