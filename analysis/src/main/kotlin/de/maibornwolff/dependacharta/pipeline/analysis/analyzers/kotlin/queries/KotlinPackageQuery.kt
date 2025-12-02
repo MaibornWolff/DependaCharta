@@ -31,19 +31,17 @@ class KotlinPackageQuery(
     fun execute(
         node: TSNode,
         bodyContainingNode: String
-    ) =
-        node
-            .execute(packageQuery)
-            .map {
-                val capturedNode = it.captures[0].node
-                extractPackageNames(capturedNode, bodyContainingNode)
-            }.firstOrNull() ?: emptyList()
+    ) = node
+        .execute(packageQuery)
+        .map {
+            val capturedNode = it.captures[0].node
+            extractPackageNames(capturedNode, bodyContainingNode)
+        }.firstOrNull() ?: emptyList()
 
     private fun extractPackageNames(
         node: TSNode,
         bodyContainingNode: String
-    ) =
-        node
-            .execute(identifierQuery)
-            .flatMap { it.captures.map { capture -> nodeAsString(capture.node, bodyContainingNode) } }
+    ) = node
+        .execute(identifierQuery)
+        .flatMap { it.captures.map { capture -> nodeAsString(capture.node, bodyContainingNode) } }
 }
