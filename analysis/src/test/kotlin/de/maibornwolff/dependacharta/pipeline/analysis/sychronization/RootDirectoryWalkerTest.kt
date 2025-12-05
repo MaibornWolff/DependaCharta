@@ -19,7 +19,7 @@ class RootDirectoryWalkerTest {
 
         // then
         val matchingFiles = files.toSet()
-        assertThat(matchingFiles).hasSize(2)
+        assertThat(matchingFiles).hasSize(3)
         matchingFiles.forEach { file ->
             assertThat(file).containsAnyOf(".java", ".cs")
         }
@@ -54,9 +54,9 @@ class RootDirectoryWalkerTest {
     @Test
     fun `Should return fileInfo`() {
         // given
-        val expectedFileName = "Test.java"
+        val expectedFileName = "Sample.java"
         val testee = RootDirectoryWalker(File("src/test/resources/rootdirectorywalker"), listOf(SupportedLanguage.JAVA))
-        val filePath = testee.walk().toList()[0]
+        val filePath = testee.walk().toList().find { it.endsWith("Sample.java") }!!
 
         // when
         val fileInfo = testee.getFileInfo(filePath)
@@ -99,5 +99,71 @@ class RootDirectoryWalkerTest {
 
         // Verify that main_test.go is indeed filtered out
         assertThat(fileList.none { it.contains("main_test.go") }).isTrue()
+    }
+
+    @Test
+    fun `Should ignore Java test files ending with Test dot java`() {
+        // given
+        val testee = RootDirectoryWalker(File("src/test/resources/rootdirectorywalker/java-test-files"), listOf(SupportedLanguage.JAVA))
+
+        // when
+        val files = testee.walk()
+
+        // then
+        val fileList = files.toList()
+        assertThat(fileList).hasSize(1)
+        assertThat(fileList.first()).endsWith("Main.java")
+        assertThat(fileList.none { it.contains("MainTest.java") }).isTrue()
+    }
+
+    @Test
+    fun `Should ignore Kotlin test files ending with Test dot kt`() {
+        // given
+        val testee = RootDirectoryWalker(File("src/test/resources/rootdirectorywalker/kotlin-test-files"), listOf(SupportedLanguage.KOTLIN))
+
+        // when
+        val files = testee.walk()
+
+        // then
+        val fileList = files.toList()
+        assertThat(fileList).hasSize(1)
+        assertThat(fileList.first()).endsWith("Main.kt")
+        assertThat(fileList.none { it.contains("MainTest.kt") }).isTrue()
+    }
+
+    @Test
+    fun `Should ignore files in test directory`() {
+        // given
+        val testee = RootDirectoryWalker(File("src/test/resources/rootdirectorywalker/test-directory"), listOf(SupportedLanguage.JAVA))
+
+        // when
+        val files = testee.walk()
+
+        // then
+        assertThat(files.toList()).isEmpty()
+    }
+
+    @Test
+    fun `Should ignore files in tests directory`() {
+        // given
+        val testee = RootDirectoryWalker(File("src/test/resources/rootdirectorywalker/tests-directory"), listOf(SupportedLanguage.JAVA))
+
+        // when
+        val files = testee.walk()
+
+        // then
+        assertThat(files.toList()).isEmpty()
+    }
+
+    @Test
+    fun `Should ignore files in __tests__ directory`() {
+        // given
+        val testee = RootDirectoryWalker(File("src/test/resources/rootdirectorywalker/jest-tests"), listOf(SupportedLanguage.TYPESCRIPT))
+
+        // when
+        val files = testee.walk()
+
+        // then
+        assertThat(files.toList()).isEmpty()
     }
 }
