@@ -42,7 +42,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: dependacharta/dependacharta-analysis
+          images: maibornwolff/dependacharta-analysis
           tags: |
             # Manual dispatch: custom tag
             type=raw,value=${{ inputs.tag }},enable=${{ github.event_name == 'workflow_dispatch' }}
