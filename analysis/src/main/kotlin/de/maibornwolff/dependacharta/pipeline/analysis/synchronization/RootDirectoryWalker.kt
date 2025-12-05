@@ -34,7 +34,8 @@ class RootDirectoryWalker(
         if (!file.isFile) return false
         val extension = file.extension
         if (!languagesByExtension.containsKey(extension)) return false
-        return isNotIgnored(file.invariantSeparatorsPath)
+        val relativePath = file.toRelativeString(rootDirectory).replace("\\", "/")
+        return isNotIgnored(relativePath)
     }
 
     private fun isNotIgnored(path: String): Boolean {
