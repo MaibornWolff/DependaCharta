@@ -575,6 +575,31 @@ class KotlinAnalyzerTest {
     }
 
     @Test
+    fun `sealed class nested types should include parent class in path`() {
+        val kotlinCode = """
+            package de.maibornwolff.excavation.extraction
+
+            sealed class ExtractionStrategy {
+                data class FirstChildByType(val type: String) : ExtractionStrategy()
+                data class AllChildrenByType(val type: String) : ExtractionStrategy()
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(3, nodes.size)
+
+        // The full paths should include the parent class
+        val paths = nodes.map { it.pathWithName.withDots() }
+        assertThat(paths).containsExactlyInAnyOrder(
+            "de.maibornwolff.excavation.extraction.ExtractionStrategy",
+            "de.maibornwolff.excavation.extraction.ExtractionStrategy.FirstChildByType",
+            "de.maibornwolff.excavation.extraction.ExtractionStrategy.AllChildrenByType"
+        )
+    }
+
+    @Test
     fun `should handle nested class correctly`() {
         val kotlinCode = """
             package de.maibornwolff.dependacharta.analysis.analyzers
@@ -1336,5 +1361,73 @@ class KotlinAnalyzerTest {
                 Type.generic("List", listOf(Type.simple("String")))
             )
         )
+    }
+
+    @Test
+    fun `should extract qualified nested type constructor call`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            class Consumer {
+                fun useNestedType() {
+                    val strategy = ExtractionStrategy.AllChildrenByType("identifier")
+                }
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val usedTypes = report.nodes.first().usedTypes
+        val typeNames = usedTypes.map { it.name }
+        assertThat(typeNames).contains("ExtractionStrategy.AllChildrenByType")
+        assertThat(typeNames).contains("ExtractionStrategy")
+    }
+
+    @Test
+    fun `should extract qualified nested type in map value - real world case`() {
+        // This reproduces the exact pattern from JavaExtractionDictionary.kt:
+        // INFERRED_PARAMETERS to ExtractionStrategy.AllChildrenByType(IDENTIFIER)
+        val kotlinCode = """
+            package de.maibornwolff.treesitter.excavationsite.languages.java.extraction
+
+            import de.maibornwolff.treesitter.excavationsite.extraction.ExtractionStrategy
+
+            object JavaExtractionDictionary {
+                private const val IDENTIFIER = "identifier"
+                private const val INFERRED_PARAMETERS = "inferred_parameters"
+
+                val multiIdentifierMethods: Map<String, ExtractionStrategy> = mapOf(
+                    INFERRED_PARAMETERS to ExtractionStrategy.AllChildrenByType(IDENTIFIER)
+                )
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val usedTypes = report.nodes.first().usedTypes
+        val typeNames = usedTypes.map { it.name }
+        // Must extract the qualified nested type
+        assertThat(typeNames).contains("ExtractionStrategy.AllChildrenByType")
+    }
+
+    @Test
+    fun `should extract qualified nested type property access`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            class Consumer {
+                fun useNestedType() {
+                    val value = MyEnum.Entry.CONSTANT
+                }
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val usedTypes = report.nodes.first().usedTypes
+        val typeNames = usedTypes.map { it.name }
+        // MyEnum.Entry.CONSTANT should extract MyEnum.Entry as the type
+        assertThat(typeNames).contains("MyEnum.Entry")
+        assertThat(typeNames).contains("MyEnum")
     }
 }
