@@ -31,18 +31,56 @@ class KotlinAnalyzer(
         val packageResult = packageQuery.execute(rootNode, fileInfo.content)
         val dependencies = importQuery.execute(rootNode, fileInfo.content)
         val declarations = declarationsQuery.execute(rootNode)
-        val nodes = declarations.map {
+
+        // Build a map of byte offset -> declaration name for parent lookup
+        val declarationsByOffset = declarations.associateBy(
+            { it.startByte },
+            { extractDeclarationName(it) }
+        )
+
+        val nodes = declarations.map { declaration ->
+            val parentPath = findParentClassPath(declaration, declarationsByOffset)
             extractNodeFromDeclaration(
                 packageResult,
+                parentPath,
                 dependencies,
-                it
+                declaration
             )
         }
         return FileReport(nodes)
     }
 
+    private fun extractDeclarationName(declaration: TSNode): String {
+        val nodeBody = nodeAsString(declaration, fileInfo.content)
+        val declarationNode = parseCode(nodeBody).getChild(0)
+        val nameNode = declarationNode.find("type_identifier") ?: declarationNode.find("simple_identifier")
+        return nameNode?.let { nodeAsString(it, nodeBody) } ?: "Unknown"
+    }
+
+    private fun findParentClassPath(
+        declaration: TSNode,
+        declarationsByOffset: Map<Int, String>
+    ): List<String> {
+        val parentClasses = mutableListOf<String>()
+        var current = declaration.parent
+
+        while (!current.isNull) {
+            if (current.type == "class_declaration" || current.type == "object_declaration") {
+                // Check if this parent is in our declarations map
+                val parentName = declarationsByOffset[current.startByte]
+                if (parentName != null) {
+                    parentClasses.add(0, parentName)
+                }
+            }
+            current = current.parent
+        }
+
+        return parentClasses
+    }
+
     private fun extractNodeFromDeclaration(
         packagePath: List<String>,
+        parentClassPath: List<String>,
         imports: List<Dependency>,
         declaration: TSNode
     ): Node {
@@ -53,8 +91,12 @@ class KotlinAnalyzer(
 
         val implicitWildcardImport = Dependency(path = Path(packagePath), isWildcard = true)
         val usedTypes = extractUsedTypes(declarationNode, nodeBody)
+
+        // Full path includes package + parent classes + declaration name
+        val fullPath = packagePath + parentClassPath + declarationName
+
         return Node(
-            pathWithName = Path(packagePath + declarationName),
+            pathWithName = Path(fullPath),
             physicalPath = fileInfo.physicalPath,
             language = SupportedLanguage.KOTLIN,
             nodeType = nodeType(declarationNode),
