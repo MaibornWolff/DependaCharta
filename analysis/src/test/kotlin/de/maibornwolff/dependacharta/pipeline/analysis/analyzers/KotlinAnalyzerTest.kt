@@ -1430,4 +1430,428 @@ class KotlinAnalyzerTest {
         assertThat(typeNames).contains("MyEnum.Entry")
         assertThat(typeNames).contains("MyEnum")
     }
+
+    @Test
+    fun `should extract bare object reference in lambda`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            class Language {
+                val languageDefinitionProvider = { JavaDefinition }
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val usedTypes = report.nodes.first().usedTypes
+        assertThat(usedTypes).contains(Type.simple("JavaDefinition"))
+    }
+
+    @Test
+    fun `should extract bare object reference in property initializer`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            class Container {
+                val reference = MyObject
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val usedTypes = report.nodes.first().usedTypes
+        assertThat(usedTypes).contains(Type.simple("MyObject"))
+    }
+
+    @Test
+    fun `should not duplicate types when identifier appears in multiple contexts`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            class Container {
+                val provider = { JavaDefinition }
+                val instance = JavaDefinition
+                fun getDefinition(): JavaDefinition = JavaDefinition
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val usedTypes = report.nodes.first().usedTypes
+        val javaDefinitionCount = usedTypes.count { it.name == "JavaDefinition" }
+        // usedTypes is a Set, so duplicates should be removed
+        assertThat(javaDefinitionCount).isEqualTo(1)
+    }
+
+    @Test
+    fun `should extract enum value navigation expression`() {
+        // This tests that navigation expressions still work as before
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            class Language {
+                val languageProvider = { Language.KOTLIN }
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val usedTypes = report.nodes.first().usedTypes
+        assertThat(usedTypes).contains(Type.simple("Language"))
+    }
+
+    @Test
+    fun `should not extract lowercase identifiers as bare type references`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            class Container {
+                val provider = { someFunction }
+                val reference = localVariable
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val usedTypes = report.nodes.first().usedTypes
+        val typeNames = usedTypes.map { it.name }
+        assertThat(typeNames).doesNotContain("someFunction")
+        assertThat(typeNames).doesNotContain("localVariable")
+    }
+
+    // --- Top-level function tests ---
+
+    @Test
+    fun `should extract simple top-level function`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            fun greet() {
+                println("Hello")
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+        assertEquals("greet", nodes[0].pathWithName.parts.last())
+        assertEquals(NodeType.FUNCTION, nodes[0].nodeType)
+        assertEquals(
+            "de.maibornwolff.dependacharta.analysis.analyzers.greet",
+            nodes[0].pathWithName.withDots()
+        )
+    }
+
+    @Test
+    fun `should extract top-level function with parameter types`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            fun processData(input: String, count: Int) {
+                println(input.repeat(count))
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+        assertEquals("processData", nodes[0].pathWithName.parts.last())
+        assertThat(nodes[0].usedTypes).containsAll(
+            listOf(Type.simple("String"), Type.simple("Int"))
+        )
+    }
+
+    @Test
+    fun `should extract top-level function with return type`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            fun createMessage(): String {
+                return "Hello World"
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+        assertEquals("createMessage", nodes[0].pathWithName.parts.last())
+        assertThat(nodes[0].usedTypes).contains(Type.simple("String"))
+    }
+
+    @Test
+    fun `should extract top-level extension function with receiver type`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            fun String.addPrefix(prefix: String): String {
+                return prefix + this
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+        assertEquals("addPrefix", nodes[0].pathWithName.parts.last())
+        assertEquals(NodeType.FUNCTION, nodes[0].nodeType)
+        assertThat(nodes[0].usedTypes).contains(Type.simple("String"))
+    }
+
+    @Test
+    fun `should extract multiple top-level functions`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            fun first(): Int = 1
+            fun second(): String = "two"
+            fun third(): Boolean = true
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(3, nodes.size)
+        assertThat(nodes.map { it.pathWithName.parts.last() })
+            .containsExactly("first", "second", "third")
+        nodes.forEach { node ->
+            assertEquals(NodeType.FUNCTION, node.nodeType)
+        }
+    }
+
+    @Test
+    fun `should extract mix of top-level functions and classes`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            fun helperFunction(): String = "helper"
+
+            class DataClass(val value: String)
+
+            fun anotherHelper(data: DataClass): String {
+                return data.value
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(3, nodes.size)
+
+        val helperFunction = nodes[0]
+        assertEquals("helperFunction", helperFunction.pathWithName.parts.last())
+        assertEquals(NodeType.FUNCTION, helperFunction.nodeType)
+
+        val dataClass = nodes[1]
+        assertEquals("DataClass", dataClass.pathWithName.parts.last())
+        assertEquals(NodeType.CLASS, dataClass.nodeType)
+
+        val anotherHelper = nodes[2]
+        assertEquals("anotherHelper", anotherHelper.pathWithName.parts.last())
+        assertEquals(NodeType.FUNCTION, anotherHelper.nodeType)
+        assertThat(anotherHelper.usedTypes).contains(Type.simple("DataClass"))
+    }
+
+    @Test
+    fun `should not extract methods inside classes as top-level functions`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            class MyClass {
+                fun methodInClass(): String = "method"
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+        assertEquals("MyClass", nodes[0].pathWithName.parts.last())
+        assertEquals(NodeType.CLASS, nodes[0].nodeType)
+    }
+
+    @Test
+    fun `should extract top-level suspend function`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            suspend fun fetchData(): String {
+                return "data"
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+        assertEquals("fetchData", nodes[0].pathWithName.parts.last())
+        assertEquals(NodeType.FUNCTION, nodes[0].nodeType)
+        assertThat(nodes[0].usedTypes).contains(Type.simple("String"))
+    }
+
+    @Test
+    fun `should extract top-level function with annotations`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            @Deprecated("Use newFunction instead")
+            fun oldFunction(): String {
+                return "old"
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+        assertEquals("oldFunction", nodes[0].pathWithName.parts.last())
+        assertEquals(NodeType.FUNCTION, nodes[0].nodeType)
+        assertThat(nodes[0].usedTypes).contains(Type.simple("Deprecated"))
+    }
+
+    @Test
+    fun `should extract top-level generic function`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            fun <T> identity(value: T): T {
+                return value
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val nodes = report.nodes
+        assertEquals(1, nodes.size)
+        assertEquals("identity", nodes[0].pathWithName.parts.last())
+        assertEquals(NodeType.FUNCTION, nodes[0].nodeType)
+    }
+
+    // --- Callable Reference Tests ---
+
+    @Test
+    fun `should extract simple callable reference`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            class Consumer {
+                val ref = ::myFunction
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val usedTypes = report.nodes.first().usedTypes
+        assertThat(usedTypes).contains(Type.simple("myFunction"))
+    }
+
+    @Test
+    fun `should extract qualified callable reference with type`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            class Consumer {
+                val ref = SomeClass::someMethod
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val usedTypes = report.nodes.first().usedTypes
+        assertThat(usedTypes).contains(Type.simple("SomeClass"))
+        assertThat(usedTypes).contains(Type.simple("someMethod"))
+    }
+
+    @Test
+    fun `should extract callable reference in function argument`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            class Consumer {
+                fun process() {
+                    listOf(1, 2, 3).map(::transform)
+                }
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val usedTypes = report.nodes.first().usedTypes
+        assertThat(usedTypes).contains(Type.simple("transform"))
+    }
+
+    @Test
+    fun `should extract callable reference in lambda`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            class Consumer {
+                val provider = { ::extractLabelIdentifier }
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val usedTypes = report.nodes.first().usedTypes
+        assertThat(usedTypes).contains(Type.simple("extractLabelIdentifier"))
+    }
+
+    @Test
+    fun `should extract lowercase callable reference - real world pattern`() {
+        // This reproduces the exact pattern from TreesitterLibrary KotlinDefinition.kt
+        val kotlinCode = """
+            package de.maibornwolff.treesitter.excavationsite.languages.kotlin
+
+            import de.maibornwolff.treesitter.excavationsite.features.extraction.extractors.languagespecific.kotlin.extractLabelIdentifier
+
+            object KotlinDefinition {
+                val extractor = Extract.Identifier(customSingle = ::extractLabelIdentifier)
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val usedTypes = report.nodes.first().usedTypes
+        // The callable reference should be detected
+        assertThat(usedTypes).contains(Type.simple("extractLabelIdentifier"))
+    }
+
+    @Test
+    fun `should extract multiple callable references in same class`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            class Consumer {
+                val ref1 = ::firstFunction
+                val ref2 = ::secondFunction
+                val ref3 = SomeClass::thirdMethod
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val usedTypes = report.nodes.first().usedTypes
+        assertThat(usedTypes).contains(Type.simple("firstFunction"))
+        assertThat(usedTypes).contains(Type.simple("secondFunction"))
+        assertThat(usedTypes).contains(Type.simple("thirdMethod"))
+        assertThat(usedTypes).contains(Type.simple("SomeClass"))
+    }
+
+    @Test
+    fun `should extract constructor reference`() {
+        val kotlinCode = """
+            package de.maibornwolff.dependacharta.analysis.analyzers
+
+            class Consumer {
+                val factory = ::MyDataClass
+            }
+        """.trimIndent()
+
+        val report = KotlinAnalyzer(FileInfo(SupportedLanguage.KOTLIN, "./path", kotlinCode)).analyze()
+
+        val usedTypes = report.nodes.first().usedTypes
+        assertThat(usedTypes).contains(Type.simple("MyDataClass"))
+    }
 }

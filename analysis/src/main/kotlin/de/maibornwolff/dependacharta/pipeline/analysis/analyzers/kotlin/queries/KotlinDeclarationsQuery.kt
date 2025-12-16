@@ -18,19 +18,23 @@ class KotlinDeclarationsQuery(
         [
          (class_declaration)
          (object_declaration)
+         (function_declaration)
         ] @declaration
             """.trimIndent()
         )
 
     /**
      * Returns the Kotlin declarations contained within the given node.
+     * This includes classes, objects, and top-level functions.
      *
      * Example:
      * ```
      * class MyGreatClass {}
      * object MySingleton {}
+     * fun myTopLevelFunction() {}
      * ```
-     * will return the TreeSitter nodes representing `MyGreatClass` and `MySingleton`.
+     * will return the TreeSitter nodes representing `MyGreatClass`, `MySingleton`,
+     * and `myTopLevelFunction`.
      *
      * @param node the node to execute the query on
      * @return list of [TSNode]s representing the declarations

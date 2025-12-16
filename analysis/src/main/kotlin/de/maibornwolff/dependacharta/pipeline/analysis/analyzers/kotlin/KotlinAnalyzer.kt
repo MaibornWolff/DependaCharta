@@ -25,12 +25,15 @@ class KotlinAnalyzer(
     private val annotationTypesQuery = KotlinAnnotationTypesQuery(kotlin)
     private val constructorCallQuery = KotlinConstructorCallQuery(kotlin)
     private val callExpressionQuery = KotlinCallExpressionQuery(kotlin)
+    private val bareTypeReferenceQuery = KotlinBareTypeReferenceQuery(kotlin)
+    private val callableReferenceQuery = KotlinCallableReferenceQuery(kotlin)
 
     override fun analyze(): FileReport {
         val rootNode = parseCode(fileInfo.content)
         val packageResult = packageQuery.execute(rootNode, fileInfo.content)
         val dependencies = importQuery.execute(rootNode, fileInfo.content)
         val declarations = declarationsQuery.execute(rootNode)
+            .filter { isTopLevelDeclaration(it) }
 
         // Build a map of byte offset -> declaration name for parent lookup
         val declarationsByOffset = declarations.associateBy(
@@ -123,14 +126,18 @@ class KotlinAnalyzer(
         val annotations = annotationTypesQuery.execute(declaration, nodeBody)
         val constructorCalls = constructorCallQuery.execute(declaration, nodeBody)
         val callExpressions = callExpressionQuery.execute(declaration, nodeBody)
+        val bareTypeReferences = bareTypeReferenceQuery.execute(declaration, nodeBody)
+        val callableReferences = callableReferenceQuery.execute(declaration, nodeBody)
         return (
             inheritanceTypes + propertyTypes + parameterTypes + returnTypes +
-                annotations + constructorCalls + callExpressions
+                annotations + constructorCalls + callExpressions + bareTypeReferences +
+                callableReferences
         ).toSet()
     }
 
     private fun nodeType(declaration: TSNode): NodeType {
         if (declaration.type == "object_declaration") return NodeType.CLASS
+        if (declaration.type == "function_declaration") return NodeType.FUNCTION
         if (declaration.type != "class_declaration") return NodeType.UNKNOWN
 
         val children = declaration.getChildren()
@@ -139,5 +146,19 @@ class KotlinAnalyzer(
             children.any { it.type == "enum" } -> NodeType.ENUM
             else -> NodeType.CLASS
         }
+    }
+
+    private fun isTopLevelDeclaration(node: TSNode): Boolean {
+        if (node.type != "function_declaration") return true
+
+        var current = node.parent
+        while (!current.isNull) {
+            when (current.type) {
+                "class_declaration", "object_declaration", "function_declaration" -> return false
+                "source_file" -> return true
+            }
+            current = current.parent
+        }
+        return true
     }
 }
