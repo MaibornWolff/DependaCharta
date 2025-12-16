@@ -1,0 +1,239 @@
+package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.tsconfig
+
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.model.DirectImport
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
+import java.io.File
+
+class PathAliasResolverTest {
+
+    @Test
+    fun `should resolve simple path alias without wildcard`() {
+        // given
+        val config = TsConfigData(
+            compilerOptions = CompilerOptions(
+                baseUrl = "src",
+                paths = mapOf("core" to listOf("core"))
+            )
+        )
+        val import = DirectImport("core")
+        val tsconfigDir = File("/project")
+        val analysisRoot = File("/project")
+
+        // when
+        val resolved = PathAliasResolver.resolve(import, config, tsconfigDir, analysisRoot)
+
+        // then
+        assertThat(resolved).isNotNull
+        assertThat(resolved).isEqualTo(Path(listOf("src", "core")))
+    }
+
+    @Test
+    fun `should resolve path alias with wildcard`() {
+        // given
+        val config = TsConfigData(
+            compilerOptions = CompilerOptions(
+                baseUrl = "src",
+                paths = mapOf("core/*" to listOf("core/*"))
+            )
+        )
+        val import = DirectImport("core/models")
+        val tsconfigDir = File("/project")
+        val analysisRoot = File("/project")
+
+        // when
+        val resolved = PathAliasResolver.resolve(import, config, tsconfigDir, analysisRoot)
+
+        // then
+        assertThat(resolved).isNotNull
+        assertThat(resolved).isEqualTo(Path(listOf("src", "core", "models")))
+    }
+
+    @Test
+    fun `should resolve nested path with wildcard`() {
+        // given
+        val config = TsConfigData(
+            compilerOptions = CompilerOptions(
+                baseUrl = "src",
+                paths = mapOf("models/*" to listOf("app/models/*"))
+            )
+        )
+        val import = DirectImport("models/user/types")
+        val tsconfigDir = File("/project")
+        val analysisRoot = File("/project")
+
+        // when
+        val resolved = PathAliasResolver.resolve(import, config, tsconfigDir, analysisRoot)
+
+        // then
+        assertThat(resolved).isNotNull
+        assertThat(resolved).isEqualTo(Path(listOf("src", "app", "models", "user", "types")))
+    }
+
+    @Test
+    fun `should resolve with @ prefix alias`() {
+        // given
+        val config = TsConfigData(
+            compilerOptions = CompilerOptions(
+                baseUrl = ".",
+                paths = mapOf("@app/*" to listOf("src/app/*"))
+            )
+        )
+        val import = DirectImport("@app/components/Button")
+        val tsconfigDir = File("/project")
+        val analysisRoot = File("/project")
+
+        // when
+        val resolved = PathAliasResolver.resolve(import, config, tsconfigDir, analysisRoot)
+
+        // then
+        assertThat(resolved).isNotNull
+        assertThat(resolved).isEqualTo(Path(listOf("src", "app", "components", "Button")))
+    }
+
+    @Test
+    fun `should apply baseUrl when no path match found`() {
+        // given
+        val config = TsConfigData(
+            compilerOptions = CompilerOptions(
+                baseUrl = "src",
+                paths = mapOf("core/*" to listOf("core/*"))
+            )
+        )
+        val import = DirectImport("utils/helpers")
+        val tsconfigDir = File("/project")
+        val analysisRoot = File("/project")
+
+        // when
+        val resolved = PathAliasResolver.resolve(import, config, tsconfigDir, analysisRoot)
+
+        // then
+        assertThat(resolved).isNotNull
+        assertThat(resolved).isEqualTo(Path(listOf("src", "utils", "helpers")))
+    }
+
+    @Test
+    fun `should return null when no baseUrl and no path match`() {
+        // given
+        val config = TsConfigData(
+            compilerOptions = CompilerOptions(
+                baseUrl = null,
+                paths = mapOf("core/*" to listOf("core/*"))
+            )
+        )
+        val import = DirectImport("utils/helpers")
+        val tsconfigDir = File("/project")
+        val analysisRoot = File("/project")
+
+        // when
+        val resolved = PathAliasResolver.resolve(import, config, tsconfigDir, analysisRoot)
+
+        // then
+        assertThat(resolved).isNull()
+    }
+
+    @Test
+    fun `should return null when config has no compilerOptions`() {
+        // given
+        val config = TsConfigData(compilerOptions = null)
+        val import = DirectImport("core/models")
+        val tsconfigDir = File("/project")
+        val analysisRoot = File("/project")
+
+        // when
+        val resolved = PathAliasResolver.resolve(import, config, tsconfigDir, analysisRoot)
+
+        // then
+        assertThat(resolved).isNull()
+    }
+
+    @Test
+    fun `should handle relative baseUrl`() {
+        // given
+        val config = TsConfigData(
+            compilerOptions = CompilerOptions(
+                baseUrl = "./src",
+                paths = mapOf("core/*" to listOf("core/*"))
+            )
+        )
+        val import = DirectImport("core/models")
+        val tsconfigDir = File("/project")
+        val analysisRoot = File("/project")
+
+        // when
+        val resolved = PathAliasResolver.resolve(import, config, tsconfigDir, analysisRoot)
+
+        // then
+        assertThat(resolved).isNotNull
+        assertThat(resolved).isEqualTo(Path(listOf("src", "core", "models")))
+    }
+
+    @Test
+    fun `should prefer first matching path pattern`() {
+        // given
+        val config = TsConfigData(
+            compilerOptions = CompilerOptions(
+                baseUrl = "src",
+                paths = mapOf(
+                    "core/*" to listOf("core/*", "lib/core/*")
+                )
+            )
+        )
+        val import = DirectImport("core/models")
+        val tsconfigDir = File("/project")
+        val analysisRoot = File("/project")
+
+        // when
+        val resolved = PathAliasResolver.resolve(import, config, tsconfigDir, analysisRoot)
+
+        // then
+        assertThat(resolved).isNotNull
+        assertThat(resolved).isEqualTo(Path(listOf("src", "core", "models")))
+    }
+
+    @Test
+    fun `should handle analysis root different from tsconfig dir`() {
+        // given
+        val config = TsConfigData(
+            compilerOptions = CompilerOptions(
+                baseUrl = "src",
+                paths = mapOf("core/*" to listOf("core/*"))
+            )
+        )
+        val import = DirectImport("core/models")
+        val tsconfigDir = File("/project/frontend")
+        val analysisRoot = File("/project/frontend/src")
+
+        // when
+        val resolved = PathAliasResolver.resolve(import, config, tsconfigDir, analysisRoot)
+
+        // then
+        assertThat(resolved).isNotNull
+        assertThat(resolved).isEqualTo(Path(listOf("core", "models")))
+    }
+
+    @Test
+    fun `should match exact pattern before wildcard pattern`() {
+        // given
+        val config = TsConfigData(
+            compilerOptions = CompilerOptions(
+                baseUrl = "src",
+                paths = mapOf(
+                    "core" to listOf("core/index"),
+                    "core/*" to listOf("core/*")
+                )
+            )
+        )
+        val import = DirectImport("core")
+        val tsconfigDir = File("/project")
+        val analysisRoot = File("/project")
+
+        // when
+        val resolved = PathAliasResolver.resolve(import, config, tsconfigDir, analysisRoot)
+
+        // then
+        assertThat(resolved).isNotNull
+        assertThat(resolved).isEqualTo(Path(listOf("src", "core", "index")))
+    }
+}

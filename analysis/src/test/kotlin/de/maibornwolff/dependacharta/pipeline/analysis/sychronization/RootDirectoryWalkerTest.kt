@@ -65,7 +65,8 @@ class RootDirectoryWalkerTest {
         val expected = FileInfo(
             language = SupportedLanguage.JAVA,
             physicalPath = expectedFileName,
-            content = "java test"
+            content = "java test",
+            analysisRoot = File("src/test/resources/rootdirectorywalker")
         )
         assertThat(fileInfo).isEqualTo(expected)
     }

@@ -1,5 +1,6 @@
 package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.queries
 
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.model.DirectImport
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.model.toImport
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.execute
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.getNamedChildren
@@ -9,12 +10,16 @@ import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.DEFA
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.model.DependenciesAndAliases
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.model.IdentifierWithAlias
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.trimFileEnding
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.tsconfig.PathAliasResolver
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.tsconfig.TsConfigResolver
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Dependency
+import de.maibornwolff.dependacharta.pipeline.analysis.model.FileInfo
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
 import org.treesitter.TSNode
 import org.treesitter.TSQuery
 import org.treesitter.TSQueryMatch
 import org.treesitter.TreeSitterTypescript
+import java.io.File
 
 /**
  *  [execute]
@@ -27,6 +32,7 @@ class TypescriptImportStatementQuery(
         typescript,
         "(variable_declarator name: _ @name value: (call_expression function: (identifier) @function arguments: (arguments (string) @module) (#eq? @function \"require\")))"
     )
+    private val tsConfigResolver = TsConfigResolver()
 
     /**
      * Returns the dependencies and aliases of the imports contained within the given node.
@@ -67,19 +73,21 @@ class TypescriptImportStatementQuery(
      * @param node the node to execute the query on
      * @param bodyContainingNode the string that was parsed to get to the node
      * @param currentFilePath the path of the file that contains the node
+     * @param fileInfo the file info containing analysis root for path resolution
      * @return [DependenciesAndAliases] containing the imported dependencies and aliases
      */
     fun execute(
         node: TSNode,
         bodyContainingNode: String,
-        currentFilePath: Path
+        currentFilePath: Path,
+        fileInfo: FileInfo? = null
     ): DependenciesAndAliases {
         val esModuleImports = node
             .execute(esModuleImportQuery)
-            .map { import -> extractDependenciesAndAliasesFromEsModule(import, bodyContainingNode, currentFilePath) }
+            .map { import -> extractDependenciesAndAliasesFromEsModule(import, bodyContainingNode, currentFilePath, fileInfo) }
         val commonJsImports = node
             .execute(commonJsImportsQuery)
-            .map { import -> extractDependenciesAndAliasesFromCommonJs(import, bodyContainingNode, currentFilePath) }
+            .map { import -> extractDependenciesAndAliasesFromCommonJs(import, bodyContainingNode, currentFilePath, fileInfo) }
 
         return (esModuleImports + commonJsImports).fold(
             DependenciesAndAliases(emptySet(), emptyMap()),
@@ -90,12 +98,13 @@ class TypescriptImportStatementQuery(
     private fun extractDependenciesAndAliasesFromEsModule(
         import: TSQueryMatch,
         nodeBody: String,
-        filePath: Path
+        filePath: Path,
+        fileInfo: FileInfo?
     ): DependenciesAndAliases {
         val source = import.captures[1].node.getNamedChild(0)
         val sourceName = nodeAsString(source, nodeBody)
         val trimmedSourceName = sourceName.trimFileEnding()
-        val path = resolveRelativePath(trimmedSourceName.toImport(), filePath)
+        val path = resolveImportPath(trimmedSourceName, filePath, fileInfo)
 
         val identifiersWithAliases = import.captures[0]
             .node
@@ -118,12 +127,13 @@ class TypescriptImportStatementQuery(
     private fun extractDependenciesAndAliasesFromCommonJs(
         import: TSQueryMatch,
         nodeBody: String,
-        filePath: Path
+        filePath: Path,
+        fileInfo: FileInfo?
     ): DependenciesAndAliases {
         val source = import.captures[2].node.getNamedChild(0)
         val sourceName = nodeAsString(source, nodeBody)
         val trimmedSourceName = sourceName.trimFileEnding()
-        val path = resolveRelativePath(trimmedSourceName.toImport(), filePath)
+        val path = resolveImportPath(trimmedSourceName, filePath, fileInfo)
         val node = import.captures[0].node
         val identifiersWithAliases = if (node.type == "object_pattern") {
             node.getNamedChildren().map { child -> identifierWithAliasCommonJs(child, nodeBody) }
@@ -133,6 +143,48 @@ class TypescriptImportStatementQuery(
             )
         }
         return toDependenciesAndAliases(identifiersWithAliases, path)
+    }
+
+    private fun resolveImportPath(
+        importString: String,
+        currentFilePath: Path,
+        fileInfo: FileInfo?
+    ): Path {
+        val import = importString.toImport()
+
+        if (import is DirectImport && fileInfo?.analysisRoot != null) {
+            val sourceFile = fileInfo.analysisRoot.resolve(fileInfo.physicalPath)
+            val tsConfig = tsConfigResolver.findTsConfigWithInheritance(sourceFile)
+
+            if (tsConfig != null) {
+                val tsconfigFile = findTsConfigFile(sourceFile)
+                if (tsconfigFile != null) {
+                    val resolved = PathAliasResolver.resolve(
+                        import,
+                        tsConfig,
+                        tsconfigFile.parentFile,
+                        fileInfo.analysisRoot
+                    )
+                    if (resolved != null) {
+                        return resolved
+                    }
+                }
+            }
+        }
+
+        return resolveRelativePath(import, currentFilePath)
+    }
+
+    private fun findTsConfigFile(sourceFile: File): File? {
+        var currentDir = sourceFile.parentFile
+        while (currentDir != null) {
+            val tsconfigFile = currentDir.resolve("tsconfig.json")
+            if (tsconfigFile.exists()) {
+                return tsconfigFile
+            }
+            currentDir = currentDir.parentFile
+        }
+        return null
     }
 
     private fun toDependenciesAndAliases(

@@ -23,7 +23,8 @@ class RootDirectoryWalker(
             content = sourceCodeFile
                 .readText(Charsets.UTF_8)
                 // delete UTF-8 BOM character
-                .removePrefix("\uFEFF")
+                .removePrefix("\uFEFF"),
+            analysisRoot = rootDirectory
         )
     }
 

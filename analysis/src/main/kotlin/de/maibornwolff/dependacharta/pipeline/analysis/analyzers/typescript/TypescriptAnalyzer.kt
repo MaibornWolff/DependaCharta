@@ -39,12 +39,12 @@ class TypescriptAnalyzer(
 
         val nodes = if (fileName == "index.ts" || fileName == "index.tsx") {
             // Index files need to process BOTH re-exports AND regular exports
-            val fileLevelDependencies = importStatementQuery.execute(rootNode, fileInfo.content, path)
+            val fileLevelDependencies = importStatementQuery.execute(rootNode, fileInfo.content, path, fileInfo)
             val reexports = extractExportsOfIndexTs(rootNode, fileInfo.content, path)
             val regularExports = extractNodes(rootNode, fileInfo.content, path, fileLevelDependencies)
             reexports + regularExports
         } else {
-            val fileLevelDependencies = importStatementQuery.execute(rootNode, fileInfo.content, path)
+            val fileLevelDependencies = importStatementQuery.execute(rootNode, fileInfo.content, path, fileInfo)
             extractNodes(rootNode, fileInfo.content, path, fileLevelDependencies)
         }
         val dependencyOnThisFile = Dependency(path, isWildcard = true)
