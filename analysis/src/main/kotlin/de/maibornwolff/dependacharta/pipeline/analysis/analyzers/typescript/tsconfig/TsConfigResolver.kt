@@ -57,7 +57,10 @@ class TsConfigResolver {
         return mergeConfigs(parentConfig, config)
     }
 
-    private fun resolveExtendsPath(tsconfigFile: File, extendsPath: String): File {
+    private fun resolveExtendsPath(
+        tsconfigFile: File,
+        extendsPath: String
+    ): File {
         return if (File(extendsPath).isAbsolute) {
             File(extendsPath)
         } else {
@@ -65,7 +68,10 @@ class TsConfigResolver {
         }
     }
 
-    private fun mergeConfigs(parent: TsConfigData, child: TsConfigData): TsConfigData {
+    private fun mergeConfigs(
+        parent: TsConfigData,
+        child: TsConfigData
+    ): TsConfigData {
         val parentOptions = parent.compilerOptions
         val childOptions = child.compilerOptions
 

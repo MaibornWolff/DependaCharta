@@ -10,6 +10,7 @@ ktlint_standard_string-template-indent = disabled
 ktlint_standard_supertype-list-wrapping = disabled
 ktlint_standard_multiline-expression-wrapping = disabled
 ktlint_standard_no-wildcard-imports = disabled
+ktlint_standard_function-expression-body = disabled
 
 [build.gradle.kts]
 max_line_length = off

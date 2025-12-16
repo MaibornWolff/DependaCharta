@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test
 import java.io.File
 
 class PathAliasResolverTest {
-
     @Test
     fun `should resolve simple path alias without wildcard`() {
         // given
