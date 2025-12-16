@@ -26,3 +26,4 @@ analyzer.log
 visualization/sbom
 
 .claude/settings.local.json
+.agency/
