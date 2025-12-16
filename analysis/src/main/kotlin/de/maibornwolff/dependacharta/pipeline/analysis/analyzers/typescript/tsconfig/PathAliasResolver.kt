@@ -36,7 +36,10 @@ object PathAliasResolver {
         return Path(relativePath.split("/").filter { it.isNotEmpty() })
     }
 
-    private fun findMatchingPath(importPath: String, paths: Map<String, List<String>>?): String? {
+    private fun findMatchingPath(
+        importPath: String,
+        paths: Map<String, List<String>>?
+    ): String? {
         if (paths == null) {
             return null
         }
@@ -65,7 +68,10 @@ object PathAliasResolver {
         return baseUrl.removePrefix("./").removeSuffix("/")
     }
 
-    private fun makeRelativeToAnalysisRoot(absolutePath: File, analysisRoot: File): String {
+    private fun makeRelativeToAnalysisRoot(
+        absolutePath: File,
+        analysisRoot: File
+    ): String {
         val canonicalAnalysisRoot = analysisRoot.canonicalFile
         val absolutePathStr = absolutePath.path
         val analysisRootStr = canonicalAnalysisRoot.path

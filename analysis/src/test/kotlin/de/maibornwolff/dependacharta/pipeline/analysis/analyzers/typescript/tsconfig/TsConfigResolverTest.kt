@@ -22,13 +22,15 @@ class TsConfigResolverTest {
         // given
         val srcDir = tempDir.resolve("src").apply { mkdirs() }
         val tsconfig = srcDir.resolve("tsconfig.json")
-        tsconfig.writeText("""
+        tsconfig.writeText(
+            """
             {
               "compilerOptions": {
                 "baseUrl": "."
               }
             }
-        """.trimIndent())
+            """.trimIndent()
+        )
 
         val sourceFile = srcDir.resolve("index.ts")
 
@@ -44,13 +46,15 @@ class TsConfigResolverTest {
     fun `should find tsconfig in parent directory`() {
         // given
         val tsconfig = tempDir.resolve("tsconfig.json")
-        tsconfig.writeText("""
+        tsconfig.writeText(
+            """
             {
               "compilerOptions": {
                 "baseUrl": "src"
               }
             }
-        """.trimIndent())
+            """.trimIndent()
+        )
 
         val srcDir = tempDir.resolve("src/components").apply { mkdirs() }
         val sourceFile = srcDir.resolve("App.ts")
@@ -67,23 +71,27 @@ class TsConfigResolverTest {
     fun `should prefer nearest tsconfig in monorepo`() {
         // given
         val rootTsconfig = tempDir.resolve("tsconfig.json")
-        rootTsconfig.writeText("""
+        rootTsconfig.writeText(
+            """
             {
               "compilerOptions": {
                 "baseUrl": "."
               }
             }
-        """.trimIndent())
+            """.trimIndent()
+        )
 
         val packagesDir = tempDir.resolve("packages/frontend").apply { mkdirs() }
         val packageTsconfig = packagesDir.resolve("tsconfig.json")
-        packageTsconfig.writeText("""
+        packageTsconfig.writeText(
+            """
             {
               "compilerOptions": {
                 "baseUrl": "src"
               }
             }
-        """.trimIndent())
+            """.trimIndent()
+        )
 
         val sourceFile = packagesDir.resolve("src/index.ts")
 
@@ -112,17 +120,20 @@ class TsConfigResolverTest {
     fun `should resolve tsconfig with extends field`() {
         // given
         val baseTsconfig = tempDir.resolve("tsconfig.base.json")
-        baseTsconfig.writeText("""
+        baseTsconfig.writeText(
+            """
             {
               "compilerOptions": {
                 "baseUrl": ".",
                 "strict": true
               }
             }
-        """.trimIndent())
+            """.trimIndent()
+        )
 
         val tsconfig = tempDir.resolve("tsconfig.json")
-        tsconfig.writeText("""
+        tsconfig.writeText(
+            """
             {
               "extends": "./tsconfig.base.json",
               "compilerOptions": {
@@ -131,7 +142,8 @@ class TsConfigResolverTest {
                 }
               }
             }
-        """.trimIndent())
+            """.trimIndent()
+        )
 
         val sourceFile = tempDir.resolve("src/index.ts")
 
@@ -148,7 +160,8 @@ class TsConfigResolverTest {
     fun `should resolve extends to merged configuration`() {
         // given
         val baseTsconfig = tempDir.resolve("tsconfig.base.json")
-        baseTsconfig.writeText("""
+        baseTsconfig.writeText(
+            """
             {
               "compilerOptions": {
                 "baseUrl": ".",
@@ -157,10 +170,12 @@ class TsConfigResolverTest {
                 }
               }
             }
-        """.trimIndent())
+            """.trimIndent()
+        )
 
         val tsconfig = tempDir.resolve("tsconfig.json")
-        tsconfig.writeText("""
+        tsconfig.writeText(
+            """
             {
               "extends": "./tsconfig.base.json",
               "compilerOptions": {
@@ -169,7 +184,8 @@ class TsConfigResolverTest {
                 }
               }
             }
-        """.trimIndent())
+            """.trimIndent()
+        )
 
         val sourceFile = tempDir.resolve("src/index.ts")
 
@@ -186,23 +202,27 @@ class TsConfigResolverTest {
     fun `should override parent baseUrl with child baseUrl`() {
         // given
         val baseTsconfig = tempDir.resolve("tsconfig.base.json")
-        baseTsconfig.writeText("""
+        baseTsconfig.writeText(
+            """
             {
               "compilerOptions": {
                 "baseUrl": "."
               }
             }
-        """.trimIndent())
+            """.trimIndent()
+        )
 
         val tsconfig = tempDir.resolve("tsconfig.json")
-        tsconfig.writeText("""
+        tsconfig.writeText(
+            """
             {
               "extends": "./tsconfig.base.json",
               "compilerOptions": {
                 "baseUrl": "src"
               }
             }
-        """.trimIndent())
+            """.trimIndent()
+        )
 
         val sourceFile = tempDir.resolve("index.ts")
 
@@ -218,16 +238,19 @@ class TsConfigResolverTest {
     fun `should handle extends with absolute path`() {
         // given
         val baseTsconfig = tempDir.resolve("config/tsconfig.base.json").apply { parentFile.mkdirs() }
-        baseTsconfig.writeText("""
+        baseTsconfig.writeText(
+            """
             {
               "compilerOptions": {
                 "baseUrl": "."
               }
             }
-        """.trimIndent())
+            """.trimIndent()
+        )
 
         val tsconfig = tempDir.resolve("tsconfig.json")
-        tsconfig.writeText("""
+        tsconfig.writeText(
+            """
             {
               "extends": "${baseTsconfig.absolutePath}",
               "compilerOptions": {
@@ -236,7 +259,8 @@ class TsConfigResolverTest {
                 }
               }
             }
-        """.trimIndent())
+            """.trimIndent()
+        )
 
         val sourceFile = tempDir.resolve("src/index.ts")
 
@@ -253,11 +277,13 @@ class TsConfigResolverTest {
     fun `should return null for extends with non-existent file`() {
         // given
         val tsconfig = tempDir.resolve("tsconfig.json")
-        tsconfig.writeText("""
+        tsconfig.writeText(
+            """
             {
               "extends": "./nonexistent.json"
             }
-        """.trimIndent())
+            """.trimIndent()
+        )
 
         val sourceFile = tempDir.resolve("src/index.ts")
 
@@ -273,13 +299,15 @@ class TsConfigResolverTest {
     fun `should cache tsconfig lookups for performance`() {
         // given
         val tsconfig = tempDir.resolve("tsconfig.json")
-        tsconfig.writeText("""
+        tsconfig.writeText(
+            """
             {
               "compilerOptions": {
                 "baseUrl": "src"
               }
             }
-        """.trimIndent())
+            """.trimIndent()
+        )
 
         val file1 = tempDir.resolve("src/file1.ts")
         val file2 = tempDir.resolve("src/file2.ts")

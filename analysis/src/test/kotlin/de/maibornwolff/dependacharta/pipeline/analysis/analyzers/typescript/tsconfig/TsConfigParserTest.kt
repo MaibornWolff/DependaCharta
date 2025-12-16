@@ -13,7 +13,8 @@ class TsConfigParserTest {
     fun `should parse tsconfig with baseUrl and paths`() {
         // given
         val tsconfig = tempDir.resolve("tsconfig.json")
-        tsconfig.writeText("""
+        tsconfig.writeText(
+            """
             {
               "compilerOptions": {
                 "baseUrl": "src",
@@ -23,7 +24,8 @@ class TsConfigParserTest {
                 }
               }
             }
-        """.trimIndent())
+            """.trimIndent()
+        )
 
         // when
         val result = TsConfigParser.parse(tsconfig)
@@ -39,13 +41,15 @@ class TsConfigParserTest {
     fun `should parse tsconfig with only baseUrl`() {
         // given
         val tsconfig = tempDir.resolve("tsconfig.json")
-        tsconfig.writeText("""
+        tsconfig.writeText(
+            """
             {
               "compilerOptions": {
                 "baseUrl": "./src"
               }
             }
-        """.trimIndent())
+            """.trimIndent()
+        )
 
         // when
         val result = TsConfigParser.parse(tsconfig)
@@ -60,7 +64,8 @@ class TsConfigParserTest {
     fun `should parse tsconfig with only paths`() {
         // given
         val tsconfig = tempDir.resolve("tsconfig.json")
-        tsconfig.writeText("""
+        tsconfig.writeText(
+            """
             {
               "compilerOptions": {
                 "paths": {
@@ -68,7 +73,8 @@ class TsConfigParserTest {
                 }
               }
             }
-        """.trimIndent())
+            """.trimIndent()
+        )
 
         // when
         val result = TsConfigParser.parse(tsconfig)
@@ -83,16 +89,19 @@ class TsConfigParserTest {
     fun `should parse tsconfig with extends field`() {
         // given
         val parentTsconfig = tempDir.resolve("tsconfig.base.json")
-        parentTsconfig.writeText("""
+        parentTsconfig.writeText(
+            """
             {
               "compilerOptions": {
                 "baseUrl": "."
               }
             }
-        """.trimIndent())
+            """.trimIndent()
+        )
 
         val tsconfig = tempDir.resolve("tsconfig.json")
-        tsconfig.writeText("""
+        tsconfig.writeText(
+            """
             {
               "extends": "./tsconfig.base.json",
               "compilerOptions": {
@@ -101,7 +110,8 @@ class TsConfigParserTest {
                 }
               }
             }
-        """.trimIndent())
+            """.trimIndent()
+        )
 
         // when
         val result = TsConfigParser.parse(tsconfig)
@@ -128,13 +138,15 @@ class TsConfigParserTest {
     fun `should return null for malformed JSON`() {
         // given
         val tsconfig = tempDir.resolve("tsconfig.json")
-        tsconfig.writeText("""
+        tsconfig.writeText(
+            """
             {
               "compilerOptions": {
                 "baseUrl": "src"
               invalid json
             }
-        """.trimIndent())
+            """.trimIndent()
+        )
 
         // when
         val result = TsConfigParser.parse(tsconfig)
@@ -162,12 +174,14 @@ class TsConfigParserTest {
     fun `should parse tsconfig without compilerOptions`() {
         // given
         val tsconfig = tempDir.resolve("tsconfig.json")
-        tsconfig.writeText("""
+        tsconfig.writeText(
+            """
             {
               "include": ["src/**/*"],
               "exclude": ["node_modules"]
             }
-        """.trimIndent())
+            """.trimIndent()
+        )
 
         // when
         val result = TsConfigParser.parse(tsconfig)
@@ -181,7 +195,8 @@ class TsConfigParserTest {
     fun `should handle multiple path mappings for same pattern`() {
         // given
         val tsconfig = tempDir.resolve("tsconfig.json")
-        tsconfig.writeText("""
+        tsconfig.writeText(
+            """
             {
               "compilerOptions": {
                 "baseUrl": ".",
@@ -190,7 +205,8 @@ class TsConfigParserTest {
                 }
               }
             }
-        """.trimIndent())
+            """.trimIndent()
+        )
 
         // when
         val result = TsConfigParser.parse(tsconfig)
