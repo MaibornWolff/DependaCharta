@@ -4,6 +4,7 @@ import {Action} from './Action';
 import {Edge} from "./Edge";
 import {DataClass} from "../common/DataClass";
 import { IdUtils } from "./Id";
+import {Coordinates} from "./lsmLayouting";
 
 // TODO avoid Maps (→ (de-)serialization issues)
 export class State extends DataClass<State> {
@@ -20,6 +21,7 @@ export class State extends DataClass<State> {
   declare readonly isInteractive: boolean
   declare readonly isUsageShown: boolean
   declare readonly multiselectMode: boolean
+  declare readonly manuallyPositionedNodes: Map<string, Coordinates>
 
   static build(overrides: Partial<State> = {}) {
     const defaults = State.make({
@@ -35,7 +37,8 @@ export class State extends DataClass<State> {
       selectedFilter: EdgeFilterType.FEEDBACK_EDGES_AND_TWISTED_EDGES,
       isInteractive: true,
       isUsageShown: true,
-      multiselectMode: false
+      multiselectMode: false,
+      manuallyPositionedNodes: new Map<string, Coordinates>()
     })
 
     return defaults.copy(overrides)
@@ -57,10 +60,26 @@ export class State extends DataClass<State> {
         return this.copy({
           expandedNodeIds: [...this.expandedNodeIds, action.nodeId]
         })
-      case action instanceof Action.CollapseNode:
+      case action instanceof Action.CollapseNode: {
+        // Find the node being collapsed
+        const collapsedNode = this.allNodes.find(node => node.id === action.nodeId)
+
+        // Get all descendant IDs (but not the collapsed node itself)
+        const descendantIds = collapsedNode
+          ? Array.from(getDescendants(collapsedNode))
+              .map(node => node.id)
+              .filter(id => id !== action.nodeId) // Exclude the parent
+          : []
+
+        // Remove descendant positions from manuallyPositionedNodes
+        const updatedManualPositions = new Map(this.manuallyPositionedNodes)
+        descendantIds.forEach(id => updatedManualPositions.delete(id))
+
         return this.copy({
-          expandedNodeIds: this.expandedNodeIds.filter(id => !IdUtils.isDescendantOf([action.nodeId])(id))
+          expandedNodeIds: this.expandedNodeIds.filter(id => !IdUtils.isDescendantOf([action.nodeId])(id)),
+          manuallyPositionedNodes: updatedManualPositions
         })
+      }
       case action instanceof Action.ChangeFilter:
         return this.copy({
           selectedFilter: action.edgeFilter
@@ -158,8 +177,28 @@ export class State extends DataClass<State> {
             ? this.selectedNodeIds.filter(id => id !== action.nodeId)
             : [...this.selectedNodeIds, action.nodeId]
         })
+      case action instanceof Action.SetNodeManualPosition: {
+        const updatedMap = new Map(this.manuallyPositionedNodes)
+        updatedMap.set(action.nodeId, action.position)
+        return this.copy({
+          manuallyPositionedNodes: updatedMap
+        })
+      }
+      case action instanceof Action.ClearNodeManualPosition: {
+        const updatedMap = new Map(this.manuallyPositionedNodes)
+        updatedMap.delete(action.nodeId)
+        return this.copy({
+          manuallyPositionedNodes: updatedMap
+        })
+      }
+      case action instanceof Action.ClearAllManualPositions:
+        return this.copy({
+          manuallyPositionedNodes: new Map()
+        })
       case action instanceof Action.ResetView:
-        return this
+        return this.copy({
+          manuallyPositionedNodes: new Map()
+        })
       default:
         action satisfies never
         return this

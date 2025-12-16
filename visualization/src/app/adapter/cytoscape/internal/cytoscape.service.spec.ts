@@ -98,6 +98,26 @@ describe('CytoscapeService', async () => {
     })
   });
 
+  it('should recalculate layout when resetting view with manual positions', () => {
+    // Arrange
+    const updatedState = expandEmptyTopLevelPackages()
+    const stateWithManualPositions = updatedState.copy({
+      manuallyPositionedNodes: new Map([['de', { x: 500, y: 500 }]])
+    })
+    const action = new Action.ResetView()
+    const finalState = stateWithManualPositions.reduce(action)
+
+    // Spy on the private updateGraph method
+    const updateGraphSpy = spyOn<any>(cytoscapeService, 'updateGraph')
+
+    // Act
+    cytoscapeService.apply(finalState, action)
+
+    // Assert - just verify updateGraph was called
+    expect(updateGraphSpy).toHaveBeenCalled()
+    expect(finalState.manuallyPositionedNodes.size).toBe(0)
+  });
+
   it('should show a selected nodes edges in multiselect mode', () => {
     // given
     const initialState = expandEmptyTopLevelPackages()
@@ -242,7 +262,7 @@ describe('CytoscapeService', () => {
       // Call registerEventListeners directly
       (service as any).registerEventListeners(mockCore);
 
-      expect(mockCore.on).toHaveBeenCalledTimes(8);
+      expect(mockCore.on).toHaveBeenCalledTimes(9);
     });
   });
 
