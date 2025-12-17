@@ -154,10 +154,10 @@ class TypescriptImportStatementQuery(
 
         if (import is DirectImport && fileInfo?.analysisRoot != null) {
             val sourceFile = fileInfo.analysisRoot.resolve(fileInfo.physicalPath)
-            val tsConfig = tsConfigResolver.findTsConfigWithInheritance(sourceFile)
+            val tsConfig = tsConfigResolver.findTsConfig(sourceFile)
 
             if (tsConfig != null) {
-                val tsconfigFile = findTsConfigFile(sourceFile)
+                val tsconfigFile = tsConfigResolver.findTsConfigFile(sourceFile)
                 if (tsconfigFile != null) {
                     val resolved = PathAliasResolver.resolve(
                         import,
@@ -173,18 +173,6 @@ class TypescriptImportStatementQuery(
         }
 
         return resolveRelativePath(import, currentFilePath)
-    }
-
-    private fun findTsConfigFile(sourceFile: File): File? {
-        var currentDir = sourceFile.parentFile
-        while (currentDir != null) {
-            val tsconfigFile = currentDir.resolve("tsconfig.json")
-            if (tsconfigFile.exists()) {
-                return tsconfigFile
-            }
-            currentDir = currentDir.parentFile
-        }
-        return null
     }
 
     private fun toDependenciesAndAliases(

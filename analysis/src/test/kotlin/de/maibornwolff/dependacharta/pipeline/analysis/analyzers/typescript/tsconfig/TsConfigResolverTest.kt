@@ -18,7 +18,7 @@ class TsConfigResolverTest {
     }
 
     @Test
-    fun `should find tsconfig in same directory as file`() {
+    fun `should find tsconfig without extends field`() {
         // given
         val srcDir = tempDir.resolve("src").apply { mkdirs() }
         val tsconfig = srcDir.resolve("tsconfig.json")
@@ -40,31 +40,6 @@ class TsConfigResolverTest {
         // then
         assertThat(result).isNotNull
         assertThat(result?.compilerOptions?.baseUrl).isEqualTo(".")
-    }
-
-    @Test
-    fun `should find tsconfig in parent directory`() {
-        // given
-        val tsconfig = tempDir.resolve("tsconfig.json")
-        tsconfig.writeText(
-            """
-            {
-              "compilerOptions": {
-                "baseUrl": "src"
-              }
-            }
-            """.trimIndent()
-        )
-
-        val srcDir = tempDir.resolve("src/components").apply { mkdirs() }
-        val sourceFile = srcDir.resolve("App.ts")
-
-        // when
-        val result = resolver.findTsConfig(sourceFile)
-
-        // then
-        assertThat(result).isNotNull
-        assertThat(result?.compilerOptions?.baseUrl).isEqualTo("src")
     }
 
     @Test
@@ -117,46 +92,6 @@ class TsConfigResolverTest {
     }
 
     @Test
-    fun `should resolve tsconfig with extends field`() {
-        // given
-        val baseTsconfig = tempDir.resolve("tsconfig.base.json")
-        baseTsconfig.writeText(
-            """
-            {
-              "compilerOptions": {
-                "baseUrl": ".",
-                "strict": true
-              }
-            }
-            """.trimIndent()
-        )
-
-        val tsconfig = tempDir.resolve("tsconfig.json")
-        tsconfig.writeText(
-            """
-            {
-              "extends": "./tsconfig.base.json",
-              "compilerOptions": {
-                "paths": {
-                  "core/*": ["core/*"]
-                }
-              }
-            }
-            """.trimIndent()
-        )
-
-        val sourceFile = tempDir.resolve("src/index.ts")
-
-        // when
-        val result = resolver.findTsConfig(sourceFile)
-
-        // then
-        assertThat(result).isNotNull
-        assertThat(result?.extends).isEqualTo("./tsconfig.base.json")
-        assertThat(result?.compilerOptions?.paths).containsKey("core/*")
-    }
-
-    @Test
     fun `should resolve extends to merged configuration`() {
         // given
         val baseTsconfig = tempDir.resolve("tsconfig.base.json")
@@ -190,7 +125,7 @@ class TsConfigResolverTest {
         val sourceFile = tempDir.resolve("src/index.ts")
 
         // when
-        val merged = resolver.findTsConfigWithInheritance(sourceFile)
+        val merged = resolver.findTsConfig(sourceFile)
 
         // then
         assertThat(merged).isNotNull
@@ -227,7 +162,7 @@ class TsConfigResolverTest {
         val sourceFile = tempDir.resolve("index.ts")
 
         // when
-        val merged = resolver.findTsConfigWithInheritance(sourceFile)
+        val merged = resolver.findTsConfig(sourceFile)
 
         // then
         assertThat(merged).isNotNull
@@ -265,7 +200,7 @@ class TsConfigResolverTest {
         val sourceFile = tempDir.resolve("src/index.ts")
 
         // when
-        val merged = resolver.findTsConfigWithInheritance(sourceFile)
+        val merged = resolver.findTsConfig(sourceFile)
 
         // then
         assertThat(merged).isNotNull
@@ -288,7 +223,7 @@ class TsConfigResolverTest {
         val sourceFile = tempDir.resolve("src/index.ts")
 
         // when
-        val merged = resolver.findTsConfigWithInheritance(sourceFile)
+        val merged = resolver.findTsConfig(sourceFile)
 
         // then
         assertThat(merged).isNotNull

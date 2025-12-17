@@ -11,15 +11,10 @@ class TsConfigResolver {
 
     fun findTsConfig(sourceFile: File): TsConfigData? {
         val tsconfigFile = findTsConfigFile(sourceFile) ?: return null
-        return getCachedOrParse(tsconfigFile)
-    }
-
-    fun findTsConfigWithInheritance(sourceFile: File): TsConfigData? {
-        val tsconfigFile = findTsConfigFile(sourceFile) ?: return null
         return resolveWithInheritance(tsconfigFile)
     }
 
-    private fun findTsConfigFile(sourceFile: File): File? {
+    internal fun findTsConfigFile(sourceFile: File): File? {
         var currentDir = if (sourceFile.isDirectory) sourceFile else sourceFile.parentFile
 
         while (currentDir != null) {
