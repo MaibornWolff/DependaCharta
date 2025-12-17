@@ -325,16 +325,11 @@ class IsPointingUpwardsTest {
             ).build()
 
         // When: Converting to DTO with virtual root (simulates what happens in ReportService)
-        // Create a virtual root that wraps both top-level roots
-        // Need to update the parent field of the roots to point to virtual root
-        val coreRootWithParent = coreRoot.copy(parent = "__virtual_root__")
-        val storeRootWithParent = storeRoot.copy(parent = "__virtual_root__")
+        // Use the helper method to wrap both roots
+        val (rootsWithParent, virtualRoot) = GraphNode.wrapInVirtualRootIfNeeded(listOf(coreRoot, storeRoot))
+        val coreRootWithParent = rootsWithParent[0]
 
-        val virtualRoot = GraphNodeBuilder(id = "__virtual_root__")
-            .withChildren(coreRootWithParent, storeRootWithParent)
-            .build()
-
-        val coreDto = coreRootWithParent.toProjectNodeDto(emptyMap(), root = virtualRoot)
+        val coreDto = coreRootWithParent.toProjectNodeDto(emptyMap(), virtualRoot)
 
         // Then: Find the edge in the DTO structure
         val hydrateNode = findNodeInDto(coreDto, "hydrate")

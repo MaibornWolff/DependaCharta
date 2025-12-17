@@ -37,7 +37,7 @@ class ReportServiceTest {
 
         // then
         val expected = ProjectReportDto(
-            setOf(graphNode.toProjectNodeDto(cyclicEdges)),
+            setOf(graphNode.toProjectNodeDto(cyclicEdges, graphNode)),
             mapOf("de.maibornwolff.main" to resolvedNodes[0].toLeafInformationDto(cyclicEdges))
         )
         assertThat(report).isEqualTo(expected)

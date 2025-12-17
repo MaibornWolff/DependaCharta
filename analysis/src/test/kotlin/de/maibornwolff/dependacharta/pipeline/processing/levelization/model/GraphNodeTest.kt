@@ -14,7 +14,7 @@ class GraphNodeTest {
         val graphNode = GraphNodeBuilder(id = "my.node", dependencies = setOf("de.maibornwolff.main")).build()
 
         // when
-        val projectNodeDto = graphNode.toProjectNodeDto(emptyMap())
+        val projectNodeDto = graphNode.toProjectNodeDto(emptyMap(), graphNode)
 
         // then
         val expected = ProjectNodeDto.build(
@@ -46,7 +46,7 @@ class GraphNodeTest {
             ).build()
 
         // when
-        val projectNodeDto = graphNode.toProjectNodeDto(emptyMap())
+        val projectNodeDto = graphNode.toProjectNodeDto(emptyMap(), graphNode)
 
         // then
         val expected = ProjectNodeDto.build(
@@ -93,7 +93,7 @@ class GraphNodeTest {
         val cycles = mapOf("node.child2" to setOf("de.maibornwolff.main"))
 
         // when
-        val projectNodeDto = graphNode.toProjectNodeDto(cycles)
+        val projectNodeDto = graphNode.toProjectNodeDto(cycles, graphNode)
 
         // then
         val expected = ProjectNodeDto.build(

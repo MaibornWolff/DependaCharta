@@ -91,11 +91,51 @@ data class GraphNode(
             val (sourceAncestor, targetAncestor) = findSiblingsUnderLowestCommonAncestor(source, target, root)
             return sourceAncestor.level!! <= targetAncestor.level!!
         }
+
+        /**
+         * Wraps multiple root nodes in a virtual root to enable cross-root dependency analysis.
+         * For single roots, returns the root unchanged.
+         *
+         * @throws IllegalArgumentException if the node list is empty
+         * @throws IllegalStateException if any node already has a parent (should be true roots)
+         * @return Pair of (nodes with updated parent, unified root for analysis)
+         */
+        fun wrapInVirtualRootIfNeeded(nodes: List<GraphNode>): Pair<List<GraphNode>, GraphNode> {
+            if (nodes.isEmpty()) {
+                throw IllegalArgumentException("Cannot wrap empty node list")
+            }
+
+            return if (nodes.size > 1) {
+                // Validate that all nodes are true roots (parent = null)
+                val nodesWithParents = nodes.filter { it.parent != null }
+                if (nodesWithParents.isNotEmpty()) {
+                    throw IllegalStateException(
+                        "Expected root nodes with parent=null, but found ${nodesWithParents.size} nodes with parents: " +
+                            nodesWithParents.joinToString(", ") { "${it.id} (parent=${it.parent})" }
+                    )
+                }
+
+                val virtualRootId = "__virtual_root__"
+                val nodesWithParent = nodes.map { it.copy(parent = virtualRootId) }
+                val virtualRoot = GraphNode(
+                    id = virtualRootId,
+                    parent = null,
+                    children = nodesWithParent,
+                    level = null,
+                    dependencies = emptySet(),
+                    edges = emptySet()
+                )
+                Pair(nodesWithParent, virtualRoot)
+            } else {
+                val singleRoot = nodes.first()
+                Pair(listOf(singleRoot), singleRoot)
+            }
+        }
     }
 
     fun toProjectNodeDto(
         cyclicEdgesByLeaf: Map<String, Set<String>>,
-        root: GraphNode = this
+        root: GraphNode
     ): ProjectNodeDto {
         val isLeaf = children.isEmpty()
         val childDtos = children.map { it.toProjectNodeDto(cyclicEdgesByLeaf, root) }.toSet()
