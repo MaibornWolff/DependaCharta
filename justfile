@@ -4,6 +4,9 @@ default:
 test:
     cd analysis && ./gradlew test
 
+ktlintformat:
+    cd analysis && ./gradlew ktlintFormat
+
 build:
     cd analysis && ./gradlew fatJar
 

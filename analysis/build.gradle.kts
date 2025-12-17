@@ -105,6 +105,7 @@ tasks {
 }
 
 tasks.test {
+    dependsOn(tasks.ktlintCheck)
     useJUnitPlatform()
     finalizedBy(tasks.jacocoTestReport)
 }
