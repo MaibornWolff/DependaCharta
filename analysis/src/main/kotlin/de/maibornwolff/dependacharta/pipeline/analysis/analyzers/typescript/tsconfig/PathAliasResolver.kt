@@ -161,14 +161,14 @@ object PathAliasResolver {
         absolutePath: File,
         analysisRoot: File
     ): String {
-        val canonicalAnalysisRoot = analysisRoot.canonicalFile
-        val absolutePathStr = absolutePath.path
-        val analysisRootStr = canonicalAnalysisRoot.path
+        val canonicalRoot = analysisRoot.canonicalFile
+        val path = absolutePath.path
+        val root = canonicalRoot.path
 
-        return if (absolutePathStr.startsWith(analysisRootStr)) {
-            absolutePathStr.substring(analysisRootStr.length).removePrefix("/")
+        return if (path.startsWith(root)) {
+            path.substring(root.length).removePrefix("/")
         } else {
-            absolutePathStr.removePrefix("/")
+            path.removePrefix("/")
         }
     }
 }
