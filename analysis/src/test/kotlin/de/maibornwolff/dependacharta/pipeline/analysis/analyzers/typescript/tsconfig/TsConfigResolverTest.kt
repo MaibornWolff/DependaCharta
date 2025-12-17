@@ -38,7 +38,6 @@ class TsConfigResolverTest {
         val result = resolver.findTsConfig(sourceFile)
 
         // then
-        assertThat(result).isNotNull
         assertThat(result?.data?.compilerOptions?.baseUrl).isEqualTo(".")
     }
 
@@ -74,7 +73,6 @@ class TsConfigResolverTest {
         val result = resolver.findTsConfig(sourceFile)
 
         // then
-        assertThat(result).isNotNull
         assertThat(result?.data?.compilerOptions?.baseUrl).isEqualTo("src")
     }
 
@@ -128,7 +126,6 @@ class TsConfigResolverTest {
         val merged = resolver.findTsConfig(sourceFile)
 
         // then
-        assertThat(merged).isNotNull
         assertThat(merged?.data?.compilerOptions?.baseUrl).isEqualTo(".")
         assertThat(merged?.data?.compilerOptions?.paths).containsKeys("core/*", "utils/*")
     }
@@ -165,7 +162,6 @@ class TsConfigResolverTest {
         val merged = resolver.findTsConfig(sourceFile)
 
         // then
-        assertThat(merged).isNotNull
         assertThat(merged?.data?.compilerOptions?.baseUrl).isEqualTo("src")
     }
 
@@ -203,7 +199,6 @@ class TsConfigResolverTest {
         val merged = resolver.findTsConfig(sourceFile)
 
         // then
-        assertThat(merged).isNotNull
         assertThat(merged?.data?.compilerOptions?.baseUrl).isEqualTo(".")
         assertThat(merged?.data?.compilerOptions?.paths).containsKey("core/*")
     }
@@ -226,7 +221,6 @@ class TsConfigResolverTest {
         val merged = resolver.findTsConfig(sourceFile)
 
         // then
-        assertThat(merged).isNotNull
         assertThat(merged?.data?.compilerOptions).isNull()
     }
 
@@ -252,8 +246,6 @@ class TsConfigResolverTest {
         val result2 = resolver.findTsConfig(file2)
 
         // then
-        assertThat(result1).isNotNull
-        assertThat(result2).isNotNull
         assertThat(result1?.data).isSameAs(result2?.data)
     }
 }

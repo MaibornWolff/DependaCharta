@@ -15,7 +15,7 @@ class TsConfigResolver {
         return TsConfigResult(data, tsconfigFile)
     }
 
-    internal fun findTsConfigFile(sourceFile: File): File? {
+    private fun findTsConfigFile(sourceFile: File): File? {
         var currentDir = if (sourceFile.isDirectory) sourceFile else sourceFile.parentFile
 
         while (currentDir != null) {
