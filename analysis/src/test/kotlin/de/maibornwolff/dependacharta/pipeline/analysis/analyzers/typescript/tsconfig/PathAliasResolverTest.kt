@@ -235,4 +235,68 @@ class PathAliasResolverTest {
         assertThat(resolved).isNotNull
         assertThat(resolved).isEqualTo(Path(listOf("src", "core", "index")))
     }
+
+    @Test
+    fun `should normalize baseUrl with trailing slash`() {
+        // given
+        val config = TsConfigData(
+            compilerOptions = CompilerOptions(
+                baseUrl = "src/",
+                paths = mapOf("core/*" to listOf("core/*"))
+            )
+        )
+        val import = DirectImport("core/models")
+        val tsconfigDir = File("/project")
+        val analysisRoot = File("/project")
+
+        // when
+        val resolved = PathAliasResolver.resolve(import, config, tsconfigDir, analysisRoot)
+
+        // then
+        assertThat(resolved).isNotNull
+        assertThat(resolved).isEqualTo(Path(listOf("src", "core", "models")))
+    }
+
+    @Test
+    fun `should handle baseUrl with leading dot-slash and trailing slash`() {
+        // given
+        val config = TsConfigData(
+            compilerOptions = CompilerOptions(
+                baseUrl = "./src/",
+                paths = mapOf("core/*" to listOf("core/*"))
+            )
+        )
+        val import = DirectImport("core/models")
+        val tsconfigDir = File("/project")
+        val analysisRoot = File("/project")
+
+        // when
+        val resolved = PathAliasResolver.resolve(import, config, tsconfigDir, analysisRoot)
+
+        // then
+        assertThat(resolved).isNotNull
+        assertThat(resolved).isEqualTo(Path(listOf("src", "core", "models")))
+    }
+
+    @Test
+    fun `should not create double slashes in resolved paths`() {
+        // given
+        val config = TsConfigData(
+            compilerOptions = CompilerOptions(
+                baseUrl = "src",
+                paths = mapOf("@app/*" to listOf("app/*"))
+            )
+        )
+        val import = DirectImport("@app/components")
+        val tsconfigDir = File("/project")
+        val analysisRoot = File("/project")
+
+        // when
+        val resolved = PathAliasResolver.resolve(import, config, tsconfigDir, analysisRoot)
+
+        // then
+        assertThat(resolved).isNotNull
+        assertThat(resolved).isEqualTo(Path(listOf("src", "app", "components")))
+        assertThat(resolved.toString()).doesNotContain("//")
+    }
 }

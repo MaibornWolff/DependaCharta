@@ -19,7 +19,6 @@ import org.treesitter.TSNode
 import org.treesitter.TSQuery
 import org.treesitter.TSQueryMatch
 import org.treesitter.TreeSitterTypescript
-import java.io.File
 
 /**
  *  [execute]

@@ -5,6 +5,7 @@ import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
 import java.io.File
 
 object PathAliasResolver {
+    // Main entry point: resolves "@app/models" with paths config to Path(["src", "app", "models"])
     fun resolve(
         import: DirectImport,
         config: TsConfigData,
@@ -12,30 +13,55 @@ object PathAliasResolver {
         analysisRoot: File
     ): Path? {
         val compilerOptions = config.compilerOptions ?: return null
-        val importPath = import.directPath
+        val resolvedPath = resolveAgainstConfig(import.directPath, compilerOptions) ?: return null
+        val absolutePath = computeAbsolutePath(resolvedPath, compilerOptions.baseUrl, tsconfigDir)
+        return convertToRelativePath(absolutePath, analysisRoot)
+    }
 
-        val matchedPath = findMatchingPath(importPath, compilerOptions.paths)
-        val resolvedPath = if (matchedPath != null) {
-            matchedPath
-        } else if (compilerOptions.baseUrl != null) {
-            "$importPath"
-        } else {
-            return null
+    // Resolves import path using path mappings or baseUrl fallback
+    // Example: "@app/models" with "@app/*" -> "src/app/*" returns "src/app/models"
+    private fun resolveAgainstConfig(
+        importPath: String,
+        options: CompilerOptions
+    ): String? {
+        val matchedPath = findMatchingPath(importPath, options.paths)
+        if (matchedPath != null) {
+            return matchedPath
         }
+        if (options.baseUrl != null) {
+            return importPath
+        }
+        return null
+    }
 
-        val fullPath = if (compilerOptions.baseUrl != null) {
-            val normalizedBaseUrl = normalizeBaseUrl(compilerOptions.baseUrl)
+    // Computes absolute path by combining baseUrl and resolved path
+    // Example: "src/app/models" with baseUrl "." in "/project" -> "/project/src/app/models"
+    private fun computeAbsolutePath(
+        resolvedPath: String,
+        baseUrl: String?,
+        tsconfigDir: File
+    ): File {
+        val fullPath = if (baseUrl != null) {
+            val normalizedBaseUrl = baseUrl.removePrefix("./").removeSuffix("/")
             "$normalizedBaseUrl/$resolvedPath"
         } else {
             resolvedPath
         }
+        return tsconfigDir.resolve(fullPath).canonicalFile
+    }
 
-        val absolutePath = tsconfigDir.resolve(fullPath).canonicalFile
+    // Converts absolute path to project-relative Path object
+    // Example: "/project/src/app/models" relative to "/project" -> Path(["src", "app", "models"])
+    private fun convertToRelativePath(
+        absolutePath: File,
+        analysisRoot: File
+    ): Path {
         val relativePath = makeRelativeToAnalysisRoot(absolutePath, analysisRoot)
-
         return Path(relativePath.split("/").filter { it.isNotEmpty() })
     }
 
+    // Finds first matching path mapping for import path
+    // Example: "@app/models" with "@app/*" -> "src/app/*" returns "src/app/models"
     private fun findMatchingPath(
         importPath: String,
         paths: Map<String, List<String>>?
@@ -45,27 +71,90 @@ object PathAliasResolver {
         }
 
         for ((pattern, mappings) in paths) {
-            if (pattern == importPath) {
-                return mappings.firstOrNull()
-            }
-
-            if (pattern.endsWith("/*")) {
-                val prefix = pattern.removeSuffix("/*")
-                if (importPath.startsWith(prefix) && (importPath.length == prefix.length || importPath[prefix.length] == '/')) {
-                    val suffix = if (importPath.length > prefix.length) importPath.substring(prefix.length + 1) else ""
-                    val mapping = mappings.firstOrNull() ?: continue
-                    if (mapping.endsWith("/*")) {
-                        return mapping.removeSuffix("/*") + if (suffix.isNotEmpty()) "/$suffix" else ""
-                    }
-                }
+            val matched = tryMatchPattern(importPath, pattern, mappings)
+            if (matched != null) {
+                return matched
             }
         }
 
         return null
     }
 
-    private fun normalizeBaseUrl(baseUrl: String): String {
-        return baseUrl.removePrefix("./").removeSuffix("/")
+    // Routes to exact match or wildcard match based on pattern
+    // Example: "core" with pattern "core" -> exact match, "core/models" with "core/*" -> wildcard
+    private fun tryMatchPattern(
+        importPath: String,
+        pattern: String,
+        mappings: List<String>
+    ): String? {
+        if (pattern == importPath) {
+            return mappings.firstOrNull()
+        }
+
+        if (pattern.endsWith("/*")) {
+            return tryWildcardMatch(importPath, pattern, mappings)
+        }
+
+        return null
+    }
+
+    // Handles wildcard pattern matching: "@app/models" with "@app/*" -> "src/app/*" = "src/app/models"
+    private fun tryWildcardMatch(
+        importPath: String,
+        pattern: String,
+        mappings: List<String>
+    ): String? {
+        val prefix = pattern.removeSuffix("/*")
+
+        if (!matchesPrefix(importPath, prefix)) {
+            return null
+        }
+
+        val suffix = extractSuffix(importPath, prefix)
+        val mapping = mappings.firstOrNull() ?: return null
+
+        if (mapping.endsWith("/*")) {
+            return substituteWildcard(mapping, suffix)
+        }
+
+        return null
+    }
+
+    // Validates prefix with boundary: "core/models" matches "core", but "coreutils" does not
+    private fun matchesPrefix(
+        importPath: String,
+        prefix: String
+    ): Boolean {
+        if (!importPath.startsWith(prefix)) {
+            return false
+        }
+        // Match if exact or followed by slash (word boundary)
+        return importPath.length == prefix.length || importPath[prefix.length] == '/'
+    }
+
+    // Extracts remainder after prefix: "core/models/user" with "core" -> "models/user"
+    private fun extractSuffix(
+        importPath: String,
+        prefix: String
+    ): String {
+        return if (importPath.length > prefix.length) {
+            importPath.substring(prefix.length + 1)
+        } else {
+            ""
+        }
+    }
+
+    // Substitutes wildcard: "src/app/*" with "models/user" -> "src/app/models/user"
+    private fun substituteWildcard(
+        mapping: String,
+        suffix: String
+    ): String {
+        val baseMapping = mapping.removeSuffix("/*")
+        return if (suffix.isNotEmpty()) {
+            "$baseMapping/$suffix"
+        } else {
+            baseMapping
+        }
     }
 
     private fun makeRelativeToAnalysisRoot(
