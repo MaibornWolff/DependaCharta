@@ -1,6 +1,7 @@
 package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.tsconfig
 
 import kotlinx.serialization.Serializable
+import java.io.File
 
 @Serializable
 data class TsConfigData(
@@ -11,6 +12,11 @@ data class TsConfigData(
         val EMPTY = TsConfigData()
     }
 }
+
+data class TsConfigResult(
+    val data: TsConfigData,
+    val file: File
+)
 
 @Serializable
 data class CompilerOptions(

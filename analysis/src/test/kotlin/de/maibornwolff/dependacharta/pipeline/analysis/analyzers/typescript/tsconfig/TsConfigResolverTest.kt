@@ -39,7 +39,7 @@ class TsConfigResolverTest {
 
         // then
         assertThat(result).isNotNull
-        assertThat(result?.compilerOptions?.baseUrl).isEqualTo(".")
+        assertThat(result?.data?.compilerOptions?.baseUrl).isEqualTo(".")
     }
 
     @Test
@@ -75,7 +75,7 @@ class TsConfigResolverTest {
 
         // then
         assertThat(result).isNotNull
-        assertThat(result?.compilerOptions?.baseUrl).isEqualTo("src")
+        assertThat(result?.data?.compilerOptions?.baseUrl).isEqualTo("src")
     }
 
     @Test
@@ -129,8 +129,8 @@ class TsConfigResolverTest {
 
         // then
         assertThat(merged).isNotNull
-        assertThat(merged?.compilerOptions?.baseUrl).isEqualTo(".")
-        assertThat(merged?.compilerOptions?.paths).containsKeys("core/*", "utils/*")
+        assertThat(merged?.data?.compilerOptions?.baseUrl).isEqualTo(".")
+        assertThat(merged?.data?.compilerOptions?.paths).containsKeys("core/*", "utils/*")
     }
 
     @Test
@@ -166,7 +166,7 @@ class TsConfigResolverTest {
 
         // then
         assertThat(merged).isNotNull
-        assertThat(merged?.compilerOptions?.baseUrl).isEqualTo("src")
+        assertThat(merged?.data?.compilerOptions?.baseUrl).isEqualTo("src")
     }
 
     @Test
@@ -204,8 +204,8 @@ class TsConfigResolverTest {
 
         // then
         assertThat(merged).isNotNull
-        assertThat(merged?.compilerOptions?.baseUrl).isEqualTo(".")
-        assertThat(merged?.compilerOptions?.paths).containsKey("core/*")
+        assertThat(merged?.data?.compilerOptions?.baseUrl).isEqualTo(".")
+        assertThat(merged?.data?.compilerOptions?.paths).containsKey("core/*")
     }
 
     @Test
@@ -227,7 +227,7 @@ class TsConfigResolverTest {
 
         // then
         assertThat(merged).isNotNull
-        assertThat(merged?.compilerOptions).isNull()
+        assertThat(merged?.data?.compilerOptions).isNull()
     }
 
     @Test
@@ -254,6 +254,6 @@ class TsConfigResolverTest {
         // then
         assertThat(result1).isNotNull
         assertThat(result2).isNotNull
-        assertThat(result1).isSameAs(result2)
+        assertThat(result1?.data).isSameAs(result2?.data)
     }
 }

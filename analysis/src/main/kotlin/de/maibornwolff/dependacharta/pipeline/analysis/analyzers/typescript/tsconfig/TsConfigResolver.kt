@@ -9,9 +9,10 @@ class TsConfigResolver {
         private const val TSCONFIG_FILENAME = "tsconfig.json"
     }
 
-    fun findTsConfig(sourceFile: File): TsConfigData? {
+    fun findTsConfig(sourceFile: File): TsConfigResult? {
         val tsconfigFile = findTsConfigFile(sourceFile) ?: return null
-        return resolveWithInheritance(tsconfigFile)
+        val data = resolveWithInheritance(tsconfigFile) ?: return null
+        return TsConfigResult(data, tsconfigFile)
     }
 
     internal fun findTsConfigFile(sourceFile: File): File? {

@@ -153,20 +153,17 @@ class TypescriptImportStatementQuery(
 
         if (import is DirectImport && fileInfo?.analysisRoot != null) {
             val sourceFile = fileInfo.analysisRoot.resolve(fileInfo.physicalPath)
-            val tsConfig = tsConfigResolver.findTsConfig(sourceFile)
+            val result = tsConfigResolver.findTsConfig(sourceFile)
 
-            if (tsConfig != null) {
-                val tsconfigFile = tsConfigResolver.findTsConfigFile(sourceFile)
-                if (tsconfigFile != null) {
-                    val resolved = PathAliasResolver.resolve(
-                        import,
-                        tsConfig,
-                        tsconfigFile.parentFile,
-                        fileInfo.analysisRoot
-                    )
-                    if (resolved != null) {
-                        return resolved
-                    }
+            if (result != null) {
+                val resolved = PathAliasResolver.resolve(
+                    import,
+                    result.data,
+                    result.file.parentFile,
+                    fileInfo.analysisRoot
+                )
+                if (resolved != null) {
+                    return resolved
                 }
             }
         }
