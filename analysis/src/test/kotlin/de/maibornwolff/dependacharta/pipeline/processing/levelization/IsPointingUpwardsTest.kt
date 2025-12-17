@@ -280,6 +280,92 @@ class IsPointingUpwardsTest {
     }
 
     @Test
+    fun `should detect twisted edges between multiple top-level roots - reproduces RootFolderBug`() {
+        // Given: Multiple top-level roots representing the structure when analyzing src/frontend/src/
+        // This reproduces the bug where core → store dependency is NOT marked as twisted
+        //
+        // Structure (what the bug creates - multiple separate roots):
+        //   core (level 0)
+        //   │   └── models
+        //   │       └── hydrate
+        //   │           └── actions
+        //   │               └── hydrate (leaf) → store.createStore.RootState
+        //   store (level 1)
+        //       └── createStore
+        //           └── RootState (leaf)
+        //
+        // Expected: core.models.hydrate.actions.hydrate → store.createStore.RootState
+        //           should be TWISTED (level 0 → level 1, architectural violation)
+
+        val storeRoot = GraphNodeBuilder(id = "store", level = 1)
+            .withChildren(
+                GraphNodeBuilder(id = "createStore", parent = "store", level = 1)
+                    .withChildren(
+                        GraphNodeBuilder(id = "RootState", parent = "store.createStore", level = 1).build()
+                    ).build()
+            ).build()
+
+        val coreRoot = GraphNodeBuilder(id = "core", level = 0)
+            .withChildren(
+                GraphNodeBuilder(id = "models", parent = "core", level = 0)
+                    .withChildren(
+                        GraphNodeBuilder(id = "hydrate", parent = "core.models", level = 0)
+                            .withChildren(
+                                GraphNodeBuilder(id = "actions", parent = "core.models.hydrate", level = 0)
+                                    .withChildren(
+                                        GraphNodeBuilder(
+                                            id = "hydrate",
+                                            parent = "core.models.hydrate.actions",
+                                            level = 0,
+                                            dependencies = setOf("store.createStore.RootState")
+                                        ).build()
+                                    ).build()
+                            ).build()
+                    ).build()
+            ).build()
+
+        // When: Converting to DTO with virtual root (simulates what happens in ReportService)
+        // Create a virtual root that wraps both top-level roots
+        // Need to update the parent field of the roots to point to virtual root
+        val coreRootWithParent = coreRoot.copy(parent = "__virtual_root__")
+        val storeRootWithParent = storeRoot.copy(parent = "__virtual_root__")
+
+        val virtualRoot = GraphNodeBuilder(id = "__virtual_root__")
+            .withChildren(coreRootWithParent, storeRootWithParent)
+            .build()
+
+        val coreDto = coreRootWithParent.toProjectNodeDto(emptyMap(), root = virtualRoot)
+
+        // Then: Find the edge in the DTO structure
+        val hydrateNode = findNodeInDto(coreDto, "hydrate")
+        val edgeToStore = hydrateNode?.containedInternalDependencies?.get("store.createStore.RootState")
+
+        // This is the bug: isPointingUpwards should be TRUE (twisted edge from level 0 → 1)
+        // but it's currently FALSE because the exception is caught and silently swallowed
+        assertThat(edgeToStore).isNotNull
+        assertThat(edgeToStore!!.isPointingUpwards)
+            .describedAs(
+                "Edge from core (level 0) to store (level 1) should be twisted (isPointingUpwards=true), " +
+                    "but bug causes it to be false when roots are separate"
+            ).isTrue()
+    }
+
+    /**
+     * Helper to find a node by name in the DTO tree
+     */
+    private fun findNodeInDto(
+        node: de.maibornwolff.dependacharta.pipeline.processing.model.ProjectNodeDto,
+        name: String
+    ): de.maibornwolff.dependacharta.pipeline.processing.model.ProjectNodeDto? {
+        if (node.name == name) return node
+        for (child in node.children) {
+            val found = findNodeInDto(child, name)
+            if (found != null) return found
+        }
+        return null
+    }
+
+    @Test
     fun `should handle real-world example from Java codebase`() {
         // Given: The actual structure from the Java example
         // Structure (simplified):

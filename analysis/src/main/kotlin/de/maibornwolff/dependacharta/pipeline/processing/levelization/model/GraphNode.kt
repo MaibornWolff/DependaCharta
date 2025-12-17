@@ -153,6 +153,7 @@ data class GraphNode(
         EdgeInfoDto(
             isCyclic = any { it.isCyclic },
             weight = sumOf { it.weight },
-            type = map { it.type }.toSet().joinToString(",")
+            type = map { it.type }.toSet().joinToString(","),
+            isPointingUpwards = any { it.isPointingUpwards }
         )
 }
