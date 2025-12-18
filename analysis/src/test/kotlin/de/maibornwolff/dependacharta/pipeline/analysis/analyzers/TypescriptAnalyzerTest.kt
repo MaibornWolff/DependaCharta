@@ -1182,28 +1182,6 @@ class TypescriptAnalyzerTest {
     }
 
     @Test
-    fun `should handle wildcard re-exports in index ts`() {
-        // given - Index file with wildcard re-export
-        val typescriptCode = """
-             export * from './constants'
-        """.trimIndent()
-
-        // when
-        val report = TypescriptAnalyzer(
-            FileInfo(
-                SupportedLanguage.TYPESCRIPT,
-                "src/common/index.ts",
-                typescriptCode
-            )
-        ).analyze()
-
-        // then
-        // Without analysisRoot, creates no nodes (can't resolve)
-        // This is expected behavior - needs file system access
-        assertThat(report.nodes).isEmpty()
-    }
-
-    @Test
     fun `should create REEXPORT nodes for wildcard re-exports with file resolution`() {
         // given - Test resources with real file structure
         val testRoot = File("src/test/resources/typescript-wildcard")

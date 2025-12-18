@@ -42,12 +42,10 @@ class TypescriptExportNameExtractor(
         targetPath: Path,
         visitedPaths: Set<Path> = emptySet()
     ): ExportSource {
-        // Guard: circular references
         if (visitedPaths.contains(targetPath)) {
             return ExportSource(emptySet(), false)
         }
 
-        // Find and read the file
         val fileResult = findTargetFile(targetPath)
         if (fileResult == null) {
             return ExportSource(emptySet(), false)
@@ -55,17 +53,10 @@ class TypescriptExportNameExtractor(
 
         val (targetFile, isIndexFile) = fileResult
         val fileContent = targetFile.readText(Charsets.UTF_8)
-
-        // Parse the file
         val rootNode = parseCode(fileContent)
-
-        // Extract direct exports
         val directExports = extractDirectExportNames(rootNode, fileContent, targetPath)
-
-        // Extract wildcard re-export sources
         val wildcardSources = wildcardExportQuery.execute(rootNode, fileContent)
 
-        // Recursively get exports from wildcard sources
         val wildcardExports = wildcardSources
             .flatMap { sourceString ->
                 val trimmedSource = sourceString.trim('"', '\'').trimFileEnding()
@@ -86,33 +77,19 @@ class TypescriptExportNameExtractor(
     private fun findTargetFile(targetPath: Path): Pair<File, Boolean>? {
         val relativePath = targetPath.parts.joinToString("/")
 
-        // Try direct files first (.ts, .tsx)
-        val directCandidates = listOf(
+        val candidates = listOf(
             "$relativePath.ts" to false,
-            "$relativePath.tsx" to false
-        )
-
-        for ((path, isIndex) in directCandidates) {
-            val file = analysisRoot.resolve(path)
-            if (file.exists() && file.isFile) {
-                return file to isIndex
-            }
-        }
-
-        // Try index files (index.ts, index.tsx)
-        val indexCandidates = listOf(
+            "$relativePath.tsx" to false,
             "$relativePath/index.ts" to true,
             "$relativePath/index.tsx" to true
         )
 
-        for ((path, isIndex) in indexCandidates) {
-            val file = analysisRoot.resolve(path)
-            if (file.exists() && file.isFile) {
-                return file to isIndex
-            }
+        return candidates.firstNotNullOfOrNull { (path, isIndex) ->
+            analysisRoot
+                .resolve(path)
+                .takeIf { it.exists() && it.isFile }
+                ?.let { it to isIndex }
         }
-
-        return null
     }
 
     private fun parseCode(code: String): TSNode {

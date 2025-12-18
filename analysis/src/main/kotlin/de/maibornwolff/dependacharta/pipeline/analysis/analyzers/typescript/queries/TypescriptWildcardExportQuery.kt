@@ -13,7 +13,6 @@ import org.treesitter.TreeSitterTypescript
 class TypescriptWildcardExportQuery(
     typescript: TreeSitterTypescript
 ) {
-    // Try alternative query patterns - namespace_export might not be the right node
     private val query = TSQuery(
         typescript,
         """

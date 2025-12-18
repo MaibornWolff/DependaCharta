@@ -46,7 +46,7 @@ class TypescriptAnalyzer(
         val nodes = if (fileName == "index.ts" || fileName == "index.tsx") {
             // Index files need to process BOTH re-exports AND regular exports
             val fileLevelDependencies = importStatementQuery.execute(rootNode, fileInfo.content, path, fileInfo)
-            val reexports = extractExportsOfIndexTs(rootNode, fileInfo.content, path)
+            val reexports = extractIndexTsExports(rootNode, fileInfo.content, path)
             val regularExports = extractNodes(rootNode, fileInfo.content, path, fileLevelDependencies)
             reexports + regularExports
         } else {
@@ -59,12 +59,11 @@ class TypescriptAnalyzer(
         return FileReport(nodes = allNodes.map { it.copy(dependencies = it.dependencies + dependencyOnThisFile) })
     }
 
-    private fun extractExportsOfIndexTs(
+    private fun extractIndexTsExports(
         rootNode: TSNode,
         fileBody: String,
         filePath: Path
     ): List<Node> {
-        // Named re-exports (CHANGED: now uses REEXPORT for consistency)
         val namedReexports = indexTsExportQuery.execute(rootNode, fileBody, filePath).map { (export, dependencies) ->
             Node(
                 pathWithName = filePath + (export.alias ?: export.identifier),
@@ -76,7 +75,6 @@ class TypescriptAnalyzer(
             )
         }
 
-        // Wildcard re-exports (NEW)
         val wildcardReexports = extractWildcardReexports(rootNode, fileBody, filePath)
 
         return namedReexports + wildcardReexports
@@ -87,7 +85,6 @@ class TypescriptAnalyzer(
         fileBody: String,
         filePath: Path
     ): List<Node> {
-        // Get wildcard sources
         val wildcardSources = wildcardExportQuery.execute(rootNode, fileBody)
 
         // If no analysisRoot, can't resolve - skip
@@ -98,32 +95,34 @@ class TypescriptAnalyzer(
         val extractor = TypescriptExportNameExtractor(fileInfo.analysisRoot)
 
         return wildcardSources.flatMap { sourceString ->
-            // Resolve source path
             val trimmedSource = sourceString.trim('"', '\'').trimFileEnding()
             val sourcePath = resolveWildcardSourcePath(trimmedSource, filePath)
-
-            // Extract exports from target (returns ExportSource with isIndexFile info)
             val exportSource = extractor.extractExports(sourcePath)
 
-            // Create REEXPORT nodes for each export with correct dependency
             exportSource.names.map { exportName ->
-                val dependency = if (exportSource.isIndexFile) {
-                    // Target is index.ts: create dependency to src.common.constants.index.FOO
-                    Dependency(sourcePath + "index" + exportName)
-                } else {
-                    // Target is direct file: create dependency to src.common.constants.FOO
-                    Dependency(sourcePath + exportName)
-                }
-
                 Node(
                     pathWithName = filePath + exportName,
                     physicalPath = fileInfo.physicalPath,
                     language = fileInfo.language,
                     nodeType = NodeType.REEXPORT,
-                    dependencies = setOf(dependency),
+                    dependencies = setOf(createDependencyForExport(sourcePath, exportName, exportSource.isIndexFile)),
                     usedTypes = setOf(Type.simple(exportName))
                 )
             }
+        }
+    }
+
+    private fun createDependencyForExport(
+        sourcePath: Path,
+        exportName: String,
+        isIndexFile: Boolean
+    ): Dependency {
+        return if (isIndexFile) {
+            // Target is index.ts: create dependency to src.common.constants.index.FOO
+            Dependency(sourcePath + "index" + exportName)
+        } else {
+            // Target is direct file: create dependency to src.common.constants.FOO
+            Dependency(sourcePath + exportName)
         }
     }
 
