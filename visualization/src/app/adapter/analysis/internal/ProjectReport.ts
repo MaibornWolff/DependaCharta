@@ -26,21 +26,13 @@ export interface NodeInformation {
   name: string
   physicalPath: string
   language: Language
-  nodeType: NodeType
+  /** Node classification (e.g., CLASS, INTERFACE, FUNCTION). Accepts any string value. */
+  nodeType: string
   dependencies: Record<string, EdgeMetaInformation>
 }
 
 export enum Language {
   JAVA = "JAVA"
-}
-
-export enum NodeType {
-  CLASS = "CLASS",
-  INTERFACE = "INTERFACE",
-  ANNOTATION = "ANNOTATION",
-  ENUM = "ENUM",
-  METHOD = "METHOD",
-  UNKNOWN = "UNKNOWN"
 }
 
 export function getChildren(id: string, nodesToCheck: ProjectNode[], parentPath: string): ProjectNode[] {
