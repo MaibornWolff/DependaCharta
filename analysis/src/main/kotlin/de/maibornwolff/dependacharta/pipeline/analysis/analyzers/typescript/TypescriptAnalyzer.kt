@@ -1,11 +1,16 @@
 package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript
 
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.LanguageAnalyzer
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.model.DirectImport
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.model.toImport
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.nodeAsString
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.resolveRelativePath
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.withoutFileSuffix
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.model.Declaration
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.model.DependenciesAndAliases
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.queries.*
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.tsconfig.PathAliasResolver
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.tsconfig.TsConfigResolver
 import de.maibornwolff.dependacharta.pipeline.analysis.model.*
 import org.treesitter.TSNode
 import org.treesitter.TSParser
@@ -22,6 +27,7 @@ class TypescriptAnalyzer(
     private val defaultExportQuery = TypescriptDefaultExportQuery(typescript)
     private val importStatementQuery = TypescriptImportStatementQuery(typescript)
     private val indexTsExportQuery = TypescriptIndexTsExportQuery(typescript)
+    private val wildcardExportQuery = TypescriptWildcardExportQuery(typescript)
     private val typeIdentifierQuery = TypescriptTypeIdentifierQuery(typescript)
     private val constructorCallQuery = TypescriptConstructorCallQuery(typescript)
     private val memberExpressionQuery = TypescriptMemberExpressionQuery(typescript)
@@ -57,15 +63,96 @@ class TypescriptAnalyzer(
         rootNode: TSNode,
         fileBody: String,
         filePath: Path
-    ) = indexTsExportQuery.execute(rootNode, fileBody, filePath).map { (export, dependencies) ->
-        Node(
-            pathWithName = filePath + (export.alias ?: export.identifier),
-            physicalPath = fileInfo.physicalPath,
-            language = fileInfo.language,
-            nodeType = NodeType.VARIABLE,
-            dependencies = dependencies,
-            usedTypes = setOf(Type.simple(export.identifier))
-        )
+    ): List<Node> {
+        // Named re-exports (CHANGED: now uses REEXPORT for consistency)
+        val namedReexports = indexTsExportQuery.execute(rootNode, fileBody, filePath).map { (export, dependencies) ->
+            Node(
+                pathWithName = filePath + (export.alias ?: export.identifier),
+                physicalPath = fileInfo.physicalPath,
+                language = fileInfo.language,
+                nodeType = NodeType.REEXPORT,
+                dependencies = dependencies,
+                usedTypes = setOf(Type.simple(export.identifier))
+            )
+        }
+
+        // Wildcard re-exports (NEW)
+        val wildcardReexports = extractWildcardReexports(rootNode, fileBody, filePath)
+
+        return namedReexports + wildcardReexports
+    }
+
+    private fun extractWildcardReexports(
+        rootNode: TSNode,
+        fileBody: String,
+        filePath: Path
+    ): List<Node> {
+        // Get wildcard sources
+        val wildcardSources = wildcardExportQuery.execute(rootNode, fileBody)
+
+        // If no analysisRoot, can't resolve - skip
+        if (fileInfo.analysisRoot == null) {
+            return emptyList()
+        }
+
+        val extractor = TypescriptExportNameExtractor(fileInfo.analysisRoot)
+
+        return wildcardSources.flatMap { sourceString ->
+            // Resolve source path
+            val trimmedSource = sourceString.trim('"', '\'').trimFileEnding()
+            val sourcePath = resolveWildcardSourcePath(trimmedSource, filePath)
+
+            // Extract exports from target (returns ExportSource with isIndexFile info)
+            val exportSource = extractor.extractExports(sourcePath)
+
+            // Create REEXPORT nodes for each export with correct dependency
+            exportSource.names.map { exportName ->
+                val dependency = if (exportSource.isIndexFile) {
+                    // Target is index.ts: create dependency to src.common.constants.index.FOO
+                    Dependency(sourcePath + "index" + exportName)
+                } else {
+                    // Target is direct file: create dependency to src.common.constants.FOO
+                    Dependency(sourcePath + exportName)
+                }
+
+                Node(
+                    pathWithName = filePath + exportName,
+                    physicalPath = fileInfo.physicalPath,
+                    language = fileInfo.language,
+                    nodeType = NodeType.REEXPORT,
+                    dependencies = setOf(dependency),
+                    usedTypes = setOf(Type.simple(exportName))
+                )
+            }
+        }
+    }
+
+    private fun resolveWildcardSourcePath(
+        sourceString: String,
+        currentPath: Path
+    ): Path {
+        // Try tsconfig path resolution first
+        val import = sourceString.toImport()
+
+        if (import is DirectImport && fileInfo.analysisRoot != null) {
+            val sourceFile = fileInfo.analysisRoot.resolve(fileInfo.physicalPath)
+            val tsConfigResult = TsConfigResolver().findTsConfig(sourceFile)
+
+            if (tsConfigResult != null) {
+                val resolved = PathAliasResolver.resolve(
+                    import,
+                    tsConfigResult.data,
+                    tsConfigResult.file.parentFile,
+                    fileInfo.analysisRoot
+                )
+                if (resolved != null) {
+                    return resolved
+                }
+            }
+        }
+
+        // Fall back to relative resolution
+        return resolveRelativePath(import, currentPath)
     }
 
     private fun extractDefaultExport(

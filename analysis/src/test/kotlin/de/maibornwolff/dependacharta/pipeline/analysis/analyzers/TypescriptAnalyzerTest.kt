@@ -10,6 +10,7 @@ import de.maibornwolff.dependacharta.pipeline.analysis.model.Type
 import de.maibornwolff.dependacharta.pipeline.shared.SupportedLanguage
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.tuple
+import org.junit.jupiter.api.Assumptions.assumeTrue
 import org.junit.jupiter.api.Test
 import java.io.File
 
@@ -1178,5 +1179,62 @@ class TypescriptAnalyzerTest {
 
         assertThat(routesNode!!.pathWithName)
             .isEqualTo(Path(listOf("src", "routes", "index", "Routes")))
+    }
+
+    @Test
+    fun `should handle wildcard re-exports in index ts`() {
+        // given - Index file with wildcard re-export
+        val typescriptCode = """
+             export * from './constants'
+        """.trimIndent()
+
+        // when
+        val report = TypescriptAnalyzer(
+            FileInfo(
+                SupportedLanguage.TYPESCRIPT,
+                "src/common/index.ts",
+                typescriptCode
+            )
+        ).analyze()
+
+        // then
+        // Without analysisRoot, creates no nodes (can't resolve)
+        // This is expected behavior - needs file system access
+        assertThat(report.nodes).isEmpty()
+    }
+
+    @Test
+    fun `should create REEXPORT nodes for wildcard re-exports with file resolution`() {
+        // given - Test resources with real file structure
+        val testRoot = File("src/test/resources/typescript-wildcard")
+        assumeTrue(testRoot.exists())
+
+        val fileContent = "export * from './constants'"
+
+        // when
+        val report = TypescriptAnalyzer(
+            FileInfo(
+                SupportedLanguage.TYPESCRIPT,
+                "common/index.ts",
+                fileContent,
+                analysisRoot = testRoot
+            )
+        ).analyze()
+
+        // then - Should create REEXPORT nodes for discovered exports
+        assertThat(report.nodes)
+            .isNotEmpty()
+            .allMatch { it.nodeType == NodeType.REEXPORT }
+
+        // Should have dependencies to source
+        val fooNode = report.nodes.find { it.pathWithName.getName() == "FOO" }
+        assertThat(fooNode).isNotNull
+        assertThat(fooNode!!.dependencies)
+            .anyMatch { it.path.toString().contains("constants") }
+
+        // Verify all expected exports are present
+        // Note: Path class converts underscores to dots, so "EXCLUDED_TERMS_LIST" becomes "EXCLUDED.TERMS.LIST"
+        val exportNames = report.nodes.map { it.pathWithName.getName() }.toSet()
+        assertThat(exportNames).contains("FOO", "BAR", "EXCLUDED.TERMS.LIST", "RESTRICTED.ROLE.TERMS")
     }
 }
