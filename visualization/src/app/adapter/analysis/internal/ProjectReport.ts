@@ -25,14 +25,11 @@ export interface EdgeMetaInformation {
 export interface NodeInformation {
   name: string
   physicalPath: string
-  language: Language
+  /** Programming language (e.g., JAVA, KOTLIN, TYPESCRIPT). Accepts any string value. */
+  language: string
   /** Node classification (e.g., CLASS, INTERFACE, FUNCTION). Accepts any string value. */
   nodeType: string
   dependencies: Record<string, EdgeMetaInformation>
-}
-
-export enum Language {
-  JAVA = "JAVA"
 }
 
 export function getChildren(id: string, nodesToCheck: ProjectNode[], parentPath: string): ProjectNode[] {
