@@ -1215,4 +1215,57 @@ class TypescriptAnalyzerTest {
         val exportNames = report.nodes.map { it.pathWithName.getName() }.toSet()
         assertThat(exportNames).contains("FOO", "BAR", "EXCLUDED.TERMS.LIST", "RESTRICTED.ROLE.TERMS")
     }
+
+    @Test
+    fun `wildcard re-export REEXPORT nodes should depend on source nodes not themselves`() {
+        // given - Test resources with real file structure
+        val testRoot = File("src/test/resources/typescript-wildcard")
+        assumeTrue(testRoot.exists())
+
+        val fileContent = "export * from './constants'"
+
+        // when
+        val report = TypescriptAnalyzer(
+            FileInfo(
+                SupportedLanguage.TYPESCRIPT,
+                "common/index.ts",
+                fileContent,
+                analysisRoot = testRoot
+            )
+        ).analyze()
+
+        // then - REEXPORT nodes should depend on source nodes, not themselves
+        val fooReexport = report.nodes.find { it.pathWithName.getName() == "FOO" }
+        assertThat(fooReexport).isNotNull
+        assertThat(fooReexport!!.nodeType).isEqualTo(NodeType.REEXPORT)
+
+        // The REEXPORT node path is: common.index.FOO
+        val reexportNodePath = Path(listOf("common", "index", "FOO"))
+        assertThat(fooReexport.pathWithName).isEqualTo(reexportNodePath)
+
+        // Expected: Should depend on source (common.index.FOO -> common.constants.index.FOO)
+        val expectedSourcePath = Path(listOf("common", "constants", "index", "FOO"))
+
+        // Bug check: Verify REEXPORT node does NOT have self-referential dependencies
+        val selfRefDeps = fooReexport.dependencies.filter { it.path == reexportNodePath && !it.isWildcard }
+        assertThat(selfRefDeps)
+            .withFailMessage(
+                "BUG: REEXPORT node has self-referential dependency ($reexportNodePath -> $reexportNodePath). " +
+                    "It should depend on source node $expectedSourcePath instead."
+            ).isEmpty()
+
+        // Filter out the wildcard dependency to the file itself (added at end of analyze())
+        val nonWildcardDeps = fooReexport.dependencies.filter { !it.isWildcard }
+
+        assertThat(nonWildcardDeps)
+            .withFailMessage(
+                "REEXPORT node should have exactly one non-wildcard dependency to source node ($expectedSourcePath), " +
+                    "but found: ${nonWildcardDeps.map { it.path }}"
+            ).hasSize(1)
+
+        assertThat(nonWildcardDeps.first().path)
+            .withFailMessage(
+                "REEXPORT node should depend on source node ($expectedSourcePath), not on itself ($reexportNodePath)"
+            ).isEqualTo(expectedSourcePath)
+    }
 }

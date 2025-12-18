@@ -89,7 +89,8 @@ data class Node(
         languageDictionary: Map<String, Path>
     ): Path {
         val plainTypeName = fullName.split(".").last()
-        val possibleImports = projectDictionary[plainTypeName]
+        // Exclude self-references to prevent REEXPORT nodes from depending on themselves
+        val possibleImports = projectDictionary[plainTypeName]?.filter { it != pathWithName }
 
         // First check if this type is in the same package
         if (possibleImports != null) {
