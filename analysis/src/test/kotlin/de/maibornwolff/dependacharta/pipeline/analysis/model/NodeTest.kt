@@ -259,4 +259,32 @@ class NodeTest {
             allChildrenByTypePath.withDots()
         )
     }
+
+    @Test
+    fun `should filter out self-references when resolving types`() {
+        // given
+        val hitPointsPath = Path(listOf("de", "domain", "model", "HitPoints"))
+        val packagePath = Path(listOf("de", "domain", "model"))
+
+        val projectDictionary = mapOf(
+            "HitPoints" to listOf(hitPointsPath)
+        )
+        val languageDictionary = emptyMap<String, Path>()
+
+        val node = Node(
+            pathWithName = hitPointsPath,
+            physicalPath = "./HitPoints.java",
+            nodeType = NodeType.CLASS,
+            language = SupportedLanguage.JAVA,
+            dependencies = setOf(Dependency(packagePath, isWildcard = true)),
+            usedTypes = setOf(Type.simple("HitPoints"))
+        )
+
+        // when
+        val resolvedNode = node.resolveTypes(projectDictionary, languageDictionary, setOf(hitPointsPath.withDots()))
+
+        // then
+        val internalDeps = resolvedNode.resolvedNodeDependencies.internalDependencies
+        Assertions.assertThat(internalDeps).isEmpty()
+    }
 }

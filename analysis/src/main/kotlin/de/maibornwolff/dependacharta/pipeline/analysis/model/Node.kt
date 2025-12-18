@@ -52,6 +52,7 @@ data class Node(
             .asSequence()
             .filter { it.resolvedPath != null }
             .filter { !languageDictionary.containsValue(it.resolvedPath) }
+            .filter { it.resolvedPath != pathWithName }
             .map { Dependency(path = it.resolvedPath!!, type = it.usageSource) }
             .toSet()
 
