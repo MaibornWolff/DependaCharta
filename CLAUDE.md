@@ -210,9 +210,56 @@ Example: `feat(visualization): add dark mode toggle (#123)`
 - **Backward Compatibility**: Changes to `.cc.json` format require careful versioning
 
 **TDD Workflow** (Red → Green → Refactor):
-1. Write one failing test
+1. **Write one failing test FIRST** - Never write implementation before tests
+   - When reproducing bugs, tests MUST be red (failing) before the fix
+   - If test is green before fixing bug, the test doesn't reproduce the bug correctly
 2. Write minimum code to pass
-3. Run all tests (must be green)
+3. **Run ALL tests** via `just test` (must be green before any commit)
 4. Refactor if needed
-5. Commit
+5. **Request permission to commit** - NEVER commit without asking first
 6. Repeat
+
+**Test Quality Guidelines**:
+- **No redundant assertions**: Remove unnecessary null checks before equality assertions
+  - ❌ Bad: `assertNotNull(result); assertEquals(expected, result)`
+  - ✅ Good: `assertEquals(expected, result)` (this already fails on null)
+- **Keep tests concise**: Remove any assertion that doesn't add value
+- Tests written to reproduce bugs must fail until the bug is fixed
+
+### Committing Code
+
+**CRITICAL RULES**:
+- **NEVER commit code without asking first**
+- **ALWAYS run `just test`** before any commit to ensure all tests pass
+- Only commit after receiving explicit user permission
+- Follow the commit message format defined above
+
+### Post-Implementation Code Review
+
+After implementing a feature and all tests pass, **always ask if you should commit**. After committing, **propose a code review** to check for:
+
+**Code Structure**:
+- Methods are short with single level of abstraction (SLA principle)
+- No mixed abstraction levels within methods
+- Proper separation of concerns
+
+**Naming & Consistency**:
+- Classes, methods, variables have correct and concise names
+- Naming precision matches scope size (larger scope = more precise name)
+- Consistent naming patterns throughout new code
+
+**Test Quality**:
+- Tests are concise without redundant assertions
+- Tests follow existing structure (Given-When-Then or Arrange-Act-Assert)
+- Test names are exhaustive and describe the specific scenario, not just the feature
+- No implementation comments or plan relicts left in test code
+
+**Code Quality**:
+- KISS and DRY principles applied
+- No duplication - new code should call existing code when possible
+- No features implemented that weren't requested
+- Code follows existing patterns in the codebase
+
+**Before proposing changes**:
+- Ask about missing important features or use cases if noticed
+- Verify all implementation matches user's explicit requests
