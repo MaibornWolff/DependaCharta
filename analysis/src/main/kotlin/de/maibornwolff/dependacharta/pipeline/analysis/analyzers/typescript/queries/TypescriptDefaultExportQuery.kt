@@ -2,17 +2,17 @@ package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.que
 
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.execute
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.nodeAsString
+import org.treesitter.TSLanguage
 import org.treesitter.TSNode
 import org.treesitter.TSQuery
-import org.treesitter.TreeSitterTypescript
 
 /**
  *  [execute]
  */
 class TypescriptDefaultExportQuery(
-    val typescript: TreeSitterTypescript
+    val language: TSLanguage
 ) {
-    private val query = TSQuery(typescript, "(export_statement value: (_) @default_export)")
+    private val query = TSQuery(language, "(export_statement value: (_) @default_export)")
 
     /**
      * Returns the name of the default export of a typescript node.

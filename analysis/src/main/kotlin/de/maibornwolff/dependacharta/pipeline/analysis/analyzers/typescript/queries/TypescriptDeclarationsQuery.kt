@@ -2,18 +2,18 @@ package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.que
 
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.execute
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.model.Declaration
+import org.treesitter.TSLanguage
 import org.treesitter.TSNode
 import org.treesitter.TSQuery
-import org.treesitter.TreeSitterTypescript
 
 /**
  *  [execute]
  */
 class TypescriptDeclarationsQuery(
-    val typescript: TreeSitterTypescript
+    val language: TSLanguage
 ) {
-    private val unexportedDeclarationQuery = TSQuery(typescript, "(program (declaration) @declaration)")
-    private val exportedDeclarationQuery = TSQuery(typescript, "(export_statement declaration: (declaration)) @exported_declaration")
+    private val unexportedDeclarationQuery = TSQuery(language, "(program (declaration) @declaration)")
+    private val exportedDeclarationQuery = TSQuery(language, "(export_statement declaration: (declaration)) @exported_declaration")
 
     /**
      * Returns the typescript declarations contained within the given node.

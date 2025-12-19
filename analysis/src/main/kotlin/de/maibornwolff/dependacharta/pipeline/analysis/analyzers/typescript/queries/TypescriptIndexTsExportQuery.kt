@@ -9,17 +9,17 @@ import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.mode
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.trimFileEnding
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Dependency
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
+import org.treesitter.TSLanguage
 import org.treesitter.TSNode
 import org.treesitter.TSQuery
-import org.treesitter.TreeSitterTypescript
 
 /**
  *  [execute]
  */
 class TypescriptIndexTsExportQuery(
-    val typescript: TreeSitterTypescript
+    val language: TSLanguage
 ) {
-    private val query = TSQuery(typescript, "(export_statement (export_clause) @export source: _ @source)")
+    private val query = TSQuery(language, "(export_statement (export_clause) @export source: _ @source)")
 
     /**
      * Returns the dependencies and aliases of the exports contained within the given node.

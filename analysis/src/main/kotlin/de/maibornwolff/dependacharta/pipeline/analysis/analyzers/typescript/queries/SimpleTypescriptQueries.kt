@@ -2,17 +2,17 @@ package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.que
 
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.execute
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.nodeAsString
+import org.treesitter.TSLanguage
 import org.treesitter.TSNode
 import org.treesitter.TSQuery
-import org.treesitter.TreeSitterTypescript
 
 /**
  *  [execute]
  */
 class TypescriptTypeIdentifierQuery(
-    val typescript: TreeSitterTypescript
+    val language: TSLanguage
 ) {
-    private val query = TSQuery(typescript, "(type_identifier) @type")
+    private val query = TSQuery(language, "(type_identifier) @type")
 
     /**
      * Returns the type identifiers contained within the given node.
@@ -42,9 +42,9 @@ class TypescriptTypeIdentifierQuery(
  *  [execute]
  */
 class TypescriptConstructorCallQuery(
-    val typescript: TreeSitterTypescript
+    val language: TSLanguage
 ) {
-    private val query = TSQuery(typescript, "(new_expression (identifier) @constructor)")
+    private val query = TSQuery(language, "(new_expression (identifier) @constructor)")
 
     /**
      * Returns the types of all called constructors within a node.
@@ -74,9 +74,9 @@ class TypescriptConstructorCallQuery(
  *  [execute]
  */
 class TypescriptMemberExpressionQuery(
-    val typescript: TreeSitterTypescript
+    val language: TSLanguage
 ) {
-    private val query = TSQuery(typescript, "(member_expression (identifier) @memberExpression)")
+    private val query = TSQuery(language, "(member_expression (identifier) @memberExpression)")
 
     /**
      * Returns types whose members get accessed.
@@ -107,9 +107,9 @@ class TypescriptMemberExpressionQuery(
  *  [execute]
  */
 class TypescriptExtendsClauseQuery(
-    val typescript: TreeSitterTypescript
+    val language: TSLanguage
 ) {
-    private val query = TSQuery(typescript, "(extends_clause (identifier) @extends)")
+    private val query = TSQuery(language, "(extends_clause (identifier) @extends)")
 
     /**
      * Returns the types that are extended within the given node.
@@ -139,9 +139,9 @@ class TypescriptExtendsClauseQuery(
  *  [execute]
  */
 class TypescriptIdentifierQuery(
-    val typescript: TreeSitterTypescript
+    val language: TSLanguage
 ) {
-    private val query = TSQuery(typescript, "(identifier) @identifier")
+    private val query = TSQuery(language, "(identifier) @identifier")
 
     /**
      * Returns all identifiers used withing a given node.
@@ -171,9 +171,9 @@ class TypescriptIdentifierQuery(
 }
 
 class TypescriptMethodCallIdentifierQuery(
-    val typescript: TreeSitterTypescript
+    val language: TSLanguage
 ) {
-    private val query = TSQuery(typescript, "(call_expression (identifier) @identifier)")
+    private val query = TSQuery(language, "(call_expression (identifier) @identifier)")
 
     /**
      * Returns the identifiers of called methods.

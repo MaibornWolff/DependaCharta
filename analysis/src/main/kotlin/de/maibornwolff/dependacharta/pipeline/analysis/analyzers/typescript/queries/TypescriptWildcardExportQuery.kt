@@ -2,19 +2,19 @@ package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.que
 
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.execute
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.nodeAsString
+import org.treesitter.TSLanguage
 import org.treesitter.TSNode
 import org.treesitter.TSQuery
-import org.treesitter.TreeSitterTypescript
 
 /**
  * Query to extract wildcard re-export statements from TypeScript/TSX files.
  * Example: export * from './constants'
  */
 class TypescriptWildcardExportQuery(
-    typescript: TreeSitterTypescript
+    language: TSLanguage
 ) {
     private val query = TSQuery(
-        typescript,
+        language,
         """
         (export_statement
           "*" @star

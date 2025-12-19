@@ -14,6 +14,7 @@ import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.tsco
 import de.maibornwolff.dependacharta.pipeline.analysis.model.*
 import org.treesitter.TSNode
 import org.treesitter.TSParser
+import org.treesitter.TreeSitterTsx
 import org.treesitter.TreeSitterTypescript
 
 const val DEFAULT_EXPORT_NODE_NAME = "DEFAULT_EXPORT"
@@ -22,18 +23,21 @@ class TypescriptAnalyzer(
     private val fileInfo: FileInfo
 ) : LanguageAnalyzer {
     private val isTsxFile = fileInfo.physicalPath.endsWith(".tsx")
-    private val typescript = TreeSitterTypescript()
-    private val declarationsQuery = TypescriptDeclarationsQuery(typescript)
-    private val defaultExportQuery = TypescriptDefaultExportQuery(typescript)
-    private val importStatementQuery = TypescriptImportStatementQuery(typescript)
-    private val indexTsExportQuery = TypescriptIndexTsExportQuery(typescript)
-    private val wildcardExportQuery = TypescriptWildcardExportQuery(typescript)
-    private val typeIdentifierQuery = TypescriptTypeIdentifierQuery(typescript)
-    private val constructorCallQuery = TypescriptConstructorCallQuery(typescript)
-    private val memberExpressionQuery = TypescriptMemberExpressionQuery(typescript)
-    private val extendsClauseQuery = TypescriptExtendsClauseQuery(typescript)
-    private val methodCallIdentifierQuery = TypescriptMethodCallIdentifierQuery(typescript)
-    private val identifierQuery = TypescriptIdentifierQuery(typescript)
+
+    // Use TSX grammar for .tsx files (supports JSX), TypeScript grammar for .ts files
+    private val grammar = if (isTsxFile) TreeSitterTsx() else TreeSitterTypescript()
+
+    private val declarationsQuery = TypescriptDeclarationsQuery(grammar)
+    private val defaultExportQuery = TypescriptDefaultExportQuery(grammar)
+    private val importStatementQuery = TypescriptImportStatementQuery(grammar)
+    private val indexTsExportQuery = TypescriptIndexTsExportQuery(grammar)
+    private val wildcardExportQuery = TypescriptWildcardExportQuery(grammar)
+    private val typeIdentifierQuery = TypescriptTypeIdentifierQuery(grammar)
+    private val constructorCallQuery = TypescriptConstructorCallQuery(grammar)
+    private val memberExpressionQuery = TypescriptMemberExpressionQuery(grammar)
+    private val extendsClauseQuery = TypescriptExtendsClauseQuery(grammar)
+    private val methodCallIdentifierQuery = TypescriptMethodCallIdentifierQuery(grammar)
+    private val identifierQuery = TypescriptIdentifierQuery(grammar)
 
     override fun analyze(): FileReport {
         val rootNode = parseCode(fileInfo.content)
@@ -209,7 +213,7 @@ class TypescriptAnalyzer(
 
     private fun parseCode(typescriptCode: String): TSNode {
         val parser = TSParser()
-        parser.language = typescript
+        parser.language = grammar
         val tree = parser.parseString(null, typescriptCode)
         return tree.rootNode
     }

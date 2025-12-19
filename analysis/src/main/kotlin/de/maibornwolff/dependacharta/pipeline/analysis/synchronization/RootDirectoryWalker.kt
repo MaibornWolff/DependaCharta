@@ -17,9 +17,12 @@ class RootDirectoryWalker(
 
     fun getFileInfo(path: String): FileInfo {
         val sourceCodeFile = File(path)
+        val relativePath = sourceCodeFile.toRelativeString(rootDirectory)
+        // If relative path is empty (single file analysis), use the file name
+        val effectivePath = if (relativePath.isEmpty()) sourceCodeFile.name else relativePath
         return FileInfo(
             language = determineLanguage(path),
-            physicalPath = sourceCodeFile.toRelativeString(rootDirectory),
+            physicalPath = effectivePath,
             content = sourceCodeFile
                 .readText(Charsets.UTF_8)
                 // delete UTF-8 BOM character

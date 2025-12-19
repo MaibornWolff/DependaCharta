@@ -15,20 +15,20 @@ import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.tsco
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Dependency
 import de.maibornwolff.dependacharta.pipeline.analysis.model.FileInfo
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
+import org.treesitter.TSLanguage
 import org.treesitter.TSNode
 import org.treesitter.TSQuery
 import org.treesitter.TSQueryMatch
-import org.treesitter.TreeSitterTypescript
 
 /**
  *  [execute]
  */
 class TypescriptImportStatementQuery(
-    val typescript: TreeSitterTypescript
+    val language: TSLanguage
 ) {
-    private val esModuleImportQuery = TSQuery(typescript, "(import_statement (import_clause) @import source: _ @source)")
+    private val esModuleImportQuery = TSQuery(language, "(import_statement (import_clause) @import source: _ @source)")
     private val commonJsImportsQuery = TSQuery(
-        typescript,
+        language,
         "(variable_declarator name: _ @name value: (call_expression function: (identifier) @function arguments: (arguments (string) @module) (#eq? @function \"require\")))"
     )
     private val tsConfigResolver = TsConfigResolver()
