@@ -112,7 +112,7 @@ export class NonCompoundNodeComponent {
   }
 
   calculateLabel() {
-    return isPackage(this.node) ? this.node.label.toUpperCase() : this.node.label
+    return this.node.label
   }
 
   isPinned(): boolean {

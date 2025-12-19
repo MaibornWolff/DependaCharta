@@ -265,7 +265,7 @@ describe('NonCompoundNodeComponent', () => {
   });
 
   describe('calculateLabel', () => {
-    it('should return uppercase label for package nodes', () => {
+    it('should return original label for package nodes', () => {
       const packageNode = VisibleGraphNode.build();
       (packageNode as any).type = 'PACKAGE';
       packageNode.label = 'test package';
