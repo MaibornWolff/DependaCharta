@@ -23,8 +23,8 @@ describe('File Loader Integration Test', () => {
           .and('have.length.at.least', 1)
           .should('have.length', 2)
           .then((nodes) => {
-            expect(nodes.eq(0)).to.contain.text('CYPRESS_CONFIG');
-            expect(nodes.eq(1)).to.contain.text('SRC');
+            expect(nodes.eq(0)).to.contain.text('cypress_config');
+            expect(nodes.eq(1)).to.contain.text('src');
           });
       });
   });
@@ -36,20 +36,20 @@ describe('File Loader Integration Test', () => {
     cy.get('#file').selectFile(filePath, {force: true});
 
     // Act
-    cy.get('.non-compound-node').contains('SRC').click();
+    cy.get('.non-compound-node').contains('src').click();
 
     // Assert
     cy.get('.compound-node')
       .should('exist')
       .within(() => {
-        cy.get('.header .label').should('have.text', 'SRC');
+        cy.get('.header .label').should('have.text', 'src');
       });
 
     cy.get('.non-compound-node')
       .should('have.length', 2)
       .then((nodes) => {
-        expect(nodes.eq(0)).to.contain.text('CYPRESS_CONFIG');
-        expect(nodes.eq(1)).to.contain.text('APP');
+        expect(nodes.eq(0)).to.contain.text('cypress_config');
+        expect(nodes.eq(1)).to.contain.text('app');
       });
   });
 
