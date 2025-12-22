@@ -10,9 +10,9 @@ export namespace EdgePredicate {
         return edge => !edge.isCyclic && !edge.isPointingUpwards
       case EdgeType.CYCLIC:
         return edge => edge.isCyclic && !edge.isPointingUpwards
-      case EdgeType.FEEDBACK:
+      case EdgeType.FEEDBACK_LEAF_LEVEL:
         return edge => edge.isCyclic && edge.isPointingUpwards
-      case EdgeType.TWISTED:
+      case EdgeType.FEEDBACK_CONTAINER_LEVEL:
         return edge => !edge.isCyclic && edge.isPointingUpwards
       case EdgeType.NONE:
         return (_) => false

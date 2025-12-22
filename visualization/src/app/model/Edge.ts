@@ -18,8 +18,8 @@ export class Edge {
   // TODO `Edge` should have a function `getType(): EdgeType`
   // !isCyclic && !isPointingUpwards => REGULAR
   // isCyclic && !isPointingUpwards => CYCLIC
-  // !isCyclic && isPointingUpwards => TWISTED
-  // isCyclic && isPointingUpwards => FEEDBACK
+  // !isCyclic && isPointingUpwards => FEEDBACK_CONTAINER_LEVEL
+  // isCyclic && isPointingUpwards => FEEDBACK_LEAF_LEVEL
   // TODO (next) `EdgePredicate`, `EdgeFilter`, `EdgeFilterResult` can be removed
 
   static aggregateEdges(edges: Edge[], shouldAggregateEdges: boolean): Edge[] {

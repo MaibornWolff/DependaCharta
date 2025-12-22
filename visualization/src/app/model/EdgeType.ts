@@ -3,8 +3,8 @@ import {EdgeFilterType} from './EdgeFilter';
 export enum EdgeType {
   REGULAR = "REGULAR",
   CYCLIC = "CYCLIC",
-  FEEDBACK = "FEEDBACK",
-  TWISTED = "TWISTED",
+  FEEDBACK_LEAF_LEVEL = "FEEDBACK_LEAF_LEVEL",
+  FEEDBACK_CONTAINER_LEVEL = "FEEDBACK_CONTAINER_LEVEL",
   NONE = "NONE"
 }
 
@@ -15,21 +15,21 @@ export namespace EdgeType {
         return [
           EdgeType.REGULAR,
           EdgeType.CYCLIC,
-          EdgeType.FEEDBACK,
-          EdgeType.TWISTED]
+          EdgeType.FEEDBACK_LEAF_LEVEL,
+          EdgeType.FEEDBACK_CONTAINER_LEVEL]
       case EdgeFilterType.NONE:
         return []
       case EdgeFilterType.CYCLES_ONLY:
         return [
           EdgeType.CYCLIC,
-          EdgeType.FEEDBACK]
-      case EdgeFilterType.FEEDBACK_EDGES_ONLY:
+          EdgeType.FEEDBACK_LEAF_LEVEL]
+      case EdgeFilterType.FEEDBACK_LEAF_LEVEL_ONLY:
         return [
-          EdgeType.FEEDBACK]
-      case EdgeFilterType.FEEDBACK_EDGES_AND_TWISTED_EDGES:
+          EdgeType.FEEDBACK_LEAF_LEVEL]
+      case EdgeFilterType.ALL_FEEDBACK_EDGES:
         return [
-          EdgeType.FEEDBACK,
-          EdgeType.TWISTED]
+          EdgeType.FEEDBACK_LEAF_LEVEL,
+          EdgeType.FEEDBACK_CONTAINER_LEVEL]
     }
   }
 }

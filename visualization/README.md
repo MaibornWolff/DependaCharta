@@ -28,10 +28,10 @@ Prerequisites: Git and Node.js installed
 
 ### Edge Filters
 You can choose from the following filters to limit which edges are displayed:
-- **Show only feedback edges (default)**: Only show the edges which are part of a cycle but also travel from a lower level to a higher level
-- Show feedback and twisted edges: Only show all edges which travel from a lower level to a higher level (includes feedback edges which are a red solid line, and non-cyclic twisted edges which are a red dotted line)
-- Show only cycles: Only show edges which are part of a cycle. Regular cyclic edges are colored blue, while feedback edges are colored red
-- Show all edges: Shows all edges. Regular edges are colored gray, while cyclic edges are colored blue, feedback edges are colored red as a solid line and twisted edges are colored red as a dotted line
+- **Show all feedback edges (default)**: Show all edges which travel from a lower level to a higher level (includes leaf level feedback edges which are red solid lines, and container level feedback edges which are red dotted lines)
+- Show only leaf level feedback edges: Only show the edges which are part of a cycle but also travel from a lower level to a higher level
+- Show only cycles: Only show edges which are part of a cycle. Regular cyclic edges are colored blue, while leaf level feedback edges are colored red
+- Show all edges: Shows all edges. Regular edges are colored gray, cyclic edges are colored blue, leaf level feedback edges are colored red as solid lines, and container level feedback edges are colored red as dotted lines
 - Show no edges: Hides all edges
 
 ## Directory Strucure and Dataflow

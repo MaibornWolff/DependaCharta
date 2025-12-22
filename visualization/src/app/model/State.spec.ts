@@ -55,7 +55,7 @@ describe('State', () => {
       expect(state.selectedNodeIds).toEqual([])
       expect(state.pinnedNodeIds).toEqual([])
       expect(state.showLabels).toBe(true)
-      expect(state.selectedFilter).toBe(EdgeFilterType.FEEDBACK_EDGES_AND_TWISTED_EDGES)
+      expect(state.selectedFilter).toBe(EdgeFilterType.ALL_FEEDBACK_EDGES)
       expect(state.isInteractive).toBe(true)
       expect(state.isUsageShown).toBe(true)
       expect(state.multiselectMode).toBe(false)

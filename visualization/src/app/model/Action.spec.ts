@@ -23,7 +23,7 @@ describe('State Handler', () => {
 
       // then
       expect(newState.showLabels).toEqual(true)
-      expect(newState.selectedFilter).toEqual(EdgeFilterType.FEEDBACK_EDGES_AND_TWISTED_EDGES)
+      expect(newState.selectedFilter).toEqual(EdgeFilterType.ALL_FEEDBACK_EDGES)
       expect(newState.allNodes.find(node => node.id == rootId)).toEqual(rootNode)
       expect(newState.allNodes.find(node => node.id == childId)).toEqual(childNode)
       expect(newState.hiddenNodeIds).toEqual([])

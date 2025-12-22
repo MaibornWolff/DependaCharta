@@ -6,8 +6,8 @@ import {EdgeType} from '../../../../model/EdgeType';
 
 export const REGULAR_EDGE_COLOR = "rgb(128,128,128)"
 export const CYCLE_EDGE_COLOR = "rgb(0,0,255)";
-export const FEEDBACK_EDGE_COLOR = "rgb(255,0,0)";
-export const TWISTED_EDGE_COLOR = "rgb(255,0,0)";
+export const FEEDBACK_LEAF_LEVEL_EDGE_COLOR = "rgb(255,0,0)";
+export const FEEDBACK_CONTAINER_LEVEL_EDGE_COLOR = "rgb(255,0,0)";
 
 @Injectable({
   providedIn: 'root'
@@ -45,17 +45,17 @@ export class EdgeDisplayService {
           .style("line-color", CYCLE_EDGE_COLOR)
           .style("target-arrow-color", CYCLE_EDGE_COLOR)
         break
-      case EdgeType.FEEDBACK:
+      case EdgeType.FEEDBACK_LEAF_LEVEL:
         edge
           .style("display", "element")
-          .style("line-color", FEEDBACK_EDGE_COLOR)
-          .style("target-arrow-color", FEEDBACK_EDGE_COLOR)
+          .style("line-color", FEEDBACK_LEAF_LEVEL_EDGE_COLOR)
+          .style("target-arrow-color", FEEDBACK_LEAF_LEVEL_EDGE_COLOR)
         break
-      case EdgeType.TWISTED:
+      case EdgeType.FEEDBACK_CONTAINER_LEVEL:
         edge
           .style("display", "element")
-          .style("line-color", TWISTED_EDGE_COLOR)
-          .style("target-arrow-color", TWISTED_EDGE_COLOR)
+          .style("line-color", FEEDBACK_CONTAINER_LEVEL_EDGE_COLOR)
+          .style("target-arrow-color", FEEDBACK_CONTAINER_LEVEL_EDGE_COLOR)
           .style('line-style', 'dotted')
         break
       case EdgeType.NONE:

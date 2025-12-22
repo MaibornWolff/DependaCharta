@@ -2734,22 +2734,22 @@
                                   "containedInternalDependencies": {}
                                 },
                                 {
-                                  "leafId": "src.app.adapter.cytoscape.internal.ui.edge-display_service.FEEDBACK_EDGE_COLOR",
-                                  "name": "FEEDBACK_EDGE_COLOR",
+                                  "leafId": "src.app.adapter.cytoscape.internal.ui.edge-display_service.FEEDBACK_LEAF_LEVEL_EDGE_COLOR",
+                                  "name": "FEEDBACK_LEAF_LEVEL_EDGE_COLOR",
                                   "children": [],
                                   "level": 0,
                                   "containedLeaves": [
-                                    "src.app.adapter.cytoscape.internal.ui.edge-display_service.FEEDBACK_EDGE_COLOR"
+                                    "src.app.adapter.cytoscape.internal.ui.edge-display_service.FEEDBACK_LEAF_LEVEL_EDGE_COLOR"
                                   ],
                                   "containedInternalDependencies": {}
                                 },
                                 {
-                                  "leafId": "src.app.adapter.cytoscape.internal.ui.edge-display_service.TWISTED_EDGE_COLOR",
-                                  "name": "TWISTED_EDGE_COLOR",
+                                  "leafId": "src.app.adapter.cytoscape.internal.ui.edge-display_service.FEEDBACK_CONTAINER_LEVEL_EDGE_COLOR",
+                                  "name": "FEEDBACK_CONTAINER_LEVEL_EDGE_COLOR",
                                   "children": [],
                                   "level": 0,
                                   "containedLeaves": [
-                                    "src.app.adapter.cytoscape.internal.ui.edge-display_service.TWISTED_EDGE_COLOR"
+                                    "src.app.adapter.cytoscape.internal.ui.edge-display_service.FEEDBACK_CONTAINER_LEVEL_EDGE_COLOR"
                                   ],
                                   "containedInternalDependencies": {}
                                 },
@@ -2785,8 +2785,8 @@
                               "containedLeaves": [
                                 "src.app.adapter.cytoscape.internal.ui.edge-display_service.REGULAR_EDGE_COLOR",
                                 "src.app.adapter.cytoscape.internal.ui.edge-display_service.CYCLE_EDGE_COLOR",
-                                "src.app.adapter.cytoscape.internal.ui.edge-display_service.FEEDBACK_EDGE_COLOR",
-                                "src.app.adapter.cytoscape.internal.ui.edge-display_service.TWISTED_EDGE_COLOR",
+                                "src.app.adapter.cytoscape.internal.ui.edge-display_service.FEEDBACK_LEAF_LEVEL_EDGE_COLOR",
+                                "src.app.adapter.cytoscape.internal.ui.edge-display_service.FEEDBACK_CONTAINER_LEVEL_EDGE_COLOR",
                                 "src.app.adapter.cytoscape.internal.ui.edge-display_service.EdgeDisplayService"
                               ],
                               "containedInternalDependencies": {
@@ -3363,8 +3363,8 @@
                           "containedLeaves": [
                             "src.app.adapter.cytoscape.internal.ui.edge-display_service.REGULAR_EDGE_COLOR",
                             "src.app.adapter.cytoscape.internal.ui.edge-display_service.CYCLE_EDGE_COLOR",
-                            "src.app.adapter.cytoscape.internal.ui.edge-display_service.FEEDBACK_EDGE_COLOR",
-                            "src.app.adapter.cytoscape.internal.ui.edge-display_service.TWISTED_EDGE_COLOR",
+                            "src.app.adapter.cytoscape.internal.ui.edge-display_service.FEEDBACK_LEAF_LEVEL_EDGE_COLOR",
+                            "src.app.adapter.cytoscape.internal.ui.edge-display_service.FEEDBACK_CONTAINER_LEVEL_EDGE_COLOR",
                             "src.app.adapter.cytoscape.internal.ui.edge-display_service.EdgeDisplayService",
                             "src.app.adapter.cytoscape.internal.ui.non-compound-nodes.interaction-bar.interaction-bar_component.InteractionBarComponent",
                             "src.app.adapter.cytoscape.internal.ui.non-compound-nodes.non-compound-node.non-compound-node_component.NonCompoundNodeComponent",
@@ -3460,8 +3460,8 @@
                         "src.app.adapter.cytoscape.internal.state.cytoscape-state_service.CytoscapeStateService",
                         "src.app.adapter.cytoscape.internal.ui.edge-display_service.REGULAR_EDGE_COLOR",
                         "src.app.adapter.cytoscape.internal.ui.edge-display_service.CYCLE_EDGE_COLOR",
-                        "src.app.adapter.cytoscape.internal.ui.edge-display_service.FEEDBACK_EDGE_COLOR",
-                        "src.app.adapter.cytoscape.internal.ui.edge-display_service.TWISTED_EDGE_COLOR",
+                        "src.app.adapter.cytoscape.internal.ui.edge-display_service.FEEDBACK_LEAF_LEVEL_EDGE_COLOR",
+                        "src.app.adapter.cytoscape.internal.ui.edge-display_service.FEEDBACK_CONTAINER_LEVEL_EDGE_COLOR",
                         "src.app.adapter.cytoscape.internal.ui.edge-display_service.EdgeDisplayService",
                         "src.app.adapter.cytoscape.internal.ui.non-compound-nodes.interaction-bar.interaction-bar_component.InteractionBarComponent",
                         "src.app.adapter.cytoscape.internal.ui.non-compound-nodes.non-compound-node.non-compound-node_component.NonCompoundNodeComponent",
@@ -3761,8 +3761,8 @@
                     "src.app.adapter.cytoscape.internal.state.cytoscape-state_service.CytoscapeStateService",
                     "src.app.adapter.cytoscape.internal.ui.edge-display_service.REGULAR_EDGE_COLOR",
                     "src.app.adapter.cytoscape.internal.ui.edge-display_service.CYCLE_EDGE_COLOR",
-                    "src.app.adapter.cytoscape.internal.ui.edge-display_service.FEEDBACK_EDGE_COLOR",
-                    "src.app.adapter.cytoscape.internal.ui.edge-display_service.TWISTED_EDGE_COLOR",
+                    "src.app.adapter.cytoscape.internal.ui.edge-display_service.FEEDBACK_LEAF_LEVEL_EDGE_COLOR",
+                    "src.app.adapter.cytoscape.internal.ui.edge-display_service.FEEDBACK_CONTAINER_LEVEL_EDGE_COLOR",
                     "src.app.adapter.cytoscape.internal.ui.edge-display_service.EdgeDisplayService",
                     "src.app.adapter.cytoscape.internal.ui.non-compound-nodes.interaction-bar.interaction-bar_component.InteractionBarComponent",
                     "src.app.adapter.cytoscape.internal.ui.non-compound-nodes.non-compound-node.non-compound-node_component.NonCompoundNodeComponent",
@@ -3989,8 +3989,8 @@
                 "src.app.adapter.cytoscape.internal.state.cytoscape-state_service.CytoscapeStateService",
                 "src.app.adapter.cytoscape.internal.ui.edge-display_service.REGULAR_EDGE_COLOR",
                 "src.app.adapter.cytoscape.internal.ui.edge-display_service.CYCLE_EDGE_COLOR",
-                "src.app.adapter.cytoscape.internal.ui.edge-display_service.FEEDBACK_EDGE_COLOR",
-                "src.app.adapter.cytoscape.internal.ui.edge-display_service.TWISTED_EDGE_COLOR",
+                "src.app.adapter.cytoscape.internal.ui.edge-display_service.FEEDBACK_LEAF_LEVEL_EDGE_COLOR",
+                "src.app.adapter.cytoscape.internal.ui.edge-display_service.FEEDBACK_CONTAINER_LEVEL_EDGE_COLOR",
                 "src.app.adapter.cytoscape.internal.ui.edge-display_service.EdgeDisplayService",
                 "src.app.adapter.cytoscape.internal.ui.non-compound-nodes.interaction-bar.interaction-bar_component.InteractionBarComponent",
                 "src.app.adapter.cytoscape.internal.ui.non-compound-nodes.non-compound-node.non-compound-node_component.NonCompoundNodeComponent",
@@ -4784,8 +4784,8 @@
             "src.app.adapter.cytoscape.internal.state.cytoscape-state_service.CytoscapeStateService",
             "src.app.adapter.cytoscape.internal.ui.edge-display_service.REGULAR_EDGE_COLOR",
             "src.app.adapter.cytoscape.internal.ui.edge-display_service.CYCLE_EDGE_COLOR",
-            "src.app.adapter.cytoscape.internal.ui.edge-display_service.FEEDBACK_EDGE_COLOR",
-            "src.app.adapter.cytoscape.internal.ui.edge-display_service.TWISTED_EDGE_COLOR",
+            "src.app.adapter.cytoscape.internal.ui.edge-display_service.FEEDBACK_LEAF_LEVEL_EDGE_COLOR",
+            "src.app.adapter.cytoscape.internal.ui.edge-display_service.FEEDBACK_CONTAINER_LEVEL_EDGE_COLOR",
             "src.app.adapter.cytoscape.internal.ui.edge-display_service.EdgeDisplayService",
             "src.app.adapter.cytoscape.internal.ui.non-compound-nodes.interaction-bar.interaction-bar_component.InteractionBarComponent",
             "src.app.adapter.cytoscape.internal.ui.non-compound-nodes.non-compound-node.non-compound-node_component.NonCompoundNodeComponent",
@@ -5235,8 +5235,8 @@
         "src.app.adapter.cytoscape.internal.state.cytoscape-state_service.CytoscapeStateService",
         "src.app.adapter.cytoscape.internal.ui.edge-display_service.REGULAR_EDGE_COLOR",
         "src.app.adapter.cytoscape.internal.ui.edge-display_service.CYCLE_EDGE_COLOR",
-        "src.app.adapter.cytoscape.internal.ui.edge-display_service.FEEDBACK_EDGE_COLOR",
-        "src.app.adapter.cytoscape.internal.ui.edge-display_service.TWISTED_EDGE_COLOR",
+        "src.app.adapter.cytoscape.internal.ui.edge-display_service.FEEDBACK_LEAF_LEVEL_EDGE_COLOR",
+        "src.app.adapter.cytoscape.internal.ui.edge-display_service.FEEDBACK_CONTAINER_LEVEL_EDGE_COLOR",
         "src.app.adapter.cytoscape.internal.ui.edge-display_service.EdgeDisplayService",
         "src.app.adapter.cytoscape.internal.ui.non-compound-nodes.interaction-bar.interaction-bar_component.InteractionBarComponent",
         "src.app.adapter.cytoscape.internal.ui.non-compound-nodes.non-compound-node.non-compound-node_component.NonCompoundNodeComponent",
@@ -6261,17 +6261,17 @@
       "language": "TYPESCRIPT",
       "dependencies": {}
     },
-    "src.app.adapter.cytoscape.internal.ui.edge-display_service.FEEDBACK_EDGE_COLOR": {
-      "id": "src.app.adapter.cytoscape.internal.ui.edge-display_service.FEEDBACK_EDGE_COLOR",
-      "name": "FEEDBACK_EDGE_COLOR",
+    "src.app.adapter.cytoscape.internal.ui.edge-display_service.FEEDBACK_LEAF_LEVEL_EDGE_COLOR": {
+      "id": "src.app.adapter.cytoscape.internal.ui.edge-display_service.FEEDBACK_LEAF_LEVEL_EDGE_COLOR",
+      "name": "FEEDBACK_LEAF_LEVEL_EDGE_COLOR",
       "physicalPath": "src\\app\\adapter\\cytoscape\\internal\\ui\\edge-display.service.ts",
       "nodeType": "VARIABLE",
       "language": "TYPESCRIPT",
       "dependencies": {}
     },
-    "src.app.adapter.cytoscape.internal.ui.edge-display_service.TWISTED_EDGE_COLOR": {
-      "id": "src.app.adapter.cytoscape.internal.ui.edge-display_service.TWISTED_EDGE_COLOR",
-      "name": "TWISTED_EDGE_COLOR",
+    "src.app.adapter.cytoscape.internal.ui.edge-display_service.FEEDBACK_CONTAINER_LEVEL_EDGE_COLOR": {
+      "id": "src.app.adapter.cytoscape.internal.ui.edge-display_service.FEEDBACK_CONTAINER_LEVEL_EDGE_COLOR",
+      "name": "FEEDBACK_CONTAINER_LEVEL_EDGE_COLOR",
       "physicalPath": "src\\app\\adapter\\cytoscape\\internal\\ui\\edge-display.service.ts",
       "nodeType": "VARIABLE",
       "language": "TYPESCRIPT",

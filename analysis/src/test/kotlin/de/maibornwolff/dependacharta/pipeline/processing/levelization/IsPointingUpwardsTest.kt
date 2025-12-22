@@ -280,9 +280,9 @@ class IsPointingUpwardsTest {
     }
 
     @Test
-    fun `should detect twisted edges between multiple top-level roots - reproduces RootFolderBug`() {
+    fun `should detect container level feedback edges between multiple top-level roots - reproduces RootFolderBug`() {
         // Given: Multiple top-level roots representing the structure when analyzing src/frontend/src/
-        // This reproduces the bug where core → store dependency is NOT marked as twisted
+        // This reproduces the bug where core → store dependency is NOT marked as container level feedback edge
         //
         // Structure (what the bug creates - multiple separate roots):
         //   core (level 0)
@@ -295,7 +295,7 @@ class IsPointingUpwardsTest {
         //           └── RootState (leaf)
         //
         // Expected: core.models.hydrate.actions.hydrate → store.createStore.RootState
-        //           should be TWISTED (level 0 → level 1, architectural violation)
+        //           should be a container level feedback edge (level 0 → level 1, architectural violation)
 
         val storeRoot = GraphNodeBuilder(id = "store", level = 1)
             .withChildren(
@@ -335,12 +335,12 @@ class IsPointingUpwardsTest {
         val hydrateNode = findNodeInDto(coreDto, "hydrate")
         val edgeToStore = hydrateNode?.containedInternalDependencies?.get("store.createStore.RootState")
 
-        // This is the bug: isPointingUpwards should be TRUE (twisted edge from level 0 → 1)
+        // This is the bug: isPointingUpwards should be TRUE (container level feedback edge from level 0 → 1)
         // but it's currently FALSE because the exception is caught and silently swallowed
         assertThat(edgeToStore).isNotNull
         assertThat(edgeToStore!!.isPointingUpwards)
             .describedAs(
-                "Edge from core (level 0) to store (level 1) should be twisted (isPointingUpwards=true), " +
+                "Edge from core (level 0) to store (level 1) should be a container level feedback edge (isPointingUpwards=true), " +
                     "but bug causes it to be false when roots are separate"
             ).isTrue()
     }

@@ -15,8 +15,8 @@ export class FilterComponent {
   @Input() selectedFilter!: EdgeFilterType
 
   allEdgeFilterTypes = [
-    EdgeFilterType.FEEDBACK_EDGES_AND_TWISTED_EDGES,
-    EdgeFilterType.FEEDBACK_EDGES_ONLY,
+    EdgeFilterType.ALL_FEEDBACK_EDGES,
+    EdgeFilterType.FEEDBACK_LEAF_LEVEL_ONLY,
     EdgeFilterType.CYCLES_ONLY,
     EdgeFilterType.ALL,
     EdgeFilterType.NONE
@@ -28,8 +28,8 @@ export class FilterComponent {
       case EdgeFilterType.ALL: name = "Show All"; break
       case EdgeFilterType.NONE: name = "Hide All"; break
       case EdgeFilterType.CYCLES_ONLY: name = "Show only cycles"; break
-      case EdgeFilterType.FEEDBACK_EDGES_ONLY: name = "Show only feedback edges"; break
-      case EdgeFilterType.FEEDBACK_EDGES_AND_TWISTED_EDGES: name = "Show feedback and twisted edges"; break
+      case EdgeFilterType.FEEDBACK_LEAF_LEVEL_ONLY: name = "Show only leaf level feedback edges"; break
+      case EdgeFilterType.ALL_FEEDBACK_EDGES: name = "Show all feedback edges"; break
     }
     return name
   }

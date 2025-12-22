@@ -32,7 +32,7 @@ export class State extends DataClass<State> {
       pinnedNodeIds: [],
       selectedPinnedNodeIds: [],
       showLabels: true,
-      selectedFilter: EdgeFilterType.FEEDBACK_EDGES_AND_TWISTED_EDGES,
+      selectedFilter: EdgeFilterType.ALL_FEEDBACK_EDGES,
       isInteractive: true,
       isUsageShown: true,
       multiselectMode: false

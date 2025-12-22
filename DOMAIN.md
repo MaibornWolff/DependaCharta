@@ -71,17 +71,19 @@ Weight helps identify the strength of coupling between components.
 
 Dependencies are classified into **4 edge types** based on two properties:
 
-| Edge Type | Cyclic? | Pointing Upward? | Color | Description |
-|-----------|---------|------------------|-------|-------------|
+| Edge Type | Cyclic at Leaf Level? | Pointing Upward? | Color | Description |
+|-----------|----------------------|------------------|-------|-------------|
 | **REGULAR** | No | No | **Grey** | Normal dependencies following architecture |
 | **CYCLIC** | Yes | No | **Blue** | Cyclic dependencies that follow architectural flow |
-| **TWISTED** | No | Yes | **Red** | Non-cyclic architectural violations |
-| **FEEDBACK** | Yes | Yes | **Red** | Cyclic dependencies that violate architecture |
+| **FEEDBACK_CONTAINER_LEVEL** | No | Yes | **Red (dotted)** | Container level feedback edges - may create cycles at package/module level, architectural violations |
+| **FEEDBACK_LEAF_LEVEL** | Yes | Yes | **Red (solid)** | Leaf level feedback edges - create cycles at class/function level, architectural violations |
 
 **Color Summary:**
 - **Grey edges (REGULAR)**: Normal dependencies that follow the architectural flow (neither cyclic nor upward-pointing)
 - **Blue edges (CYCLIC)**: Cyclic dependencies that still respect the architectural direction (downward-pointing cycles)
-- **Red edges (TWISTED + FEEDBACK)**: Architectural violations - dependencies that point upward, whether cyclic or not
+- **Red edges (all feedback edges)**: Architectural violations - dependencies that point upward
+  - **Dotted red (FEEDBACK_CONTAINER_LEVEL)**: May create cycles at container (package/module) level
+  - **Solid red (FEEDBACK_LEAF_LEVEL)**: Create cycles at leaf (class/function) level
 
 ## Visualization Features
 
@@ -162,8 +164,8 @@ Frontend Visualization (Angular + Cytoscape.js)
 | **Edge Aggregation** | Combining multiple leaf-to-leaf edges into namespace-level edges |
 | **REGULAR Edge** | Normal dependency (grey) - neither cyclic nor upward-pointing |
 | **CYCLIC Edge** | Cyclic dependency (blue) - forms a cycle but follows architectural direction |
-| **TWISTED Edge** | Non-cyclic architectural violation (red) - points upward but not cyclic |
-| **FEEDBACK Edge** | Cyclic architectural violation (red) - both cyclic and upward-pointing |
+| **FEEDBACK_CONTAINER_LEVEL Edge** | Container level feedback edge (red dotted) - creates cycles at package/module level, violates architecture |
+| **FEEDBACK_LEAF_LEVEL Edge** | Leaf level feedback edge (red solid) - creates cycles at class/function level, violates architecture |
 
 ## Related Documentation
 

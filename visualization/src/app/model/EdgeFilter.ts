@@ -6,8 +6,8 @@ export enum EdgeFilterType {
   ALL = "ALL",
   NONE = "NONE",
   CYCLES_ONLY = "CYCLES_ONLY",
-  FEEDBACK_EDGES_ONLY = "FEEDBACK_EDGES_ONLY",
-  FEEDBACK_EDGES_AND_TWISTED_EDGES = "FEEDBACK_EDGES_AND_TWISTED_EDGES",
+  FEEDBACK_LEAF_LEVEL_ONLY = "FEEDBACK_LEAF_LEVEL_ONLY",
+  ALL_FEEDBACK_EDGES = "ALL_FEEDBACK_EDGES",
 }
 
 export type EdgeFilter = (edges: Edge[]) => EdgeFilterResult
@@ -45,7 +45,7 @@ export namespace EdgeFilter {
   }
 
   export function isFilterForcesEdgesAggregation(edgeFilterType: EdgeFilterType): boolean {
-    return edgeFilterType !== EdgeFilterType.CYCLES_ONLY && edgeFilterType !== EdgeFilterType.FEEDBACK_EDGES_ONLY
+    return edgeFilterType !== EdgeFilterType.CYCLES_ONLY && edgeFilterType !== EdgeFilterType.FEEDBACK_LEAF_LEVEL_ONLY
   }
 }
 

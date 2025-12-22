@@ -376,18 +376,18 @@ describe('Edge', () => {
       expect(edges[0].isCyclic).toEqual(true)
     })
 
-    it('merges feedback and twisted edges with same source/target into one feedback edge with summed weight when showFeedbackEdgesAndTwistedEdges is active', () => {
+    it('merges leaf level and container level feedback edges with same source/target into one feedback edge with summed weight when showAllFeedbackEdges is active', () => {
            // given
            const leafNodeId1 = "leafNode1";
            const leafNodeId2 = "leafNode2";
-           const feedbackEdge = ShallowEdge.build({
+           const feedbackLeafLevelEdge = ShallowEdge.build({
              source: leafNodeId1,
              target: leafNodeId2,
              isCyclic: true,
              isPointingUpwards: true,
              weight: 2
            })
-           const twistedEdge = ShallowEdge.build({
+           const feedbackContainerLevelEdge = ShallowEdge.build({
              source: leafNodeId1,
              target: leafNodeId2,
              isCyclic: false,
@@ -397,13 +397,13 @@ describe('Edge', () => {
 
            const leafNode1 = VisibleGraphNode.build({
              id: leafNodeId1,
-             dependencies: [feedbackEdge, twistedEdge]
+             dependencies: [feedbackLeafLevelEdge, feedbackContainerLevelEdge]
            })
            const leafNode2 = VisibleGraphNode.build({
              id: leafNodeId2
            })
 
-           const state = State.fromRootNodes([leafNode1, leafNode2]).copy({ selectedFilter: EdgeFilterType.FEEDBACK_EDGES_AND_TWISTED_EDGES });
+           const state = State.fromRootNodes([leafNode1, leafNode2]).copy({ selectedFilter: EdgeFilterType.ALL_FEEDBACK_EDGES });
 
            // when
            const edges = state.createEdges([leafNode1, leafNode2]);

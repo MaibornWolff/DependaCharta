@@ -18,7 +18,7 @@ describe('New Graph Filter', () => {
     expect(edgeFilterResult).toEqual(expected)
   })
 
-  it('showOnlyFeedbackEdges should only return feedback edges', () => {
+  it('showOnlyFeedbackLeafLevelEdges should only return leaf level feedback edges', () => {
     // given
     const level0Node = VisibleGraphNode.build({
       level: 0
@@ -27,7 +27,7 @@ describe('New Graph Filter', () => {
       level: 1
     })
 
-    const feedbackEdge = Edge.build({
+    const feedbackLeafLevelEdge = Edge.build({
       source: level0Node,
       target: level1Node,
       isCyclic: true,
@@ -41,17 +41,17 @@ describe('New Graph Filter', () => {
     })
 
     // when
-    const edges = [feedbackEdge, nonFeedbackEdge]
-    const edgeFilter = EdgeFilter.fromEnum(EdgeFilterType.FEEDBACK_EDGES_ONLY)
+    const edges = [feedbackLeafLevelEdge, nonFeedbackEdge]
+    const edgeFilter = EdgeFilter.fromEnum(EdgeFilterType.FEEDBACK_LEAF_LEVEL_ONLY)
     const edgeFilterResult = edgeFilter(edges)
 
     // then
     const expected = EdgeFilterResult.empty()
-      .set(feedbackEdge.id, EdgeType.FEEDBACK)
+      .set(feedbackLeafLevelEdge.id, EdgeType.FEEDBACK_LEAF_LEVEL)
     expect(edgeFilterResult).toEqual(expected)
   })
 
-  it('showOnlyFeedbackEdges should not return twisted edges', () => {
+  it('showOnlyFeedbackLeafLevelEdges should not return container level feedback edges', () => {
     // given
     const level0Node = VisibleGraphNode.build({
       level: 0
@@ -61,13 +61,13 @@ describe('New Graph Filter', () => {
     })
 
 
-    const feedbackEdge = Edge.build({
+    const feedbackLeafLevelEdge = Edge.build({
       source: level0Node,
       target: level1Node,
       isCyclic: true,
       isPointingUpwards: true
     })
-    const twistedEdge = Edge.build({
+    const feedbackContainerLevelEdge = Edge.build({
       source: level0Node,
       target: level1Node,
       isCyclic: false,
@@ -75,17 +75,17 @@ describe('New Graph Filter', () => {
     })
 
     // when
-    const edges = [feedbackEdge, twistedEdge]
-    const edgeFilter = EdgeFilter.fromEnum(EdgeFilterType.FEEDBACK_EDGES_ONLY)
+    const edges = [feedbackLeafLevelEdge, feedbackContainerLevelEdge]
+    const edgeFilter = EdgeFilter.fromEnum(EdgeFilterType.FEEDBACK_LEAF_LEVEL_ONLY)
     const edgeFilterResult = edgeFilter(edges)
 
     // then
     const expected = EdgeFilterResult.empty()
-      .set(feedbackEdge.id, EdgeType.FEEDBACK)
+      .set(feedbackLeafLevelEdge.id, EdgeType.FEEDBACK_LEAF_LEVEL)
     expect(edgeFilterResult).toEqual(expected)
   })
 
-  it('showOnlyFeedbackEdges should not return any non-cyclic edges', () => {
+  it('showOnlyFeedbackLeafLevelEdges should not return any non-cyclic edges', () => {
     // given
     const edge = Edge.build({
       source: VisibleGraphNode.build({
@@ -100,7 +100,7 @@ describe('New Graph Filter', () => {
 
     // when
     const edges = [edge]
-    const edgeFilter = EdgeFilter.fromEnum(EdgeFilterType.FEEDBACK_EDGES_ONLY)
+    const edgeFilter = EdgeFilter.fromEnum(EdgeFilterType.FEEDBACK_LEAF_LEVEL_ONLY)
     const edgeFilterResult = edgeFilter(edges)
 
     // then
@@ -108,7 +108,7 @@ describe('New Graph Filter', () => {
     expect(edgeFilterResult).toEqual(expected)
   })
 
-  it('showFeedbackEdgesAndTwistedEdges should return twisted and feedback edges', () => {
+  it('showAllFeedbackEdges should return container level and leaf level feedback edges', () => {
     // given
     const level0Node = VisibleGraphNode.build({
       level: 0
@@ -117,7 +117,7 @@ describe('New Graph Filter', () => {
       level: 1
     })
 
-    const twistedEdge = Edge.build({
+    const feedbackContainerLevelEdge = Edge.build({
       id: '1',
       source: level0Node,
       target: level1Node,
@@ -125,7 +125,7 @@ describe('New Graph Filter', () => {
       isPointingUpwards: true
     })
 
-    const feedbackEdge = Edge.build({
+    const feedbackLeafLevelEdge = Edge.build({
       id: '2',
       source: level0Node,
       target: level1Node,
@@ -134,18 +134,18 @@ describe('New Graph Filter', () => {
     })
 
     // when
-    const edges = [twistedEdge, feedbackEdge]
-    const edgeFilter = EdgeFilter.fromEnum(EdgeFilterType.FEEDBACK_EDGES_AND_TWISTED_EDGES)
+    const edges = [feedbackContainerLevelEdge, feedbackLeafLevelEdge]
+    const edgeFilter = EdgeFilter.fromEnum(EdgeFilterType.ALL_FEEDBACK_EDGES)
     const edgeFilterResult = edgeFilter(edges)
 
     // then
     const expected = EdgeFilterResult.empty()
-      .set(feedbackEdge.id, EdgeType.FEEDBACK)
-      .set(twistedEdge.id, EdgeType.TWISTED)
+      .set(feedbackLeafLevelEdge.id, EdgeType.FEEDBACK_LEAF_LEVEL)
+      .set(feedbackContainerLevelEdge.id, EdgeType.FEEDBACK_CONTAINER_LEVEL)
     expect(edgeFilterResult).toEqual(expected)
   })
 
-  it('showFeedbackEdgesAndTwistedEdges should not return regular and cyclic edges which are no feedback or twisted edge', () => {
+  it('showAllFeedbackEdges should not return regular and cyclic edges which are no feedback edges', () => {
     // given
     const level0Node = VisibleGraphNode.build({
       level: 0
@@ -170,7 +170,7 @@ describe('New Graph Filter', () => {
 
     // when
     const edges = [regularEdge, regularCyclicEdge]
-    const edgeFilter = EdgeFilter.fromEnum(EdgeFilterType.FEEDBACK_EDGES_AND_TWISTED_EDGES)
+    const edgeFilter = EdgeFilter.fromEnum(EdgeFilterType.ALL_FEEDBACK_EDGES)
     const edgeFilterResult = edgeFilter(edges)
 
     // then
@@ -178,7 +178,7 @@ describe('New Graph Filter', () => {
     expect(edgeFilterResult).toEqual(expected)
   })
 
-  it('showCyclicEdges should show cyclic and feedback edges', () => {
+  it('showCyclicEdges should show cyclic and leaf level feedback edges', () => {
     // given
     const level0Node = VisibleGraphNode.build({
       level: 0
@@ -187,7 +187,7 @@ describe('New Graph Filter', () => {
       level: 1
     })
 
-    const feedbackEdge = Edge.build({
+    const feedbackLeafLevelEdge = Edge.build({
       id: '1',
       source: level0Node,
       target: level1Node,
@@ -204,18 +204,18 @@ describe('New Graph Filter', () => {
     })
 
     // when
-    const edges = [feedbackEdge, regularCyclicEdge]
+    const edges = [feedbackLeafLevelEdge, regularCyclicEdge]
     const edgeFilter = EdgeFilter.fromEnum(EdgeFilterType.CYCLES_ONLY)
     const edgeFilterResult = edgeFilter(edges)
 
     // then
     const expected = EdgeFilterResult.empty()
       .set(regularCyclicEdge.id, EdgeType.CYCLIC)
-      .set(feedbackEdge.id, EdgeType.FEEDBACK)
+      .set(feedbackLeafLevelEdge.id, EdgeType.FEEDBACK_LEAF_LEVEL)
     expect(edgeFilterResult).toEqual(expected)
   })
 
-  it('showCyclicEdges should not show regular and twisted edges', () => {
+  it('showCyclicEdges should not show regular and container level feedback edges', () => {
     // given
     const level0Node = VisibleGraphNode.build({
       level: 0
@@ -231,7 +231,7 @@ describe('New Graph Filter', () => {
       isPointingUpwards: false
     })
 
-    const twistedEdge = Edge.build({
+    const feedbackContainerLevelEdge = Edge.build({
       source: level0Node,
       target: level1Node,
       isCyclic: false,
@@ -239,7 +239,7 @@ describe('New Graph Filter', () => {
     })
 
     // when
-    const edges = [regularEdge, twistedEdge]
+    const edges = [regularEdge, feedbackContainerLevelEdge]
     const edgeFilter = EdgeFilter.fromEnum(EdgeFilterType.CYCLES_ONLY)
     const edgeFilterResult = edgeFilter(edges)
 
@@ -265,7 +265,7 @@ describe('New Graph Filter', () => {
       isPointingUpwards: false
     })
 
-    const twistedEdge = Edge.build({
+    const feedbackContainerLevelEdge = Edge.build({
       id: '2',
       source: level0Node,
       target: level1Node,
@@ -273,7 +273,7 @@ describe('New Graph Filter', () => {
       isPointingUpwards: true
     })
 
-    const feedbackEdge = Edge.build({
+    const feedbackLeafLevelEdge = Edge.build({
       id: '3',
       source: level0Node,
       target: level1Node,
@@ -290,7 +290,7 @@ describe('New Graph Filter', () => {
     })
 
     // when
-    const edges = [regularEdge, regularCyclicEdge, twistedEdge, feedbackEdge]
+    const edges = [regularEdge, regularCyclicEdge, feedbackContainerLevelEdge, feedbackLeafLevelEdge]
     const edgeFilter = EdgeFilter.fromEnum(EdgeFilterType.ALL)
     const edgeFilterResult = edgeFilter(edges)
 
@@ -298,8 +298,8 @@ describe('New Graph Filter', () => {
     const expected: EdgeFilterResult = new Map()
       .set(regularEdge.id, EdgeType.REGULAR)
       .set(regularCyclicEdge.id, EdgeType.CYCLIC)
-      .set(twistedEdge.id, EdgeType.TWISTED)
-      .set(feedbackEdge.id, EdgeType.FEEDBACK)
+      .set(feedbackContainerLevelEdge.id, EdgeType.FEEDBACK_CONTAINER_LEVEL)
+      .set(feedbackLeafLevelEdge.id, EdgeType.FEEDBACK_LEAF_LEVEL)
 
     expect(edgeFilterResult).toEqual(expected)
   })

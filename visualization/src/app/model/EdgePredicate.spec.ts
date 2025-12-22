@@ -4,7 +4,7 @@ import {Edge} from './Edge.spec';
 import {VisibleGraphNode} from './GraphNode.spec';
 
 describe('Layout', () => {
-  it('Is no feedback edge, when edge points from lower level node to higher level node and is not cyclic', () => {
+  it('Is no leaf level feedback edge, when edge points from lower level node to higher level node and is not cyclic', () => {
     const edge = Edge.build({
       source: VisibleGraphNode.build({
         level: 1
@@ -16,11 +16,11 @@ describe('Layout', () => {
       isPointingUpwards: true
     })
 
-    const predicate = EdgePredicate.fromEnum(EdgeType.FEEDBACK)
+    const predicate = EdgePredicate.fromEnum(EdgeType.FEEDBACK_LEAF_LEVEL)
     expect(predicate(edge)).toEqual(false);
   });
 
-  it('Is no feedback edge, when edge points from higher level node to lower level node and is cyclic', () => {
+  it('Is no leaf level feedback edge, when edge points from higher level node to lower level node and is cyclic', () => {
     const edge = Edge.build({
       source: VisibleGraphNode.build({
         level: 2
@@ -32,11 +32,11 @@ describe('Layout', () => {
       isPointingUpwards: false
     })
 
-    const predicate = EdgePredicate.fromEnum(EdgeType.FEEDBACK)
+    const predicate = EdgePredicate.fromEnum(EdgeType.FEEDBACK_LEAF_LEVEL)
     expect(predicate(edge)).toEqual(false);
   });
 
-  it('Is feedback edge, when edge points from lower level node to higher level node and is cyclic', () => {
+  it('Is leaf level feedback edge, when edge points from lower level node to higher level node and is cyclic', () => {
     const edge = Edge.build({
       source: VisibleGraphNode.build({
         level: 1
@@ -48,11 +48,11 @@ describe('Layout', () => {
       isPointingUpwards: true
     })
 
-    const predicate = EdgePredicate.fromEnum(EdgeType.FEEDBACK)
+    const predicate = EdgePredicate.fromEnum(EdgeType.FEEDBACK_LEAF_LEVEL)
     expect(predicate(edge)).toEqual(true);
   });
 
-  it('Is no twisted edge, when edge points from higher level node to lower level node and is cyclic', () => {
+  it('Is no container level feedback edge, when edge points from higher level node to lower level node and is cyclic', () => {
     const edge = Edge.build({
       source: VisibleGraphNode.build({
         level: 2
@@ -64,11 +64,11 @@ describe('Layout', () => {
       isPointingUpwards: false
     })
 
-    const predicate = EdgePredicate.fromEnum(EdgeType.TWISTED)
+    const predicate = EdgePredicate.fromEnum(EdgeType.FEEDBACK_CONTAINER_LEVEL)
     expect(predicate(edge)).toEqual(false);
   });
 
-  it('Is no twisted edge, when edge points from lower level node to higher level node and is cyclic', () => {
+  it('Is no container level feedback edge, when edge points from lower level node to higher level node and is cyclic', () => {
     const edge = Edge.build({
       source: VisibleGraphNode.build({
         level: 1
@@ -80,11 +80,11 @@ describe('Layout', () => {
       isPointingUpwards: true
     })
 
-    const predicate = EdgePredicate.fromEnum(EdgeType.TWISTED)
+    const predicate = EdgePredicate.fromEnum(EdgeType.FEEDBACK_CONTAINER_LEVEL)
     expect(predicate(edge)).toEqual(false);
   });
 
-  it('Is no twisted edge, when edge points from higher level node to lower level node and is not cyclic', () => {
+  it('Is no container level feedback edge, when edge points from higher level node to lower level node and is not cyclic', () => {
     const edge = Edge.build({
       source: VisibleGraphNode.build({
         level: 2
@@ -96,11 +96,11 @@ describe('Layout', () => {
       isPointingUpwards: false
     })
 
-    const predicate = EdgePredicate.fromEnum(EdgeType.TWISTED)
+    const predicate = EdgePredicate.fromEnum(EdgeType.FEEDBACK_CONTAINER_LEVEL)
     expect(predicate(edge)).toEqual(false);
   });
 
-  it('Is twisted edge, when edge points from lower level node to higher level node and is not cyclic', () => {
+  it('Is container level feedback edge, when edge points from lower level node to higher level node and is not cyclic', () => {
     const edge = Edge.build({
       source: VisibleGraphNode.build({
         level: 1
@@ -112,7 +112,7 @@ describe('Layout', () => {
       isPointingUpwards: true
     })
 
-    const predicate = EdgePredicate.fromEnum(EdgeType.TWISTED)
+    const predicate = EdgePredicate.fromEnum(EdgeType.FEEDBACK_CONTAINER_LEVEL)
     expect(predicate(edge)).toEqual(true);
   });
 
@@ -128,7 +128,7 @@ describe('Layout', () => {
       isPointingUpwards: true
     })
 
-    const predicate = EdgePredicate.fromEnum(EdgeType.TWISTED)
+    const predicate = EdgePredicate.fromEnum(EdgeType.FEEDBACK_CONTAINER_LEVEL)
     expect(predicate(edge)).toEqual(true);
   });
 
@@ -147,7 +147,7 @@ describe('Layout', () => {
       isPointingUpwards: false
     })
 
-    const predicate = EdgePredicate.fromEnum(EdgeType.TWISTED)
+    const predicate = EdgePredicate.fromEnum(EdgeType.FEEDBACK_CONTAINER_LEVEL)
     expect(predicate(edge)).toEqual(false);
   });
 
@@ -166,7 +166,7 @@ describe('Layout', () => {
       isPointingUpwards: true
     })
 
-    const predicate = EdgePredicate.fromEnum(EdgeType.TWISTED)
+    const predicate = EdgePredicate.fromEnum(EdgeType.FEEDBACK_CONTAINER_LEVEL)
     expect(predicate(edge)).toEqual(true);
   });
 });

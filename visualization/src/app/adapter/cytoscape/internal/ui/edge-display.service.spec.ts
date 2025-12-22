@@ -3,9 +3,9 @@ import {TestBed} from '@angular/core/testing';
 import {
     CYCLE_EDGE_COLOR,
     EdgeDisplayService,
-    FEEDBACK_EDGE_COLOR,
+    FEEDBACK_LEAF_LEVEL_EDGE_COLOR,
     REGULAR_EDGE_COLOR,
-    TWISTED_EDGE_COLOR
+    FEEDBACK_CONTAINER_LEVEL_EDGE_COLOR
 } from './edge-display.service';
 import {buildUniqueId} from '../../../../common/test/TestUtils.spec';
 import {CytoscapeGraphBuilder, ElementDefinitionBuilder} from '../converter/CytoscapeModelBuilders.spec';
@@ -86,13 +86,13 @@ describe('EdgeDisplayService', () => {
     expect(cyclicEdge.style('target-arrow-color')).toEqual(CYCLE_EDGE_COLOR)
   });
 
-  it('should color twisted edge correctly', () => {
+  it('should color container level feedback edge correctly', () => {
     //given
     const sourceNodeId = buildUniqueId()
-    const twistedEdgeNodeId = buildUniqueId()
+    const feedbackContainerLevelEdgeNodeId = buildUniqueId()
     const dependency = ShallowEdge.build({
       source: sourceNodeId,
-      target: twistedEdgeNodeId,
+      target: feedbackContainerLevelEdgeNodeId,
       isCyclic: false,
       isPointingUpwards: true
     })
@@ -101,31 +101,31 @@ describe('EdgeDisplayService', () => {
       .setLevel(1)
       .setContainedDependencies([dependency])
       .build()
-    const twistedEdgeNode = new ElementDefinitionBuilder()
-      .setId(twistedEdgeNodeId)
+    const feedbackContainerLevelEdgeNode = new ElementDefinitionBuilder()
+      .setId(feedbackContainerLevelEdgeNodeId)
       .setLevel(2)
       .build()
     const cy = new CytoscapeGraphBuilder()
-      .newEdge(sourceNode, twistedEdgeNode)
+      .newEdge(sourceNode, feedbackContainerLevelEdgeNode)
       .build()
 
     //when
     service.applyFilters(cy, [EdgeFilter.fromEnum(EdgeFilterType.ALL)])
 
     //then
-    const twistedEdge = cy.getElementById(sourceNodeId + "-" + twistedEdgeNodeId)[0]
-    expect(twistedEdge.hidden()).toEqual(false)
-    expect(twistedEdge.style('line-color')).toEqual(TWISTED_EDGE_COLOR)
-    expect(twistedEdge.style('target-arrow-color')).toEqual(TWISTED_EDGE_COLOR)
+    const feedbackContainerLevelEdge = cy.getElementById(sourceNodeId + "-" + feedbackContainerLevelEdgeNodeId)[0]
+    expect(feedbackContainerLevelEdge.hidden()).toEqual(false)
+    expect(feedbackContainerLevelEdge.style('line-color')).toEqual(FEEDBACK_CONTAINER_LEVEL_EDGE_COLOR)
+    expect(feedbackContainerLevelEdge.style('target-arrow-color')).toEqual(FEEDBACK_CONTAINER_LEVEL_EDGE_COLOR)
   });
 
-  it('should color feedback edge correctly', () => {
+  it('should color leaf level feedback edge correctly', () => {
     //given
     const sourceNodeId = buildUniqueId()
-    const feedbackEdgeNodeId = buildUniqueId()
+    const feedbackLeafLevelEdgeNodeId = buildUniqueId()
     const dependency = ShallowEdge.build({
       source: sourceNodeId,
-      target: feedbackEdgeNodeId,
+      target: feedbackLeafLevelEdgeNodeId,
       isCyclic: true,
       isPointingUpwards: true
     })
@@ -134,22 +134,22 @@ describe('EdgeDisplayService', () => {
       .setLevel(1)
       .setContainedDependencies([dependency])
       .build()
-    const feedbackEdgeNode = new ElementDefinitionBuilder()
-      .setId(feedbackEdgeNodeId)
+    const feedbackLeafLevelEdgeNode = new ElementDefinitionBuilder()
+      .setId(feedbackLeafLevelEdgeNodeId)
       .setLevel(2)
       .build()
     const cy = new CytoscapeGraphBuilder()
-      .newEdge(sourceNode, feedbackEdgeNode)
+      .newEdge(sourceNode, feedbackLeafLevelEdgeNode)
       .build()
 
     //when
     service.applyFilters(cy, [EdgeFilter.fromEnum(EdgeFilterType.ALL)])
 
     //then
-    const feedbackEdge = cy.getElementById(sourceNodeId + "-" + feedbackEdgeNodeId)[0]
-    expect(feedbackEdge.hidden()).toEqual(false)
-    expect(feedbackEdge.style('line-color')).toEqual(FEEDBACK_EDGE_COLOR)
-    expect(feedbackEdge.style('target-arrow-color')).toEqual(FEEDBACK_EDGE_COLOR)
+    const feedbackLeafLevelEdge = cy.getElementById(sourceNodeId + "-" + feedbackLeafLevelEdgeNodeId)[0]
+    expect(feedbackLeafLevelEdge.hidden()).toEqual(false)
+    expect(feedbackLeafLevelEdge.style('line-color')).toEqual(FEEDBACK_LEAF_LEVEL_EDGE_COLOR)
+    expect(feedbackLeafLevelEdge.style('target-arrow-color')).toEqual(FEEDBACK_LEAF_LEVEL_EDGE_COLOR)
   });
 
   it('should hide edges when they are not contained in EdgeFilterResult', () => {
