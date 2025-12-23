@@ -2,7 +2,7 @@ package de.maibornwolff.dependacharta.pipeline.processing.dependencies.dictionar
 
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
 
-class GoDictionary : LanguageDictionary {
+class GoStandardLibrary : StandardLibrary {
     override fun get() = goDictionary
 
     companion object {

@@ -2,7 +2,7 @@ package de.maibornwolff.dependacharta.pipeline.processing.dependencies.dictionar
 
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
 
-class KotlinDictionary : LanguageDictionary {
+class KotlinStandardLibrary : StandardLibrary {
     override fun get() = kotlinDictionary
 
     companion object {

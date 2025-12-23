@@ -2,7 +2,7 @@ package de.maibornwolff.dependacharta.pipeline.processing.dependencies.dictionar
 
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
 
-class JavaDictionary : LanguageDictionary {
+class JavaStandardLibrary : StandardLibrary {
     override fun get() = javaDictionary
 
     companion object {

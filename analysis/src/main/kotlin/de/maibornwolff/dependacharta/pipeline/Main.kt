@@ -54,6 +54,7 @@ class Cli : CliktCommand() {
                 SupportedLanguage.JAVA,
                 SupportedLanguage.C_SHARP,
                 SupportedLanguage.TYPESCRIPT,
+                SupportedLanguage.JAVASCRIPT,
                 SupportedLanguage.PHP,
                 SupportedLanguage.GO,
                 SupportedLanguage.PYTHON,

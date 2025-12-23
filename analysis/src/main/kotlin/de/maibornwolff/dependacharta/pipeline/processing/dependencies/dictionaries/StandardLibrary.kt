@@ -2,6 +2,6 @@ package de.maibornwolff.dependacharta.pipeline.processing.dependencies.dictionar
 
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
 
-interface LanguageDictionary {
+interface StandardLibrary {
     fun get(): Map<String, Path>
 }

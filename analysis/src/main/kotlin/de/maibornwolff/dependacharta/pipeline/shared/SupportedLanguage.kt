@@ -6,6 +6,7 @@ enum class SupportedLanguage(
     PHP(listOf("php")),
     C_SHARP(listOf("cs")),
     TYPESCRIPT(listOf("ts", "tsx")),
+    JAVASCRIPT(listOf("js", "jsx")),
     JAVA(listOf("java")),
     GO(listOf("go")),
     PYTHON(listOf("py")),

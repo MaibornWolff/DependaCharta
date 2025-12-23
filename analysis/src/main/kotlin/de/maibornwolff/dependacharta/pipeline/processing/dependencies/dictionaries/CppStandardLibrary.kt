@@ -2,7 +2,7 @@ package de.maibornwolff.dependacharta.pipeline.processing.dependencies.dictionar
 
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
 
-class CppDictionary : LanguageDictionary {
+class CppStandardLibrary : StandardLibrary {
     override fun get(): Map<String, Path> = cppDictionary
 
     companion object {
