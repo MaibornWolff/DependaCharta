@@ -7,6 +7,7 @@ class TsConfigResolver {
 
     companion object {
         private const val TSCONFIG_FILENAME = "tsconfig.json"
+        private const val JSCONFIG_FILENAME = "jsconfig.json"
     }
 
     fun findTsConfig(sourceFile: File): TsConfigResult? {
@@ -19,10 +20,17 @@ class TsConfigResolver {
         var currentDir = if (sourceFile.isDirectory) sourceFile else sourceFile.parentFile
 
         while (currentDir != null) {
+            // Prefer tsconfig.json if it exists, otherwise use jsconfig.json
             val tsconfigFile = currentDir.resolve(TSCONFIG_FILENAME)
             if (tsconfigFile.exists()) {
                 return tsconfigFile
             }
+
+            val jsconfigFile = currentDir.resolve(JSCONFIG_FILENAME)
+            if (jsconfigFile.exists()) {
+                return jsconfigFile
+            }
+
             currentDir = currentDir.parentFile
         }
 

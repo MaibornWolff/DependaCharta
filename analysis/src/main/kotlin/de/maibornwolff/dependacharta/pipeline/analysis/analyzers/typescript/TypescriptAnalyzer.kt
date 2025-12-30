@@ -5,6 +5,7 @@ import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.model.Di
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.model.toImport
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.nodeAsString
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.resolveRelativePath
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.stripSourceFileExtension
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.withoutFileSuffix
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.model.Declaration
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.model.DependenciesAndAliases
@@ -47,23 +48,17 @@ class TypescriptAnalyzer(
         val fileSuffix = if (isTsxFile) "tsx" else "ts"
         val path = pathFromInfo.withoutFileSuffix(fileSuffix)
 
-        val nodes = if (fileName == "index.ts" || fileName == "index.tsx") {
-            // Index files need to process BOTH re-exports AND regular exports
-            val fileLevelDependencies = importStatementQuery.execute(rootNode, fileInfo.content, path, fileInfo)
-            val reexports = extractIndexTsExports(rootNode, fileInfo.content, path)
-            val regularExports = extractNodes(rootNode, fileInfo.content, path, fileLevelDependencies)
-            reexports + regularExports
-        } else {
-            val fileLevelDependencies = importStatementQuery.execute(rootNode, fileInfo.content, path, fileInfo)
-            extractNodes(rootNode, fileInfo.content, path, fileLevelDependencies)
-        }
+        val fileLevelDependencies = importStatementQuery.execute(rootNode, fileInfo.content, path, fileInfo)
+        val reexports = extractReexports(rootNode, fileInfo.content, path)
+        val regularExports = extractNodes(rootNode, fileInfo.content, path, fileLevelDependencies)
+        val nodes = reexports + regularExports
         val dependencyOnThisFile = Dependency(path, isWildcard = true)
         val allNodes = nodes + extractDefaultExport(rootNode, path)
 
         return FileReport(nodes = allNodes.map { it.copy(dependencies = it.dependencies + dependencyOnThisFile) })
     }
 
-    private fun extractIndexTsExports(
+    private fun extractReexports(
         rootNode: TSNode,
         fileBody: String,
         filePath: Path
@@ -99,7 +94,7 @@ class TypescriptAnalyzer(
         val extractor = TypescriptExportNameExtractor(fileInfo.analysisRoot)
 
         return wildcardSources.flatMap { sourceString ->
-            val trimmedSource = sourceString.trim('"', '\'').trimFileEnding()
+            val trimmedSource = sourceString.trim('"', '\'').stripSourceFileExtension()
             val sourcePath = resolveWildcardSourcePath(trimmedSource, filePath)
             val exportSource = extractor.extractExports(sourcePath)
 
@@ -197,17 +192,21 @@ class TypescriptAnalyzer(
     ): Node {
         val declarationBody = nodeAsString(declaration.node, nodeBody)
         val declarationNode = parseCode(declarationBody)
-        val usedTypes = getUsedTypes(declarationNode, declarationBody, dependenciesAndAliases)
+        val usedTypesFromDeclaration = getUsedTypes(declarationNode, declarationBody, dependenciesAndAliases)
+            .filter { it != declaration.name }
+            .map { Type.simple(it) }
+            .toSet()
+
+        // Merge types from imports with types used in declaration body
+        val allUsedTypes = dependenciesAndAliases.usedTypes + usedTypesFromDeclaration
+
         return Node(
             pathWithName = path + declaration.name,
             physicalPath = fileInfo.physicalPath,
             language = fileInfo.language,
             nodeType = declaration.type,
             dependencies = dependenciesAndAliases.dependencies,
-            usedTypes = usedTypes
-                .filter { it != declaration.name }
-                .map { Type.simple(it) }
-                .toSet()
+            usedTypes = allUsedTypes
         )
     }
 

@@ -248,4 +248,76 @@ class TsConfigResolverTest {
         // then
         assertThat(result1?.data).isSameAs(result2?.data)
     }
+
+    @Test
+    fun `should find jsconfig when tsconfig does not exist`() {
+        // Given
+        val srcDir = tempDir.resolve("src").apply { mkdirs() }
+        val jsconfig = srcDir.resolve("jsconfig.json")
+        jsconfig.writeText(
+            """
+            {
+              "compilerOptions": {
+                "baseUrl": "./",
+                "paths": {
+                  "@/*": ["src/*"]
+                }
+              }
+            }
+            """.trimIndent()
+        )
+
+        val sourceFile = srcDir.resolve("index.js")
+
+        // When
+        val result = resolver.findTsConfig(sourceFile)
+
+        // Then
+        assertThat(result?.data?.compilerOptions?.baseUrl).isEqualTo("./")
+        assertThat(result?.data?.compilerOptions?.paths).containsKey("@/*")
+        assertThat(
+            result
+                ?.data
+                ?.compilerOptions
+                ?.paths
+                ?.get("@/*")
+        ).containsExactly("src/*")
+    }
+
+    @Test
+    fun `should prefer tsconfig over jsconfig when both exist`() {
+        // Given
+        val srcDir = tempDir.resolve("src").apply { mkdirs() }
+
+        val jsconfig = srcDir.resolve("jsconfig.json")
+        jsconfig.writeText(
+            """
+            {
+              "compilerOptions": {
+                "baseUrl": "js-base"
+              }
+            }
+            """.trimIndent()
+        )
+
+        val tsconfig = srcDir.resolve("tsconfig.json")
+        tsconfig.writeText(
+            """
+            {
+              "compilerOptions": {
+                "baseUrl": "ts-base"
+              }
+            }
+            """.trimIndent()
+        )
+
+        val sourceFile = srcDir.resolve("index.ts")
+
+        // When
+        val result = resolver.findTsConfig(sourceFile)
+
+        // Then
+        assertThat(result?.data?.compilerOptions?.baseUrl).isEqualTo("ts-base")
+        assertThat(result?.file?.name).isEqualTo("tsconfig.json")
+    }
 }

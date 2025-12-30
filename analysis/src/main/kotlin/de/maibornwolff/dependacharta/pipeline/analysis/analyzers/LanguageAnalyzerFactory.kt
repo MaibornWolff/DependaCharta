@@ -9,6 +9,7 @@ import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.kotlin.KotlinAn
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.php.PhpAnalyzer
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.python.PythonAnalyzer
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.TypescriptAnalyzer
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.vue.VueAnalyzer
 import de.maibornwolff.dependacharta.pipeline.analysis.model.FileInfo
 import de.maibornwolff.dependacharta.pipeline.shared.SupportedLanguage
 
@@ -25,6 +26,7 @@ class LanguageAnalyzerFactory {
                 SupportedLanguage.PYTHON -> PythonAnalyzer(fileInfo)
                 SupportedLanguage.CPP -> CppAnalyzer(fileInfo)
                 SupportedLanguage.KOTLIN -> KotlinAnalyzer(fileInfo)
+                SupportedLanguage.VUE -> VueAnalyzer(fileInfo)
             }
     }
 }

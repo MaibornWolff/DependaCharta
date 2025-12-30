@@ -5,6 +5,8 @@ import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
 import java.io.File
 
 object PathAliasResolver {
+    private val SOURCE_EXTENSIONS = listOf(".ts", ".tsx", ".js", ".jsx", ".vue", ".json")
+
     // Main entry point: resolves "@app/models" with paths config to Path(["src", "app", "models"])
     fun resolve(
         import: DirectImport,
@@ -13,9 +15,29 @@ object PathAliasResolver {
         analysisRoot: File
     ): Path? {
         val compilerOptions = config.compilerOptions ?: return null
-        val resolvedPath = resolveAgainstConfig(import.directPath, compilerOptions) ?: return null
-        val absolutePath = computeAbsolutePath(resolvedPath, compilerOptions.baseUrl, tsconfigDir)
+        val result = resolveAgainstConfig(import.directPath, compilerOptions) ?: return null
+        val absolutePath = computeAbsolutePath(result.resolvedPath, compilerOptions.baseUrl, tsconfigDir)
+
+        // For baseUrl fallback (no explicit path pattern match), verify file exists
+        // This prevents baseUrl from claiming federation imports or other non-file imports
+        if (result.isBaseUrlFallback && !fileExistsWithAnyExtension(absolutePath)) {
+            return null
+        }
+
         return convertToRelativePath(absolutePath, analysisRoot)
+    }
+
+    private data class ResolveResult(
+        val resolvedPath: String,
+        val isBaseUrlFallback: Boolean
+    )
+
+    // Check if file exists with any of the common source extensions
+    private fun fileExistsWithAnyExtension(basePath: File): Boolean {
+        if (basePath.exists()) return true
+        return SOURCE_EXTENSIONS.any { ext ->
+            File(basePath.path + ext).exists()
+        }
     }
 
     // Resolves import path using path mappings or baseUrl fallback
@@ -23,13 +45,13 @@ object PathAliasResolver {
     private fun resolveAgainstConfig(
         importPath: String,
         options: CompilerOptions
-    ): String? {
+    ): ResolveResult? {
         val matchedPath = findMatchingPath(importPath, options.paths)
         if (matchedPath != null) {
-            return matchedPath
+            return ResolveResult(matchedPath, isBaseUrlFallback = false)
         }
         if (options.baseUrl != null) {
-            return importPath
+            return ResolveResult(importPath, isBaseUrlFallback = true)
         }
         return null
     }

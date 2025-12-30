@@ -63,7 +63,7 @@ class JavascriptEs6ExportsQuery(
             """
         (export_statement
           (export_clause
-            (export_specifier name: (identifier) @name))
+            (export_specifier) @specifier)
           source: (string) @source)
             """.trimIndent()
         )
@@ -177,8 +177,14 @@ class JavascriptEs6ExportsQuery(
         val namedReexports = node.execute(reexportNamedQuery).flatMap { match ->
             val sourcePath = extractSourcePath(match.captures.last().node, body, currentPath)
             match.captures.dropLast(1).map { capture ->
-                val exportName = nodeAsString(capture.node, body)
-                JavascriptReexport(exportName, Dependency(sourcePath + exportName))
+                val specifierNode = capture.node
+                val nameNode = specifierNode.getChildByFieldName("name")
+                val aliasNode = specifierNode.getChildByFieldName("alias")
+
+                val originalName = nodeAsString(nameNode, body)
+                val exportedName = if (aliasNode.isNull) originalName else nodeAsString(aliasNode, body)
+
+                JavascriptReexport(exportedName, Dependency(sourcePath + originalName))
             }
         }
 

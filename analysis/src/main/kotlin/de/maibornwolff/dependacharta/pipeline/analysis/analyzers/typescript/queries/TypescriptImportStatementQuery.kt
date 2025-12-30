@@ -1,20 +1,25 @@
 package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.queries
 
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.bundler.BundlerAliasResolver
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.bundler.BundlerConfigResolver
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.federation.FederationAliasResolver
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.federation.FederationConfigResolver
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.model.DirectImport
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.model.toImport
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.execute
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.getNamedChildren
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.nodeAsString
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.resolveRelativePath
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.stripSourceFileExtension
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.DEFAULT_EXPORT_NODE_NAME
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.model.DependenciesAndAliases
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.model.IdentifierWithAlias
-import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.trimFileEnding
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.tsconfig.PathAliasResolver
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.tsconfig.TsConfigResolver
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Dependency
 import de.maibornwolff.dependacharta.pipeline.analysis.model.FileInfo
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Type
 import org.treesitter.TSLanguage
 import org.treesitter.TSNode
 import org.treesitter.TSQuery
@@ -32,6 +37,8 @@ class TypescriptImportStatementQuery(
         "(variable_declarator name: _ @name value: (call_expression function: (identifier) @function arguments: (arguments (string) @module) (#eq? @function \"require\")))"
     )
     private val tsConfigResolver = TsConfigResolver()
+    private val bundlerConfigResolver = BundlerConfigResolver()
+    private val federationConfigResolver = FederationConfigResolver()
 
     /**
      * Returns the dependencies and aliases of the imports contained within the given node.
@@ -101,8 +108,9 @@ class TypescriptImportStatementQuery(
         fileInfo: FileInfo?
     ): DependenciesAndAliases {
         val source = import.captures[1].node.getNamedChild(0)
-        val sourceName = nodeAsString(source, nodeBody)
-        val trimmedSourceName = sourceName.trimFileEnding()
+        val sourceName = nodeAsString(source, nodeBody).trim('"', '\'')
+        val isVueImport = sourceName.endsWith(".vue")
+        val trimmedSourceName = sourceName.stripSourceFileExtension()
         val path = resolveImportPath(trimmedSourceName, filePath, fileInfo)
 
         val identifiersWithAliases = import.captures[0]
@@ -112,9 +120,16 @@ class TypescriptImportStatementQuery(
                 if (child.type == "named_imports") {
                     child.getNamedChildren().map { grandchild -> identifierWithAliasEsModule(grandchild, nodeBody) }
                 } else {
+                    // Vue components don't use any suffix - the component path itself is the node
+                    // For other imports, use the DEFAULT_EXPORT_NODE_NAME
+                    val identifier = if (isVueImport) {
+                        "" // Empty string so dependencyAndImplicitIndexDependency creates path and path+index
+                    } else {
+                        (path + DEFAULT_EXPORT_NODE_NAME).withUnderscores()
+                    }
                     listOf(
                         IdentifierWithAlias(
-                            identifier = (path + DEFAULT_EXPORT_NODE_NAME).withUnderscores(),
+                            identifier = identifier,
                             alias = nodeAsString(child, nodeBody)
                         )
                     )
@@ -130,15 +145,22 @@ class TypescriptImportStatementQuery(
         fileInfo: FileInfo?
     ): DependenciesAndAliases {
         val source = import.captures[2].node.getNamedChild(0)
-        val sourceName = nodeAsString(source, nodeBody)
-        val trimmedSourceName = sourceName.trimFileEnding()
+        val sourceName = nodeAsString(source, nodeBody).trim('"', '\'')
+        val isVueImport = sourceName.endsWith(".vue")
+        val trimmedSourceName = sourceName.stripSourceFileExtension()
         val path = resolveImportPath(trimmedSourceName, filePath, fileInfo)
         val node = import.captures[0].node
         val identifiersWithAliases = if (node.type == "object_pattern") {
             node.getNamedChildren().map { child -> identifierWithAliasCommonJs(child, nodeBody) }
         } else {
+            // Vue components don't use any suffix - the component path itself is the node
+            val identifier = if (isVueImport) {
+                "" // Empty string so dependencyAndImplicitIndexDependency creates path and path+index
+            } else {
+                (path + DEFAULT_EXPORT_NODE_NAME).withUnderscores()
+            }
             listOf(
-                IdentifierWithAlias(identifier = (path + DEFAULT_EXPORT_NODE_NAME).withUnderscores(), alias = nodeAsString(node, nodeBody))
+                IdentifierWithAlias(identifier = identifier, alias = nodeAsString(node, nodeBody))
             )
         }
         return toDependenciesAndAliases(identifiersWithAliases, path)
@@ -153,13 +175,41 @@ class TypescriptImportStatementQuery(
 
         if (import is DirectImport && fileInfo?.analysisRoot != null) {
             val sourceFile = fileInfo.analysisRoot.resolve(fileInfo.physicalPath)
-            val result = tsConfigResolver.findTsConfig(sourceFile)
 
-            if (result != null) {
+            // Try tsconfig/jsconfig paths first
+            val tsConfigResult = tsConfigResolver.findTsConfig(sourceFile)
+            if (tsConfigResult != null) {
                 val resolved = PathAliasResolver.resolve(
                     import,
-                    result.data,
-                    result.file.parentFile,
+                    tsConfigResult.data,
+                    tsConfigResult.file.parentFile,
+                    fileInfo.analysisRoot
+                )
+                if (resolved != null) {
+                    return resolved
+                }
+            }
+
+            // Fall back to bundler config aliases (webpack, vite, vue.config)
+            val bundlerResult = bundlerConfigResolver.findBundlerConfig(sourceFile)
+            if (bundlerResult != null) {
+                val resolved = BundlerAliasResolver.resolve(
+                    import,
+                    bundlerResult.data,
+                    fileInfo.analysisRoot
+                )
+                if (resolved != null) {
+                    return resolved
+                }
+            }
+
+            // Fall back to Module Federation remotes
+            val federationResult = federationConfigResolver.findConsumerConfig(sourceFile)
+            if (federationResult != null) {
+                val resolved = FederationAliasResolver.resolve(
+                    import,
+                    federationResult,
+                    federationConfigResolver,
                     fileInfo.analysisRoot
                 )
                 if (resolved != null) {
@@ -184,9 +234,16 @@ class TypescriptImportStatementQuery(
             .mapNotNull { if (it.alias != null) it.alias to it.identifier else null }
             .toMap()
 
+        // Create usedTypes from imported identifiers (local names used in code)
+        val usedTypes = identifiersWithAliases
+            .mapNotNull { it.alias ?: it.identifier.ifEmpty { null } }
+            .map { Type.simple(it) }
+            .toSet()
+
         return DependenciesAndAliases(
             dependencies = dependencies,
-            importByAlias = identifiersByAlias
+            importByAlias = identifiersByAlias,
+            usedTypes = usedTypes
         )
     }
 
@@ -215,8 +272,18 @@ class TypescriptImportStatementQuery(
     private fun dependencyAndImplicitIndexDependency(
         importPath: Path,
         export: String
-    ) = setOf(
-        Dependency(importPath + export),
-        Dependency(importPath + "index" + export)
-    )
+    ): Set<Dependency> {
+        // If export is empty (e.g., for Vue components), create dependencies to just the path
+        return if (export.isEmpty()) {
+            setOf(
+                Dependency(importPath),
+                Dependency(importPath + "index")
+            )
+        } else {
+            setOf(
+                Dependency(importPath + export),
+                Dependency(importPath + "index" + export)
+            )
+        }
+    }
 }

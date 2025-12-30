@@ -220,6 +220,25 @@ Example: `feat(visualization): add dark mode toggle (#123)`
 6. Repeat
 
 **Test Quality Guidelines**:
+- **Given-When-Then structure**: ALWAYS use Given-When-Then comments to structure tests
+  - `// Given` - Setup and preconditions
+  - `// When` - Action being tested
+  - `// Then` - Expected outcomes (assertions)
+  - Example:
+    ```kotlin
+    @Test
+    fun `analyzes Vue component`() {
+        // Given
+        val vueCode = "..."
+        val fileInfo = FileInfo(...)
+
+        // When
+        val result = analyzer.analyze()
+
+        // Then
+        assertThat(result.nodes).hasSize(1)
+    }
+    ```
 - **No redundant assertions**: Remove unnecessary null checks before equality assertions
   - ❌ Bad: `assertNotNull(result); assertEquals(expected, result)`
   - ✅ Good: `assertEquals(expected, result)` (this already fails on null)

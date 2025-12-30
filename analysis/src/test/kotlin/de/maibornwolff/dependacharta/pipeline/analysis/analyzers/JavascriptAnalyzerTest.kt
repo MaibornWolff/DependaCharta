@@ -244,13 +244,13 @@ class JavascriptAnalyzerTest {
 
     @Test
     fun `should handle ES6 re-exports from index file`() {
-        // given
+        // Given
         val javascriptCode = """
             export { MyClass } from './MyClass'
             export { MyFunction } from './MyFunction'
         """.trimIndent()
 
-        // when
+        // When
         val report = JavascriptAnalyzer(
             FileInfo(
                 SupportedLanguage.JAVASCRIPT,
@@ -259,11 +259,61 @@ class JavascriptAnalyzerTest {
             )
         ).analyze()
 
-        // then
+        // Then
         assertThat(report.nodes).hasSize(2)
         assertThat(report.nodes)
             .extracting("nodeType")
             .containsExactly(NodeType.REEXPORT, NodeType.REEXPORT)
+    }
+
+    @Test
+    fun `should handle ES6 re-exports from non-index barrel file`() {
+        // Given
+        val javascriptCode = """
+            export { default as validationMixin } from './mixins/validation.mixin'
+            export { required, maxLength } from './validators'
+            export { default as helperMixin } from './mixins/helper.mixin'
+        """.trimIndent()
+
+        // When
+        val report = JavascriptAnalyzer(
+            FileInfo(
+                SupportedLanguage.JAVASCRIPT,
+                "shared/utils.js",
+                javascriptCode
+            )
+        ).analyze()
+
+        // Then
+        assertThat(report.nodes).hasSize(4)
+        assertThat(report.nodes)
+            .extracting("nodeType")
+            .containsOnly(NodeType.REEXPORT)
+    }
+
+    @Test
+    fun `should use alias name for re-exports with aliases`() {
+        // Given
+        val javascriptCode = """
+            export { default as validationMixin } from './mixins/validation.mixin'
+            export { foo as bar } from './fooModule'
+        """.trimIndent()
+
+        // When
+        val report = JavascriptAnalyzer(
+            FileInfo(
+                SupportedLanguage.JAVASCRIPT,
+                "shared/utils.js",
+                javascriptCode
+            )
+        ).analyze()
+
+        // Then
+        assertThat(report.nodes).hasSize(2)
+        val nodeNames = report.nodes.map { it.pathWithName.parts.last() }
+        // Should use alias names, not original names
+        assertThat(nodeNames).containsExactlyInAnyOrder("validationMixin", "bar")
+        assertThat(nodeNames).doesNotContain("default", "foo")
     }
 
     @Test

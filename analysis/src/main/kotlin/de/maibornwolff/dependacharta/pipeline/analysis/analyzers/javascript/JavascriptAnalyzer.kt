@@ -14,15 +14,11 @@ import de.maibornwolff.dependacharta.pipeline.analysis.model.Node
 import de.maibornwolff.dependacharta.pipeline.analysis.model.NodeType
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Type
-import de.maibornwolff.dependacharta.pipeline.analysis.model.TypeOfUsage
 import org.treesitter.TSNode
 import org.treesitter.TSParser
 import org.treesitter.TreeSitterJavascript
 
 const val DEFAULT_EXPORT_NAME = "default"
-
-private const val INDEX_JS = "index.js"
-private const val INDEX_JSX = "index.jsx"
 
 class JavascriptAnalyzer(
     private val fileInfo: FileInfo
@@ -37,33 +33,12 @@ class JavascriptAnalyzer(
     override fun analyze(): FileReport {
         val rootNode = parseCode(fileInfo.content)
         val filePathWithSlashes = fileInfo.physicalPathAsPath()
-        val pathWithoutFileEnding = filePathWithSlashes.withoutFileSuffix(if (fileInfo.physicalPath.endsWith(".jsx")) "jsx" else "js")
+        val fileSuffix = if (fileInfo.physicalPath.endsWith(".jsx")) "jsx" else "js"
+        val pathWithoutFileEnding = filePathWithSlashes.withoutFileSuffix(fileSuffix)
 
-        val fileName = filePathWithSlashes.getName()
-        val isIndexFile = fileName == INDEX_JS || fileName == INDEX_JSX
-
-        if (isIndexFile) {
-            return analyzeIndexFile(rootNode, pathWithoutFileEnding)
-        }
-
-        return analyzeRegularFile(rootNode, pathWithoutFileEnding)
-    }
-
-    private fun analyzeIndexFile(
-        rootNode: TSNode,
-        filePath: Path
-    ): FileReport {
-        val reexports = extractReexports(rootNode, filePath)
-        val regularExports = extractRegularExports(rootNode, filePath)
+        val reexports = extractReexports(rootNode, pathWithoutFileEnding)
+        val regularExports = extractRegularExports(rootNode, pathWithoutFileEnding)
         return FileReport(reexports + regularExports)
-    }
-
-    private fun analyzeRegularFile(
-        rootNode: TSNode,
-        filePath: Path
-    ): FileReport {
-        val nodes = extractRegularExports(rootNode, filePath)
-        return FileReport(nodes)
     }
 
     private fun extractReexports(
@@ -87,9 +62,9 @@ class JavascriptAnalyzer(
         rootNode: TSNode,
         filePath: Path
     ): List<Node> {
-        val es6Imports = es6ImportsQuery.execute(rootNode, fileInfo.content, filePath)
+        val es6ImportsResult = es6ImportsQuery.execute(rootNode, fileInfo.content, filePath, fileInfo)
         val commonJsRequires = commonJsRequireQuery.execute(rootNode, fileInfo.content, filePath)
-        val allImports = es6Imports + commonJsRequires
+        val allDependencies = es6ImportsResult.dependencies + commonJsRequires
 
         val es6ExportsInfo = es6ExportsQuery.executeExports(rootNode, fileInfo.content)
         val commonJsExports = commonJsExportsQuery.execute(rootNode, fileInfo.content)
@@ -97,13 +72,21 @@ class JavascriptAnalyzer(
 
         val declarations = declarationsQuery.execute(rootNode, fileInfo.content)
 
-        return buildNodesFromDeclarations(declarations, allExports, allImports, filePath, es6ExportsInfo.defaultExportedIdentifier)
+        return buildNodesFromDeclarations(
+            declarations,
+            allExports,
+            allDependencies,
+            es6ImportsResult.usedTypes,
+            filePath,
+            es6ExportsInfo.defaultExportedIdentifier
+        )
     }
 
     private fun buildNodesFromDeclarations(
         declarations: List<JavascriptDeclaration>,
         exports: Set<String>,
-        imports: List<Dependency>,
+        dependencies: Set<Dependency>,
+        usedTypes: Set<Type>,
         filePath: Path,
         defaultExportedIdentifier: String?
     ): List<Node> {
@@ -119,22 +102,10 @@ class JavascriptAnalyzer(
                 physicalPath = fileInfo.physicalPath,
                 language = fileInfo.language,
                 nodeType = declaration.nodeType,
-                dependencies = imports.toSet(),
-                usedTypes = createSyntheticTypesFromImports(imports)
+                dependencies = dependencies,
+                usedTypes = usedTypes
             )
         }
-    }
-
-    private fun createSyntheticTypesFromImports(imports: List<Dependency>): Set<Type> {
-        return imports
-            .mapNotNull { dependency ->
-                val identifier = dependency.path.parts.lastOrNull()
-                if (identifier != null && identifier.isNotEmpty()) {
-                    Type.simple(identifier, TypeOfUsage.USAGE)
-                } else {
-                    null
-                }
-            }.toSet()
     }
 
     private fun parseCode(javascriptCode: String): TSNode {

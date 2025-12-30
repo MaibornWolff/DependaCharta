@@ -59,7 +59,8 @@ class Cli : CliktCommand() {
                 SupportedLanguage.GO,
                 SupportedLanguage.PYTHON,
                 SupportedLanguage.CPP,
-                SupportedLanguage.KOTLIN
+                SupportedLanguage.KOTLIN,
+                SupportedLanguage.VUE
             )
         )
         ProcessingPipeline.run(

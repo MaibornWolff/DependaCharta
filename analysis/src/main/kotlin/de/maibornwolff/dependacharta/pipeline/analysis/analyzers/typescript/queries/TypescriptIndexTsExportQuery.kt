@@ -5,8 +5,8 @@ import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.ex
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.getNamedChildren
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.nodeAsString
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.resolveRelativePath
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.stripSourceFileExtension
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.model.IdentifierWithAlias
-import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.trimFileEnding
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Dependency
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
 import org.treesitter.TSLanguage
@@ -61,7 +61,7 @@ class TypescriptIndexTsExportQuery(
                     identifierWithAlias(child, bodyContainingNode)
                 }
                 val source = it.captures[1].node.getNamedChild(0)
-                val trimmedSourceName = nodeAsString(source, bodyContainingNode).trimFileEnding()
+                val trimmedSourceName = nodeAsString(source, bodyContainingNode).stripSourceFileExtension()
                 val importPath = resolveRelativePath(trimmedSourceName.toImport(), currentFilePath)
                 exports.map { export -> export to dependencyAndImplicitIndexDependency(importPath, export.identifier) }
             }

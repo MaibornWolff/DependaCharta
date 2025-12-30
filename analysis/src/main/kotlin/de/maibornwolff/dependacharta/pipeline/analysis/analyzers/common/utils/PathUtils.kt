@@ -54,3 +54,20 @@ fun Path.withoutFileSuffix(fileSuffix: String): Path {
             return Path(this.parts.dropLast(1) + fileNameWithoutSuffix)
         }
 }
+
+/**
+ * Strips known source file extensions from import paths to normalize them.
+ * This ensures dependency paths match node paths which have extensions stripped.
+ *
+ * @return The path with the extension removed if it was a known source extension
+ */
+fun String.stripSourceFileExtension(): String {
+    return when {
+        this.endsWith(".vue") -> this.dropLast(4)
+        this.endsWith(".tsx") -> this.dropLast(4)
+        this.endsWith(".jsx") -> this.dropLast(4)
+        this.endsWith(".ts") -> this.dropLast(3)
+        this.endsWith(".js") -> this.dropLast(3)
+        else -> this
+    }
+}

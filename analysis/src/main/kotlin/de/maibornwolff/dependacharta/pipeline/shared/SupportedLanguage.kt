@@ -12,6 +12,7 @@ enum class SupportedLanguage(
     PYTHON(listOf("py")),
     CPP(listOf("cpp", "c", "cc", "cxx", "h", "hpp", "hxx", "hh")),
     KOTLIN(listOf("kt", "kts")),
+    VUE(listOf("vue")),
 }
 
 fun languagesByExtension(languages: List<SupportedLanguage>) =

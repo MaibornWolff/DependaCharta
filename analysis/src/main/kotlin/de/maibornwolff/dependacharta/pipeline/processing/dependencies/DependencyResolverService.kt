@@ -38,6 +38,7 @@ class DependencyResolverService {
                 SupportedLanguage.PYTHON -> EmptyStandardLibrary()
                 SupportedLanguage.CPP -> CppStandardLibrary()
                 SupportedLanguage.KOTLIN -> KotlinStandardLibrary()
+                SupportedLanguage.VUE -> EmptyStandardLibrary()
             }
     }
 }

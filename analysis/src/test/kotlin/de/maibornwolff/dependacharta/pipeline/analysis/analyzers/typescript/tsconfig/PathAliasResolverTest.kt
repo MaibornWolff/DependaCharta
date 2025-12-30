@@ -92,8 +92,9 @@ class PathAliasResolverTest {
     }
 
     @Test
-    fun `should apply baseUrl when no path match found`() {
-        // given
+    fun `should return null for baseUrl fallback when file does not exist`() {
+        // Given - baseUrl is set but no explicit path mapping matches
+        // baseUrl fallback now requires file existence to prevent claiming module federation imports
         val config = TsConfigData(
             compilerOptions = CompilerOptions(
                 baseUrl = "src",
@@ -104,12 +105,11 @@ class PathAliasResolverTest {
         val tsconfigDir = File("/project")
         val analysisRoot = File("/project")
 
-        // when
+        // When
         val resolved = PathAliasResolver.resolve(import, config, tsconfigDir, analysisRoot)
 
-        // then
-        assertThat(resolved).isNotNull
-        assertThat(resolved).isEqualTo(Path(listOf("src", "utils", "helpers")))
+        // Then - returns null because /project/src/utils/helpers doesn't exist
+        assertThat(resolved).isNull()
     }
 
     @Test

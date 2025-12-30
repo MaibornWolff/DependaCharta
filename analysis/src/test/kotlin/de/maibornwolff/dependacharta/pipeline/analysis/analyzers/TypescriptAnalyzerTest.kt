@@ -262,10 +262,12 @@ class TypescriptAnalyzerTest {
         val expectedDependency = Dependency(
             path = Path(listOf("MyGreatInterface", "MyGreatInterface_$DEFAULT_EXPORT_NODE_NAME")),
         )
-        val expectedType = Type.simple("MyGreatInterface_$DEFAULT_EXPORT_NODE_NAME")
         val node = report.nodes[0]
         assertThat(node.dependencies).contains(expectedDependency)
-        assertThat(node.usedTypes).containsExactly(expectedType)
+        assertThat(node.usedTypes).containsExactlyInAnyOrder(
+            Type.simple("MyGreatInterface"),
+            Type.simple("MyGreatInterface_$DEFAULT_EXPORT_NODE_NAME")
+        )
     }
 
     @Test
@@ -413,6 +415,31 @@ class TypescriptAnalyzerTest {
         assertThat(nodeOfAThirdClass.dependencies).contains(expectedDependency3)
         assertThat(nodeOfAThirdClass.dependencies).doesNotContain(expectedDependency1, expectedDependency2)
         assertThat(nodeOfAThirdClass.usedTypes).containsExactly(Type.simple("AThirdClass"))
+    }
+
+    @Test
+    fun `should handle reexports from non-index barrel file`() {
+        // Given
+        val typescriptCode = """
+            export { default as validationMixin } from './mixins/validation.mixin'
+            export { required, maxLength } from './validators'
+            export { default as helperMixin } from './mixins/helper.mixin'
+        """.trimIndent()
+
+        // When
+        val report = TypescriptAnalyzer(
+            FileInfo(
+                SupportedLanguage.TYPESCRIPT,
+                "shared/utils.ts",
+                typescriptCode
+            )
+        ).analyze()
+
+        // Then
+        assertThat(report.nodes).hasSize(4)
+        assertThat(report.nodes)
+            .extracting("nodeType")
+            .containsOnly(NodeType.REEXPORT)
     }
 
     @Test

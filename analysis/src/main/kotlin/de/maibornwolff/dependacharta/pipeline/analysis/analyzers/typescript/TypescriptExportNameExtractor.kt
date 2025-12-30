@@ -2,6 +2,7 @@ package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript
 
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.model.toImport
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.resolveRelativePath
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.stripSourceFileExtension
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.queries.TypescriptDeclarationsQuery
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.queries.TypescriptIndexTsExportQuery
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.queries.TypescriptWildcardExportQuery
@@ -59,7 +60,7 @@ class TypescriptExportNameExtractor(
 
         val wildcardExports = wildcardSources
             .flatMap { sourceString ->
-                val trimmedSource = sourceString.trim('"', '\'').trimFileEnding()
+                val trimmedSource = sourceString.trim('"', '\'').stripSourceFileExtension()
                 val sourcePath = resolveRelativePath(trimmedSource.toImport(), targetPath)
                 extractExports(sourcePath, visitedPaths + targetPath).names
             }.toSet()
