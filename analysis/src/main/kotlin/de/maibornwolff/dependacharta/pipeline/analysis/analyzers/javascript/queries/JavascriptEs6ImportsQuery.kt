@@ -1,19 +1,10 @@
 package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.javascript.queries
 
-import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.bundler.BundlerAliasResolver
-import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.bundler.BundlerConfigResolver
-import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.federation.FederationAliasResolver
-import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.federation.FederationConfigResolver
-import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.model.DirectImport
-import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.model.toImport
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.ImportPathResolver
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.execute
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.nodeAsString
-import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.resolveRelativePath
-import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.stripSourceFileExtension
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.javascript.DEFAULT_EXPORT_NAME
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.model.DependenciesAndAliases
-import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.tsconfig.PathAliasResolver
-import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.tsconfig.TsConfigResolver
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Dependency
 import de.maibornwolff.dependacharta.pipeline.analysis.model.FileInfo
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
@@ -58,9 +49,7 @@ class JavascriptEs6ImportsQuery(
             """.trimIndent()
         )
 
-    private val tsConfigResolver = TsConfigResolver()
-    private val bundlerConfigResolver = BundlerConfigResolver()
-    private val federationConfigResolver = FederationConfigResolver()
+    private val importPathResolver = ImportPathResolver()
 
     fun execute(
         node: TSNode,
@@ -125,55 +114,6 @@ class JavascriptEs6ImportsQuery(
         fileInfo: FileInfo?
     ): Path {
         val sourceString = nodeAsString(sourceNode, body).trim('"', '\'')
-        val trimmedSourceString = sourceString.stripSourceFileExtension()
-        val import = trimmedSourceString.toImport()
-
-        if (import is DirectImport && fileInfo?.analysisRoot != null) {
-            val sourceFile = fileInfo.analysisRoot.resolve(fileInfo.physicalPath)
-
-            // Try jsconfig.json/tsconfig.json path resolution first
-            val tsConfigResult = tsConfigResolver.findTsConfig(sourceFile)
-            if (tsConfigResult != null) {
-                val resolved = PathAliasResolver.resolve(
-                    import,
-                    tsConfigResult.data,
-                    tsConfigResult.file.parentFile,
-                    fileInfo.analysisRoot
-                )
-                if (resolved != null) {
-                    return resolved
-                }
-            }
-
-            // Fall back to bundler config aliases (webpack, vite, vue.config)
-            val bundlerResult = bundlerConfigResolver.findBundlerConfig(sourceFile)
-            if (bundlerResult != null) {
-                val resolved = BundlerAliasResolver.resolve(
-                    import,
-                    bundlerResult.data,
-                    fileInfo.analysisRoot
-                )
-                if (resolved != null) {
-                    return resolved
-                }
-            }
-
-            // Fall back to Module Federation remotes
-            val federationResult = federationConfigResolver.findConsumerConfig(sourceFile)
-            if (federationResult != null) {
-                val resolved = FederationAliasResolver.resolve(
-                    import,
-                    federationResult,
-                    federationConfigResolver,
-                    fileInfo.analysisRoot
-                )
-                if (resolved != null) {
-                    return resolved
-                }
-            }
-        }
-
-        // Fall back to relative path resolution
-        return resolveRelativePath(import, currentPath)
+        return importPathResolver.resolve(sourceString, currentPath, fileInfo)
     }
 }

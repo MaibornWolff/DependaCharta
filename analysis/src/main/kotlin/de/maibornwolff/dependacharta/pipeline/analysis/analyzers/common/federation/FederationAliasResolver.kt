@@ -1,7 +1,7 @@
 package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.federation
 
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.model.DirectImport
-import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.stripSourceFileExtension
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.toRelativePath
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
 import java.io.File
 
@@ -45,7 +45,7 @@ object FederationAliasResolver {
         // Resolve to actual file path
         val resolvedFile = producerConfig.moduleDir.resolve(exposedPath).canonicalFile
 
-        return convertToRelativePath(resolvedFile, analysisRoot)
+        return toRelativePath(resolvedFile, analysisRoot, stripExtension = true)
     }
 
     private fun parseImportPath(importPath: String): Pair<String, String>? {
@@ -67,29 +67,6 @@ object FederationAliasResolver {
             remoteUrl.substring(0, atIndex)
         } else {
             remoteUrl.ifEmpty { null }
-        }
-    }
-
-    private fun convertToRelativePath(
-        absolutePath: File,
-        analysisRoot: File
-    ): Path {
-        val relativePath = makeRelativeToAnalysisRoot(absolutePath, analysisRoot.canonicalFile)
-            .stripSourceFileExtension()
-        return Path(relativePath.split("/").filter { it.isNotEmpty() })
-    }
-
-    private fun makeRelativeToAnalysisRoot(
-        absolutePath: File,
-        analysisRoot: File
-    ): String {
-        val path = absolutePath.path
-        val root = analysisRoot.path
-
-        return if (path.startsWith(root)) {
-            path.substring(root.length).removePrefix("/")
-        } else {
-            path.removePrefix("/")
         }
     }
 }

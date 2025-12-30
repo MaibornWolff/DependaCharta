@@ -1,6 +1,7 @@
 package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.bundler
 
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.model.DirectImport
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.toRelativePath
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
 import java.io.File
 
@@ -15,7 +16,7 @@ object BundlerAliasResolver {
         analysisRoot: File
     ): Path? {
         val resolved = resolveAlias(import.directPath, config.aliases) ?: return null
-        return convertToRelativePath(resolved, analysisRoot)
+        return toRelativePath(resolved, analysisRoot)
     }
 
     private fun resolveAlias(
@@ -48,27 +49,5 @@ object BundlerAliasResolver {
         }
 
         return null
-    }
-
-    private fun convertToRelativePath(
-        absolutePath: File,
-        analysisRoot: File
-    ): Path {
-        val relativePath = makeRelativeToAnalysisRoot(absolutePath.canonicalFile, analysisRoot.canonicalFile)
-        return Path(relativePath.split("/").filter { it.isNotEmpty() })
-    }
-
-    private fun makeRelativeToAnalysisRoot(
-        absolutePath: File,
-        analysisRoot: File
-    ): String {
-        val path = absolutePath.path
-        val root = analysisRoot.path
-
-        return if (path.startsWith(root)) {
-            path.substring(root.length).removePrefix("/")
-        } else {
-            path.removePrefix("/")
-        }
     }
 }

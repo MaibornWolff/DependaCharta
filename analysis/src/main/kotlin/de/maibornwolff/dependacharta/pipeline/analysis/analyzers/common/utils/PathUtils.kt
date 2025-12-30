@@ -4,6 +4,7 @@ import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.model.Di
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.model.Import
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.model.RelativeImport
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
+import java.io.File
 
 /**
  * Resolves the path of an import relative to the file it is imported in.
@@ -69,5 +70,37 @@ fun String.stripSourceFileExtension(): String {
         this.endsWith(".ts") -> this.dropLast(3)
         this.endsWith(".js") -> this.dropLast(3)
         else -> this
+    }
+}
+
+/**
+ * Converts an absolute file path to a Path relative to the analysis root.
+ *
+ * @param absolutePath The absolute path to convert
+ * @param analysisRoot The root directory of the analysis
+ * @param stripExtension Whether to strip source file extensions from the result
+ * @return A Path relative to the analysis root
+ */
+fun toRelativePath(
+    absolutePath: File,
+    analysisRoot: File,
+    stripExtension: Boolean = false
+): Path {
+    val relativePath = makeRelativeToAnalysisRoot(absolutePath.canonicalFile, analysisRoot.canonicalFile)
+    val finalPath = if (stripExtension) relativePath.stripSourceFileExtension() else relativePath
+    return Path(finalPath.split("/").filter { it.isNotEmpty() })
+}
+
+private fun makeRelativeToAnalysisRoot(
+    absolutePath: File,
+    analysisRoot: File
+): String {
+    val path = absolutePath.path
+    val root = analysisRoot.path
+
+    return if (path.startsWith(root)) {
+        path.substring(root.length).removePrefix("/")
+    } else {
+        path.removePrefix("/")
     }
 }

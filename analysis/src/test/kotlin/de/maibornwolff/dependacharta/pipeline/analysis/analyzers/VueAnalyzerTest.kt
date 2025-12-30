@@ -323,7 +323,6 @@ class VueAnalyzerTest {
 
         // Both imports should produce usedTypes entries
         val usedTypeNames = node.usedTypes.map { it.name }
-        println("UsedTypes: $usedTypeNames")
 
         // Module alias import should create usedTypes for the named imports
         assertThat(usedTypeNames).contains("validateMixin")
@@ -370,8 +369,6 @@ class VueAnalyzerTest {
         assertThat(node.pathWithName.toString()).isEqualTo("src.parent.ParentComponent")
 
         val dependencyPaths = node.dependencies.map { it.path.toString() }
-        println("Dependency paths: $dependencyPaths")
-        println("Dependency full objects: ${node.dependencies}")
 
         // The dependency should NOT include .vue extension to match the node path
         // And should include the full path resolved from the relative import

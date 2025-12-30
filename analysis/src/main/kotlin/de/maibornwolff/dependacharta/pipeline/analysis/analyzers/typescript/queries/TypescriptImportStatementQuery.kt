@@ -1,21 +1,13 @@
 package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.queries
 
-import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.bundler.BundlerAliasResolver
-import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.bundler.BundlerConfigResolver
-import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.federation.FederationAliasResolver
-import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.federation.FederationConfigResolver
-import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.model.DirectImport
-import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.model.toImport
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.ImportPathResolver
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.execute
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.getNamedChildren
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.nodeAsString
-import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.resolveRelativePath
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.stripSourceFileExtension
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.DEFAULT_EXPORT_NODE_NAME
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.model.DependenciesAndAliases
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.model.IdentifierWithAlias
-import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.tsconfig.PathAliasResolver
-import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.tsconfig.TsConfigResolver
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Dependency
 import de.maibornwolff.dependacharta.pipeline.analysis.model.FileInfo
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
@@ -36,9 +28,7 @@ class TypescriptImportStatementQuery(
         language,
         "(variable_declarator name: _ @name value: (call_expression function: (identifier) @function arguments: (arguments (string) @module) (#eq? @function \"require\")))"
     )
-    private val tsConfigResolver = TsConfigResolver()
-    private val bundlerConfigResolver = BundlerConfigResolver()
-    private val federationConfigResolver = FederationConfigResolver()
+    private val importPathResolver = ImportPathResolver()
 
     /**
      * Returns the dependencies and aliases of the imports contained within the given node.
@@ -171,54 +161,7 @@ class TypescriptImportStatementQuery(
         currentFilePath: Path,
         fileInfo: FileInfo?
     ): Path {
-        val import = importString.toImport()
-
-        if (import is DirectImport && fileInfo?.analysisRoot != null) {
-            val sourceFile = fileInfo.analysisRoot.resolve(fileInfo.physicalPath)
-
-            // Try tsconfig/jsconfig paths first
-            val tsConfigResult = tsConfigResolver.findTsConfig(sourceFile)
-            if (tsConfigResult != null) {
-                val resolved = PathAliasResolver.resolve(
-                    import,
-                    tsConfigResult.data,
-                    tsConfigResult.file.parentFile,
-                    fileInfo.analysisRoot
-                )
-                if (resolved != null) {
-                    return resolved
-                }
-            }
-
-            // Fall back to bundler config aliases (webpack, vite, vue.config)
-            val bundlerResult = bundlerConfigResolver.findBundlerConfig(sourceFile)
-            if (bundlerResult != null) {
-                val resolved = BundlerAliasResolver.resolve(
-                    import,
-                    bundlerResult.data,
-                    fileInfo.analysisRoot
-                )
-                if (resolved != null) {
-                    return resolved
-                }
-            }
-
-            // Fall back to Module Federation remotes
-            val federationResult = federationConfigResolver.findConsumerConfig(sourceFile)
-            if (federationResult != null) {
-                val resolved = FederationAliasResolver.resolve(
-                    import,
-                    federationResult,
-                    federationConfigResolver,
-                    fileInfo.analysisRoot
-                )
-                if (resolved != null) {
-                    return resolved
-                }
-            }
-        }
-
-        return resolveRelativePath(import, currentFilePath)
+        return importPathResolver.resolve(importString, currentFilePath, fileInfo, stripExtension = false)
     }
 
     private fun toDependenciesAndAliases(

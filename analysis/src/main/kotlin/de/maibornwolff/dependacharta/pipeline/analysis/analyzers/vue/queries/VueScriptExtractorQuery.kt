@@ -34,38 +34,23 @@ class VueScriptExtractorQuery(
             .first()
             .node
 
-        // Extract attributes
+        // Extract attributes from start tag
         val startTag = scriptElement.find("start_tag")
         var lang: String? = null
         var isSetup = false
 
         if (startTag != null) {
-            val attributes = startTag.find("attribute")
-            if (attributes != null) {
-                val attrNameNode = attributes.find("attribute_name")
-                val attrName = if (attrNameNode != null) nodeAsString(attrNameNode, fileBody) else null
-                val attrValueNode = attributes.find("quoted_attribute_value")?.find("attribute_value")
-                val attrValue = if (attrValueNode != null) nodeAsString(attrValueNode, fileBody) else null
-
-                when (attrName) {
-                    "lang" -> lang = attrValue
-                    "setup" -> isSetup = true
-                }
-            }
-
-            // Check for setup attribute
             for (i in 0 until startTag.childCount) {
                 val child = startTag.getChild(i)
                 if (child.type == "attribute") {
                     val nameNode = child.find("attribute_name")
                     val name = if (nameNode != null) nodeAsString(nameNode, fileBody) else null
-                    if (name == "setup") {
-                        isSetup = true
-                    }
-                    if (name == "lang") {
-                        val valueNode = child.find("quoted_attribute_value")?.find("attribute_value")
-                        val value = if (valueNode != null) nodeAsString(valueNode, fileBody) else null
-                        lang = value
+                    when (name) {
+                        "setup" -> isSetup = true
+                        "lang" -> {
+                            val valueNode = child.find("quoted_attribute_value")?.find("attribute_value")
+                            lang = if (valueNode != null) nodeAsString(valueNode, fileBody) else null
+                        }
                     }
                 }
             }
