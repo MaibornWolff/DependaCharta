@@ -160,6 +160,8 @@ The GitLab CI pipeline automatically:
 
 Example: `feat(visualization): add dark mode toggle (#123)`
 
+**Agency Worktrees**: When working inside an agency worktree (e.g., `4-feedback-list-custom`), the numeric prefix (like "4-") is a local task index only. **Never include agency task IDs in commit messages** - they have no meaning outside the current session.
+
 ### Pull Requests
 
 - Name PR like branch name
