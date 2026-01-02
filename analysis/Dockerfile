@@ -19,7 +19,7 @@ COPY src/ ./src/
 RUN gradle fatJar --no-daemon
 
 # Stage 2: Create minimal runtime image
-FROM eclipse-temurin:17.0.16_8-jre
+FROM eclipse-temurin:17.0.17_10-jre
 
 # Install build tools needed for Tree-sitter native libraries and create non-root user
 RUN apt-get update && apt-get install -y \
