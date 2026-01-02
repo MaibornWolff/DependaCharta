@@ -1,4 +1,4 @@
-import {Edge, FeedbackEdgeGroup, groupFeedbackEdges, ShallowEdge} from './Edge';
+import {Edge, FeedbackEdgeGroup, getHierarchy, groupFeedbackEdges, ShallowEdge} from './Edge';
 import {EdgeFilterType} from './EdgeFilter';
 import {State} from './State';
 import {VisibleGraphNode} from './GraphNode.spec';
@@ -869,6 +869,151 @@ describe('FeedbackListEntry', () => {
       expect(outerGroup.weight).toBe(1);
       expect(outerGroup.hasLeafLevel).toBe(true);
       expect(outerGroup.children[0]).toBe(innerGroup);
+    });
+  });
+});
+
+describe('getHierarchy', () => {
+  describe('ShallowEdge hierarchy', () => {
+    it('should return 4 when both source and target have 4 dots', () => {
+      // Given
+      const edge = ShallowEdge.build({
+        source: 'com.example.domain.service.MyService',
+        target: 'com.example.domain.model.MyModel'
+      });
+
+      // When
+      const hierarchy = getHierarchy(edge);
+
+      // Then
+      expect(hierarchy).toBe(4);
+    });
+
+    it('should return minimum when source has fewer dots than target', () => {
+      // Given
+      const edge = ShallowEdge.build({
+        source: 'com.example.AppConfig',
+        target: 'com.example.domain.service.MyService'
+      });
+
+      // When
+      const hierarchy = getHierarchy(edge);
+
+      // Then
+      expect(hierarchy).toBe(2);
+    });
+
+    it('should return minimum when target has fewer dots than source', () => {
+      // Given
+      const edge = ShallowEdge.build({
+        source: 'com.example.domain.MyClass',
+        target: 'com.example.OtherClass'
+      });
+
+      // When
+      const hierarchy = getHierarchy(edge);
+
+      // Then
+      expect(hierarchy).toBe(2);
+    });
+
+    it('should return 0 for top-level nodes without dots', () => {
+      // Given
+      const edge = ShallowEdge.build({
+        source: 'infrastructure',
+        target: 'domain'
+      });
+
+      // When
+      const hierarchy = getHierarchy(edge);
+
+      // Then
+      expect(hierarchy).toBe(0);
+    });
+
+    it('should return 0 when one node is top-level', () => {
+      // Given
+      const edge = ShallowEdge.build({
+        source: 'app',
+        target: 'com.example.util.Helper'
+      });
+
+      // When
+      const hierarchy = getHierarchy(edge);
+
+      // Then
+      expect(hierarchy).toBe(0);
+    });
+
+    it('should strip :leaf suffix before counting dots', () => {
+      // Given
+      const edge = ShallowEdge.build({
+        source: 'com.example.A:leaf',
+        target: 'com.example.B:leaf'
+      });
+
+      // When
+      const hierarchy = getHierarchy(edge);
+
+      // Then
+      expect(hierarchy).toBe(2);
+    });
+
+    it('should strip :leaf suffix and return minimum', () => {
+      // Given
+      const edge = ShallowEdge.build({
+        source: 'root:leaf',
+        target: 'com.other.Thing:leaf'
+      });
+
+      // When
+      const hierarchy = getHierarchy(edge);
+
+      // Then
+      expect(hierarchy).toBe(0);
+    });
+  });
+
+  describe('FeedbackEdgeGroup hierarchy', () => {
+    it('should calculate hierarchy from group source and target, not children', () => {
+      // Given
+      const child1 = ShallowEdge.build({
+        source: 'com.example.domain.service.A',
+        target: 'com.example.service.util.B'
+      });
+      const child2 = ShallowEdge.build({
+        source: 'com.example.domain.model.C',
+        target: 'com.example.service.D'
+      });
+      const group = new FeedbackEdgeGroup('com.example.domain', 'com.example.service', [child1, child2]);
+
+      // When
+      const hierarchy = getHierarchy(group);
+
+      // Then - uses group's own source/target (2 dots each), not children
+      expect(hierarchy).toBe(2);
+    });
+
+    it('should return 1 for shallow group', () => {
+      // Given
+      const group = new FeedbackEdgeGroup('com.example', 'com.other', []);
+
+      // When
+      const hierarchy = getHierarchy(group);
+
+      // Then
+      expect(hierarchy).toBe(1);
+    });
+
+    it('should return 0 for top-level group', () => {
+      // Given
+      const group = new FeedbackEdgeGroup('infrastructure', 'domain', []);
+
+      // When
+      const hierarchy = getHierarchy(group);
+
+      // Then
+      expect(hierarchy).toBe(0);
     });
   });
 });

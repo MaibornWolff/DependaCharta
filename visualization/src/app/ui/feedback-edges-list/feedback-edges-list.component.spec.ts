@@ -73,6 +73,11 @@ describe('FeedbackEdgesListComponent', () => {
       fixture.detectChanges();
     });
 
+    it('should default to hierarchy ascending sort', () => {
+      // Then
+      expect(component.selectedSort).toBe(SortOption.HIERARCHY_ASC);
+    });
+
     it('should sort by source ascending (A-Z)', () => {
       // When
       triggerSortChange(SortOption.SOURCE_ASC);
@@ -157,6 +162,41 @@ describe('FeedbackEdgesListComponent', () => {
 
       // Then
       expect((sorted[0] as ShallowEdge).type).toBe('FEEDBACK_LEAF_LEVEL');
+    });
+
+    describe('hierarchy sorting', () => {
+      const hierarchyEdges = [
+        createMockFeedbackEdge('com.example.domain.service.MyService', 'com.example.domain.model.MyModel', 1, false), // hierarchy 4
+        createMockFeedbackEdge('com.example.AppConfig', 'com.example.domain.MyClass', 2, false), // hierarchy 2
+        createMockFeedbackEdge('infrastructure', 'domain', 3, false) // hierarchy 0
+      ];
+
+      beforeEach(() => {
+        component.feedbackEdges = hierarchyEdges;
+        fixture.detectChanges();
+      });
+
+      it('should sort by hierarchy ascending (low hierarchy first = top-level)', () => {
+        // When
+        triggerSortChange(SortOption.HIERARCHY_ASC);
+        const sorted = component.sortedFeedbackEntries;
+
+        // Then - hierarchy 0, 2, 4
+        expect(sorted[0].source).toBe('infrastructure');
+        expect(sorted[1].source).toBe('com.example.AppConfig');
+        expect(sorted[2].source).toBe('com.example.domain.service.MyService');
+      });
+
+      it('should sort by hierarchy descending (high hierarchy first = deep nested)', () => {
+        // When
+        triggerSortChange(SortOption.HIERARCHY_DESC);
+        const sorted = component.sortedFeedbackEntries;
+
+        // Then - hierarchy 4, 2, 0
+        expect(sorted[0].source).toBe('com.example.domain.service.MyService');
+        expect(sorted[1].source).toBe('com.example.AppConfig');
+        expect(sorted[2].source).toBe('infrastructure');
+      });
     });
 
     function triggerSortChange(sortOption: SortOption): void {

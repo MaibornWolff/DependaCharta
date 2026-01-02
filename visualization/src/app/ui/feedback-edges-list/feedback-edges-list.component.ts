@@ -1,6 +1,6 @@
 import {Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges} from '@angular/core';
 import {NgClass, NgForOf, NgIf, NgTemplateOutlet} from '@angular/common';
-import {FeedbackEdgeGroup, FeedbackListEntry, groupFeedbackEdges, ShallowEdge} from '../../model/Edge';
+import {FeedbackEdgeGroup, FeedbackListEntry, getHierarchy, groupFeedbackEdges, ShallowEdge} from '../../model/Edge';
 
 type ResizeDirection = 'top' | 'right' | 'top-right';
 
@@ -12,7 +12,9 @@ export enum SortOption {
   WEIGHT_ASC = 'weightAsc',
   WEIGHT_DESC = 'weightDesc',
   TYPE_ASC = 'typeAsc',
-  TYPE_DESC = 'typeDesc'
+  TYPE_DESC = 'typeDesc',
+  HIERARCHY_ASC = 'hierarchyAsc',
+  HIERARCHY_DESC = 'hierarchyDesc'
 }
 
 @Component({
@@ -28,7 +30,7 @@ export class FeedbackEdgesListComponent implements OnChanges, OnDestroy {
   @Output() groupClicked = new EventEmitter<FeedbackListEntry>();
 
   isExpanded = false;
-  selectedSort: SortOption = SortOption.WEIGHT_DESC;
+  selectedSort: SortOption = SortOption.HIERARCHY_ASC;
   expandedGroups = new Set<string>();
 
   // Cached computed values
@@ -53,6 +55,8 @@ export class FeedbackEdgesListComponent implements OnChanges, OnDestroy {
   constructor(private elementRef: ElementRef) {}
 
   allSortOptions = [
+    {value: SortOption.HIERARCHY_ASC, label: 'Hierarchy (Low-High)'},
+    {value: SortOption.HIERARCHY_DESC, label: 'Hierarchy (High-Low)'},
     {value: SortOption.SOURCE_ASC, label: 'Source (A-Z)'},
     {value: SortOption.SOURCE_DESC, label: 'Source (Z-A)'},
     {value: SortOption.TARGET_ASC, label: 'Target (A-Z)'},
@@ -218,6 +222,10 @@ export class FeedbackEdgesListComponent implements OnChanges, OnDestroy {
 
   private getSortFunction(): (a: FeedbackListEntry, b: FeedbackListEntry) => number {
     switch (this.selectedSort) {
+      case SortOption.HIERARCHY_ASC:
+        return (a, b) => getHierarchy(a) - getHierarchy(b);
+      case SortOption.HIERARCHY_DESC:
+        return (a, b) => getHierarchy(b) - getHierarchy(a);
       case SortOption.SOURCE_ASC:
         return (a, b) => a.source.localeCompare(b.source);
       case SortOption.SOURCE_DESC:

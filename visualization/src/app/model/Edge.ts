@@ -126,6 +126,14 @@ function getPathSegments(nodeId: string): string[] {
   return withoutLeafSuffix.split('.');
 }
 
+export function getHierarchy(entry: FeedbackListEntry): number {
+  const sourceWithoutLeaf = entry.source.replace(/:leaf$/, '');
+  const targetWithoutLeaf = entry.target.replace(/:leaf$/, '');
+  const sourceDots = (sourceWithoutLeaf.match(/\./g) || []).length;
+  const targetDots = (targetWithoutLeaf.match(/\./g) || []).length;
+  return Math.min(sourceDots, targetDots);
+}
+
 export function groupFeedbackEdges(edges: ShallowEdge[]): FeedbackListEntry[] {
   if (edges.length === 0) return [];
   if (edges.length === 1) return edges;
