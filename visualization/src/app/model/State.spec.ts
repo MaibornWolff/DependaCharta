@@ -3,6 +3,7 @@ import { GraphNode, expand } from './GraphNode';
 import * as GraphNodeTest from './GraphNode.spec';
 import { EdgeFilterType } from './EdgeFilter';
 import { Action } from './Action';
+import { ShallowEdge } from './Edge';
 import {InputDevice, MouseInaccuracyDetectorComponent} from '../mouse-inaccuracy-detector.component';
 import {of} from 'rxjs';
 
@@ -558,6 +559,323 @@ describe('State', () => {
 
         expect(newState.selectedNodeIds).not.toContain('selected-node');
       });
+    });
+
+    describe('NAVIGATE_TO_EDGE action', () => {
+      it('should expand ancestors of both source and target nodes', () => {
+        // Given
+        const grandchild1 = GraphNodeTest.GraphNode.build({
+          id: 'root.pkg1.grandchild1',
+          children: []
+        });
+        const child1 = GraphNodeTest.GraphNode.build({
+          id: 'root.pkg1',
+          children: [grandchild1]
+        });
+        const grandchild2 = GraphNodeTest.GraphNode.build({
+          id: 'root.pkg2.grandchild2',
+          children: []
+        });
+        const child2 = GraphNodeTest.GraphNode.build({
+          id: 'root.pkg2',
+          children: [grandchild2]
+        });
+        const root = GraphNodeTest.GraphNode.build({
+          id: 'root',
+          children: [child1, child2]
+        });
+        grandchild1.parent = child1;
+        grandchild2.parent = child2;
+        child1.parent = root;
+        child2.parent = root;
+
+        const stateWithNodes = State.build({
+          allNodes: [root, child1, child2, grandchild1, grandchild2],
+          expandedNodeIds: []
+        });
+
+        // When
+        const action = new Action.NavigateToEdge('root.pkg1.grandchild1', 'root.pkg2.grandchild2');
+        const newState = stateWithNodes.reduce(action);
+
+        // Then
+        expect(newState.expandedNodeIds).toContain('root.pkg1');
+        expect(newState.expandedNodeIds).toContain('root.pkg2');
+        expect(newState.expandedNodeIds).toContain('root');
+      });
+
+      it('should set hoveredNodeId to the source node', () => {
+        // Given
+        const sourceNode = GraphNodeTest.GraphNode.build({
+          id: 'source',
+          children: []
+        });
+        const targetNode = GraphNodeTest.GraphNode.build({
+          id: 'target',
+          children: []
+        });
+        const stateWithNodes = State.build({
+          allNodes: [sourceNode, targetNode],
+          hoveredNodeId: ''
+        });
+
+        // When
+        const action = new Action.NavigateToEdge('source', 'target');
+        const newState = stateWithNodes.reduce(action);
+
+        // Then
+        expect(newState.hoveredNodeId).toBe('source');
+      });
+
+      it('should not duplicate already expanded ancestors', () => {
+        // Given
+        const grandchild = GraphNodeTest.GraphNode.build({
+          id: 'root.child.grandchild',
+          children: []
+        });
+        const child = GraphNodeTest.GraphNode.build({
+          id: 'root.child',
+          children: [grandchild]
+        });
+        const root = GraphNodeTest.GraphNode.build({
+          id: 'root',
+          children: [child]
+        });
+        grandchild.parent = child;
+        child.parent = root;
+
+        const stateWithNodes = State.build({
+          allNodes: [root, child, grandchild],
+          expandedNodeIds: ['root']
+        });
+
+        // When
+        const action = new Action.NavigateToEdge('root.child.grandchild', 'root.child.grandchild');
+        const newState = stateWithNodes.reduce(action);
+
+        // Then
+        // Should contain 'root' (already expanded) and 'root.child' (newly expanded)
+        expect(newState.expandedNodeIds.filter(id => id === 'root').length).toBe(1);
+        expect(newState.expandedNodeIds).toContain('root.child');
+      });
+
+      it('should handle navigation to non-existent nodes gracefully', () => {
+        // Given
+        const existingNode = GraphNodeTest.GraphNode.build({
+          id: 'existing',
+          children: []
+        });
+        const stateWithNodes = State.build({
+          allNodes: [existingNode],
+          expandedNodeIds: []
+        });
+
+        // When
+        const action = new Action.NavigateToEdge('nonexistent', 'alsoNonexistent');
+        const newState = stateWithNodes.reduce(action);
+
+        // Then
+        expect(newState.hoveredNodeId).toBe('nonexistent');
+        expect(newState.expandedNodeIds).toEqual([]);
+      });
+    });
+  });
+
+  describe('getAllFeedbackEdges', () => {
+    it('should return empty array when there are no leaf nodes', () => {
+      // Given
+      const state = State.build({ allNodes: [] });
+
+      // When
+      const result = state.getAllFeedbackEdges();
+
+      // Then
+      expect(result).toEqual([]);
+    });
+
+    it('should return feedback edges from leaf nodes with isPointingUpwards true', () => {
+      // Given
+      const feedbackEdge = new ShallowEdge('source', 'target', 'source->target', 1, false, true, 'FEEDBACK');
+      const regularEdge = new ShallowEdge('source2', 'target2', 'source2->target2', 1, false, false, 'REGULAR');
+      const leafNode = GraphNodeTest.GraphNode.build({
+        id: 'leaf',
+        children: [],
+        dependencies: [feedbackEdge, regularEdge]
+      });
+      const state = State.build({ allNodes: [leafNode] });
+
+      // When
+      const result = state.getAllFeedbackEdges();
+
+      // Then
+      expect(result.length).toBe(1);
+      expect(result[0]).toBe(feedbackEdge);
+    });
+
+    it('should only return edges from leaf nodes, not from parent nodes', () => {
+      // Given
+      const feedbackEdgeOnParent = new ShallowEdge('parent', 'target', 'parent->target', 1, false, true, 'FEEDBACK');
+      const feedbackEdgeOnLeaf = new ShallowEdge('leaf', 'target', 'leaf->target', 1, false, true, 'FEEDBACK');
+
+      const leafNode = GraphNodeTest.GraphNode.build({
+        id: 'leaf',
+        children: [],
+        dependencies: [feedbackEdgeOnLeaf]
+      });
+      const parentNode = GraphNodeTest.GraphNode.build({
+        id: 'parent',
+        children: [leafNode],
+        dependencies: [feedbackEdgeOnParent]
+      });
+      const state = State.build({ allNodes: [parentNode, leafNode] });
+
+      // When
+      const result = state.getAllFeedbackEdges();
+
+      // Then
+      expect(result.length).toBe(1);
+      expect(result[0]).toBe(feedbackEdgeOnLeaf);
+    });
+
+    it('should return multiple feedback edges from multiple leaf nodes', () => {
+      // Given
+      const feedbackEdge1 = new ShallowEdge('leaf1', 'target1', 'leaf1->target1', 1, true, true, 'FEEDBACK');
+      const feedbackEdge2 = new ShallowEdge('leaf2', 'target2', 'leaf2->target2', 2, false, true, 'FEEDBACK');
+
+      const leafNode1 = GraphNodeTest.GraphNode.build({
+        id: 'leaf1',
+        children: [],
+        dependencies: [feedbackEdge1]
+      });
+      const leafNode2 = GraphNodeTest.GraphNode.build({
+        id: 'leaf2',
+        children: [],
+        dependencies: [feedbackEdge2]
+      });
+      const state = State.build({ allNodes: [leafNode1, leafNode2] });
+
+      // When
+      const result = state.getAllFeedbackEdges();
+
+      // Then
+      expect(result.length).toBe(2);
+      expect(result).toContain(feedbackEdge1);
+      expect(result).toContain(feedbackEdge2);
+    });
+  });
+
+  describe('getAncestorIdsToExpand', () => {
+    it('should return empty array when node does not exist', () => {
+      // Given
+      const state = State.build({ allNodes: [] });
+
+      // When
+      const result = state.getAncestorIdsToExpand('nonexistent');
+
+      // Then
+      expect(result).toEqual([]);
+    });
+
+    it('should return empty array when node has no ancestors', () => {
+      // Given
+      const rootNode = GraphNodeTest.GraphNode.build({
+        id: 'root',
+        children: []
+      });
+      const state = State.build({ allNodes: [rootNode] });
+
+      // When
+      const result = state.getAncestorIdsToExpand('root');
+
+      // Then
+      expect(result).toEqual([]);
+    });
+
+    it('should return ancestor IDs that are not yet expanded', () => {
+      // Given
+      const grandchild = GraphNodeTest.GraphNode.build({
+        id: 'grandchild',
+        children: []
+      });
+      const child = GraphNodeTest.GraphNode.build({
+        id: 'child',
+        children: [grandchild]
+      });
+      const parent = GraphNodeTest.GraphNode.build({
+        id: 'parent',
+        children: [child]
+      });
+      grandchild.parent = child;
+      child.parent = parent;
+
+      const state = State.build({
+        allNodes: [parent, child, grandchild],
+        expandedNodeIds: []
+      });
+
+      // When
+      const result = state.getAncestorIdsToExpand('grandchild');
+
+      // Then
+      expect(result).toEqual(['child', 'parent']);
+    });
+
+    it('should exclude ancestors that are already expanded', () => {
+      // Given
+      const grandchild = GraphNodeTest.GraphNode.build({
+        id: 'grandchild',
+        children: []
+      });
+      const child = GraphNodeTest.GraphNode.build({
+        id: 'child',
+        children: [grandchild]
+      });
+      const parent = GraphNodeTest.GraphNode.build({
+        id: 'parent',
+        children: [child]
+      });
+      grandchild.parent = child;
+      child.parent = parent;
+
+      const state = State.build({
+        allNodes: [parent, child, grandchild],
+        expandedNodeIds: ['parent']
+      });
+
+      // When
+      const result = state.getAncestorIdsToExpand('grandchild');
+
+      // Then
+      expect(result).toEqual(['child']);
+    });
+
+    it('should return empty array when all ancestors are already expanded', () => {
+      // Given
+      const grandchild = GraphNodeTest.GraphNode.build({
+        id: 'grandchild',
+        children: []
+      });
+      const child = GraphNodeTest.GraphNode.build({
+        id: 'child',
+        children: [grandchild]
+      });
+      const parent = GraphNodeTest.GraphNode.build({
+        id: 'parent',
+        children: [child]
+      });
+      grandchild.parent = child;
+      child.parent = parent;
+
+      const state = State.build({
+        allNodes: [parent, child, grandchild],
+        expandedNodeIds: ['parent', 'child']
+      });
+
+      // When
+      const result = state.getAncestorIdsToExpand('grandchild');
+
+      // Then
+      expect(result).toEqual([]);
     });
   });
 

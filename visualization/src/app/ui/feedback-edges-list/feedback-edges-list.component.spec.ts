@@ -1,6 +1,6 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {FeedbackEdgesListComponent, SortOption} from './feedback-edges-list.component';
-import {ShallowEdge} from '../../model/Edge';
+import {FeedbackEdgeGroup, ShallowEdge} from '../../model/Edge';
 
 describe('FeedbackEdgesListComponent', () => {
   let component: FeedbackEdgesListComponent;
@@ -378,6 +378,187 @@ describe('FeedbackEdgesListComponent', () => {
       // Then
       expect(sourceSuffix).toBe('org.foo.ClassA');
       expect(targetSuffix).toBe('com.bar.ClassB');
+    });
+  });
+
+  describe('group expansion', () => {
+    it('should emit groupClicked event when a group entry is clicked', () => {
+      // Given
+      const childEdge = createMockFeedbackEdge('com.pkg.A', 'com.pkg.B', 1, false);
+      const group = new FeedbackEdgeGroup('com.pkg', 'com.pkg', [childEdge]);
+      fixture.detectChanges();
+      spyOn(component.groupClicked, 'emit');
+
+      // When
+      component.onEntryClick(group);
+
+      // Then
+      expect(component.groupClicked.emit).toHaveBeenCalledWith(group);
+    });
+
+    it('should toggle group expanded state', () => {
+      // Given
+      const childEdge = createMockFeedbackEdge('com.pkg.A', 'com.pkg.B', 1, false);
+      const group = new FeedbackEdgeGroup('com.pkg', 'com.pkg', [childEdge]);
+      fixture.detectChanges();
+
+      // When/Then - initially not expanded
+      expect(component.isGroupExpanded(group)).toBe(false);
+
+      // When - expand
+      component.toggleGroupExpanded(group);
+
+      // Then
+      expect(component.isGroupExpanded(group)).toBe(true);
+
+      // When - collapse
+      component.toggleGroupExpanded(group);
+
+      // Then
+      expect(component.isGroupExpanded(group)).toBe(false);
+    });
+
+    it('should stop event propagation and toggle group on chevron click', () => {
+      // Given
+      const childEdge = createMockFeedbackEdge('com.pkg.A', 'com.pkg.B', 1, false);
+      const group = new FeedbackEdgeGroup('com.pkg', 'com.pkg', [childEdge]);
+      fixture.detectChanges();
+      const mockEvent = jasmine.createSpyObj('Event', ['stopPropagation']);
+
+      // When
+      component.onChevronClick(mockEvent, group);
+
+      // Then
+      expect(mockEvent.stopPropagation).toHaveBeenCalled();
+      expect(component.isGroupExpanded(group)).toBe(true);
+    });
+
+    it('should toggle group on prefix click for group entries', () => {
+      // Given
+      const childEdge = createMockFeedbackEdge('com.pkg.A', 'com.pkg.B', 1, false);
+      const group = new FeedbackEdgeGroup('com.pkg', 'com.pkg', [childEdge]);
+      fixture.detectChanges();
+      const mockEvent = jasmine.createSpyObj('Event', ['stopPropagation']);
+
+      // When
+      component.onPrefixClick(mockEvent, group);
+
+      // Then
+      expect(component.isGroupExpanded(group)).toBe(true);
+    });
+
+    it('should not toggle on prefix click for non-group entries', () => {
+      // Given
+      const edge = createMockFeedbackEdge('A', 'B', 1, false);
+      fixture.detectChanges();
+      const mockEvent = jasmine.createSpyObj('Event', ['stopPropagation']);
+
+      // When
+      component.onPrefixClick(mockEvent, edge);
+
+      // Then - no error thrown, nothing happens
+      expect(component.isGroupExpanded(edge)).toBe(false);
+    });
+  });
+
+  describe('handleEntryClick', () => {
+    it('should delegate to onEntryClick', () => {
+      // Given
+      const edge = createMockFeedbackEdge('A', 'B', 1, false);
+      fixture.detectChanges();
+      spyOn(component, 'onEntryClick');
+
+      // When
+      component.handleEntryClick(edge);
+
+      // Then
+      expect(component.onEntryClick).toHaveBeenCalledWith(edge);
+    });
+  });
+
+  describe('trackByEntry', () => {
+    it('should return unique key for entry', () => {
+      // Given
+      const edge = createMockFeedbackEdge('Source', 'Target', 1, false);
+
+      // When
+      const key = component.trackByEntry(0, edge);
+
+      // Then
+      expect(key).toBe('Source→Target');
+    });
+  });
+
+  describe('resize functionality', () => {
+    beforeEach(() => {
+      fixture.detectChanges();
+      component.isExpanded = true;
+      fixture.detectChanges();
+    });
+
+    it('should initialize resize state on resize start', () => {
+      // Given
+      const mockEvent = {
+        preventDefault: jasmine.createSpy('preventDefault'),
+        stopPropagation: jasmine.createSpy('stopPropagation'),
+        clientX: 100,
+        clientY: 200
+      } as unknown as MouseEvent;
+
+      // When
+      component.onResizeStart(mockEvent, 'right');
+
+      // Then
+      expect(mockEvent.preventDefault).toHaveBeenCalled();
+      expect(mockEvent.stopPropagation).toHaveBeenCalled();
+    });
+
+    it('should add document event listeners on resize start', () => {
+      // Given
+      const mockEvent = {
+        preventDefault: jasmine.createSpy('preventDefault'),
+        stopPropagation: jasmine.createSpy('stopPropagation'),
+        clientX: 100,
+        clientY: 200
+      } as unknown as MouseEvent;
+      spyOn(document, 'addEventListener');
+
+      // When
+      component.onResizeStart(mockEvent, 'top');
+
+      // Then
+      expect(document.addEventListener).toHaveBeenCalledWith('mousemove', jasmine.any(Function));
+      expect(document.addEventListener).toHaveBeenCalledWith('mouseup', jasmine.any(Function));
+    });
+
+    it('should remove document event listeners on destroy', () => {
+      // Given
+      spyOn(document, 'removeEventListener');
+
+      // When
+      component.ngOnDestroy();
+
+      // Then
+      expect(document.removeEventListener).toHaveBeenCalledWith('mousemove', jasmine.any(Function));
+      expect(document.removeEventListener).toHaveBeenCalledWith('mouseup', jasmine.any(Function));
+    });
+  });
+
+  describe('sorting with groups', () => {
+    it('should sort group children recursively', () => {
+      // Given - Create edges that will be grouped together
+      const edge1 = createMockFeedbackEdge('com.pkg.service.Z', 'com.pkg.model.A', 5, false);
+      const edge2 = createMockFeedbackEdge('com.pkg.service.A', 'com.pkg.model.B', 1, false);
+      component.feedbackEdges = [edge1, edge2];
+      fixture.detectChanges();
+
+      // When - Sort by source ascending
+      const mockEvent = { target: { value: SortOption.SOURCE_ASC } } as unknown as Event;
+      component.onSortChange(mockEvent);
+
+      // Then - Entries should be sorted
+      const sorted = component.sortedFeedbackEntries;
+      expect(sorted.length).toBeGreaterThan(0);
     });
   });
 });
