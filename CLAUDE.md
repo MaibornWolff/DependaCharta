@@ -13,8 +13,11 @@ DependaCharta is a multi-language code analysis and visualization tool that cons
 ### Quick Commands (using justfile)
 
 ```bash
-# Run unit tests
+# Run analysis (Kotlin) unit tests
 just test
+
+# Run visualization (Angular) unit tests (headless)
+just test-frontend
 
 # Build the analysis tool
 just build
@@ -65,8 +68,11 @@ npm run start-electron
 # Build
 npm run build
 
-# Run tests with coverage
+# Run tests (opens Chrome, watches for changes - interactive dev mode)
 npm run test
+
+# Run tests headless (single run, for CI or quick verification)
+npm run test -- --no-watch --browsers=ChromeHeadless
 
 # Run E2E tests
 npm run cypress:open  # Interactive
@@ -229,7 +235,9 @@ Example: `feat(visualization): add dark mode toggle (#123)`
    - When reproducing bugs, tests MUST be red (failing) before the fix
    - If test is green before fixing bug, the test doesn't reproduce the bug correctly
 2. Write minimum code to pass
-3. **Run ALL tests** via `just test` (must be green before any commit)
+3. **Run ALL tests** (must be green before any commit):
+   - Analysis (Kotlin): `just test`
+   - Visualization (Angular): `just test-frontend`
 4. Refactor if needed
 5. **Request permission to commit** - NEVER commit without asking first
 6. Repeat
