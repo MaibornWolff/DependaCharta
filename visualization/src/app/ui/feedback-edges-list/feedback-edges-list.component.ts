@@ -1,6 +1,6 @@
 import {Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges} from '@angular/core';
 import {NgClass, NgForOf, NgIf, NgTemplateOutlet} from '@angular/common';
-import {FeedbackListEntry, groupFeedbackEdges, ShallowEdge} from '../../model/Edge';
+import {FeedbackEdgeGroup, FeedbackListEntry, groupFeedbackEdges, ShallowEdge} from '../../model/Edge';
 
 type ResizeDirection = 'top' | 'right' | 'top-right';
 
@@ -33,6 +33,7 @@ export class FeedbackEdgesListComponent implements OnChanges, OnDestroy {
 
   // Cached computed values
   sortedFeedbackEntries: FeedbackListEntry[] = [];
+  private commonPrefixCache = new Map<string, string>();
 
   // Resize state
   private isResizing = false;
@@ -43,6 +44,8 @@ export class FeedbackEdgesListComponent implements OnChanges, OnDestroy {
   private startHeight = 0;
   private readonly minWidth = 280;
   private readonly minHeight = 150;
+  private readonly defaultWidth = 600;
+  private readonly defaultHeight = 250;
 
   private boundOnMouseMove = this.onResizeMove.bind(this);
   private boundOnMouseUp = this.onResizeEnd.bind(this);
@@ -67,8 +70,20 @@ export class FeedbackEdgesListComponent implements OnChanges, OnDestroy {
   }
 
   private updateSortedEntries(): void {
+    this.commonPrefixCache.clear();
     const grouped = groupFeedbackEdges(this.feedbackEdges);
-    this.sortedFeedbackEntries = [...grouped].sort(this.getSortFunction());
+    this.sortedFeedbackEntries = this.sortEntriesRecursively(grouped);
+  }
+
+  private sortEntriesRecursively(entries: FeedbackListEntry[]): FeedbackListEntry[] {
+    const sortFn = this.getSortFunction();
+    return [...entries].sort(sortFn).map(entry => {
+      if (entry.isGroup && entry.children.length > 0) {
+        const sortedChildren = this.sortEntriesRecursively(entry.children);
+        return new FeedbackEdgeGroup(entry.source, entry.target, sortedChildren);
+      }
+      return entry;
+    });
   }
 
   get hasFeedbackEdges(): boolean {
@@ -85,6 +100,17 @@ export class FeedbackEdgesListComponent implements OnChanges, OnDestroy {
 
   toggleExpanded(): void {
     this.isExpanded = !this.isExpanded;
+    if (this.isExpanded) {
+      this.applyDefaultDimensions();
+    }
+  }
+
+  private applyDefaultDimensions(): void {
+    const overlay = this.elementRef.nativeElement.querySelector('.feedback-edges-overlay');
+    if (overlay) {
+      overlay.style.width = `${this.defaultWidth}px`;
+      overlay.style.height = `${this.defaultHeight}px`;
+    }
   }
 
   onEntryClick(entry: FeedbackListEntry): void {
@@ -102,6 +128,12 @@ export class FeedbackEdgesListComponent implements OnChanges, OnDestroy {
   onChevronClick(event: Event, entry: FeedbackListEntry): void {
     event.stopPropagation();
     this.toggleGroupExpanded(entry);
+  }
+
+  onPrefixClick(event: Event, entry: FeedbackListEntry): void {
+    if (entry.isGroup) {
+      this.onChevronClick(event, entry);
+    }
   }
 
   toggleGroupExpanded(entry: FeedbackListEntry): void {
@@ -136,6 +168,11 @@ export class FeedbackEdgesListComponent implements OnChanges, OnDestroy {
   }
 
   getCommonPrefix(entry: FeedbackListEntry): string {
+    const cacheKey = `${entry.source}→${entry.target}`;
+    if (this.commonPrefixCache.has(cacheKey)) {
+      return this.commonPrefixCache.get(cacheKey)!;
+    }
+
     const source = entry.source.replace(/:leaf$/, '');
     const target = entry.target.replace(/:leaf$/, '');
     const sourceParts = source.split('.');
@@ -152,7 +189,9 @@ export class FeedbackEdgesListComponent implements OnChanges, OnDestroy {
       }
     }
 
-    return commonParts.length > 0 ? commonParts.join('.') : '';
+    const result = commonParts.length > 0 ? commonParts.join('.') : '';
+    this.commonPrefixCache.set(cacheKey, result);
+    return result;
   }
 
   getSourceSuffix(entry: FeedbackListEntry): string {

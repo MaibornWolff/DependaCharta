@@ -54,7 +54,7 @@
     <span
       class="common-prefix"
       *ngIf="getCommonPrefix(entry)"
-      (click)="entry.isGroup ? onChevronClick($event, entry) : null"
+      (click)="onPrefixClick($event, entry)"
       [class.clickable]="entry.isGroup"
     >{{ getCommonPrefix(entry) }}:</span>
     <span class="source" [title]="getSourceTooltip(entry)">{{ getSourceSuffix(entry) }}</span>

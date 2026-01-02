@@ -27,8 +27,7 @@
 }
 
 .feedback-edges-overlay.expanded {
-  width: 600px;
-  height: 250px;
+  /* width and height set by TypeScript (defaultWidth, defaultHeight) */
   max-height: none;
   display: flex;
   flex-direction: column;
