@@ -1,0 +1,50 @@
+{
+  "projectTreeRoots": [
+    {
+      "name": "moduleA",
+      "children": [
+        {
+          "leafId": "moduleA.ClassA",
+          "name": "ClassA",
+          "children": [],
+          "level": 1,
+          "containedLeaves": ["moduleA.ClassA"],
+          "containedInternalDependencies": {
+            "moduleB.ClassB": {
+              "weight": 2,
+              "isCyclic": false,
+              "isPointingUpwards": false,
+              "type": "REGULAR"
+            }
+          }
+        }
+      ],
+      "level": 0,
+      "containedLeaves": ["moduleA.ClassA"],
+      "containedInternalDependencies": {}
+    },
+    {
+      "name": "moduleB",
+      "children": [
+        {
+          "leafId": "moduleB.ClassB",
+          "name": "ClassB",
+          "children": [],
+          "level": 0,
+          "containedLeaves": ["moduleB.ClassB"],
+          "containedInternalDependencies": {
+            "moduleA.ClassA": {
+              "weight": 3,
+              "isCyclic": false,
+              "isPointingUpwards": true,
+              "type": "FEEDBACK_CONTAINER_LEVEL"
+            }
+          }
+        }
+      ],
+      "level": 1,
+      "containedLeaves": ["moduleB.ClassB"],
+      "containedInternalDependencies": {}
+    }
+  ]
+}

@@ -10,6 +10,8 @@ import {MouseInaccuracyDetectorComponent} from './mouse-inaccuracy-detector.comp
 import {ProjectReport} from './adapter/analysis/internal/ProjectReport'
 import {State} from './model/State'
 import {ToggleButtonComponent} from "./ui/toggle-button/toggle-button.component";
+import {FeedbackEdgesListComponent} from './ui/feedback-edges-list/feedback-edges-list.component';
+import {FeedbackListEntry, ShallowEdge} from './model/Edge';
 
 // TODO move to better location (model?)
 // TODO naming
@@ -17,7 +19,7 @@ export type StateChange = {state: State, action: Action}
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, FilterComponent, JsonLoaderComponent, VersionComponent, CytoscapeComponent, MouseInaccuracyDetectorComponent, ToggleButtonComponent],
+  imports: [RouterOutlet, FilterComponent, JsonLoaderComponent, VersionComponent, CytoscapeComponent, MouseInaccuracyDetectorComponent, ToggleButtonComponent, FeedbackEdgesListComponent],
   templateUrl: './app.component.html',
   standalone: true,
   styleUrl: './app.component.css'
@@ -32,11 +34,13 @@ export class AppComponent {
   cytoscapeInitialized: boolean = true
   state: State = State.build()
   stateChange!: StateChange
+  cachedFeedbackEdges: ShallowEdge[] = []
 
   apply(action: Action) {
     this.isLoading = true
     this.state = this.state.reduce(action)
     this.stateChange = {state: this.state, action: action}
+    this.cachedFeedbackEdges = this.state.getAllFeedbackEdges()
     this.isLoading = false
   }
 
@@ -87,5 +91,14 @@ export class AppComponent {
   leaveMultiselectMode() {
     this.apply(new Action.LeaveMultiselectMode())
     this.apply(new Action.ResetMultiselection())
+  }
+
+  onEdgeClicked(edge: ShallowEdge): void {
+    this.apply(new Action.NavigateToEdge(edge.source, edge.target))
+  }
+
+  onGroupClicked(group: FeedbackListEntry): void {
+    // Group source/target are already valid container paths
+    this.apply(new Action.NavigateToEdge(group.source, group.target))
   }
 }

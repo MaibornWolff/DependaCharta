@@ -45,6 +45,10 @@ export class CytoscapeService {
       case action instanceof Action.HideAllEdgesOfNode:
         this.applyFilters(cy, state)
         break
+      case action instanceof Action.NavigateToEdge:
+        this.rerenderGraphFromState(cy, state)
+        this.applyFilters(cy, state)
+        break
       case action instanceof Action.InitializeState:
         this.initializeGraphFromState(cy, state)
         break

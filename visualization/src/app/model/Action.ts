@@ -90,6 +90,13 @@ export namespace Action {
       readonly nodeId: string
     ) {}
   }
+
+  export class NavigateToEdge {
+    constructor(
+      readonly sourceNodeId: string,
+      readonly targetNodeId: string
+    ) {}
+  }
 }
 
 export type Action =
@@ -112,3 +119,4 @@ export type Action =
   | Action.ResetMultiselection
   | Action.PinNode
   | Action.UnpinNode
+  | Action.NavigateToEdge

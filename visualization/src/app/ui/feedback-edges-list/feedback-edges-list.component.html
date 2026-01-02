@@ -1,0 +1,78 @@
+<div class="feedback-edges-overlay" [ngClass]="{'expanded': isExpanded}" role="region" aria-label="Feedback Edges List">
+  <!-- Resize handles (only visible when expanded) -->
+  <div class="resize-handle resize-top" *ngIf="isExpanded" (mousedown)="onResizeStart($event, 'top')"></div>
+  <div class="resize-handle resize-right" *ngIf="isExpanded" (mousedown)="onResizeStart($event, 'right')"></div>
+  <div class="resize-handle resize-top-right" *ngIf="isExpanded" (mousedown)="onResizeStart($event, 'top-right')"></div>
+  <div class="header" (click)="toggleExpanded()" [attr.aria-expanded]="isExpanded" tabindex="0" (keydown.enter)="toggleExpanded()" (keydown.space)="toggleExpanded()">
+    <span class="chevron" [ngClass]="{'rotated': isExpanded}">&#9650;</span>
+    <span class="title">Feedback Edges (experimental)</span>
+    <span class="count-badge" *ngIf="feedbackEdgeCount > 0">{{ feedbackEdgeCount }}</span>
+  </div>
+
+  <div class="content" *ngIf="isExpanded">
+    <div class="sort-container" *ngIf="hasFeedbackEdges">
+      <label for="sort-select">Sort by:</label>
+      <select id="sort-select" (change)="onSortChange($event)" aria-label="Sort feedback edges">
+        <option *ngFor="let option of allSortOptions" [value]="option.value" [selected]="option.value === selectedSort">
+          {{ option.label }}
+        </option>
+      </select>
+    </div>
+
+    <div class="edge-list" *ngIf="hasFeedbackEdges">
+      <ng-container *ngFor="let entry of sortedFeedbackEntries; trackBy: trackByEntry">
+        <ng-container *ngTemplateOutlet="entryTemplate; context: { entry: entry, depth: 0 }"></ng-container>
+      </ng-container>
+    </div>
+
+    <div class="empty-state" *ngIf="!hasFeedbackEdges">
+      <span>No feedback edges found</span>
+    </div>
+  </div>
+</div>
+
+<ng-template #entryTemplate let-entry="entry" let-depth="depth">
+  <div
+    class="edge-item"
+    [ngClass]="{
+      'leaf-level': isLeafLevelFeedback(entry),
+      'container-level': isContainerLevelFeedback(entry),
+      'is-group': entry.isGroup,
+      'group-expanded': entry.isGroup && isGroupExpanded(entry)
+    }"
+    [style.padding-left.px]="12 + depth * 16"
+    (click)="handleEntryClick(entry)"
+    tabindex="0"
+    (keydown.enter)="handleEntryClick(entry)"
+    role="button"
+    [attr.aria-label]="(entry.isGroup ? 'Group ' : 'Edge ') + 'from ' + entry.source + ' to ' + entry.target"
+    [attr.aria-expanded]="entry.isGroup ? isGroupExpanded(entry) : null"
+  >
+    <span class="group-toggle" *ngIf="entry.isGroup" (click)="onChevronClick($event, entry)">
+      {{ isGroupExpanded(entry) ? '▼' : '▶' }}
+    </span>
+    <span
+      class="common-prefix"
+      *ngIf="getCommonPrefix(entry)"
+      (click)="entry.isGroup ? onChevronClick($event, entry) : null"
+      [class.clickable]="entry.isGroup"
+    >{{ getCommonPrefix(entry) }}:</span>
+    <span class="source" [title]="getSourceTooltip(entry)">{{ getSourceSuffix(entry) }}</span>
+    <span class="arrow">&rarr;</span>
+    <span class="target" [title]="getTargetTooltip(entry)">{{ getTargetSuffix(entry) }}</span>
+    <span class="weight">({{ entry.weight }})</span>
+    <span class="type-badge" [ngClass]="{
+      'leaf': isLeafLevelFeedback(entry) && !isContainerLevelFeedback(entry),
+      'container': isContainerLevelFeedback(entry) && !isLeafLevelFeedback(entry),
+      'mixed': isLeafLevelFeedback(entry) && isContainerLevelFeedback(entry)
+    }">
+      {{ isLeafLevelFeedback(entry) && isContainerLevelFeedback(entry) ? 'Mixed' : (isLeafLevelFeedback(entry) ? 'Leaf' : 'Container') }}
+    </span>
+  </div>
+
+  <ng-container *ngIf="entry.isGroup && isGroupExpanded(entry)">
+    <ng-container *ngFor="let child of entry.children; trackBy: trackByEntry">
+      <ng-container *ngTemplateOutlet="entryTemplate; context: { entry: child, depth: depth + 1 }"></ng-container>
+    </ng-container>
+  </ng-container>
+</ng-template>

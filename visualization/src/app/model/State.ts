@@ -1,7 +1,7 @@
 import {expand, getDescendants, GraphNode, GraphNodeUtils, VisibleGraphNode, VisibleGraphNodeUtils} from "./GraphNode";
 import {EdgeFilter, EdgeFilterType} from "./EdgeFilter";
 import {Action} from './Action';
-import {Edge} from "./Edge";
+import {Edge, ShallowEdge} from "./Edge";
 import {DataClass} from "../common/DataClass";
 import { IdUtils } from "./Id";
 
@@ -160,6 +160,15 @@ export class State extends DataClass<State> {
         })
       case action instanceof Action.ResetView:
         return this
+      case action instanceof Action.NavigateToEdge: {
+        const sourceAncestors = this.getAncestorIdsToExpand(action.sourceNodeId)
+        const targetAncestors = this.getAncestorIdsToExpand(action.targetNodeId)
+        const allAncestorsToExpand = [...new Set([...sourceAncestors, ...targetAncestors])]
+        return this.copy({
+          expandedNodeIds: [...this.expandedNodeIds, ...allAncestorsToExpand],
+          hoveredNodeId: action.sourceNodeId
+        })
+      }
       default:
         action satisfies never
         return this
@@ -190,6 +199,29 @@ export class State extends DataClass<State> {
         return VisibleGraphNodeUtils.createEdgesForNode(node, visibleNodes, this.hiddenNodeIds)
       })
     return Edge.aggregateEdges(edges, EdgeFilter.isFilterForcesEdgesAggregation(this.selectedFilter))
+  }
+
+  getAllFeedbackEdges(): ShallowEdge[] {
+    const leafNodes = this.allNodes.filter(node => node.children.length === 0)
+    return leafNodes.flatMap(node =>
+      node.dependencies.filter(dep => dep.isPointingUpwards)
+    )
+  }
+
+  getAncestorIdsToExpand(nodeId: string): string[] {
+    const node = this.allNodes.find(n => n.id === nodeId)
+    if (!node) {
+      return []
+    }
+    const ancestorIds: string[] = []
+    let current = node.parent
+    while (current) {
+      if (!this.expandedNodeIds.includes(current.id)) {
+        ancestorIds.push(current.id)
+      }
+      current = current.parent
+    }
+    return ancestorIds
   }
 
   private toVisibleGraphNode(graphNode: GraphNode): VisibleGraphNode {
