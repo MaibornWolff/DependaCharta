@@ -48,7 +48,9 @@
     [attr.aria-label]="(entry.isGroup ? 'Group ' : 'Edge ') + 'from ' + entry.source + ' to ' + entry.target"
     [attr.aria-expanded]="entry.isGroup ? isGroupExpanded(entry) : null"
   >
-    <span class="group-toggle" *ngIf="entry.isGroup" (click)="onChevronClick($event, entry)">
+    <span class="group-toggle" *ngIf="entry.isGroup" (click)="onChevronClick($event, entry)"
+      role="button" tabindex="0" (keydown.enter)="onChevronClick($event, entry)" (keydown.space)="onChevronClick($event, entry)"
+      [attr.aria-label]="isGroupExpanded(entry) ? 'Collapse group' : 'Expand group'">
       {{ isGroupExpanded(entry) ? '▼' : '▶' }}
     </span>
     <span
@@ -56,6 +58,11 @@
       *ngIf="getCommonPrefix(entry)"
       (click)="onPrefixClick($event, entry)"
       [class.clickable]="entry.isGroup"
+      [attr.role]="entry.isGroup ? 'button' : null"
+      [attr.tabindex]="entry.isGroup ? 0 : null"
+      (keydown.enter)="onPrefixClick($event, entry)"
+      (keydown.space)="onPrefixClick($event, entry)"
+      [attr.aria-label]="entry.isGroup ? 'Toggle group ' + getCommonPrefix(entry) : null"
     >{{ getCommonPrefix(entry) }}:</span>
     <span class="source" [title]="getSourceTooltip(entry)">{{ getSourceSuffix(entry) }}</span>
     <span class="arrow">&rarr;</span>
