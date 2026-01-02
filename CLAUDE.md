@@ -84,6 +84,8 @@ npm run package-mac-silicon # macOS ARM64
 npm run package-mac-intel   # macOS x64
 ```
 
+**Note for Claude Code**: When running Angular CLI commands directly (not via npm scripts), use `npx ng ...` to ensure the local binary is found in the sandboxed environment.
+
 ## Architecture Overview
 
 ### Analysis Flow
