@@ -3,7 +3,7 @@
   <div class="resize-handle resize-top" *ngIf="isExpanded" (mousedown)="onResizeStart($event, 'top')"></div>
   <div class="resize-handle resize-right" *ngIf="isExpanded" (mousedown)="onResizeStart($event, 'right')"></div>
   <div class="resize-handle resize-top-right" *ngIf="isExpanded" (mousedown)="onResizeStart($event, 'top-right')"></div>
-  <div class="header" (click)="toggleExpanded()" [attr.aria-expanded]="isExpanded" tabindex="0" (keydown.enter)="toggleExpanded()" (keydown.space)="toggleExpanded()">
+  <div class="header" (click)="toggleExpanded()" [attr.aria-expanded]="isExpanded" tabindex="0" role="button" (keydown.enter)="toggleExpanded()" (keydown.space)="toggleExpanded()">
     <span class="chevron" [ngClass]="{'rotated': isExpanded}">&#9650;</span>
     <span class="title">Feedback Edges (experimental)</span>
     <span class="count-badge" *ngIf="feedbackEdgeCount > 0">{{ feedbackEdgeCount }}</span>
