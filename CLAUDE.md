@@ -136,6 +136,19 @@ The GitLab CI pipeline automatically:
 - Update `state` field as work progresses: `todo` → `progress` → `complete`
 - Always use the AskUserQuestion tool to clarify ambiguous requirements before finalizing the plan
 
+### Architecture Decision Records (ADRs)
+
+Architecture decisions are documented in `doc/architecture/decisions/`. See the [ADR README](doc/architecture/decisions/README.md) for a summary of all decisions.
+
+**Before implementing:**
+- Review existing ADRs to check if any are relevant to your planned work
+- If relevant ADRs exist, present findings to the user and ask whether to conform with the decision or propose changes
+
+**After implementing:**
+- Consider whether the implementation involves an architectural decision worth documenting
+- Never create or update ADRs without asking the user first
+- When appropriate, recommend creating a new ADR or updating an existing one
+
 ### Branching Strategy
 
 - Main branch: `main`
