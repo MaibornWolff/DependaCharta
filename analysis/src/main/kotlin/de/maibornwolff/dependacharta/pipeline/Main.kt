@@ -8,6 +8,7 @@ import de.maibornwolff.dependacharta.pipeline.processing.ProcessingPipeline
 import de.maibornwolff.dependacharta.pipeline.shared.LogLevel
 import de.maibornwolff.dependacharta.pipeline.shared.Logger
 import de.maibornwolff.dependacharta.pipeline.shared.SupportedLanguage
+import de.maibornwolff.dependacharta.pipeline.shared.supportedLanguagesHelpText
 
 fun main(args: Array<String>) {
     Cli().main(args)
@@ -20,6 +21,10 @@ class Cli : CliktCommand() {
             names = setOf("--version", "-v"),
             message = { "dependacharta Analysis $it" }
         )
+    }
+
+    override fun helpEpilog(context: com.github.ajalt.clikt.core.Context): String {
+        return supportedLanguagesHelpText()
     }
 
     private val rootDirectory by option("-d", "--directory", help = "Root directory to analyze")
@@ -50,18 +55,7 @@ class Cli : CliktCommand() {
         val fileReports = AnalysisPipeline.run(
             rootDirectory,
             clean,
-            listOf(
-                SupportedLanguage.JAVA,
-                SupportedLanguage.C_SHARP,
-                SupportedLanguage.TYPESCRIPT,
-                SupportedLanguage.JAVASCRIPT,
-                SupportedLanguage.PHP,
-                SupportedLanguage.GO,
-                SupportedLanguage.PYTHON,
-                SupportedLanguage.CPP,
-                SupportedLanguage.KOTLIN,
-                SupportedLanguage.VUE
-            )
+            SupportedLanguage.entries.toList()
         )
         ProcessingPipeline.run(
             fileName,

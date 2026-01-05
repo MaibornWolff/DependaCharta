@@ -13,6 +13,9 @@ ktlintformat:
 build:
     cd analysis && ./gradlew fatJar
 
+help: build
+    cd analysis && java -jar build/libs/dependacharta.jar --help
+
 run DIR: build
     cd analysis && java -jar build/libs/dependacharta.jar -d {{absolute_path(DIR)}}
 
