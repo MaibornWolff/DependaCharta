@@ -109,7 +109,7 @@ jobs:
           sed -i "s|{{visualization_win_url}}|https://github.com/$REPO/releases/download/$TAG/dependacharta-visualization-win-$TAG.zip|g" public/dependacharta.html
 
       - name: Setup Pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v5
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
