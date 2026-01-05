@@ -35,7 +35,7 @@ dependencies {
     implementation("me.tongfei:progressbar:0.10.1")
     testImplementation(kotlin("test"))
     testImplementation("org.assertj:assertj-core:3.27.6")
-    testImplementation(platform("org.junit:junit-bom:5.14.0"))
+    testImplementation(platform("org.junit:junit-bom:5.14.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     // Kotlin Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
