@@ -5,7 +5,7 @@ test:
     cd analysis && ./gradlew test
 
 test-frontend:
-    cd visualization && npm run test -- --no-watch --browsers=ChromeHeadless
+    cd visualization && npm ci && npm run test -- --no-watch --browsers=ChromeHeadless
 
 ktlintformat:
     cd analysis && ./gradlew ktlintFormat
