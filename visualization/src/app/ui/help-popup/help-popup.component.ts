@@ -10,7 +10,7 @@ import {Component, EventEmitter, Output} from '@angular/core';
 export class HelpPopupComponent {
   @Output() closePopup = new EventEmitter<void>()
 
-  onOverlayClick(event: MouseEvent) {
+  onOverlayClick(event: Event) {
     if ((event.target as HTMLElement).classList.contains('help-overlay')) {
       this.closePopup.emit()
     }

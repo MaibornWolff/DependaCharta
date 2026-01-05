@@ -5,7 +5,7 @@ test:
     cd analysis && ./gradlew test
 
 test-frontend:
-    cd visualization && npm ci && npm run test -- --no-watch --browsers=ChromeHeadless
+    cd visualization && npm ci && npm run build && npm run test -- --no-watch --browsers=ChromeHeadless
 
 # Run E2E tests (requires frontend server running: just frontend)
 test-e2e:
