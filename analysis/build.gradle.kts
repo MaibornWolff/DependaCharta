@@ -2,7 +2,7 @@ import org.cyclonedx.model.Component
 
 plugins {
     application
-    kotlin("jvm") version "2.2.21"
+    kotlin("jvm") version "2.3.0"
     kotlin("plugin.serialization") version "2.2.21"
     jacoco
     id("org.cyclonedx.bom") version "3.0.1"
