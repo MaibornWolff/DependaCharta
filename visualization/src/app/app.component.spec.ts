@@ -344,7 +344,10 @@ describe('AppComponent', () => {
       const component = fixture.componentInstance;
       fixture.detectChanges();
       const mockToggleExpanded = jasmine.createSpy('toggleExpanded');
-      component['feedbackEdgesListComponent'] = { toggleExpanded: mockToggleExpanded } as any;
+      Object.defineProperty(component, 'feedbackEdgesListComponent', {
+        value: { toggleExpanded: mockToggleExpanded },
+        writable: true
+      });
 
       // When
       const event = createKeyboardEvent('f');
@@ -361,7 +364,10 @@ describe('AppComponent', () => {
       component.state = component.state.reduce(new Action.ToggleInteractionMode());
       fixture.detectChanges();
       const mockToggleExpanded = jasmine.createSpy('toggleExpanded');
-      component['feedbackEdgesListComponent'] = { toggleExpanded: mockToggleExpanded } as any;
+      Object.defineProperty(component, 'feedbackEdgesListComponent', {
+        value: { toggleExpanded: mockToggleExpanded },
+        writable: true
+      });
 
       // When
       const event = createKeyboardEvent('f');

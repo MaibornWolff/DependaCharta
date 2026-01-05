@@ -36,7 +36,7 @@ export class FeedbackEdgesListComponent implements OnChanges, OnDestroy {
 
   // Cached computed values
   sortedFeedbackEntries: FeedbackListEntry[] = [];
-  private commonPrefixCache = new Map<string, string>();
+  private readonly commonPrefixCache = new Map<string, string>();
   private visibleEntriesCache: FeedbackListEntry[] = [];
 
   // Resize state
@@ -51,10 +51,10 @@ export class FeedbackEdgesListComponent implements OnChanges, OnDestroy {
   private readonly defaultWidth = 600;
   private readonly defaultHeight = 250;
 
-  private boundOnMouseMove = this.onResizeMove.bind(this);
-  private boundOnMouseUp = this.onResizeEnd.bind(this);
+  private readonly boundOnMouseMove = this.onResizeMove.bind(this);
+  private readonly boundOnMouseUp = this.onResizeEnd.bind(this);
 
-  constructor(private elementRef: ElementRef) {}
+  constructor(private readonly elementRef: ElementRef) {}
 
   allSortOptions = [
     {value: SortOption.HIERARCHY_ASC, label: 'Hierarchy (Low-High)'},
@@ -354,7 +354,7 @@ export class FeedbackEdgesListComponent implements OnChanges, OnDestroy {
     if (!this.isExpanded || !this.focusedEntryKey) return;
     if (this.isInputFocused(event)) return;
     const entry = this.getFocusedEntry();
-    if (!entry || !entry.isGroup) return;
+    if (!entry?.isGroup) return;
     event.preventDefault();
     this.toggleGroupExpanded(entry);
   }
@@ -397,7 +397,7 @@ export class FeedbackEdgesListComponent implements OnChanges, OnDestroy {
 
     if (!this.focusedEntryKey) {
       // No focus yet, start at first or last based on direction
-      const entry = direction > 0 ? visible[0] : visible[visible.length - 1];
+      const entry = direction > 0 ? visible[0] : visible.at(-1)!;
       this.focusedEntryKey = this.getGroupKey(entry);
       return;
     }

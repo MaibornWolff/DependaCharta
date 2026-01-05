@@ -1,4 +1,4 @@
-import {getAncestors, GraphNode, VisibleGraphNode} from './GraphNode';
+import {GraphNode, VisibleGraphNode} from './GraphNode';
 
 export class Edge {
   constructor(

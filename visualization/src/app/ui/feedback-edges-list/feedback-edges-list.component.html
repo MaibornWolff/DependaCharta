@@ -1,4 +1,4 @@
-<div class="feedback-edges-overlay" [ngClass]="{'expanded': isExpanded}" role="region" aria-label="Feedback Edges List">
+<section class="feedback-edges-overlay" [ngClass]="{'expanded': isExpanded}" aria-label="Feedback Edges List">
   <!-- Resize handles (only visible when expanded) -->
   <div class="resize-handle resize-top" *ngIf="isExpanded" (mousedown)="onResizeStart($event, 'top')"></div>
   <div class="resize-handle resize-right" *ngIf="isExpanded" (mousedown)="onResizeStart($event, 'right')"></div>
@@ -29,7 +29,7 @@
       <span>No feedback edges found</span>
     </div>
   </div>
-</div>
+</section>
 
 <ng-template #entryTemplate let-entry="entry" let-depth="depth">
   <div

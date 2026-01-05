@@ -176,7 +176,8 @@ export class State extends DataClass<State> {
   }
 
   getVisibleNodes(): VisibleGraphNode[] {
-    const expandedNodes = this.allNodes.filter(node => this.expandedNodeIds.includes(node.id))
+    const expandedNodeIdSet = new Set(this.expandedNodeIds)
+    const expandedNodes = this.allNodes.filter(node => expandedNodeIdSet.has(node.id))
     return this.allNodes
       .filter(node => !node.parent || expandedNodes.includes(node.parent))
       .filter(node => !GraphNodeUtils.isNodeOrAncestorHidden(this.hiddenNodeIds, node))

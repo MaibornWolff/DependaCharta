@@ -32,9 +32,9 @@ export class AppComponent {
   // cytoscapeComponent is only used in the git pipeline (cypress test)
   private cytoscapeComponent!: CytoscapeComponent
   @ViewChild(FeedbackEdgesListComponent)
-  private feedbackEdgesListComponent?: FeedbackEdgesListComponent
+  private readonly feedbackEdgesListComponent?: FeedbackEdgesListComponent
   @ViewChild(JsonLoaderComponent)
-  private jsonLoaderComponent!: JsonLoaderComponent
+  private readonly jsonLoaderComponent!: JsonLoaderComponent
   private changeDetector = inject(ChangeDetectorRef)
   isLoading: boolean = false
   cytoscapeInitialized: boolean = true

@@ -1,4 +1,4 @@
-<div class="help-overlay" (click)="onOverlayClick($event)">
+<div class="help-overlay" (click)="onOverlayClick($event)" (keydown.enter)="onOverlayClick($event)" tabindex="0">
   <div class="help-popup">
     <div class="help-header">
       <h2>Keyboard Shortcuts</h2>

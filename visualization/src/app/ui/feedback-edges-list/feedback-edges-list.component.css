@@ -95,7 +95,7 @@
 }
 
 .count-badge {
-  background: #e74c3c;
+  background: #c0392b;
   color: white;
   font-size: 11px;
   font-weight: 600;
@@ -229,17 +229,17 @@
 }
 
 .type-badge.leaf {
-  background: #e74c3c;
+  background: #c0392b;
   color: white;
 }
 
 .type-badge.container {
-  background: #e67e22;
+  background: #b35c00;
   color: white;
 }
 
 .type-badge.mixed {
-  background: linear-gradient(90deg, #e74c3c 0%, #e67e22 100%);
+  background: linear-gradient(90deg, #c0392b 0%, #b35c00 100%);
   color: white;
 }
 
