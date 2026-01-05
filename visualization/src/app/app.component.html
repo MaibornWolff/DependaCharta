@@ -17,6 +17,7 @@
       [isOn]="state.isUsageShown"
       (toggleChanged)="onToggleUsage()"
     >Usage Type</toggle-button>
+    <span class="help-hint" (click)="showHelpPopup = true"><kbd>?</kbd> help</span>
   </div>
   @if(cytoscapeInitialized) {<cytoscape [stateChange]="stateChange" class="cytoscape-container" (graphActionHappened)="apply($event)" /> }
   @if(state.isInteractive) {<feedback-edges-list [feedbackEdges]="cachedFeedbackEdges" (edgeClicked)="onEdgeClicked($event)" (groupClicked)="onGroupClicked($event)"></feedback-edges-list>}
@@ -26,5 +27,6 @@
     </div>
   </div>}
 </main>
+@if (showHelpPopup) {<help-popup (closePopup)="showHelpPopup = false"></help-popup>}
 <router-outlet/>
 <mouse-inaccuracy-detector/>

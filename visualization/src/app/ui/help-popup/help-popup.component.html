@@ -1,0 +1,45 @@
+<div class="help-overlay" (click)="onOverlayClick($event)">
+  <div class="help-popup">
+    <div class="help-header">
+      <h2>Keyboard Shortcuts</h2>
+      <button class="close-button" (click)="onCloseClick()" aria-label="Close">×</button>
+    </div>
+    <div class="help-content">
+      <div class="shortcuts-grid">
+        <div class="section">
+          <div class="section-header">File</div>
+          <div class="shortcut"><kbd>o</kbd> Open File</div>
+        </div>
+        <div class="section">
+          <div class="section-header">View</div>
+          <div class="shortcut"><kbd>r</kbd> Reset View</div>
+          <div class="shortcut"><kbd>l</kbd> Toggle Labels</div>
+          <div class="shortcut"><kbd>i</kbd> Interaction Mode</div>
+          <div class="shortcut"><kbd>u</kbd> Usage Type</div>
+          <div class="shortcut"><kbd>z</kbd> Restore Nodes</div>
+          <div class="shortcut"><kbd>f</kbd> Feedback Panel</div>
+        </div>
+        <div class="section">
+          <div class="section-header">Filters</div>
+          <div class="shortcut"><kbd>0</kbd> Hide All</div>
+          <div class="shortcut"><kbd>1</kbd> Show All</div>
+          <div class="shortcut"><kbd>2</kbd> Cycles Only</div>
+          <div class="shortcut"><kbd>3</kbd> Leaf Feedback</div>
+          <div class="shortcut"><kbd>4</kbd> All Feedback</div>
+        </div>
+        <div class="section">
+          <div class="section-header">Feedback List</div>
+          <div class="shortcut"><kbd>↑</kbd><kbd>↓</kbd> Navigate</div>
+          <div class="shortcut"><kbd>space</kbd> Toggle Group</div>
+          <div class="shortcut"><kbd>enter</kbd> Go to Edge</div>
+          <div class="shortcut"><kbd>s</kbd> Cycle Sort</div>
+        </div>
+        <div class="section">
+          <div class="section-header">Other</div>
+          <div class="shortcut"><kbd>?</kbd> Help</div>
+          <div class="shortcut"><kbd>esc</kbd> Close Help</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

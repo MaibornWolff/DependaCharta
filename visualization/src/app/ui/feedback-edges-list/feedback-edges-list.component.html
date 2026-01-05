@@ -38,7 +38,8 @@
       'leaf-level': isLeafLevelFeedback(entry),
       'container-level': isContainerLevelFeedback(entry),
       'is-group': entry.isGroup,
-      'group-expanded': entry.isGroup && isGroupExpanded(entry)
+      'group-expanded': entry.isGroup && isGroupExpanded(entry),
+      'focused': isFocused(entry)
     }"
     [style.padding-left.px]="12 + depth * 16"
     (click)="handleEntryClick(entry)"

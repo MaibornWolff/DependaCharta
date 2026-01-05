@@ -8,6 +8,7 @@ main {
 .menu {
   position: absolute;
   width: 100%;
+  box-sizing: border-box;
   display: flex;
   flex-direction: row;
   gap: 10px;
@@ -84,4 +85,31 @@ main {
   50%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,100% 100%,100% 100%)}
   75%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 100%)}
   100% {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 0)}
+}
+
+.help-hint {
+  margin-left: auto;
+  padding-right: 10px;
+  font-size: 12px;
+  color: #666;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.help-hint:hover {
+  color: #333;
+}
+
+.help-hint kbd {
+  display: inline-block;
+  padding: 2px 6px;
+  font-family: Arial, sans-serif;
+  font-size: 11px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 3px;
 }

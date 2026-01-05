@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { ProjectReport } from '../../adapter/analysis/internal/ProjectReport';
 
 @Component({
@@ -11,6 +11,7 @@ import { ProjectReport } from '../../adapter/analysis/internal/ProjectReport';
 export class JsonLoaderComponent implements OnInit {
   @Output() fileLoadingStart = new EventEmitter<void>()
   @Output() loadedNewFile = new EventEmitter<ProjectReport>()
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>
   defaultJsonPath = './resources/java-example.cg.json'
   // TODO remove leakage of test logic into production code
   // file exists only in git pipeline for cypress test
@@ -66,5 +67,9 @@ export class JsonLoaderComponent implements OnInit {
       // this allows for reloading a file with the same name.
       target.value = ''
     }
+  }
+
+  openFileDialog() {
+    this.fileInput.nativeElement.click()
   }
 }

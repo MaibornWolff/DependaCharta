@@ -167,6 +167,11 @@
   outline: none;
 }
 
+.edge-item.focused {
+  outline: 2px solid #316d75;
+  outline-offset: -2px;
+}
+
 .edge-item.leaf-level {
   background-color: rgba(231, 76, 60, 0.15);
 }

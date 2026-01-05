@@ -1,4 +1,4 @@
-import {Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges} from '@angular/core';
+import {Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, OnDestroy, Output, SimpleChanges} from '@angular/core';
 import {NgClass, NgForOf, NgIf, NgTemplateOutlet} from '@angular/common';
 import {FeedbackEdgeGroup, FeedbackListEntry, getHierarchy, groupFeedbackEdges, ShallowEdge} from '../../model/Edge';
 
@@ -32,10 +32,12 @@ export class FeedbackEdgesListComponent implements OnChanges, OnDestroy {
   isExpanded = false;
   selectedSort: SortOption = SortOption.HIERARCHY_ASC;
   expandedGroups = new Set<string>();
+  focusedEntryKey: string | null = null;
 
   // Cached computed values
   sortedFeedbackEntries: FeedbackListEntry[] = [];
   private commonPrefixCache = new Map<string, string>();
+  private visibleEntriesCache: FeedbackListEntry[] = [];
 
   // Resize state
   private isResizing = false;
@@ -77,6 +79,26 @@ export class FeedbackEdgesListComponent implements OnChanges, OnDestroy {
     this.commonPrefixCache.clear();
     const grouped = groupFeedbackEdges(this.feedbackEdges);
     this.sortedFeedbackEntries = this.sortEntriesRecursively(grouped);
+    this.updateVisibleEntriesCache();
+  }
+
+  private updateVisibleEntriesCache(): void {
+    this.visibleEntriesCache = this.flattenVisibleEntries(this.sortedFeedbackEntries);
+  }
+
+  private flattenVisibleEntries(entries: FeedbackListEntry[]): FeedbackListEntry[] {
+    const result: FeedbackListEntry[] = [];
+    for (const entry of entries) {
+      result.push(entry);
+      if (entry.isGroup && this.isGroupExpanded(entry)) {
+        result.push(...this.flattenVisibleEntries(entry.children));
+      }
+    }
+    return result;
+  }
+
+  getVisibleEntries(): FeedbackListEntry[] {
+    return this.visibleEntriesCache;
   }
 
   private sortEntriesRecursively(entries: FeedbackListEntry[]): FeedbackListEntry[] {
@@ -147,6 +169,7 @@ export class FeedbackEdgesListComponent implements OnChanges, OnDestroy {
     } else {
       this.expandedGroups.add(groupKey);
     }
+    this.updateVisibleEntriesCache();
   }
 
   isGroupExpanded(entry: FeedbackListEntry): boolean {
@@ -307,5 +330,97 @@ export class FeedbackEdgesListComponent implements OnChanges, OnDestroy {
   private removeResizeListeners(): void {
     document.removeEventListener('mousemove', this.boundOnMouseMove);
     document.removeEventListener('mouseup', this.boundOnMouseUp);
+  }
+
+  // Keyboard navigation
+  @HostListener('document:keydown.arrowdown', ['$event'])
+  onArrowDown(event: KeyboardEvent): void {
+    if (!this.isExpanded || !this.hasFeedbackEdges) return;
+    if (this.isInputFocused(event)) return;
+    event.preventDefault();
+    this.moveFocus(1);
+  }
+
+  @HostListener('document:keydown.arrowup', ['$event'])
+  onArrowUp(event: KeyboardEvent): void {
+    if (!this.isExpanded || !this.hasFeedbackEdges) return;
+    if (this.isInputFocused(event)) return;
+    event.preventDefault();
+    this.moveFocus(-1);
+  }
+
+  @HostListener('document:keydown.space', ['$event'])
+  onSpace(event: KeyboardEvent): void {
+    if (!this.isExpanded || !this.focusedEntryKey) return;
+    if (this.isInputFocused(event)) return;
+    const entry = this.getFocusedEntry();
+    if (!entry || !entry.isGroup) return;
+    event.preventDefault();
+    this.toggleGroupExpanded(entry);
+  }
+
+  @HostListener('document:keydown.enter', ['$event'])
+  onEnter(event: KeyboardEvent): void {
+    if (!this.isExpanded || !this.focusedEntryKey) return;
+    if (this.isInputFocused(event)) return;
+    const entry = this.getFocusedEntry();
+    if (!entry) return;
+    event.preventDefault();
+    this.onEntryClick(entry);
+  }
+
+  @HostListener('document:keydown.s', ['$event'])
+  onCycleSort(event: KeyboardEvent): void {
+    if (!this.isExpanded || !this.hasFeedbackEdges) return;
+    if (this.isInputFocused(event)) return;
+    event.preventDefault();
+    this.cycleSort();
+  }
+
+  private cycleSort(): void {
+    const sortValues = this.allSortOptions.map(opt => opt.value);
+    const currentIndex = sortValues.indexOf(this.selectedSort);
+    const nextIndex = (currentIndex + 1) % sortValues.length;
+    this.selectedSort = sortValues[nextIndex];
+    this.updateSortedEntries();
+  }
+
+  private isInputFocused(event: KeyboardEvent): boolean {
+    const target = event.target as HTMLElement | null;
+    if (!target) return false;
+    return target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT';
+  }
+
+  private moveFocus(direction: number): void {
+    const visible = this.getVisibleEntries();
+    if (visible.length === 0) return;
+
+    if (!this.focusedEntryKey) {
+      // No focus yet, start at first or last based on direction
+      const entry = direction > 0 ? visible[0] : visible[visible.length - 1];
+      this.focusedEntryKey = this.getGroupKey(entry);
+      return;
+    }
+
+    const currentIndex = visible.findIndex(e => this.getGroupKey(e) === this.focusedEntryKey);
+    if (currentIndex === -1) {
+      // Current focus not visible, reset to first
+      this.focusedEntryKey = this.getGroupKey(visible[0]);
+      return;
+    }
+
+    const newIndex = currentIndex + direction;
+    if (newIndex >= 0 && newIndex < visible.length) {
+      this.focusedEntryKey = this.getGroupKey(visible[newIndex]);
+    }
+  }
+
+  private getFocusedEntry(): FeedbackListEntry | null {
+    if (!this.focusedEntryKey) return null;
+    return this.getVisibleEntries().find(e => this.getGroupKey(e) === this.focusedEntryKey) || null;
+  }
+
+  isFocused(entry: FeedbackListEntry): boolean {
+    return this.focusedEntryKey === this.getGroupKey(entry);
   }
 }

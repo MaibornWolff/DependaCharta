@@ -11,7 +11,9 @@ import {ProjectReport} from './adapter/analysis/internal/ProjectReport'
 import {State} from './model/State'
 import {ToggleButtonComponent} from "./ui/toggle-button/toggle-button.component";
 import {FeedbackEdgesListComponent} from './ui/feedback-edges-list/feedback-edges-list.component';
+import {HelpPopupComponent} from './ui/help-popup/help-popup.component';
 import {FeedbackListEntry, ShallowEdge} from './model/Edge';
+import {EdgeFilterType} from './model/EdgeFilter';
 
 // TODO move to better location (model?)
 // TODO naming
@@ -19,7 +21,7 @@ export type StateChange = {state: State, action: Action}
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, FilterComponent, JsonLoaderComponent, VersionComponent, CytoscapeComponent, MouseInaccuracyDetectorComponent, ToggleButtonComponent, FeedbackEdgesListComponent],
+  imports: [RouterOutlet, FilterComponent, JsonLoaderComponent, VersionComponent, CytoscapeComponent, MouseInaccuracyDetectorComponent, ToggleButtonComponent, FeedbackEdgesListComponent, HelpPopupComponent],
   templateUrl: './app.component.html',
   standalone: true,
   styleUrl: './app.component.css'
@@ -29,6 +31,10 @@ export class AppComponent {
   @ViewChild(CytoscapeComponent)
   // cytoscapeComponent is only used in the git pipeline (cypress test)
   private cytoscapeComponent!: CytoscapeComponent
+  @ViewChild(FeedbackEdgesListComponent)
+  private feedbackEdgesListComponent?: FeedbackEdgesListComponent
+  @ViewChild(JsonLoaderComponent)
+  private jsonLoaderComponent!: JsonLoaderComponent
   private changeDetector = inject(ChangeDetectorRef)
   isLoading: boolean = false
   cytoscapeInitialized: boolean = true
@@ -91,6 +97,117 @@ export class AppComponent {
   leaveMultiselectMode() {
     this.apply(new Action.LeaveMultiselectMode())
     this.apply(new Action.ResetMultiselection())
+  }
+
+  // Keyboard shortcuts
+  showHelpPopup = false
+
+  private isInputFocused(event: KeyboardEvent): boolean {
+    const target = event.target as HTMLElement | null
+    if (!target) return false
+    return target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT'
+  }
+
+  @HostListener('document:keydown.r', ['$event'])
+  onResetViewShortcut(event: KeyboardEvent) {
+    if (this.isInputFocused(event)) return
+    event.preventDefault()
+    this.apply(new Action.ResetView())
+  }
+
+  @HostListener('document:keydown.l', ['$event'])
+  onToggleLabelsShortcut(event: KeyboardEvent) {
+    if (this.isInputFocused(event)) return
+    event.preventDefault()
+    this.apply(new Action.ToggleEdgeLabels())
+  }
+
+  @HostListener('document:keydown.i', ['$event'])
+  onToggleInteractionShortcut(event: KeyboardEvent) {
+    if (this.isInputFocused(event)) return
+    event.preventDefault()
+    this.apply(new Action.ToggleInteractionMode())
+  }
+
+  @HostListener('document:keydown.u', ['$event'])
+  onToggleUsageShortcut(event: KeyboardEvent) {
+    if (this.isInputFocused(event)) return
+    event.preventDefault()
+    this.apply(new Action.ToggleUsageTypeMode())
+  }
+
+  @HostListener('document:keydown.z', ['$event'])
+  onRestoreNodesShortcut(event: KeyboardEvent) {
+    if (this.isInputFocused(event)) return
+    event.preventDefault()
+    this.apply(new Action.RestoreNodes())
+  }
+
+  @HostListener('document:keydown.f', ['$event'])
+  onToggleFeedbackPanelShortcut(event: KeyboardEvent) {
+    if (this.isInputFocused(event)) return
+    if (!this.state.isInteractive) return
+    event.preventDefault()
+    this.feedbackEdgesListComponent?.toggleExpanded()
+  }
+
+  @HostListener('document:keydown.0', ['$event'])
+  onFilterNoneShortcut(event: KeyboardEvent) {
+    if (this.isInputFocused(event)) return
+    event.preventDefault()
+    this.apply(new Action.ChangeFilter(EdgeFilterType.NONE))
+  }
+
+  @HostListener('document:keydown.1', ['$event'])
+  onFilterAllShortcut(event: KeyboardEvent) {
+    if (this.isInputFocused(event)) return
+    event.preventDefault()
+    this.apply(new Action.ChangeFilter(EdgeFilterType.ALL))
+  }
+
+  @HostListener('document:keydown.2', ['$event'])
+  onFilterCyclesShortcut(event: KeyboardEvent) {
+    if (this.isInputFocused(event)) return
+    event.preventDefault()
+    this.apply(new Action.ChangeFilter(EdgeFilterType.CYCLES_ONLY))
+  }
+
+  @HostListener('document:keydown.3', ['$event'])
+  onFilterLeafFeedbackShortcut(event: KeyboardEvent) {
+    if (this.isInputFocused(event)) return
+    event.preventDefault()
+    this.apply(new Action.ChangeFilter(EdgeFilterType.FEEDBACK_LEAF_LEVEL_ONLY))
+  }
+
+  @HostListener('document:keydown.4', ['$event'])
+  onFilterAllFeedbackShortcut(event: KeyboardEvent) {
+    if (this.isInputFocused(event)) return
+    event.preventDefault()
+    this.apply(new Action.ChangeFilter(EdgeFilterType.ALL_FEEDBACK_EDGES))
+  }
+
+  @HostListener('document:keydown.o', ['$event'])
+  onOpenFileShortcut(event: KeyboardEvent) {
+    if (this.isInputFocused(event)) return
+    event.preventDefault()
+    this.jsonLoaderComponent.openFileDialog()
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  onKeyDown(event: KeyboardEvent) {
+    if (event.key === '?' || (event.shiftKey && event.key === '/')) {
+      if (this.isInputFocused(event)) return
+      event.preventDefault()
+      this.showHelpPopup = !this.showHelpPopup
+    }
+  }
+
+  @HostListener('document:keydown.escape', ['$event'])
+  onEscapeShortcut(event: KeyboardEvent) {
+    if (this.showHelpPopup) {
+      event.preventDefault()
+      this.showHelpPopup = false
+    }
   }
 
   onEdgeClicked(edge: ShallowEdge): void {

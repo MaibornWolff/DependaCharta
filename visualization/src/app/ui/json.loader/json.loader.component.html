@@ -1,6 +1,7 @@
 <div class="form-group">
-  <label for="file">Choose File</label>
+  <label for="file">Open File</label>
   <input type="file"
+         #fileInput
          id="file"
          accept="cg.json"
          (change)="loadNewFile($event.target)"
