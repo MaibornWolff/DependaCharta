@@ -7,6 +7,10 @@ test:
 test-frontend:
     cd visualization && npm ci && npm run test -- --no-watch --browsers=ChromeHeadless
 
+# Run E2E tests (requires frontend server running: just frontend)
+test-e2e:
+    cd visualization && npm run cypress:run
+
 ktlintformat:
     cd analysis && ./gradlew ktlintFormat
 
