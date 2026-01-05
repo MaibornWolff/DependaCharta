@@ -200,8 +200,15 @@ class TypescriptAnalyzer(
         // Merge types from imports with types used in declaration body
         val allUsedTypes = dependenciesAndAliases.usedTypes + usedTypesFromDeclaration
 
+        // Handle module-prefixed names (e.g., "MyModule/myFunction" from declare module)
+        val namePath = Path(declaration.name.split("/"))
+
+        // Ambient module declarations use only the module name as path (no file path prefix)
+        // This allows imports like `from "MyModule"` to resolve correctly
+        val fullPath = if (declaration.isAmbientModule) namePath else path + namePath
+
         return Node(
-            pathWithName = path + declaration.name,
+            pathWithName = fullPath,
             physicalPath = fileInfo.physicalPath,
             language = fileInfo.language,
             nodeType = declaration.type,

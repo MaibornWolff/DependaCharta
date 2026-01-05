@@ -1,6 +1,8 @@
 package de.maibornwolff.dependacharta.pipeline.processing
 
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.TypescriptAnalyzer
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Dependency
+import de.maibornwolff.dependacharta.pipeline.analysis.model.FileInfo
 import de.maibornwolff.dependacharta.pipeline.analysis.model.FileReport
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Node
 import de.maibornwolff.dependacharta.pipeline.analysis.model.NodeType
@@ -192,5 +194,119 @@ class ProcessingPipelineTest {
         val leaves = result.leaves
         assertTrue(leaves["de.mw.A"]!!.dependencies["de.mw.B"]!!.isCyclic)
         assertTrue(leaves["de.mw.B"]!!.dependencies["de.mw.A"]!!.isCyclic)
+    }
+
+    @Test
+    fun `should resolve dependency from import to declare module export`() {
+        // given
+        val outputFileName = "test"
+        val outputDirectoryName = "testresult"
+
+        // Node from: declare module "MyModule" { export function myFunction(): void; }
+        val declaredModuleNode = Node(
+            pathWithName = Path("MyModule", "myFunction"),
+            language = SupportedLanguage.TYPESCRIPT,
+            physicalPath = "types.d.ts",
+            nodeType = NodeType.FUNCTION,
+            dependencies = emptySet(),
+            usedTypes = emptySet()
+        )
+
+        // Node from: import { myFunction } from "MyModule"; export class Consumer { ... }
+        val consumerNode = Node(
+            pathWithName = Path("src", "consumer", "Consumer"),
+            language = SupportedLanguage.TYPESCRIPT,
+            physicalPath = "src/consumer.ts",
+            nodeType = NodeType.CLASS,
+            dependencies = setOf(
+                Dependency(Path("MyModule", "myFunction"))
+            ),
+            usedTypes = setOf(Type.simple("myFunction"))
+        )
+
+        val fileReports = listOf(
+            FileReport(listOf(declaredModuleNode)),
+            FileReport(listOf(consumerNode))
+        )
+
+        // when
+        ProcessingPipeline.run(outputFileName, outputDirectoryName, fileReports, false)
+
+        // then
+        val result = getResult(Json { explicitNulls = false })
+        val leaves = result.leaves
+
+        // The consumer should have a resolved dependency to the declared module
+        val consumer = leaves["src.consumer.Consumer"]
+            ?: throw AssertionError("Consumer node not found in leaves")
+        assertThat(consumer.dependencies.keys).contains("MyModule.myFunction")
+    }
+
+    @Test
+    fun `should resolve dependency when importing from declare module - end to end`() {
+        // given
+        val outputFileName = "test"
+        val outputDirectoryName = "testresult"
+
+        val declarationCode = """
+            declare module "MyModule" {
+                export function myFunction(): void;
+            }
+        """.trimIndent()
+
+        val consumerCode = """
+            import { myFunction } from "MyModule";
+
+            export class Consumer {
+                use() {
+                    myFunction();
+                }
+            }
+        """.trimIndent()
+
+        // Analyze both files
+        val declarationReport = TypescriptAnalyzer(
+            FileInfo(
+                SupportedLanguage.TYPESCRIPT,
+                "types.d.ts",
+                declarationCode
+            )
+        ).analyze()
+
+        val consumerReport = TypescriptAnalyzer(
+            FileInfo(
+                SupportedLanguage.TYPESCRIPT,
+                "src/consumer.ts",
+                consumerCode
+            )
+        ).analyze()
+
+        // when
+        ProcessingPipeline.run(
+            outputFileName,
+            outputDirectoryName,
+            listOf(declarationReport, consumerReport),
+            false
+        )
+
+        // then
+        val result = getResult(Json { explicitNulls = false })
+        val leaves = result.leaves
+
+        // Verify the declared module node exists
+        val declaredModuleNode = leaves.keys.find { it.contains("myFunction") }
+        assertThat(declaredModuleNode).isNotNull()
+
+        // Verify the consumer exists and has a resolved dependency
+        val consumer = leaves["src.consumer.Consumer"]
+            ?: throw AssertionError("Consumer node not found. Available: ${leaves.keys}")
+
+        // The dependency should be resolved (pointing to an existing node)
+        val resolvedDependencies = consumer.dependencies.keys
+        assertThat(resolvedDependencies)
+            .withFailMessage(
+                "Expected consumer to have dependency on declared module. " +
+                    "Consumer deps: $resolvedDependencies, Available nodes: ${leaves.keys}"
+            ).anyMatch { dep -> leaves.keys.any { node -> node == dep } }
     }
 }

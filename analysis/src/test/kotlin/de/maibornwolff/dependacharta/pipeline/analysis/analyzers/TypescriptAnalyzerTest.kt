@@ -914,6 +914,90 @@ class TypescriptAnalyzerTest {
     }
 
     @Test
+    fun `should create node for exported function in declare module`() {
+        // given
+        val typescriptCode = """
+            declare module "MyModule" {
+                export function myFunction(): void;
+            }
+        """.trimIndent()
+
+        // when
+        val report = TypescriptAnalyzer(
+            FileInfo(
+                SupportedLanguage.TYPESCRIPT,
+                "MyDirectory/declarations.ts",
+                typescriptCode
+            )
+        ).analyze()
+
+        // then
+        // Ambient module declarations use only the module name (no file path prefix)
+        // so that imports like `from "MyModule"` can resolve correctly
+        assertThat(report.nodes)
+            .extracting("nodeType", "pathWithName")
+            .containsExactly(
+                tuple(NodeType.FUNCTION, Path(listOf("MyModule", "myFunction")))
+            )
+    }
+
+    @Test
+    fun `should create node for exported class in declare module`() {
+        // given
+        val typescriptCode = """
+            declare module "MyModule" {
+                export class MyClass {}
+            }
+        """.trimIndent()
+
+        // when
+        val report = TypescriptAnalyzer(
+            FileInfo(
+                SupportedLanguage.TYPESCRIPT,
+                "declarations.ts",
+                typescriptCode
+            )
+        ).analyze()
+
+        // then
+        assertThat(report.nodes)
+            .extracting("nodeType", "pathWithName")
+            .containsExactly(
+                tuple(NodeType.CLASS, Path(listOf("MyModule", "MyClass")))
+            )
+    }
+
+    @Test
+    fun `should create nodes for multiple exports in declare module`() {
+        // given
+        val typescriptCode = """
+            declare module "MyModule" {
+                export function myFunction(): void;
+                export class MyClass {}
+                export const myVariable: string;
+            }
+        """.trimIndent()
+
+        // when
+        val report = TypescriptAnalyzer(
+            FileInfo(
+                SupportedLanguage.TYPESCRIPT,
+                "declarations.ts",
+                typescriptCode
+            )
+        ).analyze()
+
+        // then
+        assertThat(report.nodes)
+            .extracting("nodeType", "pathWithName")
+            .containsExactlyInAnyOrder(
+                tuple(NodeType.FUNCTION, Path(listOf("MyModule", "myFunction"))),
+                tuple(NodeType.CLASS, Path(listOf("MyModule", "MyClass"))),
+                tuple(NodeType.VARIABLE, Path(listOf("MyModule", "myVariable")))
+            )
+    }
+
+    @Test
     fun `should add identifiers used in an annotation on an exported node to usedTypes of that node`() {
         // given
         val typescriptCode = """

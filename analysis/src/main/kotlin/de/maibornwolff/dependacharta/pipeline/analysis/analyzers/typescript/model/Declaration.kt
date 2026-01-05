@@ -7,7 +7,8 @@ import org.treesitter.TSNode
 data class Declaration(
     val name: String,
     val type: NodeType,
-    val node: TSNode
+    val node: TSNode,
+    val isAmbientModule: Boolean = false
 ) {
     companion object {
         fun fromExportStatement(
@@ -50,13 +51,14 @@ data class Declaration(
 
         private fun nodeType(it: TSNode) =
             when (it.type) {
-                "function_declaration" -> NodeType.FUNCTION
+                "function_declaration",
+                "function_signature" -> NodeType.FUNCTION
                 "class_declaration",
                 "type_alias_declaration" -> NodeType.CLASS
                 "interface_declaration" -> NodeType.INTERFACE
                 "enum_declaration" -> NodeType.ENUM
                 "variable_declaration",
-                "lexical_declaration", -> NodeType.VARIABLE
+                "lexical_declaration" -> NodeType.VARIABLE
                 else -> NodeType.UNKNOWN
             }
     }
