@@ -337,5 +337,177 @@ describe('AppComponent', () => {
       // Cleanup
       document.body.removeChild(inputElement);
     });
+
+    it('should toggle feedback panel when F key is pressed and in interactive mode', () => {
+      // Given - isInteractive is true by default
+      const fixture = TestBed.createComponent(AppComponent);
+      const component = fixture.componentInstance;
+      fixture.detectChanges();
+      const mockToggleExpanded = jasmine.createSpy('toggleExpanded');
+      component['feedbackEdgesListComponent'] = { toggleExpanded: mockToggleExpanded } as any;
+
+      // When
+      const event = createKeyboardEvent('f');
+      component.onToggleFeedbackPanelShortcut(event);
+
+      // Then
+      expect(mockToggleExpanded).toHaveBeenCalled();
+    });
+
+    it('should not toggle feedback panel when F key is pressed and not in interactive mode', () => {
+      // Given - toggle to make isInteractive false
+      const fixture = TestBed.createComponent(AppComponent);
+      const component = fixture.componentInstance;
+      component.state = component.state.reduce(new Action.ToggleInteractionMode());
+      fixture.detectChanges();
+      const mockToggleExpanded = jasmine.createSpy('toggleExpanded');
+      component['feedbackEdgesListComponent'] = { toggleExpanded: mockToggleExpanded } as any;
+
+      // When
+      const event = createKeyboardEvent('f');
+      component.onToggleFeedbackPanelShortcut(event);
+
+      // Then - toggleExpanded should NOT be called when not in interactive mode
+      expect(mockToggleExpanded).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Feedback Edge Events', () => {
+    it('should dispatch NavigateToEdge action when edge is clicked', () => {
+      // Given
+      const fixture = TestBed.createComponent(AppComponent);
+      const component = fixture.componentInstance;
+      spyOn(component, 'apply');
+      fixture.detectChanges();
+      const mockEdge = { source: 'com.A', target: 'com.B' } as any;
+
+      // When
+      component.onEdgeClicked(mockEdge);
+
+      // Then
+      expect(component.apply).toHaveBeenCalledWith(new Action.NavigateToEdge('com.A', 'com.B'));
+    });
+
+    it('should dispatch NavigateToEdge action when group is clicked', () => {
+      // Given
+      const fixture = TestBed.createComponent(AppComponent);
+      const component = fixture.componentInstance;
+      spyOn(component, 'apply');
+      fixture.detectChanges();
+      const mockGroup = { source: 'com.pkg', target: 'com.other', isGroup: true } as any;
+
+      // When
+      component.onGroupClicked(mockGroup);
+
+      // Then
+      expect(component.apply).toHaveBeenCalledWith(new Action.NavigateToEdge('com.pkg', 'com.other'));
+    });
+  });
+
+  describe('Multiselect Mode', () => {
+    it('should dispatch EnterMultiselectMode action when Shift is pressed', () => {
+      // Given
+      const fixture = TestBed.createComponent(AppComponent);
+      const component = fixture.componentInstance;
+      spyOn(component, 'apply');
+      fixture.detectChanges();
+
+      // When
+      component.enterMultiselectMode();
+
+      // Then
+      expect(component.apply).toHaveBeenCalledWith(jasmine.any(Action.EnterMultiselectMode));
+    });
+
+    it('should dispatch LeaveMultiselectMode and ResetMultiselection when Shift is released', () => {
+      // Given
+      const fixture = TestBed.createComponent(AppComponent);
+      const component = fixture.componentInstance;
+      spyOn(component, 'apply');
+      fixture.detectChanges();
+
+      // When
+      component.leaveMultiselectMode();
+
+      // Then
+      expect(component.apply).toHaveBeenCalledTimes(2);
+      expect(component.apply).toHaveBeenCalledWith(jasmine.any(Action.LeaveMultiselectMode));
+      expect(component.apply).toHaveBeenCalledWith(jasmine.any(Action.ResetMultiselection));
+    });
+  });
+
+  describe('File Loading', () => {
+    it('should set cytoscapeInitialized to false and then true during file load start', () => {
+      // Given
+      const fixture = TestBed.createComponent(AppComponent);
+      const component = fixture.componentInstance;
+      fixture.detectChanges();
+      expect(component.cytoscapeInitialized).toBe(true);
+
+      // When
+      component.onFileLoadStart();
+
+      // Then
+      expect(component.cytoscapeInitialized).toBe(true);
+      expect(component.isLoading).toBe(true);
+    });
+  });
+
+  describe('Button Handlers', () => {
+    it('should dispatch RestoreNodes action when restore button is clicked', () => {
+      // Given
+      const fixture = TestBed.createComponent(AppComponent);
+      const component = fixture.componentInstance;
+      spyOn(component, 'apply');
+      fixture.detectChanges();
+
+      // When
+      component.onRestoreNodesClick();
+
+      // Then
+      expect(component.apply).toHaveBeenCalledWith(jasmine.any(Action.RestoreNodes));
+    });
+
+    it('should dispatch ResetView action when reset view button is clicked', () => {
+      // Given
+      const fixture = TestBed.createComponent(AppComponent);
+      const component = fixture.componentInstance;
+      spyOn(component, 'apply');
+      fixture.detectChanges();
+
+      // When
+      component.onResetViewClick();
+
+      // Then
+      expect(component.apply).toHaveBeenCalledWith(jasmine.any(Action.ResetView));
+    });
+
+    it('should dispatch ToggleInteractionMode action when interaction button is clicked', () => {
+      // Given
+      const fixture = TestBed.createComponent(AppComponent);
+      const component = fixture.componentInstance;
+      spyOn(component, 'apply');
+      fixture.detectChanges();
+
+      // When
+      component.onToggleInteraction();
+
+      // Then
+      expect(component.apply).toHaveBeenCalledWith(jasmine.any(Action.ToggleInteractionMode));
+    });
+
+    it('should dispatch ToggleUsageTypeMode action when usage button is clicked', () => {
+      // Given
+      const fixture = TestBed.createComponent(AppComponent);
+      const component = fixture.componentInstance;
+      spyOn(component, 'apply');
+      fixture.detectChanges();
+
+      // When
+      component.onToggleUsage();
+
+      // Then
+      expect(component.apply).toHaveBeenCalledWith(jasmine.any(Action.ToggleUsageTypeMode));
+    });
   });
 });

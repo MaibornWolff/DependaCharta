@@ -139,6 +139,34 @@ describe('CytoscapeService', async () => {
     expect(newNodes.length).toEqual(0)
   })
 
+  it('should call cy.centre when ResetView action is applied', () => {
+    // Given
+    const initialState = expandEmptyTopLevelPackages()
+    const cy = cytoscapeService.get()
+    spyOn(cy, 'centre')
+
+    // When
+    const action = new Action.ResetView()
+    cytoscapeService.apply(initialState, action)
+
+    // Then
+    expect(cy.centre).toHaveBeenCalled()
+  })
+
+  it('should rerender and apply filters when NavigateToEdge action is applied', () => {
+    // Given
+    const initialState = expandEmptyTopLevelPackages()
+    const action = new Action.NavigateToEdge('de.sots.cellarsandcentaurs.domain', 'de.sots.cellarsandcentaurs.application')
+    const newState = initialState.reduce(action)
+
+    // When
+    cytoscapeService.apply(newState, action)
+
+    // Then - edges should exist after navigation
+    const allEdges = cytoscapeService.get().edges()
+    expect(allEdges.length).toBeGreaterThan(0)
+  })
+
   function expandEmptyTopLevelPackages(): State {
     const expandDe = new Action.ExpandNode("de");
     let finalState = state.reduce(expandDe);
