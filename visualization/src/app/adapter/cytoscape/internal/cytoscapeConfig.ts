@@ -7,9 +7,6 @@ import {StylesheetStyle} from 'cytoscape';
 export const cytoscape_options = {
   // data: {...} could be useful for extra info
   // selectionType: 'additive' | 'single -> if the selection of a node should be added to a set of selections or if one node at a time should be selected (default is 'single')
-  // Performance optimizations for large graphs:
-  hideEdgesOnViewport: true, // Hide edges during pan/zoom for smoother interaction
-  textureOnViewport: true,   // Use texture caching during pan/zoom
 }
 
 /*

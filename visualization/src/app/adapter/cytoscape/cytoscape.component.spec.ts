@@ -18,7 +18,7 @@ describe('CytoscapeComponent', () => {
   // Subject Mocks für Event Streams
   let graphActionHappenedSubject: Subject<Action>;
   let layoutStoppedSubject: Subject<Core>;
-  let nodesPositionedSubject: Subject<any[]>;
+  let nodeDraggedSubject: Subject<Core>;
   let panOrZoomSubject: Subject<Core>;
   let changeCursorSubject: Subject<string>;
 
@@ -34,7 +34,7 @@ describe('CytoscapeComponent', () => {
     // Event Subjects erstellen
     graphActionHappenedSubject = new Subject<Action>();
     layoutStoppedSubject = new Subject<Core>();
-    nodesPositionedSubject = new Subject<any[]>();
+    nodeDraggedSubject = new Subject<Core>();
     panOrZoomSubject = new Subject<Core>();
     changeCursorSubject = new Subject<string>();
 
@@ -44,7 +44,7 @@ describe('CytoscapeComponent', () => {
     ], {
       graphActionHappened: graphActionHappenedSubject.asObservable(),
       layoutStopped: layoutStoppedSubject.asObservable(),
-      nodesPositioned: nodesPositionedSubject.asObservable(),
+      nodeDragged: nodeDraggedSubject.asObservable(),
       panOrZoom: panOrZoomSubject.asObservable(),
       changeCursor: changeCursorSubject.asObservable()
     });
@@ -82,7 +82,7 @@ describe('CytoscapeComponent', () => {
     // Subjects cleanup
     graphActionHappenedSubject.complete();
     layoutStoppedSubject.complete();
-    nodesPositionedSubject.complete();
+    nodeDraggedSubject.complete();
     panOrZoomSubject.complete();
     changeCursorSubject.complete();
   });

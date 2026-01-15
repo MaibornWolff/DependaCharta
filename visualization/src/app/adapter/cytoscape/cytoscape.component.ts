@@ -75,6 +75,9 @@ export class CytoscapeComponent implements OnInit, OnChanges, OnDestroy {
     this.cytoscapeService.layoutStopped.pipe(takeUntil(this.destroy$)).subscribe(cy => {
       this.rebuildNodeContainers(cy)
     })
+    this.cytoscapeService.nodeDragged.pipe(takeUntil(this.destroy$)).subscribe(cy => {
+      this.rebuildNodeContainers(cy)
+    })
     this.cytoscapeService.panOrZoom.pipe(takeUntil(this.destroy$)).subscribe(cy => {
       this.pan = cy.pan()
       this.zoom = cy.zoom()

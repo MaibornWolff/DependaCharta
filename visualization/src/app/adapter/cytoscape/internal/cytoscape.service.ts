@@ -28,6 +28,7 @@ export class CytoscapeService {
   @Output() graphActionHappened = new EventEmitter<Action>()
   @Output() interactionModeToggled = new EventEmitter<boolean>()
   @Output() layoutStopped = new EventEmitter<Core>()
+  @Output() nodeDragged = new EventEmitter<Core>()
   @Output() panOrZoom = new EventEmitter<Core>()
   @Output() changeCursor = new EventEmitter<string>()
 
@@ -165,8 +166,9 @@ export class CytoscapeService {
       this.ngZone.run(() => this.layoutStopped.emit(cy))
     })
 
-    // Note: The 'position' event was removed to prevent excessive DOM rebuilds during layout.
-    // Node container rebuilding now only happens on layoutstop, which fires once after layout completes.
+    cy.on('drag', 'node', () => {
+      this.ngZone.run(() => this.nodeDragged.emit(cy))
+    })
 
     cy.on('pan zoom', () => {
       this.ngZone.run(() => this.panOrZoom.emit(cy))

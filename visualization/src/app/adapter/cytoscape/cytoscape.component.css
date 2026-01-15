@@ -9,11 +9,9 @@
 #non-compound-node-container {
   z-index: 10;
   position: absolute;
-  pointer-events: none;
 }
 
 #compound-node-container {
   z-index: 5;
   position: absolute;
-  pointer-events: none;
 }
