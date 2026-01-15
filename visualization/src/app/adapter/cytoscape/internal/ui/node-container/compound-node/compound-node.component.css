@@ -2,6 +2,7 @@
   display: inline-block;
   position: absolute;
   background-color: rgba(70, 130, 180, 0.1);
+  pointer-events: auto;
 }
 
 .label {

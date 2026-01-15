@@ -168,7 +168,9 @@ export class CytoscapeService {
         x: event.originalEvent.clientX,
         y: event.originalEvent.clientY
       }
-      event.target.addClass('no-overlay')
+      if (event.target !== cy) {
+        event.target.addClass('no-overlay')
+      }
       this.changeCursor.emit('grabbing')
     });
 
@@ -190,7 +192,9 @@ export class CytoscapeService {
 
     cy.on('cxttapend', (event) => {
       this.isPanning = false;
-      event.target.removeClass('no-overlay')
+      if (event.target !== cy) {
+        event.target.removeClass('no-overlay')
+      }
       this.changeCursor.emit('auto')
     });
   }
