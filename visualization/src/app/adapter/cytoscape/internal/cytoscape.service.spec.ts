@@ -208,7 +208,7 @@ describe('CytoscapeService', () => {
 
     // Mock HighlightService
     mockHighlightService = jasmine.createSpyObj('HighlightService', [
-      'highlight', 'undoHighlighting'
+      'highlight', 'undoHighlighting', 'clearReferences'
     ]);
 
     TestBed.configureTestingModule({
@@ -270,7 +270,7 @@ describe('CytoscapeService', () => {
       // Call registerEventListeners directly
       (service as any).registerEventListeners(mockCore);
 
-      expect(mockCore.on).toHaveBeenCalledTimes(8);
+      expect(mockCore.on).toHaveBeenCalledTimes(7);
     });
   });
 
@@ -331,36 +331,8 @@ describe('CytoscapeService', () => {
       });
     });
 
-    describe('position node event', () => {
-      it('should emit nodesPositioned event', () => {
-        // Mock eine Cytoscape-Collection
-        const mockCollection = {
-          length: 2,
-          // Weitere Collection-Properties falls nötig
-        } as any; // Vereinfachtes Mock für die Collection
-
-        const mockNode = {
-          id: 'node1',
-          isNode: jasmine.createSpy('isNode').and.returnValue(true),
-          children: jasmine.createSpy('children').and.returnValue([])
-        };
-        const mockEvent = { target: mockNode };
-
-        spyOn(service.nodesPositioned, 'emit');
-
-        if (eventHandlers['position-node']) {
-          try {
-            eventHandlers['position-node'](mockEvent);
-            // Teste nur dass emit aufgerufen wurde, egal mit welchen Parametern
-            expect(service.nodesPositioned.emit).toHaveBeenCalled();
-          } catch (error) {
-            // Wenn der Handler einen Fehler wirft, teste wenigstens dass er existiert
-            expect(eventHandlers['position-node']).toBeDefined();
-            expect(service.nodesPositioned.emit).toBeDefined();
-          }
-        }
-      });
-    });
+    // Note: The 'position' event handler was removed to prevent excessive DOM rebuilds during layout.
+    // Node container rebuilding now only happens on layoutstop, which fires once after layout completes.
 
     describe('pan zoom event', () => {
       it('should emit panOrZoom event', () => {
@@ -547,7 +519,6 @@ describe('CytoscapeService', () => {
   describe('EventEmitter Output Tests', () => {
     it('should have all required EventEmitter outputs', () => {
       expect(service.layoutStopped).toBeDefined();
-      expect(service.nodesPositioned).toBeDefined();
       expect(service.panOrZoom).toBeDefined();
       expect(service.changeCursor).toBeDefined();
     });

@@ -1,4 +1,4 @@
-import {EventEmitter, inject, Injectable, Output} from '@angular/core';
+import {EventEmitter, inject, Injectable, NgZone, Output} from '@angular/core';
 import cytoscape, {AbstractEventObject, BoundingBox12, Core, ElementDefinition, NodeCollection, Position} from 'cytoscape';
 import {EdgeDisplayService} from './ui/edge-display.service';
 import {toCytoscapeEdges, toCytoscapeNodes} from './converter/elementDefinitionConverter';
@@ -19,6 +19,7 @@ export class CytoscapeService {
   cy!: Core
   private edgeDisplayService = inject(EdgeDisplayService)
   private highlightService = inject(HighlightService)
+  private ngZone = inject(NgZone)
 
   private isPanning = false
   private lastPanPoint: Position = {x: 0, y: 0}
@@ -27,7 +28,6 @@ export class CytoscapeService {
   @Output() graphActionHappened = new EventEmitter<Action>()
   @Output() interactionModeToggled = new EventEmitter<boolean>()
   @Output() layoutStopped = new EventEmitter<Core>()
-  @Output() nodesPositioned = new EventEmitter<Core>()
   @Output() panOrZoom = new EventEmitter<Core>()
   @Output() changeCursor = new EventEmitter<string>()
 
@@ -122,10 +122,21 @@ export class CytoscapeService {
   }
 
   initialize(): Core {
+    this.destroyExistingInstance()
     cytoscape.use(lsmLayout)
-    this.cy = this.createCytoscape()
-    this.registerEventListeners(this.cy)
+    this.ngZone.runOutsideAngular(() => {
+      this.cy = this.createCytoscape()
+      this.registerEventListeners(this.cy)
+    })
     return this.cy
+  }
+
+  private destroyExistingInstance() {
+    if (this.cy) {
+      this.cy.removeAllListeners()
+      this.cy.destroy()
+    }
+    this.highlightService.clearReferences()
   }
 
   private createCytoscape(): Core {
@@ -151,15 +162,14 @@ export class CytoscapeService {
     })
 
     cy.on("layoutstop", () => {
-      this.layoutStopped.emit(cy)
+      this.ngZone.run(() => this.layoutStopped.emit(cy))
     })
 
-    cy.on('position', 'node', () => {
-      this.nodesPositioned.emit(cy)
-    })
+    // Note: The 'position' event was removed to prevent excessive DOM rebuilds during layout.
+    // Node container rebuilding now only happens on layoutstop, which fires once after layout completes.
 
     cy.on('pan zoom', () => {
-      this.panOrZoom.emit(cy)
+      this.ngZone.run(() => this.panOrZoom.emit(cy))
     })
 
     cy.on('cxttapstart', (event) => {
@@ -171,7 +181,7 @@ export class CytoscapeService {
       if (event.target !== cy) {
         event.target.addClass('no-overlay')
       }
-      this.changeCursor.emit('grabbing')
+      this.ngZone.run(() => this.changeCursor.emit('grabbing'))
     });
 
     cy.on('cxtdrag', (event) => {
@@ -195,7 +205,7 @@ export class CytoscapeService {
       if (event.target !== cy) {
         event.target.removeClass('no-overlay')
       }
-      this.changeCursor.emit('auto')
+      this.ngZone.run(() => this.changeCursor.emit('auto'))
     });
   }
 

@@ -1,9 +1,11 @@
-import {Component, EventEmitter, inject, Input, OnChanges, OnInit, Output, Renderer2, SimpleChanges, ViewChild} from '@angular/core';
+import {Component, EventEmitter, inject, Input, OnChanges, OnDestroy, OnInit, Output, Renderer2, SimpleChanges, ViewChild} from '@angular/core';
 import {CytoscapeService} from './internal/cytoscape.service';
 import {Action} from '../../model/Action';
 import {Core, NodeSingular} from 'cytoscape';
 import {NodeContainerComponent, RenderableNode, RenderInformation} from './internal/ui/node-container/node-container.component';
 import {StateChange} from '../../app.component';
+import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 
 @Component({
   selector: 'cytoscape',
@@ -14,7 +16,7 @@ import {StateChange} from '../../app.component';
   templateUrl: './cytoscape.component.html',
   styleUrl: './cytoscape.component.css'
 })
-export class CytoscapeComponent implements OnInit, OnChanges {
+export class CytoscapeComponent implements OnInit, OnChanges, OnDestroy {
   cytoscapeService = inject(CytoscapeService)
   renderer = inject(Renderer2)
   // TODO naming
@@ -26,6 +28,8 @@ export class CytoscapeComponent implements OnInit, OnChanges {
 
   pan: { x: number, y: number } = {x: 0, y: 0}
   zoom: number = 1
+
+  private destroy$ = new Subject<void>()
 
   ngOnInit() {
     this.registerEventListeners()
@@ -41,7 +45,11 @@ export class CytoscapeComponent implements OnInit, OnChanges {
     }
   }
 
-  // layoutStopped, nodesPositioned
+  ngOnDestroy() {
+    this.destroy$.next()
+    this.destroy$.complete()
+  }
+
   private rebuildNodeContainers(cy: Core) {
     this.compoundNodeContainer.removeAll()
     this.nonCompoundNodeContainer.removeAll()
@@ -61,22 +69,17 @@ export class CytoscapeComponent implements OnInit, OnChanges {
 
   private registerEventListeners() {
     // TODO streamline propagation of events
-    this.cytoscapeService.graphActionHappened.subscribe(action =>
+    this.cytoscapeService.graphActionHappened.pipe(takeUntil(this.destroy$)).subscribe(action =>
       this.graphActionHappened.emit(action)
     )
-    // state is missing
-    this.cytoscapeService.layoutStopped.subscribe(cy => {
+    this.cytoscapeService.layoutStopped.pipe(takeUntil(this.destroy$)).subscribe(cy => {
       this.rebuildNodeContainers(cy)
     })
-    // state is missing
-    this.cytoscapeService.nodesPositioned.subscribe(cy => {
-      this.rebuildNodeContainers(cy)
-    })
-    this.cytoscapeService.panOrZoom.subscribe(cy => {
+    this.cytoscapeService.panOrZoom.pipe(takeUntil(this.destroy$)).subscribe(cy => {
       this.pan = cy.pan()
       this.zoom = cy.zoom()
     })
-    this.cytoscapeService.changeCursor.subscribe(style =>
+    this.cytoscapeService.changeCursor.pipe(takeUntil(this.destroy$)).subscribe(style =>
       this.renderer.setStyle(document.body, 'cursor', style)
     )
   }

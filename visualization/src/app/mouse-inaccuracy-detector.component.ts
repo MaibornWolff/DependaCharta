@@ -1,4 +1,6 @@
-import {Component, HostListener, OnInit} from '@angular/core';
+import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
+import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 import {
   MatSnackBar,
   MatSnackBarAction,
@@ -28,7 +30,7 @@ export class BrowserGlobals {
   template: '',
   standalone: true
 })
-export class MouseInaccuracyDetectorComponent implements OnInit{
+export class MouseInaccuracyDetectorComponent implements OnInit, OnDestroy {
 
   // Configuration
   maximumSampleSize = 20 // defines the number of event samples that are evaluated to calculate the median confidence
@@ -45,12 +47,19 @@ export class MouseInaccuracyDetectorComponent implements OnInit{
   touchpadConfidenceMedian: number | undefined
   guessedInputDevice: InputDevice | undefined
   lastZoom = 1
+  private destroy$ = new Subject<void>()
 
   constructor(public snackBar: MatSnackBar, public dialog: MatDialog, public cytoscapeService: CytoscapeService) {}
 
   ngOnInit() {
     this.cytoscapeService.panOrZoom
+      .pipe(takeUntil(this.destroy$))
       .subscribe(core => this.detectZoomJumping(core))
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next()
+    this.destroy$.complete()
   }
 
   /*

@@ -35,4 +35,9 @@ export class HighlightService {
     }
   }
 
+  clearReferences() {
+    this.currentlyFocusedEdges = undefined
+    this.currentlyFocusedNodes = undefined
+  }
+
 }
