@@ -62,14 +62,25 @@ describe('NonCompoundNodeComponent', () => {
   });
 
   describe('onMouseUp', () => {
-    it('should handle click (same coordinates) in normal mode by expanding node', () => {
+    it('should expand node on click without shift key', () => {
       component.clickCoordinates = { x: 100, y: 200 };
-      const mouseEvent = new MouseEvent('mouseup', { clientX: 100, clientY: 200 });
+      const mouseEvent = new MouseEvent('mouseup', { clientX: 100, clientY: 200, shiftKey: false });
       spyOn(component, 'expandNode');
 
       component.onMouseUp(mouseEvent);
 
       expect(component.expandNode).toHaveBeenCalled();
+    });
+
+    it('should toggle node selection on click with shift key', () => {
+      component.clickCoordinates = { x: 100, y: 200 };
+      const mouseEvent = new MouseEvent('mouseup', { clientX: 100, clientY: 200, shiftKey: true });
+      spyOn(component, 'expandNode');
+
+      component.onMouseUp(mouseEvent);
+
+      expect(component.expandNode).not.toHaveBeenCalled();
+      expect(mockStateService.graphActionHappened.emit).toHaveBeenCalledWith(new Action.ToggleNodeSelection(component.node.id));
     });
 
     it('should do nothing when coordinates differ (drag)', () => {

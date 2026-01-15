@@ -440,6 +440,21 @@ describe('AppComponent', () => {
       expect(component.apply).toHaveBeenCalledWith(jasmine.any(Action.LeaveMultiselectMode));
       expect(component.apply).toHaveBeenCalledWith(jasmine.any(Action.ResetMultiselection));
     });
+
+    it('should dispatch LeaveMultiselectMode when window loses focus', () => {
+      // Given
+      const fixture = TestBed.createComponent(AppComponent);
+      const component = fixture.componentInstance;
+      spyOn(component, 'apply');
+      fixture.detectChanges();
+
+      // When
+      component.onWindowBlur();
+
+      // Then
+      expect(component.apply).toHaveBeenCalledTimes(1);
+      expect(component.apply).toHaveBeenCalledWith(jasmine.any(Action.LeaveMultiselectMode));
+    });
   });
 
   describe('File Loading', () => {

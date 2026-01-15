@@ -99,6 +99,11 @@ export class AppComponent {
     this.apply(new Action.ResetMultiselection())
   }
 
+  @HostListener('window:blur')
+  onWindowBlur() {
+    this.apply(new Action.LeaveMultiselectMode())
+  }
+
   // Keyboard shortcuts
   showHelpPopup = false
 

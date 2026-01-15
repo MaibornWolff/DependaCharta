@@ -41,7 +41,7 @@ export class NonCompoundNodeComponent {
 
   onMouseUp(event: MouseEvent) {
     if (this.clickCoordinates.x === event.clientX && this.clickCoordinates.y === event.clientY) {
-      if (this.stateChange.state.multiselectMode) {
+      if (event.shiftKey) {
         this.stateService.graphActionHappened.emit(new Action.ToggleNodeSelection(this.node.id))
       } else {
         this.expandNode()
