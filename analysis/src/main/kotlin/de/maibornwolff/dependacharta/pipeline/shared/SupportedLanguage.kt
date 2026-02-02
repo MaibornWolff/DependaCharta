@@ -14,6 +14,7 @@ enum class SupportedLanguage(
     CPP("C++", listOf("cpp", "c", "cc", "cxx", "h", "hpp", "hxx", "hh")),
     KOTLIN("Kotlin", listOf("kt", "kts")),
     VUE("Vue", listOf("vue")),
+    ABL("ABL", listOf("p", "cls", "i", "w")),
 }
 
 fun languagesByExtension(languages: List<SupportedLanguage>) =
