@@ -1,0 +1,106 @@
+# Mise configuration for DependaCharta
+# https://mise.jdx.dev/
+
+[tools]
+java = "temurin-17"
+node = "22.21.1"
+
+[tasks.test]
+description = "Run analysis (Kotlin) unit tests"
+run = "cd analysis && ./gradlew test"
+
+[tasks.test-frontend]
+description = "Run visualization (Angular) unit tests (headless)"
+run = "cd visualization && npm ci && npm run build && npm run test -- --no-watch --browsers=ChromeHeadless"
+
+[tasks.test-e2e]
+description = "Run E2E tests (requires frontend server running: mise run frontend)"
+run = "cd visualization && npm run cypress:run"
+
+[tasks.format]
+description = "Auto-format Kotlin code with ktlint"
+run = "cd analysis && ./gradlew ktlintFormat"
+
+[tasks.build]
+description = "Build the analysis tool (fat JAR)"
+run = "cd analysis && ./gradlew fatJar"
+
+[tasks.help]
+description = "Show analysis CLI help"
+depends = ["build"]
+run = "cd analysis && java -jar build/libs/dependacharta.jar --help"
+
+[tasks.run]
+description = "Run analysis on a directory"
+usage = "run <directory>"
+depends = ["build"]
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+if [ $# -eq 0 ]; then
+  echo "Usage: mise run run <directory>"
+  exit 1
+fi
+DIR="$(cd "$1" && pwd)"
+cd analysis && java -jar build/libs/dependacharta.jar -d "$DIR"
+"""
+
+[tasks.frontend]
+description = "Start frontend development server"
+run = "cd visualization && npm ci && npm run start"
+
+[tasks.analyze]
+description = "Analyze a directory and open visualization"
+usage = "analyze <directory>"
+depends = ["build"]
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+if [ $# -eq 0 ]; then
+  echo "Usage: mise run analyze <directory>"
+  exit 1
+fi
+DIR="$(cd "$1" && pwd)"
+cd analysis && java -jar build/libs/dependacharta.jar -d "$DIR" -o ../visualization/public/analysis -f analyzed-project
+echo "Analysis complete! Starting frontend..."
+echo "Frontend will automatically load your analysis."
+echo "You can also manually specify a file: http://localhost:4200?file=./path/to/file.cg.json"
+"""
+
+[tasks.docker-build]
+description = "Build Docker image for analysis"
+run = "cd analysis && docker build -t dependacharta-analysis ."
+
+[tasks.docker-build-multi]
+description = "Build multi-platform Docker image"
+run = "cd analysis && docker buildx build --platform linux/amd64,linux/arm64 -t dependacharta-analysis ."
+
+[tasks.docker-run]
+description = "Run analysis with Docker"
+usage = "docker-run <directory>"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+if [ $# -eq 0 ]; then
+  echo "Usage: mise run docker-run <directory>"
+  exit 1
+fi
+docker run --rm -v "$1":/workspace dependacharta-analysis -d /workspace
+"""
+
+[tasks.docker-analyze]
+description = "Run Docker analysis and open visualization"
+usage = "docker-analyze <directory>"
+depends = ["docker-build"]
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+if [ $# -eq 0 ]; then
+  echo "Usage: mise run docker-analyze <directory>"
+  exit 1
+fi
+docker run --rm -v "$1":/workspace -v ./visualization/public/analysis:/output dependacharta-analysis -d /workspace -o /output -f analyzed-project
+echo "Docker analysis complete! Starting frontend..."
+echo "Frontend will automatically load your analysis."
+echo "You can also manually specify a file: http://localhost:4200?file=./path/to/file.cg.json"
+"""

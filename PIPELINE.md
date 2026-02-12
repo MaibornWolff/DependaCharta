@@ -29,15 +29,16 @@ The pipeline consists of five workflows that handle building, testing, quality c
 - **Timeout:** 30 minutes
 - **Steps:**
   1. Checkout code
-  2. Setup Java 17 (Temurin) with Gradle cache
-  3. Run ktlint for code style checks
-  4. Build and test with version set to tag or commit SHA
-  5. Upload artifacts:
+  2. Setup mise (installs Java 17 from `.mise.toml`)
+  3. Setup Gradle cache
+  4. Run ktlint for code style checks
+  5. Build and test with version set to tag or commit SHA
+  6. Upload artifacts:
      - JAR file (`dependacharta.jar`)
      - SBOM (Software Bill of Materials - `bom.json`)
      - Test results (JUnit XML)
      - Coverage reports (JaCoCo XML)
-  6. Publish test results to PR
+  7. Publish test results to PR
 
 **Artifacts Generated:**
 - `dependacharta-jar-{run_id}` - Main JAR artifact (1 day retention)
@@ -67,7 +68,7 @@ The pipeline consists of five workflows that handle building, testing, quality c
 - **Timeout:** 30 minutes
 - **Steps:**
   1. Checkout code
-  2. Setup Node.js 22.12.0 with npm cache
+  2. Setup mise (installs Node.js 22.21.1 from `.mise.toml`)
   3. Install dependencies (`npm ci`)
   4. Run Angular linter
   5. Build application with 4GB memory limit
@@ -354,15 +355,17 @@ Manual Trigger
 
 ## Environment Requirements
 
+Runtime versions are defined in `.mise.toml` and used by both local development and CI.
+
 ### Analysis Component
 - **OS:** Ubuntu 24.04
-- **Java:** 17 (Temurin distribution)
+- **Java:** 17 (Temurin, via mise)
 - **Build Tool:** Gradle (wrapper)
 - **Memory:** Default
 
 ### Visualization Component
 - **OS:** Ubuntu 24.04
-- **Node.js:** 22.12.0
+- **Node.js:** 22.21.1 (via mise)
 - **Package Manager:** npm
 - **Browser:** Chrome (for tests)
 - **Memory:** 4GB (for build)

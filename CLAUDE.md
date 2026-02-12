@@ -10,31 +10,31 @@ DependaCharta is a multi-language code analysis and visualization tool that cons
 
 ## Build and Development Commands
 
-### Quick Commands (using justfile)
+### Quick Commands (using mise)
 
 ```bash
 # Run analysis (Kotlin) unit tests
-just test
+mise run test
 
 # Run visualization (Angular) unit tests (headless)
-just test-frontend
+mise run test-frontend
 
 # Build the analysis tool
-just build
+mise run build
 
 # Run analysis on a directory (builds first if needed)
-just run <directory-to-analyze>
+mise run run <directory-to-analyze>
 
 # Analyze a directory and prepare for visualization (builds first if needed)
-just analyze <directory-to-analyze>
+mise run analyze <directory-to-analyze>
 
 # Start frontend development server (installs deps automatically)
-just frontend
+mise run frontend
 ```
 
 **Note**: The difference between `run` and `analyze`:
-- `just run <dir>` - Runs analysis and outputs to `output/analysis.cg.json`
-- `just analyze <dir>` - Runs analysis and outputs to `visualization/public/analysis/analyzed-project.cg.json` and then opens the frontend instance and shows it directly to the user. 
+- `mise run run <dir>` - Runs analysis and outputs to `output/analysis.cg.json`
+- `mise run analyze <dir>` - Runs analysis and outputs to `visualization/public/analysis/analyzed-project.cg.json` and then opens the frontend instance and shows it directly to the user. 
 
 ### Analysis Component (Kotlin)
 
@@ -238,8 +238,8 @@ Example: `feat(visualization): add dark mode toggle (#123)`
    - If test is green before fixing bug, the test doesn't reproduce the bug correctly
 2. Write minimum code to pass
 3. **Run ALL tests** (must be green before any commit):
-   - Analysis (Kotlin): `just test`
-   - Visualization (Angular): `just test-frontend`
+   - Analysis (Kotlin): `mise run test`
+   - Visualization (Angular): `mise run test-frontend`
 4. Refactor if needed
 5. **Request permission to commit** - NEVER commit without asking first
 6. Repeat
