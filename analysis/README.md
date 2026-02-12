@@ -5,7 +5,10 @@ This is the analysis component of DependaCharta that analyzes source code and ge
 # Installation
 
 ## Prerequisites
-- Java 17 or higher (check with `java -version`)
+
+**With mise (recommended):** Run `mise install` from the repository root to get the correct Java version automatically.
+
+**Manual:** Java 17 or higher (check with `java -version`)
 ## Build it yourself
 - Clone the repository
 - Download the gradle dependencies of the `analysis` project

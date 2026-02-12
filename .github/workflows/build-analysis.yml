@@ -40,17 +40,14 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x gradlew
 
-      - name: Setup Java
-        uses: actions/setup-java@v5
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-          cache: 'gradle'
+      - name: Setup mise
+        uses: jdx/mise-action@v2
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: wrapper
+          cache-read-only: ${{ github.event_name == 'pull_request' }}
 
       - name: Run ktlint
         run: ./gradlew ktlintCheck
@@ -127,17 +124,14 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x gradlew
 
-      - name: Setup Java
-        uses: actions/setup-java@v5
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-          cache: 'gradle'
+      - name: Setup mise
+        uses: jdx/mise-action@v2
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: wrapper
+          cache-read-only: true
 
       - name: Build project (for bytecode analysis)
         run: ./gradlew compileKotlin compileTestKotlin --no-daemon
