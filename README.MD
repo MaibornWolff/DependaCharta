@@ -112,7 +112,8 @@ The Visualization component is an Angular/TypeScript web application using [Cyto
 # Install mise (https://mise.jdx.dev/getting-started.html)
 curl https://mise.run | sh  # or: brew install mise
 
-# Install project runtimes (Java 17, Node.js 22)
+# Trust and install project runtimes (first time only)
+mise trust
 mise install
 
 # See all available tasks
@@ -227,7 +228,7 @@ Want to **contribute**? Check out our [contributing guide](dev_docs/CONTRIBUTING
 - Test-driven development with tests before implementation
 - Clean Code principles (pragmatic, not dogmatic)
 - [Semantic Versioning](https://semver.org) for releases
-- Automated CI/CD pipeline (see [Pipeline.md](Pipeline.md))
+- Automated CI/CD pipeline (see [PIPELINE.md](PIPELINE.md))
 
 ## Links
 
@@ -239,7 +240,7 @@ Want to **contribute**? Check out our [contributing guide](dev_docs/CONTRIBUTING
 - [Cycle Detection Algorithm](analysis/src/main/kotlin/de/maibornwolff/dependacharta/pipeline/processing/cycledetection/README.md)
 - [Levelization Algorithm](analysis/src/main/kotlin/de/maibornwolff/dependacharta/pipeline/processing/levelization/README.md)
 - [Architecture Decision Records](doc/architecture/decisions)
-- [Pipeline Documentation](Pipeline.md)
+- [Pipeline Documentation](PIPELINE.md)
 
 
 ## License

@@ -359,13 +359,13 @@ Runtime versions are defined in `.mise.toml` and used by both local development 
 
 ### Analysis Component
 - **OS:** Ubuntu 24.04
-- **Java:** 17 (Temurin, via mise)
+- **Java:** Temurin (version from `.mise.toml`)
 - **Build Tool:** Gradle (wrapper)
 - **Memory:** Default
 
 ### Visualization Component
 - **OS:** Ubuntu 24.04
-- **Node.js:** 22.21.1 (via mise)
+- **Node.js:** Version from `.mise.toml`
 - **Package Manager:** npm
 - **Browser:** Chrome (for tests)
 - **Memory:** 4GB (for build)
