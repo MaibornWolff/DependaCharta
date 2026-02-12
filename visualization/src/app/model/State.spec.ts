@@ -764,6 +764,168 @@ describe('State', () => {
     });
   });
 
+  describe('getVisibleFeedbackEdges', () => {
+    it('should return all feedback edges when no nodes are hidden', () => {
+      // Given
+      const feedbackEdge = new ShallowEdge('pkg.ClassA:leaf', 'pkg.ClassB:leaf', 'id1', 1, false, true, 'FEEDBACK');
+      const leafA = GraphNodeTest.GraphNode.build({
+        id: 'pkg.ClassA:leaf',
+        children: [],
+        dependencies: [feedbackEdge]
+      });
+      const leafB = GraphNodeTest.GraphNode.build({
+        id: 'pkg.ClassB:leaf',
+        children: [],
+        dependencies: []
+      });
+      const pkg = GraphNodeTest.GraphNode.build({
+        id: 'pkg',
+        children: [leafA, leafB],
+      });
+      leafA.parent = pkg;
+      leafB.parent = pkg;
+      const state = State.build({ allNodes: [pkg, leafA, leafB] });
+
+      // When
+      const result = state.getVisibleFeedbackEdges();
+
+      // Then
+      expect(result).toEqual([feedbackEdge]);
+    });
+
+    it('should exclude edge where source node is hidden', () => {
+      // Given
+      const feedbackEdge = new ShallowEdge('pkg.ClassA:leaf', 'pkg.ClassB:leaf', 'id1', 1, false, true, 'FEEDBACK');
+      const leafA = GraphNodeTest.GraphNode.build({
+        id: 'pkg.ClassA:leaf',
+        children: [],
+        dependencies: [feedbackEdge]
+      });
+      const leafB = GraphNodeTest.GraphNode.build({
+        id: 'pkg.ClassB:leaf',
+        children: [],
+        dependencies: []
+      });
+      const pkg = GraphNodeTest.GraphNode.build({
+        id: 'pkg',
+        children: [leafA, leafB],
+      });
+      leafA.parent = pkg;
+      leafB.parent = pkg;
+      const state = State.build({
+        allNodes: [pkg, leafA, leafB],
+        hiddenNodeIds: ['pkg.ClassA:leaf']
+      });
+
+      // When
+      const result = state.getVisibleFeedbackEdges();
+
+      // Then
+      expect(result).toEqual([]);
+    });
+
+    it('should exclude edge where target node is hidden', () => {
+      // Given
+      const feedbackEdge = new ShallowEdge('pkg.ClassA:leaf', 'pkg.ClassB:leaf', 'id1', 1, false, true, 'FEEDBACK');
+      const leafA = GraphNodeTest.GraphNode.build({
+        id: 'pkg.ClassA:leaf',
+        children: [],
+        dependencies: [feedbackEdge]
+      });
+      const leafB = GraphNodeTest.GraphNode.build({
+        id: 'pkg.ClassB:leaf',
+        children: [],
+        dependencies: []
+      });
+      const pkg = GraphNodeTest.GraphNode.build({
+        id: 'pkg',
+        children: [leafA, leafB],
+      });
+      leafA.parent = pkg;
+      leafB.parent = pkg;
+      const state = State.build({
+        allNodes: [pkg, leafA, leafB],
+        hiddenNodeIds: ['pkg.ClassB:leaf']
+      });
+
+      // When
+      const result = state.getVisibleFeedbackEdges();
+
+      // Then
+      expect(result).toEqual([]);
+    });
+
+    it('should exclude edge where ancestor of source is hidden', () => {
+      // Given
+      const feedbackEdge = new ShallowEdge('pkgA.ClassA:leaf', 'pkgB.ClassB:leaf', 'id1', 1, false, true, 'FEEDBACK');
+      const leafA = GraphNodeTest.GraphNode.build({
+        id: 'pkgA.ClassA:leaf',
+        children: [],
+        dependencies: [feedbackEdge]
+      });
+      const pkgA = GraphNodeTest.GraphNode.build({
+        id: 'pkgA',
+        children: [leafA],
+      });
+      const leafB = GraphNodeTest.GraphNode.build({
+        id: 'pkgB.ClassB:leaf',
+        children: [],
+        dependencies: []
+      });
+      const pkgB = GraphNodeTest.GraphNode.build({
+        id: 'pkgB',
+        children: [leafB],
+      });
+      leafA.parent = pkgA;
+      leafB.parent = pkgB;
+      const state = State.build({
+        allNodes: [pkgA, leafA, pkgB, leafB],
+        hiddenNodeIds: ['pkgA']
+      });
+
+      // When
+      const result = state.getVisibleFeedbackEdges();
+
+      // Then
+      expect(result).toEqual([]);
+    });
+
+    it('should exclude edge where ancestor of target is hidden', () => {
+      // Given
+      const feedbackEdge = new ShallowEdge('pkgA.ClassA:leaf', 'pkgB.ClassB:leaf', 'id1', 1, false, true, 'FEEDBACK');
+      const leafA = GraphNodeTest.GraphNode.build({
+        id: 'pkgA.ClassA:leaf',
+        children: [],
+        dependencies: [feedbackEdge]
+      });
+      const pkgA = GraphNodeTest.GraphNode.build({
+        id: 'pkgA',
+        children: [leafA],
+      });
+      const leafB = GraphNodeTest.GraphNode.build({
+        id: 'pkgB.ClassB:leaf',
+        children: [],
+        dependencies: []
+      });
+      const pkgB = GraphNodeTest.GraphNode.build({
+        id: 'pkgB',
+        children: [leafB],
+      });
+      leafA.parent = pkgA;
+      leafB.parent = pkgB;
+      const state = State.build({
+        allNodes: [pkgA, leafA, pkgB, leafB],
+        hiddenNodeIds: ['pkgB']
+      });
+
+      // When
+      const result = state.getVisibleFeedbackEdges();
+
+      // Then
+      expect(result).toEqual([]);
+    });
+  });
+
   describe('getAncestorIdsToExpand', () => {
     it('should return empty array when node does not exist', () => {
       // Given

@@ -46,7 +46,7 @@ export class AppComponent {
     this.isLoading = true
     this.state = this.state.reduce(action)
     this.stateChange = {state: this.state, action: action}
-    this.cachedFeedbackEdges = this.state.getAllFeedbackEdges()
+    this.cachedFeedbackEdges = this.state.getVisibleFeedbackEdges()
     this.isLoading = false
   }
 

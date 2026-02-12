@@ -209,6 +209,23 @@ export class State extends DataClass<State> {
     )
   }
 
+  getVisibleFeedbackEdges(): ShallowEdge[] {
+    return this.getAllFeedbackEdges().filter(edge => {
+      const sourceNode = this.allNodes.find(n => n.id === edge.source)
+      if (sourceNode && GraphNodeUtils.isNodeOrAncestorHidden(this.hiddenNodeIds, sourceNode)) {
+        return false
+      }
+
+      const targetNode = this.allNodes.find(n => n.id === edge.target)
+        ?? this.allNodes.find(n => n.id === edge.target.replace(/:leaf$/, ''))
+      if (targetNode && GraphNodeUtils.isNodeOrAncestorHidden(this.hiddenNodeIds, targetNode)) {
+        return false
+      }
+
+      return true
+    })
+  }
+
   getAncestorIdsToExpand(nodeId: string): string[] {
     const node = this.allNodes.find(n => n.id === nodeId)
     if (!node) {
