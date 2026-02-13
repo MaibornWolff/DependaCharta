@@ -96,6 +96,11 @@ export class HiddenNodesListComponent implements OnChanges, OnDestroy {
     }
   }
 
+  onHeaderKeydown(event: Event): void {
+    if (event.target !== event.currentTarget) return;
+    this.toggleExpanded();
+  }
+
   private applyDefaultDimensions(): void {
     const overlay = this.elementRef.nativeElement.querySelector('.hidden-nodes-overlay');
     if (overlay) {

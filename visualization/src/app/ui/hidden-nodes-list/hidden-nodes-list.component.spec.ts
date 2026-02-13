@@ -293,6 +293,36 @@ describe('HiddenNodesListComponent', () => {
       // Then
       expect(component.isExpanded).toBe(false);
     });
+
+    it('should not toggle header when Enter is pressed on restore all button', () => {
+      // Given
+      component.hiddenNodes = [createMockNode('com.pkg.ClassA')];
+      component.isExpanded = true;
+      fixture.detectChanges();
+      const button = fixture.nativeElement.querySelector('.restore-all-button');
+
+      // When
+      button.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+      fixture.detectChanges();
+
+      // Then — panel should still be expanded (Enter on button should not trigger header toggle)
+      expect(component.isExpanded).toBe(true);
+    });
+
+    it('should not toggle header when Space is pressed on restore all button', () => {
+      // Given
+      component.hiddenNodes = [createMockNode('com.pkg.ClassA')];
+      component.isExpanded = true;
+      fixture.detectChanges();
+      const button = fixture.nativeElement.querySelector('.restore-all-button');
+
+      // When
+      button.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }));
+      fixture.detectChanges();
+
+      // Then — panel should still be expanded (Space on button should not trigger header toggle)
+      expect(component.isExpanded).toBe(true);
+    });
   });
 
   describe('node label formatting', () => {

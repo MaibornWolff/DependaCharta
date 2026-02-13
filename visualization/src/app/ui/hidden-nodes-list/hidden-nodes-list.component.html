@@ -3,7 +3,7 @@
   <div class="resize-handle resize-top" *ngIf="isExpanded" (mousedown)="onResizeStart($event, 'top')"></div>
   <div class="resize-handle resize-left" *ngIf="isExpanded" (mousedown)="onResizeStart($event, 'left')"></div>
   <div class="resize-handle resize-top-left" *ngIf="isExpanded" (mousedown)="onResizeStart($event, 'top-left')"></div>
-  <div class="header" (click)="toggleExpanded()" [attr.aria-expanded]="isExpanded" tabindex="0" role="button" (keydown.enter)="toggleExpanded()" (keydown.space)="toggleExpanded()">
+  <div class="header" (click)="toggleExpanded()" [attr.aria-expanded]="isExpanded" tabindex="0" role="button" (keydown.enter)="onHeaderKeydown($event)" (keydown.space)="onHeaderKeydown($event)">
     <span class="chevron" [ngClass]="{'rotated': isExpanded}">&#9650;</span>
     <span class="title">Hidden Nodes</span>
     <span class="count-badge" *ngIf="hiddenNodeCount > 0">{{ hiddenNodeCount }}</span>
