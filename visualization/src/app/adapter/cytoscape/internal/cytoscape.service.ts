@@ -24,6 +24,10 @@ export class CytoscapeService {
   private isPanning = false
   private lastPanPoint: Position = {x: 0, y: 0}
 
+  // Reentrancy guard: prevents nested apply() calls (e.g., mouseleave during DOM teardown)
+  private isApplying = false
+  private pendingApply: { state: State, action: Action } | null = null
+
   // TODO naming
   @Output() graphActionHappened = new EventEmitter<Action>()
   @Output() interactionModeToggled = new EventEmitter<boolean>()
@@ -33,6 +37,27 @@ export class CytoscapeService {
   @Output() changeCursor = new EventEmitter<string>()
 
   apply(state: State, action: Action) {
+    if (this.isApplying) {
+      console.warn('⚠️ Re-entrant CytoscapeService.apply() detected, queueing:', action.constructor.name)
+      this.pendingApply = { state, action }
+      return
+    }
+
+    this.isApplying = true
+    try {
+      this.doApply(state, action)
+    } finally {
+      this.isApplying = false
+    }
+
+    if (this.pendingApply) {
+      const { state: pendingState, action: pendingAction } = this.pendingApply
+      this.pendingApply = null
+      this.apply(pendingState, pendingAction)
+    }
+  }
+
+  private doApply(state: State, action: Action) {
     if (action instanceof Action.InitializeState) {
       this.initialize()
     }

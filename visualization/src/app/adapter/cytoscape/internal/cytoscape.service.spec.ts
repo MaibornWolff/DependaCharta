@@ -167,6 +167,36 @@ describe('CytoscapeService', async () => {
     expect(allEdges.length).toBeGreaterThan(0)
   })
 
+  it('should defer re-entrant apply calls until current apply completes', () => {
+    // Given
+    const initialState = expandEmptyTopLevelPackages()
+    const renderCalls: string[] = []
+    const originalRender = (cytoscapeService as any).renderGraphFromState.bind(cytoscapeService)
+
+    spyOn(cytoscapeService as any, 'renderGraphFromState').and.callFake((cy: any, s: State) => {
+      renderCalls.push('start')
+      originalRender(cy, s)
+      // Simulate re-entrant call during render (e.g., mouseleave during DOM teardown)
+      if (renderCalls.length === 1) {
+        const reentrantAction = new Action.ExpandNode('de.sots.cellarsandcentaurs.domain')
+        const reentrantState = s.reduce(reentrantAction)
+        cytoscapeService.apply(reentrantState, reentrantAction)
+        // Without guard: this would call renderGraphFromState recursively (renderCalls would be ['start', 'start', 'end', 'end'])
+        // With guard: the re-entrant apply is queued, so renderCalls stays ['start'] at this point
+        expect(renderCalls).toEqual(['start'])
+      }
+      renderCalls.push('end')
+    })
+
+    // When
+    const action = new Action.HideNode('de.sots.cellarsandcentaurs.domain')
+    const newState = initialState.reduce(action)
+    cytoscapeService.apply(newState, action)
+
+    // Then — both renders completed sequentially, not nested
+    expect(renderCalls).toEqual(['start', 'end', 'start', 'end'])
+  })
+
   function expandEmptyTopLevelPackages(): State {
     const expandDe = new Action.ExpandNode("de");
     let finalState = state.reduce(expandDe);
