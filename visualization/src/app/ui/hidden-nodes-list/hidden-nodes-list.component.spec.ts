@@ -281,6 +281,18 @@ describe('HiddenNodesListComponent', () => {
       // Then
       expect(component.restoreAllHidden.emit).toHaveBeenCalled();
     });
+
+    it('should collapse panel when restore all is clicked', () => {
+      // Given
+      component.isExpanded = true;
+      fixture.detectChanges();
+
+      // When
+      component.onRestoreAllClick();
+
+      // Then
+      expect(component.isExpanded).toBe(false);
+    });
   });
 
   describe('node label formatting', () => {

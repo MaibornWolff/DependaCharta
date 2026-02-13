@@ -113,6 +113,7 @@ export class HiddenNodesListComponent implements OnChanges, OnDestroy {
   }
 
   onRestoreAllClick(): void {
+    this.isExpanded = false;
     this.restoreAllHidden.emit();
   }
 

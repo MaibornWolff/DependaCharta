@@ -226,9 +226,16 @@
   border-radius: 4px;
   cursor: pointer;
   padding: 2px 6px;
-  font-size: 14px;
   line-height: 1;
   transition: background-color 0.2s ease;
+}
+
+.restore-icon {
+  font-family: 'Material Icons';
+  font-size: 18px;
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
 }
 
 .restore-button:hover {

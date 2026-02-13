@@ -40,7 +40,7 @@
           {{ getNodeType(node) }}
         </span>
         <button class="restore-button" (click)="onRestoreNodeClick($event, node)" [attr.aria-label]="'Restore ' + getNodePath(node)" title="Restore node">
-          👁
+          <span class="restore-icon">visibility_off</span>
         </button>
       </div>
     </div>
