@@ -21,6 +21,7 @@
   </div>
   @if(cytoscapeInitialized) {<cytoscape [stateChange]="stateChange" class="cytoscape-container" (graphActionHappened)="apply($event)" /> }
   @if(state.isInteractive) {<feedback-edges-list [feedbackEdges]="cachedFeedbackEdges" (edgeClicked)="onEdgeClicked($event)" (groupClicked)="onGroupClicked($event)"></feedback-edges-list>}
+  @if(state.isInteractive) {<hidden-nodes-list [hiddenNodes]="cachedHiddenNodes" (restoreNode)="onRestoreHiddenNode($event)" (restoreAllHidden)="onRestoreAllHidden()"></hidden-nodes-list>}
   @if (isLoading) {<div class="loading-spinner">
     <div class="loading-container">
       <span class="loader"></span>

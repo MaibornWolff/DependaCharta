@@ -112,6 +112,11 @@ export class State extends DataClass<State> {
           selectedPinnedNodeIds: [],
           hiddenChildrenIdsByParentId: new Map()
         })
+      case action instanceof Action.RestoreAllHiddenNodes:
+        return this.copy({
+          hiddenNodeIds: [],
+          hiddenChildrenIdsByParentId: new Map()
+        })
       case action instanceof Action.RestoreNode: {
         const updatedMap = new Map(this.hiddenChildrenIdsByParentId)
         const newChildrenIds = (updatedMap.get(action.parentNodeId) || [])
@@ -173,6 +178,11 @@ export class State extends DataClass<State> {
         action satisfies never
         return this
     }
+  }
+
+  getHiddenNodes(): GraphNode[] {
+    const hiddenSet = new Set(this.hiddenNodeIds)
+    return this.allNodes.filter(node => hiddenSet.has(node.id))
   }
 
   getVisibleNodes(): VisibleGraphNode[] {

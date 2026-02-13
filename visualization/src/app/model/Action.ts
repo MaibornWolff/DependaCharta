@@ -61,6 +61,8 @@ export namespace Action {
     constructor(readonly nodeId: string) {}
   }
 
+  export class RestoreAllHiddenNodes {}
+
   export class ToggleInteractionMode {}
 
   export class ToggleUsageTypeMode {}
@@ -119,4 +121,5 @@ export type Action =
   | Action.ResetMultiselection
   | Action.PinNode
   | Action.UnpinNode
+  | Action.RestoreAllHiddenNodes
   | Action.NavigateToEdge

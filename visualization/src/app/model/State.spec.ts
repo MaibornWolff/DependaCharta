@@ -493,6 +493,44 @@ describe('State', () => {
       });
     });
 
+    describe('RESTORE_ALL_HIDDEN_NODES action', () => {
+      it('should clear hidden state but preserve pins', () => {
+        // Given
+        const stateWithHiddenAndPinned: State = initialState.copy({
+          hiddenNodeIds: [child1Id, child2Id],
+          pinnedNodeIds: ['node3'],
+          selectedPinnedNodeIds: ['node3'],
+          hiddenChildrenIdsByParentId: new Map([[parent1Id, [child1Id, child2Id]]])
+        });
+
+        // When
+        const action = new Action.RestoreAllHiddenNodes();
+        const newState = stateWithHiddenAndPinned.reduce(action);
+
+        // Then
+        expect(newState.hiddenNodeIds).toEqual([]);
+        expect(newState.hiddenChildrenIdsByParentId).toEqual(new Map());
+        expect(newState.pinnedNodeIds).toEqual(['node3']);
+        expect(newState.selectedPinnedNodeIds).toEqual(['node3']);
+      });
+
+      it('should be a no-op when no nodes are hidden', () => {
+        // Given
+        const stateWithPinsOnly: State = initialState.copy({
+          pinnedNodeIds: ['node3'],
+          selectedPinnedNodeIds: ['node3']
+        });
+
+        // When
+        const action = new Action.RestoreAllHiddenNodes();
+        const newState = stateWithPinsOnly.reduce(action);
+
+        // Then
+        expect(newState.hiddenNodeIds).toEqual([]);
+        expect(newState.pinnedNodeIds).toEqual(['node3']);
+      });
+    });
+
     describe('TOGGLE_INTERACTION_MODE action', () => {
       it('should toggle interaction mode', () => {
         const action = new Action.ToggleInteractionMode()
@@ -1038,6 +1076,52 @@ describe('State', () => {
 
       // Then
       expect(result).toEqual([]);
+    });
+  });
+
+  describe('getHiddenNodes', () => {
+    it('should return empty array when no nodes are hidden', () => {
+      // Given
+      const state = State.build({
+        allNodes: [mockParentNode, mockChildNode1, mockChildNode2]
+      });
+
+      // When
+      const result = state.getHiddenNodes();
+
+      // Then
+      expect(result).toEqual([]);
+    });
+
+    it('should return single hidden node', () => {
+      // Given
+      const state = State.build({
+        allNodes: [mockParentNode, mockChildNode1, mockChildNode2],
+        hiddenNodeIds: [mockChildNode1.id]
+      });
+
+      // When
+      const result = state.getHiddenNodes();
+
+      // Then
+      expect(result.length).toBe(1);
+      expect(result[0].id).toBe(mockChildNode1.id);
+    });
+
+    it('should return multiple hidden nodes', () => {
+      // Given
+      const state = State.build({
+        allNodes: [mockParentNode, mockChildNode1, mockChildNode2, mockGrandChildNode],
+        hiddenNodeIds: [mockChildNode1.id, mockChildNode2.id]
+      });
+
+      // When
+      const result = state.getHiddenNodes();
+
+      // Then
+      expect(result.length).toBe(2);
+      expect(result.map((n: GraphNode) => n.id)).toContain(mockChildNode1.id);
+      expect(result.map((n: GraphNode) => n.id)).toContain(mockChildNode2.id);
     });
   });
 

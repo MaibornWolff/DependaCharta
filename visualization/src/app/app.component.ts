@@ -11,8 +11,10 @@ import {ProjectReport} from './adapter/analysis/internal/ProjectReport'
 import {State} from './model/State'
 import {ToggleButtonComponent} from "./ui/toggle-button/toggle-button.component";
 import {FeedbackEdgesListComponent} from './ui/feedback-edges-list/feedback-edges-list.component';
+import {HiddenNodesListComponent, RestoreNodeEvent} from './ui/hidden-nodes-list/hidden-nodes-list.component';
 import {HelpPopupComponent} from './ui/help-popup/help-popup.component';
 import {FeedbackListEntry, ShallowEdge} from './model/Edge';
+import {GraphNode} from './model/GraphNode';
 import {EdgeFilterType} from './model/EdgeFilter';
 
 // TODO move to better location (model?)
@@ -21,7 +23,7 @@ export type StateChange = {state: State, action: Action}
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, FilterComponent, JsonLoaderComponent, VersionComponent, CytoscapeComponent, MouseInaccuracyDetectorComponent, ToggleButtonComponent, FeedbackEdgesListComponent, HelpPopupComponent],
+  imports: [RouterOutlet, FilterComponent, JsonLoaderComponent, VersionComponent, CytoscapeComponent, MouseInaccuracyDetectorComponent, ToggleButtonComponent, FeedbackEdgesListComponent, HiddenNodesListComponent, HelpPopupComponent],
   templateUrl: './app.component.html',
   standalone: true,
   styleUrl: './app.component.css'
@@ -33,6 +35,8 @@ export class AppComponent {
   private cytoscapeComponent!: CytoscapeComponent
   @ViewChild(FeedbackEdgesListComponent)
   private readonly feedbackEdgesListComponent?: FeedbackEdgesListComponent
+  @ViewChild(HiddenNodesListComponent)
+  private readonly hiddenNodesListComponent?: HiddenNodesListComponent
   @ViewChild(JsonLoaderComponent)
   private readonly jsonLoaderComponent!: JsonLoaderComponent
   private changeDetector = inject(ChangeDetectorRef)
@@ -41,12 +45,14 @@ export class AppComponent {
   state: State = State.build()
   stateChange!: StateChange
   cachedFeedbackEdges: ShallowEdge[] = []
+  cachedHiddenNodes: GraphNode[] = []
 
   apply(action: Action) {
     this.isLoading = true
     this.state = this.state.reduce(action)
     this.stateChange = {state: this.state, action: action}
     this.cachedFeedbackEdges = this.state.getVisibleFeedbackEdges()
+    this.cachedHiddenNodes = this.state.getHiddenNodes()
     this.isLoading = false
   }
 
@@ -156,6 +162,14 @@ export class AppComponent {
     this.feedbackEdgesListComponent?.toggleExpanded()
   }
 
+  @HostListener('document:keydown.h', ['$event'])
+  onToggleHiddenNodesPanelShortcut(event: KeyboardEvent) {
+    if (this.isInputFocused(event)) return
+    if (!this.state.isInteractive) return
+    event.preventDefault()
+    this.hiddenNodesListComponent?.toggleExpanded()
+  }
+
   @HostListener('document:keydown.0', ['$event'])
   onFilterNoneShortcut(event: KeyboardEvent) {
     if (this.isInputFocused(event)) return
@@ -217,6 +231,14 @@ export class AppComponent {
 
   onEdgeClicked(edge: ShallowEdge): void {
     this.apply(new Action.NavigateToEdge(edge.source, edge.target))
+  }
+
+  onRestoreHiddenNode(event: RestoreNodeEvent): void {
+    this.apply(new Action.RestoreNode(event.nodeId, event.parentNodeId))
+  }
+
+  onRestoreAllHidden(): void {
+    this.apply(new Action.RestoreAllHiddenNodes())
   }
 
   onGroupClicked(group: FeedbackListEntry): void {

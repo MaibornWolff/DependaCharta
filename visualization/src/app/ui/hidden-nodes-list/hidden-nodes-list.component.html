@@ -1,0 +1,52 @@
+<section class="hidden-nodes-overlay" [ngClass]="{'expanded': isExpanded}" aria-label="Hidden Nodes List">
+  <!-- Resize handles (only visible when expanded) -->
+  <div class="resize-handle resize-top" *ngIf="isExpanded" (mousedown)="onResizeStart($event, 'top')"></div>
+  <div class="resize-handle resize-left" *ngIf="isExpanded" (mousedown)="onResizeStart($event, 'left')"></div>
+  <div class="resize-handle resize-top-left" *ngIf="isExpanded" (mousedown)="onResizeStart($event, 'top-left')"></div>
+  <div class="header" (click)="toggleExpanded()" [attr.aria-expanded]="isExpanded" tabindex="0" role="button" (keydown.enter)="toggleExpanded()" (keydown.space)="toggleExpanded()">
+    <span class="chevron" [ngClass]="{'rotated': isExpanded}">&#9650;</span>
+    <span class="title">Hidden Nodes</span>
+    <span class="count-badge" *ngIf="hiddenNodeCount > 0">{{ hiddenNodeCount }}</span>
+    <button class="restore-all-button" *ngIf="hasHiddenNodes && isExpanded" (click)="$event.stopPropagation(); onRestoreAllClick()" aria-label="Restore All Hidden">
+      Restore All Hidden
+    </button>
+  </div>
+
+  <div class="content" *ngIf="isExpanded">
+    <div class="sort-container" *ngIf="hasHiddenNodes">
+      <label for="hidden-sort-select">Sort by:</label>
+      <select id="hidden-sort-select" (change)="onSortChange($event)" aria-label="Sort hidden nodes">
+        <option *ngFor="let option of allSortOptions" [value]="option.value" [selected]="option.value === selectedSort">
+          {{ option.label }}
+        </option>
+      </select>
+    </div>
+
+    <div class="node-list" *ngIf="hasHiddenNodes">
+      <div
+        *ngFor="let node of sortedHiddenNodes; trackBy: trackByNode"
+        class="node-item"
+        [ngClass]="{
+          'focused': isFocused(node),
+          'leaf-node': isLeaf(node),
+          'container-node': !isLeaf(node)
+        }"
+        [attr.aria-label]="'Hidden node ' + getNodePath(node)"
+      >
+        <span class="node-path" [title]="getNodePath(node)">
+          <span class="path-prefix">{{ getPathPrefix(node) }}</span><span class="path-suffix">{{ getPathSuffix(node) }}</span>
+        </span>
+        <span class="type-badge" [ngClass]="{'leaf': isLeaf(node), 'container': !isLeaf(node)}">
+          {{ getNodeType(node) }}
+        </span>
+        <button class="restore-button" (click)="onRestoreNodeClick($event, node)" [attr.aria-label]="'Restore ' + getNodePath(node)" title="Restore node">
+          👁
+        </button>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="!hasHiddenNodes">
+      <span>No hidden nodes</span>
+    </div>
+  </div>
+</section>

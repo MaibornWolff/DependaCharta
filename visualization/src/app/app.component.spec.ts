@@ -5,6 +5,7 @@ import {By} from '@angular/platform-browser';
 import {ToggleButtonComponent} from './ui/toggle-button/toggle-button.component';
 import {Action} from './model/Action';
 import {EdgeFilterType} from './model/EdgeFilter';
+import {HiddenNodesListComponent} from './ui/hidden-nodes-list/hidden-nodes-list.component';
 
 describe('AppComponent', () => {
 
@@ -375,6 +376,75 @@ describe('AppComponent', () => {
 
       // Then - toggleExpanded should NOT be called when not in interactive mode
       expect(mockToggleExpanded).not.toHaveBeenCalled();
+    });
+
+    it('should toggle hidden nodes panel when H key is pressed and in interactive mode', () => {
+      // Given - isInteractive is true by default
+      const fixture = TestBed.createComponent(AppComponent);
+      const component = fixture.componentInstance;
+      fixture.detectChanges();
+      const mockToggleExpanded = jasmine.createSpy('toggleExpanded');
+      Object.defineProperty(component, 'hiddenNodesListComponent', {
+        value: { toggleExpanded: mockToggleExpanded },
+        writable: true
+      });
+
+      // When
+      const event = createKeyboardEvent('h');
+      component.onToggleHiddenNodesPanelShortcut(event);
+
+      // Then
+      expect(mockToggleExpanded).toHaveBeenCalled();
+    });
+
+    it('should not toggle hidden nodes panel when H key is pressed and not in interactive mode', () => {
+      // Given
+      const fixture = TestBed.createComponent(AppComponent);
+      const component = fixture.componentInstance;
+      component.state = component.state.reduce(new Action.ToggleInteractionMode());
+      fixture.detectChanges();
+      const mockToggleExpanded = jasmine.createSpy('toggleExpanded');
+      Object.defineProperty(component, 'hiddenNodesListComponent', {
+        value: { toggleExpanded: mockToggleExpanded },
+        writable: true
+      });
+
+      // When
+      const event = createKeyboardEvent('h');
+      component.onToggleHiddenNodesPanelShortcut(event);
+
+      // Then
+      expect(mockToggleExpanded).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Hidden Node Events', () => {
+    it('should dispatch RestoreNode action when restore node event is received', () => {
+      // Given
+      const fixture = TestBed.createComponent(AppComponent);
+      const component = fixture.componentInstance;
+      spyOn(component, 'apply');
+      fixture.detectChanges();
+
+      // When
+      component.onRestoreHiddenNode({ nodeId: 'com.pkg.ClassA', parentNodeId: 'com.pkg' });
+
+      // Then
+      expect(component.apply).toHaveBeenCalledWith(new Action.RestoreNode('com.pkg.ClassA', 'com.pkg'));
+    });
+
+    it('should dispatch RestoreAllHiddenNodes action when restore all is triggered', () => {
+      // Given
+      const fixture = TestBed.createComponent(AppComponent);
+      const component = fixture.componentInstance;
+      spyOn(component, 'apply');
+      fixture.detectChanges();
+
+      // When
+      component.onRestoreAllHidden();
+
+      // Then
+      expect(component.apply).toHaveBeenCalledWith(jasmine.any(Action.RestoreAllHiddenNodes));
     });
   });
 
