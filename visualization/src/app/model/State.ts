@@ -79,7 +79,7 @@ export class State extends DataClass<State> {
         })
       case action instanceof Action.HideNode: {
         const node = this.findGraphNode(action.nodeId)
-        const hiddenChildrenIdsByParentId = this.hiddenChildrenIdsByParentId
+        const hiddenChildrenIdsByParentId = new Map(this.hiddenChildrenIdsByParentId)
         if (node.parent) {
           const previousHiddenChildren = hiddenChildrenIdsByParentId.get(node.parent.id) || []
           hiddenChildrenIdsByParentId.set(node.parent.id, [...previousHiddenChildren, node.id])

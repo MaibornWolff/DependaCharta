@@ -112,6 +112,7 @@ export type Action =
   | Action.HideNode
   | Action.RestoreNode
   | Action.RestoreNodes
+  | Action.RestoreAllChildren
   | Action.ToggleInteractionMode
   | Action.ToggleUsageTypeMode
   | Action.ResetView
