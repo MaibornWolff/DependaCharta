@@ -50,16 +50,22 @@ jobs:
           cache-read-only: ${{ github.event_name == 'pull_request' }}
 
       - name: Run ktlint
-        run: ./gradlew ktlintCheck
+        run: mise run lint-analysis
+        working-directory: .
 
-      - name: Build and test
+      - name: Determine version
+        id: version
         run: |
           if [ "${{ github.ref_type }}" == "tag" ]; then
-            RELEASE="${{ github.ref_name }}"
+            echo "release=${{ github.ref_name }}" >> $GITHUB_OUTPUT
           else
-            RELEASE="${{ github.sha }}"
+            echo "release=${{ github.sha }}" >> $GITHUB_OUTPUT
           fi
-          ./gradlew build -Pversion=$RELEASE
+        working-directory: .
+
+      - name: Build and test
+        run: mise run ci-build-analysis ${{ steps.version.outputs.release }}
+        working-directory: .
 
       - name: Upload JAR artifact
         uses: actions/upload-artifact@v4
@@ -134,7 +140,8 @@ jobs:
           cache-read-only: true
 
       - name: Build project (for bytecode analysis)
-        run: ./gradlew compileKotlin compileTestKotlin --no-daemon
+        run: mise run ci-compile-analysis
+        working-directory: .
 
       - name: Download coverage artifact
         uses: actions/download-artifact@v4

@@ -75,8 +75,8 @@ All new features and bug fixes in the backend shall be accompanied by unit tests
 
 **With mise (recommended):**
 ```bash
-mise run test           # Analysis tests
-mise run test-frontend  # Visualization tests
+mise run test-analysis       # Analysis tests
+mise run test-visualization  # Visualization tests
 ```
 
 **Manual:**

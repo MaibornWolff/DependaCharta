@@ -48,18 +48,22 @@ jobs:
           restore-keys: ${{ runner.os }}-npm-
 
       - name: Install dependencies
-        run: npm ci
+        run: mise run install-visualization-deps
+        working-directory: .
 
       - name: Run linter
-        run: npx ng lint
+        run: mise run lint-visualization
+        working-directory: .
 
       - name: Build application
-        run: npm run build
+        run: mise run build-visualization
+        working-directory: .
         env:
           NODE_OPTIONS: --max-old-space-size=4096
 
       - name: Run unit tests
-        run: npm run ci-test
+        run: mise run ci-test-visualization
+        working-directory: .
         env:
           CHROME_BIN: /usr/bin/google-chrome
 
@@ -72,14 +76,19 @@ jobs:
           retention-days: 1
           if-no-files-found: error
 
-      - name: Create version file
+      - name: Determine version
+        id: version
         run: |
           if [ "${{ github.ref_type }}" == "tag" ]; then
-            RELEASE="${{ github.ref_name }}"
+            echo "release=${{ github.ref_name }}" >> $GITHUB_OUTPUT
           else
-            RELEASE="${{ github.sha }}"
+            echo "release=${{ github.sha }}" >> $GITHUB_OUTPUT
           fi
-          npm run ci-createVersion -- $RELEASE
+        working-directory: .
+
+      - name: Create version file
+        run: mise run ci-create-version ${{ steps.version.outputs.release }}
+        working-directory: .
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -132,7 +141,8 @@ jobs:
           restore-keys: ${{ runner.os }}-npm-
 
       - name: Install dependencies
-        run: npm ci
+        run: mise run install-visualization-deps
+        working-directory: .
 
       - name: Install http-server and wait-on
         run: npm install -g http-server wait-on
@@ -145,13 +155,14 @@ jobs:
 
       - name: Start server and run Cypress tests
         run: |
-          http-server ./dist/visualization/browser -p 4200 &
+          http-server visualization/dist/visualization/browser -p 4200 &
           SERVER_PID=$!
           wait-on http://localhost:4200 --timeout 30000
-          npx cypress run --browser electron --config video=false,screenshotOnRunFailure=false
+          mise run ci-e2e
           TEST_EXIT=$?
           kill $SERVER_PID || true
           exit $TEST_EXIT
+        working-directory: .
 
       - name: Upload Cypress screenshots on failure
         uses: actions/upload-artifact@v4

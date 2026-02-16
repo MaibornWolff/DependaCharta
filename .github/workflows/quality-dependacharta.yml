@@ -31,13 +31,8 @@ jobs:
         with:
           gradle-version: wrapper
 
-      - name: Make gradlew executable
-        working-directory: analysis
-        run: chmod +x gradlew
-
       - name: Build DependaCharta JAR
-        working-directory: analysis
-        run: ./gradlew build -x test
+        run: mise run build-analysis-jar
 
       - name: Create output directory
         run: mkdir -p graphs

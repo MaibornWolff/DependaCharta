@@ -14,13 +14,13 @@ DependaCharta is a multi-language code analysis and visualization tool that cons
 
 ```bash
 # Run analysis (Kotlin) unit tests
-mise run test
+mise run test-analysis
 
 # Run visualization (Angular) unit tests (headless)
-mise run test-frontend
+mise run test-visualization
 
 # Build the analysis tool
-mise run build
+mise run build-analysis-jar
 
 # Run analysis on a directory (builds first if needed)
 mise run run <directory-to-analyze>
@@ -28,8 +28,8 @@ mise run run <directory-to-analyze>
 # Analyze a directory and prepare for visualization (builds first if needed)
 mise run analyze <directory-to-analyze>
 
-# Start frontend development server (installs deps automatically)
-mise run frontend
+# Start visualization development server (installs deps automatically)
+mise run dev-visualization
 ```
 
 **Note**: The difference between `run` and `analyze`:
@@ -238,8 +238,8 @@ Example: `feat(visualization): add dark mode toggle (#123)`
    - If test is green before fixing bug, the test doesn't reproduce the bug correctly
 2. Write minimum code to pass
 3. **Run ALL tests** (must be green before any commit):
-   - Analysis (Kotlin): `mise run test`
-   - Visualization (Angular): `mise run test-frontend`
+   - Analysis (Kotlin): `mise run test-analysis`
+   - Visualization (Angular): `mise run test-visualization`
 4. Refactor if needed
 5. **Request permission to commit** - NEVER commit without asking first
 6. Repeat

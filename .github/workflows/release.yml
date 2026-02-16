@@ -40,21 +40,26 @@ jobs:
           restore-keys: ${{ runner.os }}-npm-
 
       - name: Install dependencies
-        run: npm ci
+        run: mise run install-visualization-deps
+        working-directory: .
 
       - name: Build application
-        run: npm run build
+        run: mise run build-visualization
+        working-directory: .
         env:
           NODE_OPTIONS: --max-old-space-size=4096
 
       - name: Create version file
-        run: npm run ci-createVersion -- ${{ github.ref_name }}
+        run: mise run ci-create-version ${{ github.ref_name }}
+        working-directory: .
 
       - name: Package for Mac Silicon
-        run: npm run package-mac-silicon
+        run: mise run ci-package-mac
+        working-directory: .
 
       - name: Package for Windows
-        run: npm run package-win
+        run: mise run ci-package-win
+        working-directory: .
 
       - name: Create Mac Silicon zip
         working-directory: .
@@ -109,14 +114,12 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build with version
-        run: ./gradlew build -Pversion=${{ github.ref_name }}
+        run: mise run ci-build-analysis ${{ github.ref_name }}
+        working-directory: .
 
       - name: Prepare release package
-        run: |
-          mkdir -p build/release
-          cp build/libs/dependacharta.jar build/release/dependacharta.jar
-          cp bin/dependacharta.sh build/release/dependacharta.sh
-          cp bin/dependacharta.bat build/release/dependacharta.bat
+        run: mise run ci-prepare-release
+        working-directory: .
 
       - name: Create analysis zip
         working-directory: .

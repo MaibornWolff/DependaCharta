@@ -5,35 +5,60 @@
 java = "temurin-17"
 node = "22.21.1"
 
-[tasks.test]
-description = "Run analysis (Kotlin) unit tests"
-run = "cd analysis && ./gradlew test"
+# =============================================================================
+# Granular tasks — atomic reusable steps for analysis and visualization
+# =============================================================================
 
-[tasks.test-frontend]
-description = "Run visualization (Angular) unit tests (headless)"
-run = "cd visualization && npm ci && npm run build && npm run test -- --no-watch --browsers=ChromeHeadless"
+[tasks.lint-analysis]
+description = "Check Kotlin code style with ktlint"
+run = "cd analysis && ./gradlew ktlintCheck"
 
-[tasks.test-e2e]
-description = "Run E2E tests (requires frontend server running: mise run frontend)"
-run = "cd visualization && npm run cypress:run"
+[tasks.lint-visualization]
+description = "Run Angular linter"
+run = "cd visualization && npx ng lint"
 
-[tasks.format]
-description = "Auto-format Kotlin code with ktlint"
-run = "cd analysis && ./gradlew ktlintFormat"
+[tasks.install-visualization-deps]
+description = "Install visualization npm dependencies"
+run = "cd visualization && npm ci"
 
-[tasks.build]
+[tasks.build-analysis-jar]
 description = "Build the analysis tool (fat JAR)"
 run = "cd analysis && ./gradlew fatJar"
 
+[tasks.build-visualization]
+description = "Build visualization application"
+run = "cd visualization && npm run build"
+
+# =============================================================================
+# Dev tasks — high-level workflows for daily development
+# =============================================================================
+
+[tasks.test-analysis]
+description = "Run analysis (Kotlin) unit tests"
+run = "cd analysis && ./gradlew test"
+
+[tasks.test-visualization]
+description = "Run visualization (Angular) unit tests (headless)"
+depends = ["install-visualization-deps", "build-visualization"]
+run = "cd visualization && npm run test -- --no-watch --browsers=ChromeHeadless"
+
+[tasks.test-e2e]
+description = "Run E2E tests (requires visualization server running: mise run dev-visualization)"
+run = "cd visualization && npm run cypress:run"
+
+[tasks.format-analysis]
+description = "Auto-format Kotlin code with ktlint"
+run = "cd analysis && ./gradlew ktlintFormat"
+
 [tasks.help]
 description = "Show analysis CLI help"
-depends = ["build"]
+depends = ["build-analysis-jar"]
 run = "cd analysis && java -jar build/libs/dependacharta.jar --help"
 
 [tasks.run]
 description = "Run analysis on a directory"
 usage = "run <directory>"
-depends = ["build"]
+depends = ["build-analysis-jar"]
 run = """
 #!/usr/bin/env bash
 set -euo pipefail
@@ -45,14 +70,15 @@ DIR="$(cd "$1" && pwd)"
 cd analysis && java -jar build/libs/dependacharta.jar -d "$DIR"
 """
 
-[tasks.frontend]
-description = "Start frontend development server"
-run = "cd visualization && npm ci && npm run start"
+[tasks.dev-visualization]
+description = "Start visualization development server"
+depends = ["install-visualization-deps"]
+run = "cd visualization && npm run start"
 
 [tasks.analyze]
 description = "Analyze a directory and open visualization"
 usage = "analyze <directory>"
-depends = ["build"]
+depends = ["build-analysis-jar"]
 run = """
 #!/usr/bin/env bash
 set -euo pipefail
@@ -66,6 +92,70 @@ echo "Analysis complete! Starting frontend..."
 echo "Frontend will automatically load your analysis."
 echo "You can also manually specify a file: http://localhost:4200?file=./path/to/file.cg.json"
 """
+
+# =============================================================================
+# CI tasks (ci- prefix) — primarily for CI pipelines, runnable locally
+# =============================================================================
+
+[tasks.ci-build-analysis]
+description = "Full analysis build+test with version (CI)"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+if [ $# -eq 0 ]; then
+  echo "Usage: mise run ci-build-analysis <version>"
+  exit 1
+fi
+cd analysis && ./gradlew build -Pversion="$1"
+"""
+
+[tasks.ci-compile-analysis]
+description = "Compile analysis without tests (for SonarCloud)"
+run = "cd analysis && ./gradlew compileKotlin compileTestKotlin --no-daemon"
+
+[tasks.ci-test-visualization]
+description = "Run visualization tests in CI mode (headless, single run)"
+run = "cd visualization && npm run ci-test"
+
+[tasks.ci-create-version]
+description = "Write version.json into visualization build output"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+if [ $# -eq 0 ]; then
+  echo "Usage: mise run ci-create-version <version>"
+  exit 1
+fi
+cd visualization && npm run ci-createVersion -- "$1"
+"""
+
+[tasks.ci-package-mac]
+description = "Package visualization for Mac Silicon (CI)"
+run = "cd visualization && npm run package-mac-silicon"
+
+[tasks.ci-package-win]
+description = "Package visualization for Windows (CI)"
+run = "cd visualization && npm run package-win"
+
+[tasks.ci-e2e]
+description = "Run E2E tests in CI mode (headless Electron, no video)"
+run = "cd visualization && npx cypress run --browser electron --config video=false,screenshotOnRunFailure=false"
+
+[tasks.ci-prepare-release]
+description = "Prepare analysis release package (CI)"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+cd analysis
+mkdir -p build/release
+cp build/libs/dependacharta.jar build/release/dependacharta.jar
+cp bin/dependacharta.sh build/release/dependacharta.sh
+cp bin/dependacharta.bat build/release/dependacharta.bat
+"""
+
+# =============================================================================
+# Docker tasks (docker- prefix) — container-based workflows
+# =============================================================================
 
 [tasks.docker-build]
 description = "Build Docker image for analysis"

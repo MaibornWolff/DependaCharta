@@ -29,7 +29,7 @@ The pipeline consists of five workflows that handle building, testing, quality c
 - **Timeout:** 30 minutes
 - **Steps:**
   1. Checkout code
-  2. Setup mise (installs Java 17 from `.mise.toml`)
+  2. Setup mise (installs Java from `.mise.toml`)
   3. Setup Gradle cache
   4. Run ktlint for code style checks
   5. Build and test with version set to tag or commit SHA
@@ -68,7 +68,7 @@ The pipeline consists of five workflows that handle building, testing, quality c
 - **Timeout:** 30 minutes
 - **Steps:**
   1. Checkout code
-  2. Setup mise (installs Node.js 22.21.1 from `.mise.toml`)
+  2. Setup mise (installs Node.js from `.mise.toml`)
   3. Install dependencies (`npm ci`)
   4. Run Angular linter
   5. Build application with 4GB memory limit
@@ -89,7 +89,7 @@ The pipeline consists of five workflows that handle building, testing, quality c
 - **Depends on:** build job
 - **Steps:**
   1. Checkout code
-  2. Setup Node.js and install dependencies
+  2. Setup mise (installs Node.js from `.mise.toml`)
   3. Install http-server and wait-on globally
   4. Download build artifacts from build job
   5. Start http-server on port 4200
@@ -123,17 +123,18 @@ The pipeline consists of five workflows that handle building, testing, quality c
 - **Timeout:** 20 minutes
 - **Steps:**
   1. Checkout code
-  2. Setup Java 17 with Gradle cache
-  3. Build DependaCharta JAR (skip tests)
-  4. Create output directory
-  5. Analyze analysis component:
+  2. Setup mise (installs Java from `.mise.toml`)
+  3. Setup Gradle cache
+  4. Build DependaCharta JAR via `mise run build-analysis-jar`
+  5. Create output directory
+  6. Analyze analysis component:
      - Input: `analysis/src/main/kotlin/de/maibornwolff/dependacharta`
      - Output: `graphs/dependacharta-analysis.cg.json`
-  6. Analyze visualization component:
+  7. Analyze visualization component:
      - Input: `visualization/src`
      - Output: `graphs/dependacharta-visualization.cg.json`
-  7. List generated graphs
-  8. Upload graph artifacts (if enabled)
+  8. List generated graphs
+  9. Upload graph artifacts (if enabled)
 
 **Artifacts Generated:**
 - `dependacharta-self-check-{run_id}` - Generated dependency graphs (7 day retention)
@@ -159,7 +160,7 @@ The pipeline consists of five workflows that handle building, testing, quality c
 - **Timeout:** 30 minutes
 - **Steps:**
   1. Checkout code
-  2. Setup Node.js 22.12.0
+  2. Setup mise (installs Node.js from `.mise.toml`)
   3. Install dependencies
   4. Build application
   5. Create version file with tag name
@@ -179,14 +180,15 @@ The pipeline consists of five workflows that handle building, testing, quality c
 - **Timeout:** 30 minutes
 - **Steps:**
   1. Checkout code
-  2. Setup Java 17
-  3. Build with tag version
-  4. Prepare release package:
+  2. Setup mise (installs Java from `.mise.toml`)
+  3. Setup Gradle cache
+  4. Build with tag version
+  5. Prepare release package:
      - `dependacharta.jar`
      - `dependacharta.sh` (Mac/Linux)
      - `dependacharta.bat` (Windows)
-  5. Create zip: `dependacharta-analysis-{tag}.zip`
-  6. Upload artifact
+  6. Create zip: `dependacharta-analysis-{tag}.zip`
+  7. Upload artifact
 
 **Artifacts Generated:**
 - `analysis-package` - Analysis CLI package (1 day retention)
@@ -236,7 +238,7 @@ The pipeline consists of five workflows that handle building, testing, quality c
      - Manual: use input tag or latest tag
      - Tag push: use pushed tag
   3. Checkout specific tag (if manual)
-  4. Setup Node.js 22.12.0
+  4. Setup mise (installs Node.js from `.mise.toml`)
   5. Install dependencies and build visualization
   6. Create version file
   7. Prepare public directory structure:
@@ -301,9 +303,9 @@ All workflows follow the **principle of least privilege**:
 
 ### Caching Strategy
 
-- **Gradle:** Java dependencies cached by setup-java action
-- **npm:** Node dependencies cached by setup-node action
-- Cache key based on lock files for optimal invalidation
+- **mise tools:** Java and Node.js installations cached by `mise-action` (enabled by default)
+- **Gradle:** Dependencies cached by `gradle/actions/setup-gradle`
+- **npm:** Package cache (`~/.npm`) cached via `actions/cache` keyed on `package-lock.json`
 
 ### Testing Strategy
 
