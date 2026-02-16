@@ -23,18 +23,18 @@ mise run test-visualization
 mise run build-analysis-jar
 
 # Run analysis on a directory (builds first if needed)
-mise run run <directory-to-analyze>
-
-# Analyze a directory and prepare for visualization (builds first if needed)
 mise run analyze <directory-to-analyze>
+
+# Analyze a directory, prepare for visualization, and start server (builds first if needed)
+mise run analyze-and-serve <directory-to-analyze>
 
 # Start visualization development server (installs deps automatically)
 mise run dev-visualization
 ```
 
-**Note**: The difference between `run` and `analyze`:
-- `mise run run <dir>` - Runs analysis and outputs to `output/analysis.cg.json`
-- `mise run analyze <dir>` - Runs analysis and outputs to `visualization/public/analysis/analyzed-project.cg.json` and then opens the frontend instance and shows it directly to the user. 
+**Note**: The difference between `analyze` and `analyze-and-serve`:
+- `mise run analyze <dir>` - Runs analysis and outputs to `output/analysis.cg.json`
+- `mise run analyze-and-serve <dir>` - Runs analysis, outputs to `visualization/public/analysis/analyzed-project.cg.json`, and starts the frontend so you can view results directly.
 
 ### Analysis Component (Kotlin)
 

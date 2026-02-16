@@ -120,9 +120,10 @@ mise install
 mise tasks
 
 # Key workflows
-mise run analyze <directory>      # Analyze code and open visualization
-mise run test-analysis           # Run analysis unit tests
-mise run dev-visualization       # Start development server
+mise run analyze <directory>           # Analyze a codebase
+mise run analyze-and-serve <directory> # Analyze and open visualization
+mise run test-analysis                # Run analysis unit tests
+mise run dev-visualization            # Start development server
 ```
 
 **Tip**: Run `mise tasks` to discover all available commands.

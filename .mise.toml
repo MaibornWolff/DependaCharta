@@ -59,22 +59,22 @@ description = "Auto-format Kotlin code with ktlint"
 dir = "analysis"
 run = "./gradlew ktlintFormat"
 
-[tasks.help]
+[tasks.help-analysis]
 description = "Show analysis CLI help"
 dir = "analysis"
 depends = ["build-analysis-jar"]
 run = "java -jar build/libs/dependacharta.jar --help"
 
-[tasks.run]
+[tasks.analyze]
 description = "Run analysis on a directory"
-usage = "run <directory>"
+usage = "analyze <directory>"
 dir = "analysis"
 depends = ["build-analysis-jar"]
 run = """
 #!/usr/bin/env bash
 set -euo pipefail
 if [ $# -eq 0 ]; then
-  echo "Usage: mise run run <directory>"
+  echo "Usage: mise run analyze <directory>"
   exit 1
 fi
 DIR="$(cd "$1" && pwd)"
@@ -87,16 +87,16 @@ dir = "visualization"
 depends = ["install-visualization-deps"]
 run = "npm run start"
 
-[tasks.analyze]
-description = "Analyze a directory and open visualization"
-usage = "analyze <directory>"
+[tasks.analyze-and-serve]
+description = "Analyze a directory and start visualization server"
+usage = "analyze-and-serve <directory>"
 dir = "analysis"
 depends = ["build-analysis-jar"]
 run = """
 #!/usr/bin/env bash
 set -euo pipefail
 if [ $# -eq 0 ]; then
-  echo "Usage: mise run analyze <directory>"
+  echo "Usage: mise run analyze-and-serve <directory>"
   exit 1
 fi
 DIR="$(cd "$1" && pwd)"
