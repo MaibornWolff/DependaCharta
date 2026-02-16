@@ -32,6 +32,7 @@ run = "./gradlew fatJar"
 [tasks.build-visualization]
 description = "Build visualization application"
 dir = "visualization"
+depends = ["install-visualization-deps"]
 run = "npm run build"
 
 # =============================================================================
@@ -46,7 +47,7 @@ run = "./gradlew test"
 [tasks.test-visualization]
 description = "Run visualization (Angular) unit tests (headless)"
 dir = "visualization"
-depends = ["install-visualization-deps", "build-visualization"]
+depends = ["build-visualization"]
 run = "npm run test -- --no-watch --browsers=ChromeHeadless"
 
 [tasks.test-e2e]
