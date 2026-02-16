@@ -274,7 +274,7 @@ Example: `feat(visualization): add dark mode toggle (#123)`
 
 **CRITICAL RULES**:
 - **NEVER commit code without asking first**
-- **ALWAYS run `just test`** before any commit to ensure all tests pass
+- **ALWAYS run `mise run test-analysis` and `mise run test-visualization`** before any commit to ensure all tests pass
 - Only commit after receiving explicit user permission
 - Follow the commit message format defined above
 
