@@ -72,6 +72,7 @@ export class CytoscapeService {
         this.applyFilters(cy, state)
         break
       case action instanceof Action.NavigateToEdge:
+      case action instanceof Action.NavigateToNode:
         this.rerenderGraphFromState(cy, state)
         this.applyFilters(cy, state)
         break

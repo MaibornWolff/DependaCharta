@@ -174,10 +174,21 @@ export class State extends DataClass<State> {
           hoveredNodeId: action.sourceNodeId
         })
       }
+      case action instanceof Action.NavigateToNode: {
+        const ancestorsToExpand = this.getAncestorIdsToExpand(action.nodeId)
+        return this.copy({
+          expandedNodeIds: [...this.expandedNodeIds, ...ancestorsToExpand],
+          hoveredNodeId: action.nodeId
+        })
+      }
       default:
         action satisfies never
         return this
     }
+  }
+
+  getRootNodes(): GraphNode[] {
+    return this.allNodes.filter(node => !node.parent)
   }
 
   getHiddenNodes(): GraphNode[] {

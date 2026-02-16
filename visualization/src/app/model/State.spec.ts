@@ -599,6 +599,105 @@ describe('State', () => {
       });
     });
 
+    describe('NAVIGATE_TO_NODE action', () => {
+      it('should expand ancestors of the node', () => {
+        // Given
+        const grandchild = GraphNodeTest.GraphNode.build({
+          id: 'root.pkg.grandchild',
+          children: []
+        });
+        const child = GraphNodeTest.GraphNode.build({
+          id: 'root.pkg',
+          children: [grandchild]
+        });
+        const root = GraphNodeTest.GraphNode.build({
+          id: 'root',
+          children: [child]
+        });
+        grandchild.parent = child;
+        child.parent = root;
+
+        const stateWithNodes = State.build({
+          allNodes: [root, child, grandchild],
+          expandedNodeIds: []
+        });
+
+        // When
+        const action = new Action.NavigateToNode('root.pkg.grandchild');
+        const newState = stateWithNodes.reduce(action);
+
+        // Then
+        expect(newState.expandedNodeIds).toContain('root.pkg');
+        expect(newState.expandedNodeIds).toContain('root');
+      });
+
+      it('should set hoveredNodeId to the node', () => {
+        // Given
+        const node = GraphNodeTest.GraphNode.build({
+          id: 'myNode',
+          children: []
+        });
+        const stateWithNodes = State.build({
+          allNodes: [node],
+          hoveredNodeId: ''
+        });
+
+        // When
+        const action = new Action.NavigateToNode('myNode');
+        const newState = stateWithNodes.reduce(action);
+
+        // Then
+        expect(newState.hoveredNodeId).toBe('myNode');
+      });
+
+      it('should not duplicate already expanded ancestors', () => {
+        // Given
+        const grandchild = GraphNodeTest.GraphNode.build({
+          id: 'root.child.grandchild',
+          children: []
+        });
+        const child = GraphNodeTest.GraphNode.build({
+          id: 'root.child',
+          children: [grandchild]
+        });
+        const root = GraphNodeTest.GraphNode.build({
+          id: 'root',
+          children: [child]
+        });
+        grandchild.parent = child;
+        child.parent = root;
+
+        const stateWithNodes = State.build({
+          allNodes: [root, child, grandchild],
+          expandedNodeIds: ['root']
+        });
+
+        // When
+        const action = new Action.NavigateToNode('root.child.grandchild');
+        const newState = stateWithNodes.reduce(action);
+
+        // Then
+        expect(newState.expandedNodeIds.filter(id => id === 'root').length).toBe(1);
+        expect(newState.expandedNodeIds).toContain('root.child');
+      });
+
+      it('should handle navigation to non-existent node gracefully', () => {
+        // Given
+        const stateWithNodes = State.build({
+          allNodes: [],
+          expandedNodeIds: []
+        });
+
+        // When
+        const action = new Action.NavigateToNode('nonexistent');
+        const newState = stateWithNodes.reduce(action);
+
+        // Then
+        expect(newState.hoveredNodeId).toBe('nonexistent');
+        expect(newState.expandedNodeIds).toEqual([]);
+      });
+    });
+
     describe('NAVIGATE_TO_EDGE action', () => {
       it('should expand ancestors of both source and target nodes', () => {
         // Given
@@ -716,6 +815,49 @@ describe('State', () => {
         expect(newState.hoveredNodeId).toBe('nonexistent');
         expect(newState.expandedNodeIds).toEqual([]);
       });
+    });
+  });
+
+  describe('getRootNodes', () => {
+    it('should return empty array when there are no nodes', () => {
+      // Given
+      const state = State.build({ allNodes: [] });
+
+      // When
+      const result = state.getRootNodes();
+
+      // Then
+      expect(result).toEqual([]);
+    });
+
+    it('should return only nodes without parent', () => {
+      // Given
+      const state = State.build({
+        allNodes: [mockParentNode, mockChildNode1, mockChildNode2, mockGrandChildNode]
+      });
+
+      // When
+      const result = state.getRootNodes();
+
+      // Then
+      expect(result.length).toBe(1);
+      expect(result[0].id).toBe(parent1Id);
+    });
+
+    it('should return multiple root nodes', () => {
+      // Given
+      const root2 = GraphNodeTest.GraphNode.build({ id: 'root-2', children: [] });
+      const state = State.build({
+        allNodes: [mockParentNode, mockChildNode1, mockChildNode2, mockGrandChildNode, root2]
+      });
+
+      // When
+      const result = state.getRootNodes();
+
+      // Then
+      expect(result.length).toBe(2);
+      expect(result.map(n => n.id)).toContain(parent1Id);
+      expect(result.map(n => n.id)).toContain('root-2');
     });
   });
 

@@ -1,0 +1,55 @@
+<section class="explorer-overlay" [ngClass]="{'expanded': isExpanded}" aria-label="Explorer">
+  <!-- Resize handles (only visible when expanded) -->
+  <div class="resize-handle resize-bottom" *ngIf="isExpanded" (mousedown)="onResizeStart($event, 'bottom')"></div>
+  <div class="resize-handle resize-right" *ngIf="isExpanded" (mousedown)="onResizeStart($event, 'right')"></div>
+  <div class="resize-handle resize-bottom-right" *ngIf="isExpanded" (mousedown)="onResizeStart($event, 'bottom-right')"></div>
+  <div class="header" (click)="toggleExpanded()" [attr.aria-expanded]="isExpanded" tabindex="0" role="button" (keydown.enter)="toggleExpanded()" (keydown.space)="toggleExpanded()">
+    <span class="chevron" [ngClass]="{'rotated': isExpanded}">&#9660;</span>
+    <span class="title">Explorer</span>
+  </div>
+
+  <div class="content" *ngIf="isExpanded">
+    <div class="tree-list" *ngIf="filteredRootNodes.length > 0">
+      <ng-container *ngFor="let node of filteredRootNodes; trackBy: trackByNode">
+        <ng-container *ngTemplateOutlet="treeNodeTemplate; context: { node: node, depth: 0 }"></ng-container>
+      </ng-container>
+    </div>
+
+    <div class="empty-state" *ngIf="filteredRootNodes.length === 0">
+      <span>No nodes to display</span>
+    </div>
+  </div>
+</section>
+
+<ng-template #treeNodeTemplate let-node="node" let-depth="depth">
+  <div
+    class="tree-item"
+    [ngClass]="{'container-node': isContainer(node)}"
+    [style.padding-left.px]="12 + depth * 16"
+    (click)="onRowClick(node)"
+    (mouseenter)="onRowMouseEnter(node)"
+    (mouseleave)="onRowMouseLeave()"
+    tabindex="0"
+    (keydown.enter)="onRowClick(node)"
+    (keydown.space)="onRowClick(node)"
+    role="button"
+    [attr.aria-label]="'Node ' + getNodeLabel(node)"
+  >
+    <span class="tree-toggle" *ngIf="isContainer(node)" (click)="toggleTreeNode($event, node)"
+      role="button" tabindex="0" (keydown.enter)="toggleTreeNode($event, node)" (keydown.space)="toggleTreeNode($event, node)"
+      [attr.aria-label]="isTreeNodeExpanded(node) ? 'Collapse' : 'Expand'">
+      {{ isTreeNodeExpanded(node) ? '▼' : '▶' }}
+    </span>
+    <span class="tree-toggle-placeholder" *ngIf="!isContainer(node)"></span>
+    <span class="node-label" [title]="node.id">{{ getNodeLabel(node) }}</span>
+    <button class="hide-button" (click)="onHideClick($event, node)" [attr.aria-label]="'Hide ' + getNodeLabel(node)" title="Hide node">
+      <span class="hide-icon">visibility</span>
+    </button>
+  </div>
+
+  <ng-container *ngIf="isContainer(node) && isTreeNodeExpanded(node)">
+    <ng-container *ngFor="let child of getVisibleChildren(node); trackBy: trackByNode">
+      <ng-container *ngTemplateOutlet="treeNodeTemplate; context: { node: child, depth: depth + 1 }"></ng-container>
+    </ng-container>
+  </ng-container>
+</ng-template>

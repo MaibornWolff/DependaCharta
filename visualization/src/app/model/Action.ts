@@ -99,6 +99,12 @@ export namespace Action {
       readonly targetNodeId: string
     ) {}
   }
+
+  export class NavigateToNode {
+    constructor(
+      readonly nodeId: string
+    ) {}
+  }
 }
 
 export type Action =
@@ -124,3 +130,4 @@ export type Action =
   | Action.UnpinNode
   | Action.RestoreAllHiddenNodes
   | Action.NavigateToEdge
+  | Action.NavigateToNode

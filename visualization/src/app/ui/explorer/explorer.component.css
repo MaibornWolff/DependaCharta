@@ -1,0 +1,219 @@
+:host {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+}
+
+:host > * {
+  pointer-events: auto;
+}
+
+.explorer-overlay {
+  position: absolute;
+  top: 45px;
+  left: 20px;
+  z-index: 25;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-width: 220px;
+  max-height: 40px;
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out;
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+}
+
+.explorer-overlay.expanded {
+  /* width and height set by TypeScript (defaultWidth, defaultHeight) */
+  max-height: none;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Resize handles */
+.resize-handle {
+  position: absolute;
+  background: transparent;
+  z-index: 10;
+}
+
+.resize-bottom {
+  bottom: 0;
+  left: 8px;
+  right: 8px;
+  height: 6px;
+  cursor: ns-resize;
+}
+
+.resize-right {
+  top: 8px;
+  right: 0;
+  bottom: 8px;
+  width: 6px;
+  cursor: ew-resize;
+}
+
+.resize-bottom-right {
+  bottom: 0;
+  right: 0;
+  width: 12px;
+  height: 12px;
+  cursor: nwse-resize;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+  user-select: none;
+  border-bottom: 1px solid transparent;
+}
+
+.explorer-overlay.expanded .header {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.chevron {
+  font-size: 10px;
+  transition: transform 0.3s ease;
+  color: #666;
+}
+
+.chevron.rotated {
+  transform: rotate(180deg);
+}
+
+.title {
+  font-weight: 600;
+  color: #333;
+}
+
+.content {
+  padding: 4px 0 8px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.tree-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.tree-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+}
+
+.tree-item:hover {
+  background-color: rgba(49, 109, 117, 0.1);
+}
+
+.tree-item:focus {
+  outline: none;
+}
+
+.tree-toggle {
+  font-size: 10px;
+  color: #666;
+  flex-shrink: 0;
+  width: 12px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.tree-toggle:hover {
+  color: #333;
+}
+
+.tree-toggle-placeholder {
+  width: 12px;
+  flex-shrink: 0;
+}
+
+.node-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #333;
+}
+
+.tree-item.container-node > .node-label {
+  font-weight: 600;
+}
+
+.hide-button {
+  flex-shrink: 0;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 1px 4px;
+  line-height: 1;
+  opacity: 0;
+  transition: opacity 0.2s ease, background-color 0.2s ease;
+}
+
+.tree-item:hover .hide-button {
+  opacity: 1;
+}
+
+.hide-button:hover {
+  background: rgba(49, 109, 117, 0.15);
+  border-color: #316d75;
+}
+
+.hide-icon {
+  font-family: 'Material Icons';
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  color: #666;
+}
+
+.hide-button:hover .hide-icon {
+  color: #316d75;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 20px;
+  color: #888;
+  font-style: italic;
+}
+
+/* Scrollbar styling */
+.tree-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.tree-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.tree-list::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+
+.tree-list::-webkit-scrollbar-thumb:hover {
+  background: #aaa;
+}
