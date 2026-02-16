@@ -267,7 +267,7 @@ export class AppComponent {
   }
 
   onExplorerUnhover(): void {
-    this.apply(new Action.HideAllEdgesOfNode(''))
+    this.apply(new Action.ClearNodeHover())
   }
 
   onGroupClicked(group: FeedbackListEntry): void {

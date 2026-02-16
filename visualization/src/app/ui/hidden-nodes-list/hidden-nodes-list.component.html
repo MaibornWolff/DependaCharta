@@ -1,8 +1,8 @@
 <section class="hidden-nodes-overlay" [ngClass]="{'expanded': isExpanded}" aria-label="Hidden Nodes List">
   <!-- Resize handles (only visible when expanded) -->
-  <div class="resize-handle resize-top" *ngIf="isExpanded" (mousedown)="onResizeStart($event, 'top')"></div>
-  <div class="resize-handle resize-left" *ngIf="isExpanded" (mousedown)="onResizeStart($event, 'left')"></div>
-  <div class="resize-handle resize-top-left" *ngIf="isExpanded" (mousedown)="onResizeStart($event, 'top-left')"></div>
+  <div class="resize-handle resize-top" *ngIf="isExpanded" (mousedown)="onResizeStart($event, 'vertical')"></div>
+  <div class="resize-handle resize-left" *ngIf="isExpanded" (mousedown)="onResizeStart($event, 'horizontal')"></div>
+  <div class="resize-handle resize-top-left" *ngIf="isExpanded" (mousedown)="onResizeStart($event, 'both')"></div>
   <div class="header" (click)="toggleExpanded()" [attr.aria-expanded]="isExpanded" tabindex="0" role="button" (keydown.enter)="onHeaderKeydown($event)" (keydown.space)="onHeaderKeydown($event)">
     <span class="chevron" [ngClass]="{'rotated': isExpanded}">&#9650;</span>
     <span class="title">Hidden Nodes</span>

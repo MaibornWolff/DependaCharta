@@ -107,13 +107,13 @@ describe('NonCompoundNodeComponent', () => {
     it('should emit hide edges action when node is not pinned', () => {
       component.onMouseLeave();
 
-      expect(mockStateService.graphActionHappened.emit).toHaveBeenCalledWith(new Action.HideAllEdgesOfNode(component.node.id));
+      expect(mockStateService.graphActionHappened.emit).toHaveBeenCalledWith(new Action.ClearNodeHover());
     });
 
-    it('should emit hide edges action when node is pinned', () => {
+    it('should emit clear hover action when node is pinned', () => {
       component.onMouseLeave();
 
-      expect(mockStateService.graphActionHappened.emit).toHaveBeenCalledWith(new Action.HideAllEdgesOfNode(component.node.id));
+      expect(mockStateService.graphActionHappened.emit).toHaveBeenCalledWith(new Action.ClearNodeHover());
     });
   });
 

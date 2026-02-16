@@ -246,15 +246,18 @@ describe('State', () => {
       });
     });
 
-    describe('HIDE_ALL_EDGES_OF_NODE action', () => {
+    describe('CLEAR_NODE_HOVER action', () => {
       it('should reset the hoveredNodeId', () => {
+        // Given
         const stateWithHover = initialState.copy({
           hoveredNodeId: 'some-node'
         });
-        const action = new Action.HideAllEdgesOfNode('some-node');
 
+        // When
+        const action = new Action.ClearNodeHover();
         const newState = stateWithHover.reduce(action);
 
+        // Then
         expect(newState.hoveredNodeId).toBe('');
       });
     });

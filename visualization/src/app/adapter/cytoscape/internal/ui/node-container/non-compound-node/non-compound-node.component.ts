@@ -54,7 +54,7 @@ export class NonCompoundNodeComponent {
   }
 
   onMouseLeave() {
-    this.stateService.graphActionHappened.emit(new Action.HideAllEdgesOfNode(this.node.id))
+    this.stateService.graphActionHappened.emit(new Action.ClearNodeHover())
   }
 
   expandNode() {

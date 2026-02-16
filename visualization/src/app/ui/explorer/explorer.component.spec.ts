@@ -308,7 +308,7 @@ describe('ExplorerComponent', () => {
       } as unknown as MouseEvent;
 
       // When
-      component.onResizeStart(mockEvent, 'right');
+      component.onResizeStart(mockEvent, 'horizontal');
 
       // Then
       expect(mockEvent.preventDefault).toHaveBeenCalled();
@@ -326,7 +326,7 @@ describe('ExplorerComponent', () => {
       spyOn(document, 'addEventListener');
 
       // When
-      component.onResizeStart(mockEvent, 'bottom');
+      component.onResizeStart(mockEvent, 'vertical');
 
       // Then
       expect(document.addEventListener).toHaveBeenCalledWith('mousemove', jasmine.any(Function));

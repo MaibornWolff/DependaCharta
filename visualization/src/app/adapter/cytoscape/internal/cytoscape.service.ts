@@ -68,7 +68,7 @@ export class CytoscapeService {
         break;
       }
       case action instanceof Action.ShowAllEdgesOfNode:
-      case action instanceof Action.HideAllEdgesOfNode:
+      case action instanceof Action.ClearNodeHover:
         this.applyFilters(cy, state)
         break
       case action instanceof Action.NavigateToEdge:

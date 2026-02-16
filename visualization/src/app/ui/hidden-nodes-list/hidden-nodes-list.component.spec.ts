@@ -444,7 +444,7 @@ describe('HiddenNodesListComponent', () => {
       } as unknown as MouseEvent;
 
       // When
-      component.onResizeStart(mockEvent, 'left');
+      component.onResizeStart(mockEvent, 'horizontal');
 
       // Then
       expect(mockEvent.preventDefault).toHaveBeenCalled();
@@ -462,7 +462,7 @@ describe('HiddenNodesListComponent', () => {
       spyOn(document, 'addEventListener');
 
       // When
-      component.onResizeStart(mockEvent, 'top');
+      component.onResizeStart(mockEvent, 'vertical');
 
       // Then
       expect(document.addEventListener).toHaveBeenCalledWith('mousemove', jasmine.any(Function));

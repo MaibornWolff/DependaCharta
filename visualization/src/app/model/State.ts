@@ -69,7 +69,7 @@ export class State extends DataClass<State> {
         return this.copy({
           hoveredNodeId: action.nodeId
         })
-      case action instanceof Action.HideAllEdgesOfNode:
+      case action instanceof Action.ClearNodeHover:
         return this.copy({
           hoveredNodeId: ''
         })

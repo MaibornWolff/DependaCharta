@@ -34,11 +34,7 @@ export namespace Action {
     ) {}
   }
 
-  export class HideAllEdgesOfNode {
-    constructor(
-      readonly nodeId: string
-    ) {}
-  }
+  export class ClearNodeHover {}
 
   export class ToggleEdgeLabels {}
 
@@ -113,7 +109,7 @@ export type Action =
   | Action.CollapseNode
   | Action.ChangeFilter
   | Action.ShowAllEdgesOfNode
-  | Action.HideAllEdgesOfNode
+  | Action.ClearNodeHover
   | Action.ToggleEdgeLabels
   | Action.HideNode
   | Action.RestoreNode

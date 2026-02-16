@@ -72,13 +72,13 @@ export function countParents(node: GraphNode): number {
 }
 
 export class GraphNodeUtils {
-  static isNodeOrAncestorHidden(hiddenChildrenIds: string[], child: GraphNode): boolean {
-    if (hiddenChildrenIds.includes(child.id)) {
+  static isNodeOrAncestorHidden(hiddenIds: string[], child: GraphNode): boolean {
+    if (hiddenIds.includes(child.id)) {
       return true;
     }
     let parent = child.parent;
     while (parent) {
-      if (hiddenChildrenIds.includes(parent.id)) {
+      if (hiddenIds.includes(parent.id)) {
         return true;
       }
       parent = parent.parent;
