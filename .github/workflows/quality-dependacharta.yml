@@ -23,20 +23,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Setup Java
-        uses: actions/setup-java@v5
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-          cache: 'gradle'
+      - name: Setup mise
+        uses: jdx/mise-action@v2
 
-      - name: Make gradlew executable
-        working-directory: analysis
-        run: chmod +x gradlew
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: wrapper
 
       - name: Build DependaCharta JAR
-        working-directory: analysis
-        run: ./gradlew build -x test
+        run: mise run build-analysis-jar
 
       - name: Create output directory
         run: mkdir -p graphs

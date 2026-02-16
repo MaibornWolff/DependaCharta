@@ -104,38 +104,36 @@ The Visualization component is an Angular/TypeScript web application using [Cyto
 
 ## Getting Started
 
-### Prerequisites
+### Quick Start with Mise (Recommended)
 
-- **Analysis**: Java 11 or higher
-- **Visualization**: Node.js 18 or higher
-- **Optional**: [just](https://github.com/casey/just) for convenient commands
-
-### Quick Start with Just
-
-DependaCharta includes a `justfile` for streamlined workflows:
+[Mise](https://mise.jdx.dev/) manages both runtime versions (Java, Node.js) and project tasks. One tool, zero manual setup.
 
 ```bash
-# Install just if you haven't already
-brew install just  # macOS
-# or: cargo install just
-# or: npm install -g just-install
+# Install mise (https://mise.jdx.dev/getting-started.html)
+curl https://mise.run | sh  # or: brew install mise
 
-# Run unit tests
-just test
+# Trust and install project runtimes (first time only)
+mise trust
+mise install
 
-# Build the analysis tool
-just build
+# See all available tasks
+mise tasks
 
-# Analyze a directory and view results (builds first if needed)
-just analyze <directory-to-analyze>
-
-# Start frontend development server only
-just frontend
+# Key workflows
+mise run analyze <directory>           # Analyze a codebase
+mise run analyze-and-serve <directory> # Analyze and open visualization
+mise run test-analysis                # Run analysis unit tests
+mise run dev-visualization            # Start development server
 ```
 
-**Note**: The `analyze` command runs the analysis and automatically opens the visualization with your results!
+**Tip**: Run `mise tasks` to discover all available commands.
 
-### Manual Setup
+### Manual Setup (Without Mise)
+
+If you prefer not to use mise, install the prerequisites manually:
+
+- **Java**: 17 or higher (`java -version`)
+- **Node.js**: 22 or higher (`node -v`)
 
 #### Analysis Component (Kotlin)
 
@@ -208,13 +206,13 @@ docker run --rm --user root \
 
 ```bash
 # Build Docker image
-just docker-build
+mise run docker-build
 
 # Run analysis with Docker
-just docker-run <directory-to-analyze>
+mise run docker-run <directory-to-analyze>
 
 # Analyze and view results
-just docker-analyze <directory-to-analyze>
+mise run docker-analyze <directory-to-analyze>
 ```
 
 **Note**: When using Docker on macOS/Windows, run the container with `--user root` to avoid permission issues with mounted volumes.
@@ -231,7 +229,7 @@ Want to **contribute**? Check out our [contributing guide](dev_docs/CONTRIBUTING
 - Test-driven development with tests before implementation
 - Clean Code principles (pragmatic, not dogmatic)
 - [Semantic Versioning](https://semver.org) for releases
-- Automated CI/CD pipeline (see [Pipeline.md](Pipeline.md))
+- Automated CI/CD pipeline (see [PIPELINE.md](PIPELINE.md))
 
 ## Links
 
@@ -243,7 +241,7 @@ Want to **contribute**? Check out our [contributing guide](dev_docs/CONTRIBUTING
 - [Cycle Detection Algorithm](analysis/src/main/kotlin/de/maibornwolff/dependacharta/pipeline/processing/cycledetection/README.md)
 - [Levelization Algorithm](analysis/src/main/kotlin/de/maibornwolff/dependacharta/pipeline/processing/levelization/README.md)
 - [Architecture Decision Records](doc/architecture/decisions)
-- [Pipeline Documentation](Pipeline.md)
+- [Pipeline Documentation](PIPELINE.md)
 
 
 ## License

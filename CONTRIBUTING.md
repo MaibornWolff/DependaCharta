@@ -51,6 +51,8 @@ Before you start working on a new feature, please have a discussion with the mai
 
 * **Clone the repository:** Clone the forked repository to your local machine using Git. This allows you to work on the code locally.
 
+* **Set up your environment:** Install [mise](https://mise.jdx.dev/) and run `mise install` to get the correct Java and Node.js versions. Alternatively, install Java 17+ and Node.js 22+ manually.
+
 * **Create a feature branch:** Create a new branch for your code changes, starting from the `dev` branch. Give it a descriptive name that reflects the feature or bug fix you're working on.
 
 * **Make changes:** Use your preferred code editor to make the necessary code changes in the branch. Follow the project's coding conventions and guidelines.
@@ -69,11 +71,18 @@ There is no strict code style guide for this project. However, have a look at th
 
 ### Unit tests
 
-All new features and bug fixes in the backend shall be accompanied by unit tests. This ensures that the changes are well-tested and helps prevent regressions. The unittests are run with the commands
+All new features and bug fixes in the backend shall be accompanied by unit tests. This ensures that the changes are well-tested and helps prevent regressions.
 
+**With mise (recommended):**
+```bash
+mise run test-analysis       # Analysis tests
+mise run test-visualization  # Visualization tests
+```
+
+**Manual:**
 ```bash
 # in `analysis/`
-gradle test
+./gradlew test
 
 # in `visualization/`
 npm run test

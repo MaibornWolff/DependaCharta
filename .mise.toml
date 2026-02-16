@@ -1,0 +1,218 @@
+# Mise configuration for DependaCharta
+# https://mise.jdx.dev/
+
+[tools]
+java = "temurin-17"
+node = "22.21.1"
+
+# =============================================================================
+# Granular tasks — atomic reusable steps for analysis and visualization
+# =============================================================================
+
+[tasks.lint-analysis]
+description = "Check Kotlin code style with ktlint"
+dir = "analysis"
+run = "./gradlew ktlintCheck"
+
+[tasks.lint-visualization]
+description = "Run Angular linter"
+dir = "visualization"
+run = "npx ng lint"
+
+[tasks.install-visualization-deps]
+description = "Install visualization npm dependencies"
+dir = "visualization"
+run = "npm ci"
+
+[tasks.build-analysis-jar]
+description = "Build the analysis tool (fat JAR)"
+dir = "analysis"
+run = "./gradlew fatJar"
+
+[tasks.build-visualization]
+description = "Build visualization application"
+dir = "visualization"
+run = "npm run build"
+
+# =============================================================================
+# Dev tasks — high-level workflows for daily development
+# =============================================================================
+
+[tasks.test-analysis]
+description = "Run analysis (Kotlin) unit tests"
+dir = "analysis"
+run = "./gradlew test"
+
+[tasks.test-visualization]
+description = "Run visualization (Angular) unit tests (headless)"
+dir = "visualization"
+depends = ["install-visualization-deps", "build-visualization"]
+run = "npm run test -- --no-watch --browsers=ChromeHeadless"
+
+[tasks.test-e2e]
+description = "Run E2E tests (requires visualization server running: mise run dev-visualization)"
+dir = "visualization"
+run = "npm run cypress:run"
+
+[tasks.format-analysis]
+description = "Auto-format Kotlin code with ktlint"
+dir = "analysis"
+run = "./gradlew ktlintFormat"
+
+[tasks.help-analysis]
+description = "Show analysis CLI help"
+dir = "analysis"
+depends = ["build-analysis-jar"]
+run = "java -jar build/libs/dependacharta.jar --help"
+
+[tasks.analyze]
+description = "Run analysis on a directory"
+usage = "analyze <directory>"
+dir = "analysis"
+depends = ["build-analysis-jar"]
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+if [ $# -eq 0 ]; then
+  echo "Usage: mise run analyze <directory>"
+  exit 1
+fi
+DIR="$(cd "$1" && pwd)"
+java -jar build/libs/dependacharta.jar -d "$DIR"
+"""
+
+[tasks.dev-visualization]
+description = "Start visualization development server"
+dir = "visualization"
+depends = ["install-visualization-deps"]
+run = "npm run start"
+
+[tasks.analyze-and-serve]
+description = "Analyze a directory and start visualization server"
+usage = "analyze-and-serve <directory>"
+dir = "analysis"
+depends = ["build-analysis-jar"]
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+if [ $# -eq 0 ]; then
+  echo "Usage: mise run analyze-and-serve <directory>"
+  exit 1
+fi
+DIR="$(cd "$1" && pwd)"
+java -jar build/libs/dependacharta.jar -d "$DIR" -o ../visualization/public/analysis -f analyzed-project
+echo "Analysis complete! Starting frontend..."
+echo "Frontend will automatically load your analysis."
+echo "You can also manually specify a file: http://localhost:4200?file=./path/to/file.cg.json"
+"""
+
+# =============================================================================
+# CI tasks (ci- prefix) — primarily for CI pipelines, runnable locally
+# =============================================================================
+
+[tasks.ci-build-analysis]
+description = "Full analysis build+test with version (CI)"
+dir = "analysis"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+if [ $# -eq 0 ]; then
+  echo "Usage: mise run ci-build-analysis <version>"
+  exit 1
+fi
+./gradlew build -Pversion="$1"
+"""
+
+[tasks.ci-compile-analysis]
+description = "Compile analysis without tests (for SonarCloud)"
+dir = "analysis"
+run = "./gradlew compileKotlin compileTestKotlin --no-daemon"
+
+[tasks.ci-test-visualization]
+description = "Run visualization tests in CI mode (headless, single run)"
+dir = "visualization"
+run = "npm run ci-test"
+
+[tasks.ci-create-version]
+description = "Write version.json into visualization build output"
+dir = "visualization"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+if [ $# -eq 0 ]; then
+  echo "Usage: mise run ci-create-version <version>"
+  exit 1
+fi
+npm run ci-createVersion -- "$1"
+"""
+
+[tasks.ci-package-mac]
+description = "Package visualization for Mac Silicon (CI)"
+dir = "visualization"
+run = "npm run package-mac-silicon"
+
+[tasks.ci-package-win]
+description = "Package visualization for Windows (CI)"
+dir = "visualization"
+run = "npm run package-win"
+
+[tasks.ci-e2e]
+description = "Run E2E tests in CI mode (headless Electron, no video)"
+dir = "visualization"
+run = "npx cypress run --browser electron --config video=false,screenshotOnRunFailure=false"
+
+[tasks.ci-prepare-release]
+description = "Prepare analysis release package (CI)"
+dir = "analysis"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+mkdir -p build/release
+cp build/libs/dependacharta.jar build/release/dependacharta.jar
+cp bin/dependacharta.sh build/release/dependacharta.sh
+cp bin/dependacharta.bat build/release/dependacharta.bat
+"""
+
+# =============================================================================
+# Docker tasks (docker- prefix) — container-based workflows
+# =============================================================================
+
+[tasks.docker-build]
+description = "Build Docker image for analysis"
+dir = "analysis"
+run = "docker build -t dependacharta-analysis ."
+
+[tasks.docker-build-multi]
+description = "Build multi-platform Docker image"
+dir = "analysis"
+run = "docker buildx build --platform linux/amd64,linux/arm64 -t dependacharta-analysis ."
+
+[tasks.docker-run]
+description = "Run analysis with Docker"
+usage = "docker-run <directory>"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+if [ $# -eq 0 ]; then
+  echo "Usage: mise run docker-run <directory>"
+  exit 1
+fi
+docker run --rm -v "$1:/workspace" dependacharta-analysis -d /workspace
+"""
+
+[tasks.docker-analyze]
+description = "Run Docker analysis and open visualization"
+usage = "docker-analyze <directory>"
+depends = ["docker-build"]
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+if [ $# -eq 0 ]; then
+  echo "Usage: mise run docker-analyze <directory>"
+  exit 1
+fi
+docker run --rm -v "$1:/workspace" -v "$(pwd)/visualization/public/analysis:/output" dependacharta-analysis -d /workspace -o /output -f analyzed-project
+echo "Docker analysis complete! Starting frontend..."
+echo "Frontend will automatically load your analysis."
+echo "You can also manually specify a file: http://localhost:4200?file=./path/to/file.cg.json"
+"""

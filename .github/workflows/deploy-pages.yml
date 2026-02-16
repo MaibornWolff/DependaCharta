@@ -62,26 +62,26 @@ jobs:
         if: github.event_name == 'workflow_dispatch'
         run: git checkout ${{ steps.version.outputs.tag }}
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
+      - name: Setup mise
+        uses: jdx/mise-action@v2
+
+      - name: Cache npm
+        uses: actions/cache@v4
         with:
-          node-version: '22.21.1'
-          cache: 'npm'
-          cache-dependency-path: visualization/package-lock.json
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('visualization/package-lock.json') }}
+          restore-keys: ${{ runner.os }}-npm-
 
       - name: Install dependencies
-        working-directory: visualization
-        run: npm ci
+        run: mise run install-visualization-deps
 
       - name: Build visualization
-        working-directory: visualization
-        run: npm run build
+        run: mise run build-visualization
         env:
           NODE_OPTIONS: --max-old-space-size=4096
 
       - name: Create version file
-        working-directory: visualization
-        run: npm run ci-createVersion -- ${{ steps.version.outputs.tag }}
+        run: mise run ci-create-version ${{ steps.version.outputs.tag }}
 
       - name: Prepare public directory
         run: |
