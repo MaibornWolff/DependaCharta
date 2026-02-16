@@ -2,6 +2,8 @@ import {Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, Output
 import {NgClass, NgForOf, NgIf, NgTemplateOutlet} from '@angular/common';
 import {GraphNode, GraphNodeUtils} from '../../model/GraphNode';
 import {ResizablePanel} from '../shared/resizable-panel';
+import {fuzzyMatch, fuzzyHighlight, HighlightSegment} from './fuzzy-match';
+import {collectAllNodes, deduplicateByParent, stripLeafSuffix} from './search-helpers';
 
 @Component({
   selector: 'explorer',
@@ -15,6 +17,7 @@ export class ExplorerComponent implements OnChanges, OnDestroy {
   @Input() hiddenNodeIds: string[] = [];
   @Output() navigateToNode = new EventEmitter<string>();
   @Output() hideNode = new EventEmitter<string>();
+  @Output() hideNodes = new EventEmitter<string[]>();
   @Output() hoverNode = new EventEmitter<string>();
   @Output() unhoverNode = new EventEmitter<void>();
 
@@ -23,6 +26,12 @@ export class ExplorerComponent implements OnChanges, OnDestroy {
 
   filteredRootNodes: GraphNode[] = [];
 
+  searchQuery = '';
+  isSearchActive = false;
+  searchResults: GraphNode[] = [];
+  searchHighlightSegments = new Map<string, HighlightSegment[]>();
+
+  private searchDebounceTimer: ReturnType<typeof setTimeout> | null = null;
   private readonly resizablePanel: ResizablePanel;
 
   constructor(private readonly elementRef: ElementRef) {
@@ -40,6 +49,9 @@ export class ExplorerComponent implements OnChanges, OnDestroy {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['rootNodes'] || changes['hiddenNodeIds']) {
       this.updateFilteredNodes();
+      if (this.isSearchActive) {
+        this.applySearch();
+      }
     }
   }
 
@@ -89,6 +101,61 @@ export class ExplorerComponent implements OnChanges, OnDestroy {
     this.hideNode.emit(node.id);
   }
 
+  onSearchInput(query: string): void {
+    this.searchQuery = query;
+    if (this.searchDebounceTimer) {
+      clearTimeout(this.searchDebounceTimer);
+    }
+    this.searchDebounceTimer = setTimeout(() => {
+      this.applySearch();
+    }, 150);
+  }
+
+  applySearch(): void {
+    if (!this.searchQuery.trim()) {
+      this.isSearchActive = false;
+      this.searchResults = [];
+      this.searchHighlightSegments.clear();
+      return;
+    }
+    this.isSearchActive = true;
+    this.searchHighlightSegments.clear();
+    const allNodes = collectAllNodes(this.rootNodes, this.hiddenNodeIds);
+    this.searchResults = allNodes.filter(node => {
+      const displayId = stripLeafSuffix(node.id);
+      if (fuzzyMatch(this.searchQuery, displayId)) {
+        this.searchHighlightSegments.set(node.id, fuzzyHighlight(this.searchQuery, displayId));
+        return true;
+      }
+      return false;
+    });
+  }
+
+  clearSearch(): void {
+    this.searchQuery = '';
+    this.isSearchActive = false;
+    this.searchResults = [];
+    this.searchHighlightSegments.clear();
+    if (this.searchDebounceTimer) {
+      clearTimeout(this.searchDebounceTimer);
+      this.searchDebounceTimer = null;
+    }
+  }
+
+  onHideAllShownClick(): void {
+    if (this.searchResults.length === 0) {
+      return;
+    }
+    const matchedIds = this.searchResults.map(n => n.id);
+    const deduplicated = deduplicateByParent(matchedIds);
+    this.hideNodes.emit(deduplicated);
+    this.clearSearch();
+  }
+
+  getHighlightSegments(nodeId: string): HighlightSegment[] {
+    return this.searchHighlightSegments.get(nodeId) || [{text: stripLeafSuffix(nodeId), isMatch: false}];
+  }
+
   getNodeLabel(node: GraphNode): string {
     return node.label || node.id.split('.').pop()?.replace(/:leaf$/, '') || node.id;
   }
@@ -109,6 +176,9 @@ export class ExplorerComponent implements OnChanges, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    if (this.searchDebounceTimer) {
+      clearTimeout(this.searchDebounceTimer);
+    }
     this.resizablePanel.destroy();
   }
 }

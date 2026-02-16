@@ -44,6 +44,12 @@ export namespace Action {
     ) {}
   }
 
+  export class HideNodes {
+    constructor(
+      readonly nodeIds: string[]
+    ) {}
+  }
+
   export class RestoreNode {
     constructor(
       readonly nodeIdToBeRestored: string,
@@ -112,6 +118,7 @@ export type Action =
   | Action.ClearNodeHover
   | Action.ToggleEdgeLabels
   | Action.HideNode
+  | Action.HideNodes
   | Action.RestoreNode
   | Action.RestoreNodes
   | Action.RestoreAllChildren

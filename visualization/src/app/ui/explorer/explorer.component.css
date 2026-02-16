@@ -102,6 +102,97 @@
   min-height: 0;
 }
 
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  flex-shrink: 0;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 0;
+  padding: 4px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.search-input:focus {
+  border-color: #316d75;
+}
+
+.search-input::placeholder {
+  color: #999;
+}
+
+.search-clear-button {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 4px;
+  line-height: 1;
+  color: #888;
+  font-size: 16px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.search-clear-button:hover {
+  background: rgba(0, 0, 0, 0.08);
+  color: #333;
+}
+
+.search-clear-icon {
+  font-weight: bold;
+}
+
+.hide-all-button {
+  flex-shrink: 0;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 2px 4px;
+  line-height: 1;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.hide-all-button:hover {
+  background: rgba(49, 109, 117, 0.15);
+  border-color: #316d75;
+}
+
+.hide-all-icon {
+  font-family: 'Material Icons';
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  color: #666;
+}
+
+.hide-all-button:hover .hide-all-icon {
+  color: #316d75;
+}
+
+.search-results {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.search-result-item {
+  padding-left: 12px;
+}
+
 .tree-list {
   flex: 1;
   min-height: 0;

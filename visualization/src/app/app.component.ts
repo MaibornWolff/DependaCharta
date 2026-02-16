@@ -262,6 +262,10 @@ export class AppComponent {
     this.apply(new Action.HideNode(nodeId))
   }
 
+  onExplorerHideMany(nodeIds: string[]): void {
+    this.apply(new Action.HideNodes(nodeIds))
+  }
+
   onExplorerHover(nodeId: string): void {
     this.apply(new Action.ShowAllEdgesOfNode(nodeId))
   }

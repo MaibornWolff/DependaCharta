@@ -90,6 +90,13 @@ export class State extends DataClass<State> {
           pinnedNodeIds: this.pinnedNodeIds.filter(id => id !== action.nodeId)
         })
       }
+      case action instanceof Action.HideNodes: {
+        let state: State = this;
+        for (const nodeId of action.nodeIds) {
+          state = state.reduce(new Action.HideNode(nodeId));
+        }
+        return state;
+      }
       case action instanceof Action.PinNode: {
         const descendants = [...getDescendants(this.findGraphNode(action.nodeId))]
         const unpinnedDescendants = descendants.filter(node => !this.pinnedNodeIds.includes(node.id))

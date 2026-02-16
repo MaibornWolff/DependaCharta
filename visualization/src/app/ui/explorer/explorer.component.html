@@ -9,14 +9,55 @@
   </div>
 
   <div class="content" *ngIf="isExpanded">
-    <div class="tree-list" *ngIf="filteredRootNodes.length > 0">
+    <div class="search-bar">
+      <input
+        class="search-input"
+        type="text"
+        placeholder="Search nodes…"
+        [value]="searchQuery"
+        (input)="onSearchInput($any($event.target).value)"
+        aria-label="Search nodes"
+      />
+      <button class="search-clear-button" *ngIf="searchQuery" (click)="clearSearch()" aria-label="Clear search" title="Clear search">
+        <span class="search-clear-icon">×</span>
+      </button>
+      <button class="hide-all-button" *ngIf="isSearchActive && searchResults.length > 0" (click)="onHideAllShownClick()" aria-label="Hide all shown matches" title="Hide all shown matches">
+        <span class="hide-all-icon">visibility_off</span>
+      </button>
+    </div>
+
+    <div class="tree-list" *ngIf="!isSearchActive && filteredRootNodes.length > 0">
       <ng-container *ngFor="let node of filteredRootNodes; trackBy: trackByNode">
         <ng-container *ngTemplateOutlet="treeNodeTemplate; context: { node: node, depth: 0 }"></ng-container>
       </ng-container>
     </div>
 
-    <div class="empty-state" *ngIf="filteredRootNodes.length === 0">
+    <div class="search-results" *ngIf="isSearchActive && searchResults.length > 0">
+      <div
+        class="tree-item search-result-item"
+        *ngFor="let node of searchResults; trackBy: trackByNode"
+        (click)="onRowClick(node)"
+        (mouseenter)="onRowMouseEnter(node)"
+        (mouseleave)="onRowMouseLeave()"
+        tabindex="0"
+        (keydown.enter)="onRowClick(node)"
+        (keydown.space)="onRowClick(node)"
+        role="button"
+        [attr.aria-label]="'Node ' + node.id"
+      >
+        <span class="node-label" [title]="node.id"><ng-container *ngFor="let seg of getHighlightSegments(node.id)"><strong *ngIf="seg.isMatch">{{ seg.text }}</strong><ng-container *ngIf="!seg.isMatch">{{ seg.text }}</ng-container></ng-container></span>
+        <button class="hide-button" (click)="onHideClick($event, node)" [attr.aria-label]="'Hide ' + node.id" title="Hide node">
+          <span class="hide-icon">visibility</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="!isSearchActive && filteredRootNodes.length === 0">
       <span>No nodes to display</span>
+    </div>
+
+    <div class="empty-state" *ngIf="isSearchActive && searchResults.length === 0">
+      <span>No matches found</span>
     </div>
   </div>
 </section>

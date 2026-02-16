@@ -20,7 +20,7 @@
     <span class="help-hint" (click)="showHelpPopup = true" (keydown.enter)="showHelpPopup = true" tabindex="0"><kbd>?</kbd> help</span>
   </div>
   @if(cytoscapeInitialized) {<cytoscape [stateChange]="stateChange" class="cytoscape-container" (graphActionHappened)="apply($event)" /> }
-  @if(state.isInteractive) {<explorer [rootNodes]="cachedRootNodes" [hiddenNodeIds]="state.hiddenNodeIds" (navigateToNode)="onExplorerNavigate($event)" (hideNode)="onExplorerHide($event)" (hoverNode)="onExplorerHover($event)" (unhoverNode)="onExplorerUnhover()"></explorer>}
+  @if(state.isInteractive) {<explorer [rootNodes]="cachedRootNodes" [hiddenNodeIds]="state.hiddenNodeIds" (navigateToNode)="onExplorerNavigate($event)" (hideNode)="onExplorerHide($event)" (hideNodes)="onExplorerHideMany($event)" (hoverNode)="onExplorerHover($event)" (unhoverNode)="onExplorerUnhover()"></explorer>}
   @if(state.isInteractive) {<feedback-edges-list [feedbackEdges]="cachedFeedbackEdges" (edgeClicked)="onEdgeClicked($event)" (groupClicked)="onGroupClicked($event)"></feedback-edges-list>}
   @if(state.isInteractive) {<hidden-nodes-list [hiddenNodes]="cachedHiddenNodes" (restoreNode)="onRestoreHiddenNode($event)" (restoreAllHidden)="onRestoreAllHidden()"></hidden-nodes-list>}
   @if (isLoading) {<div class="loading-spinner">
