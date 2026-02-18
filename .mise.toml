@@ -68,17 +68,13 @@ run = "java -jar build/libs/dependacharta.jar --help"
 
 [tasks.analyze]
 description = "Run analysis on a directory"
-usage = "analyze <directory>"
+usage = 'arg "<directory>"'
 dir = "analysis"
 depends = ["build-analysis-jar"]
 run = """
 #!/usr/bin/env bash
 set -euo pipefail
-if [ $# -eq 0 ]; then
-  echo "Usage: mise run analyze <directory>"
-  exit 1
-fi
-DIR="$(cd "$1" && pwd)"
+DIR="$(cd "$usage_directory" && pwd)"
 java -jar build/libs/dependacharta.jar -d "$DIR"
 """
 
@@ -90,17 +86,13 @@ run = "npm run start"
 
 [tasks.analyze-and-serve]
 description = "Analyze a directory and start visualization server"
-usage = "analyze-and-serve <directory>"
+usage = 'arg "<directory>"'
 dir = "analysis"
 depends = ["build-analysis-jar"]
 run = """
 #!/usr/bin/env bash
 set -euo pipefail
-if [ $# -eq 0 ]; then
-  echo "Usage: mise run analyze-and-serve <directory>"
-  exit 1
-fi
-DIR="$(cd "$1" && pwd)"
+DIR="$(cd "$usage_directory" && pwd)"
 java -jar build/libs/dependacharta.jar -d "$DIR" -o ../visualization/public/analysis -f analyzed-project
 echo "Analysis complete! Starting frontend..."
 echo "Frontend will automatically load your analysis."
@@ -190,29 +182,21 @@ run = "docker buildx build --platform linux/amd64,linux/arm64 -t dependacharta-a
 
 [tasks.docker-run]
 description = "Run analysis with Docker"
-usage = "docker-run <directory>"
+usage = 'arg "<directory>"'
 run = """
 #!/usr/bin/env bash
 set -euo pipefail
-if [ $# -eq 0 ]; then
-  echo "Usage: mise run docker-run <directory>"
-  exit 1
-fi
-docker run --rm -v "$1:/workspace" dependacharta-analysis -d /workspace
+docker run --rm -v "$usage_directory:/workspace" dependacharta-analysis -d /workspace
 """
 
 [tasks.docker-analyze]
 description = "Run Docker analysis and open visualization"
-usage = "docker-analyze <directory>"
+usage = 'arg "<directory>"'
 depends = ["docker-build"]
 run = """
 #!/usr/bin/env bash
 set -euo pipefail
-if [ $# -eq 0 ]; then
-  echo "Usage: mise run docker-analyze <directory>"
-  exit 1
-fi
-docker run --rm -v "$1:/workspace" -v "$(pwd)/visualization/public/analysis:/output" dependacharta-analysis -d /workspace -o /output -f analyzed-project
+docker run --rm -v "$usage_directory:/workspace" -v "$(pwd)/visualization/public/analysis:/output" dependacharta-analysis -d /workspace -o /output -f analyzed-project
 echo "Docker analysis complete! Starting frontend..."
 echo "Frontend will automatically load your analysis."
 echo "You can also manually specify a file: http://localhost:4200?file=./path/to/file.cg.json"
