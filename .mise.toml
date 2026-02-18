@@ -88,15 +88,15 @@ run = "npm run start"
 description = "Analyze a directory and start visualization server"
 usage = 'arg "<directory>"'
 dir = "analysis"
-depends = ["build-analysis-jar"]
+depends = ["build-analysis-jar", "install-visualization-deps"]
+raw = true
 run = """
 #!/usr/bin/env bash
 set -euo pipefail
 DIR="$(cd "$usage_directory" && pwd)"
 java -jar build/libs/dependacharta.jar -d "$DIR" -o ../visualization/public/analysis -f analyzed-project
 echo "Analysis complete! Starting frontend..."
-echo "Frontend will automatically load your analysis."
-echo "You can also manually specify a file: http://localhost:4200?file=./path/to/file.cg.json"
+cd ../visualization && npm run start
 """
 
 # =============================================================================
