@@ -82,6 +82,7 @@ java -jar build/libs/dependacharta.jar -d "$DIR"
 description = "Start visualization development server"
 dir = "visualization"
 depends = ["install-visualization-deps"]
+raw = true
 run = "npm run start"
 
 [tasks.analyze-and-serve]
@@ -190,14 +191,14 @@ docker run --rm -v "$usage_directory:/workspace" dependacharta-analysis -d /work
 """
 
 [tasks.docker-analyze]
-description = "Run Docker analysis and open visualization"
+description = "Run Docker analysis and start visualization server"
 usage = 'arg "<directory>"'
-depends = ["docker-build"]
+depends = ["docker-build", "install-visualization-deps"]
+raw = true
 run = """
 #!/usr/bin/env bash
 set -euo pipefail
 docker run --rm -v "$usage_directory:/workspace" -v "$(pwd)/visualization/public/analysis:/output" dependacharta-analysis -d /workspace -o /output -f analyzed-project
 echo "Docker analysis complete! Starting frontend..."
-echo "Frontend will automatically load your analysis."
-echo "You can also manually specify a file: http://localhost:4200?file=./path/to/file.cg.json"
+cd visualization && npm run start
 """
