@@ -12,6 +12,8 @@ enum class LogLevel {
 }
 
 const val RESET = "\u001B[0m"
+const val BOLD = "\u001B[1m"
+const val BOLD_OFF = "\u001B[22m"
 const val RED = "\u001B[31m"
 const val YELLOW = "\u001B[33m"
 const val WHITE = "\u001B[37m"

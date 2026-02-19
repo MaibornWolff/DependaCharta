@@ -9,12 +9,16 @@ import de.maibornwolff.dependacharta.pipeline.analysis.model.NodeType
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Type
 import de.maibornwolff.dependacharta.pipeline.processing.model.ProjectReportDto
+import de.maibornwolff.dependacharta.pipeline.shared.LogLevel
+import de.maibornwolff.dependacharta.pipeline.shared.Logger
 import de.maibornwolff.dependacharta.pipeline.shared.SupportedLanguage
 import kotlinx.serialization.json.Json
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
+import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.PrintStream
 import kotlin.test.assertTrue
 
 class ProcessingPipelineTest {
@@ -308,5 +312,40 @@ class ProcessingPipelineTest {
                 "Expected consumer to have dependency on declared module. " +
                     "Consumer deps: $resolvedDependencies, Available nodes: ${leaves.keys}"
             ).anyMatch { dep -> leaves.keys.any { node -> node == dep } }
+    }
+
+    @Test
+    fun `should print visualization links after successful analysis`() {
+        // Given
+        val outputFileName = "test"
+        val outputDirectoryName = "testresult"
+        val nodeA = Node(
+            pathWithName = Path("pkg", "A"),
+            language = SupportedLanguage.JAVA,
+            physicalPath = "pkg/A.java",
+            nodeType = NodeType.CLASS,
+            dependencies = emptySet(),
+            usedTypes = emptySet()
+        )
+        val fileReports = listOf(FileReport(listOf(nodeA)))
+        val originalOut = System.out
+        val outputStream = ByteArrayOutputStream()
+        System.setOut(PrintStream(outputStream))
+        Logger.setLevel(LogLevel.INFO)
+        Logger.setLoggingDirectory(null)
+
+        try {
+            // When
+            ProcessingPipeline.run(outputFileName, outputDirectoryName, fileReports, false)
+
+            // Then
+            val output = outputStream.toString()
+            val expectedPath = File(outputDirectoryName, "$outputFileName.cg.json").absolutePath
+            assertThat(output).contains(expectedPath)
+            assertThat(output).contains("https://maibornwolff.github.io/DependaCharta/")
+            assertThat(output).contains("https://github.com/MaibornWolff/DependaCharta#visualize-your-results")
+        } finally {
+            System.setOut(originalOut)
+        }
     }
 }

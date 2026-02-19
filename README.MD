@@ -5,8 +5,9 @@
   <p>
     <a href="https://maibornwolff.github.io/DependaCharta/"><strong>🚀 Try Web Studio</strong></a> •
     <a href="#what-is-dependacharta">About</a> •
+    <a href="#quick-start">Quick Start</a> •
     <a href="#features">Features</a> •
-    <a href="#getting-started">Getting Started</a> •
+    <a href="#development-setup">Development Setup</a> •
     <a href="#get-involved">Get Involved</a> •
     <a href="#links">Links</a>
   </p>
@@ -70,6 +71,35 @@ For a detailed explanation of DependaCharta's domain concepts and visualization 
 
 **All analysis and visualization happens entirely on your machine.** No data is ever uploaded, shared, or transmitted to any external service. Your code stays private and secure. DependaCharta has no analytics, tracking, or telemetry built-in.
 
+## Quick Start
+
+### Analyze Your Code
+
+Download the latest JAR from the [releases page](https://github.com/MaibornWolff/DependaCharta/releases) and run:
+
+```bash
+java -jar dependacharta.jar -d <directory-to-analyze>
+```
+
+Or use the convenience scripts included in the release: `bin/dependacharta.sh` (Mac/Linux) or `bin/dependacharta.bat` (Windows).
+
+**With Docker** (no Java required):
+
+```bash
+docker run --rm --user root \
+  -v "$(pwd)/your-project:/workspace" \
+  maibornwolff/dependacharta-analysis:latest \
+  -d /workspace
+```
+
+The analysis outputs a `.cg.json` file (default: `output/analysis.cg.json`).
+
+### Visualize Your Results
+
+- **[Web Studio](https://maibornwolff.github.io/DependaCharta/)** — Open your `.cg.json` file directly in the browser. No installation required, fully client-side.
+- **Standalone App** — Download the desktop app for your OS from the [releases page](https://github.com/MaibornWolff/DependaCharta/releases).
+- **Run locally** — Build and run the visualization yourself. See [visualization/README.md](visualization/README.md).
+
 ## Features
 
 ### DependaCharta CLI (Analysis)
@@ -102,7 +132,7 @@ The Visualization component is an Angular/TypeScript web application using [Cyto
 <!-- TODO: Add visualization overview screenshot -->
 <!-- ![Visualization overview](assets/visualization_overview.png) -->
 
-## Getting Started
+## Development Setup
 
 ### Quick Start with Mise (Recommended)
 

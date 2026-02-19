@@ -14,6 +14,8 @@ import de.maibornwolff.dependacharta.pipeline.processing.levelization.toGraphNod
 import de.maibornwolff.dependacharta.pipeline.processing.model.ProjectReportDto
 import de.maibornwolff.dependacharta.pipeline.processing.reporting.ExportService
 import de.maibornwolff.dependacharta.pipeline.processing.reporting.ReportService
+import de.maibornwolff.dependacharta.pipeline.shared.BOLD
+import de.maibornwolff.dependacharta.pipeline.shared.BOLD_OFF
 import de.maibornwolff.dependacharta.pipeline.shared.Logger
 import de.maibornwolff.dependacharta.pipeline.shared.SupportedLanguage
 import java.io.File
@@ -21,6 +23,8 @@ import kotlin.io.path.Path
 import kotlin.io.path.createDirectories
 
 private const val CG_JSON_FILE_TYPE = ".cg.json"
+private const val WEB_STUDIO_URL = "https://maibornwolff.github.io/DependaCharta/"
+private const val VISUALIZATION_DOCS_URL = "https://github.com/MaibornWolff/DependaCharta#visualize-your-results"
 
 class ProcessingPipeline {
     companion object {
@@ -92,14 +96,26 @@ class ProcessingPipeline {
             val cyclicEdgesPerLeaf = cycles.groupByLeafs()
             val report = ReportService.createProjectReport(resolvedNodes, cyclicEdgesPerLeaf, leveledNodes)
             val jsonExport = ExportService.toJson(report)
+            val outputFilePath = File(outputDirectoryName, "$outputFileName$CG_JSON_FILE_TYPE").absolutePath
             saveToFile(
                 fileName = outputFileName,
                 content = jsonExport,
                 outputPath = outputDirectoryName
             )
-            Logger.i("Project report saved successfully as $outputFileName in directory '$outputDirectoryName'")
+            Logger.i("Project report saved: ${BOLD}$outputFilePath${BOLD_OFF}")
+            logVisualizationHint()
 
             return report
+        }
+
+        private fun logVisualizationHint() {
+            Logger.i("")
+            Logger.i("${BOLD}Visualize your results:${BOLD_OFF}")
+            Logger.i("  🌐 Web Studio: $WEB_STUDIO_URL")
+            Logger.i("     Open your .cg.json file there to explore the dependency graph.")
+            Logger.i("     All processing happens locally in your browser — your data never leaves your machine.")
+            Logger.i("")
+            Logger.i("  📖 More options: $VISUALIZATION_DOCS_URL")
         }
 
         private fun levelize(
