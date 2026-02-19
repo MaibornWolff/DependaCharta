@@ -98,7 +98,7 @@ For a detailed explanation of DependaCharta's domain concepts, see our [Domain M
 ### Key Technologies
 - **Analysis**: Kotlin, Tree-sitter, Gradle, Clikt CLI framework
 - **Visualization**: Angular 20, TypeScript, Cytoscape.js, Electron
-- **Supported Languages**: Java, C#, C++, TypeScript, PHP, Go, Python
+- **Supported Languages**: Java, C#, C++, TypeScript, JavaScript, PHP, Go, Python, Kotlin, Vue
 
 ### Project Structure
 ```

@@ -110,7 +110,7 @@ The Analysis component is a command-line tool that analyzes codebases using [Tre
 - Dependencies between files and packages
 - Cycle detection with detailed cycle information
 - Levelization for architectural insights
-- Support for multiple programming languages: **Java, C#, C++, TypeScript, PHP, Go, Python**
+- Support for multiple programming languages: **Java, C#, C++, TypeScript, JavaScript, PHP, Go, Python, Kotlin, Vue**
 
 Don't see your language? You can [extend the supported languages](analysis/howto-add-new-language.md) by adding a new parser!
 
