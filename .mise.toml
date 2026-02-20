@@ -3,7 +3,7 @@
 
 [tools]
 java = "temurin-17"
-node = "22.21.1"
+node = "22.22.0"
 
 # =============================================================================
 # Granular tasks — atomic reusable steps for analysis and visualization
