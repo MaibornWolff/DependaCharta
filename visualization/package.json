@@ -48,7 +48,7 @@
     "@types/cytoscape": "~3.31.0",
     "@types/jasmine": "~5.1.0",
     "angular-eslint": "20.7.0",
-    "cypress": "^14.3.0",
+    "cypress": "^15.0.0",
     "electron": "^37.0.0",
     "eslint": "^9.33.0",
     "eslint-plugin-only-warn": "^1.1.0",
