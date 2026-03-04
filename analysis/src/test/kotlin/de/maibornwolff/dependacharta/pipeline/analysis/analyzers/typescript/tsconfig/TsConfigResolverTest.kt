@@ -183,7 +183,7 @@ class TsConfigResolverTest {
         tsconfig.writeText(
             """
             {
-              "extends": "${baseTsconfig.absolutePath}",
+              "extends": "${baseTsconfig.invariantSeparatorsPath}",
               "compilerOptions": {
                 "paths": {
                   "core/*": ["core/*"]
