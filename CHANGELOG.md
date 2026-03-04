@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Analysis unit tests failing on Windows due to path separator handling
+
 ## [0.20.0] - 2026-02-13
 
 ### Added
