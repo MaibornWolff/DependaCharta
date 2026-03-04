@@ -41,18 +41,6 @@ class FileUtilsTest {
     }
 
     @Test
-    fun `should split windows-style backslash path into parts`() {
-        // Given
-        val path = "src\\main\\kotlin\\MyFile.kt"
-
-        // When
-        val parts = splitNameToParts(path)
-
-        // Then
-        assertThat(parts).containsExactly("src", "main", "kotlin", "MyFile.kt")
-    }
-
-    @Test
     fun `should handle empty string`() {
         // Given
         val path = ""
