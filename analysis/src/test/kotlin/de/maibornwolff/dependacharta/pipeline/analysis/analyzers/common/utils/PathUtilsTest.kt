@@ -4,6 +4,7 @@ import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.model.to
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import java.io.File
 
 class PathUtilsTest {
     @Test
@@ -34,5 +35,57 @@ class PathUtilsTest {
         val expected = listOf("test", "MyImport")
         assertThat(resolvedPath.parts)
             .containsExactlyElementsOf(expected)
+    }
+
+    @Test
+    fun `should convert absolute path to relative path using unix-style separators`() {
+        // Given
+        val analysisRoot = File("src/test/resources/rootdirectorywalker")
+        val absolutePath = File(analysisRoot, "subdir/MyFile.java")
+
+        // When
+        val result = toRelativePath(absolutePath, analysisRoot)
+
+        // Then
+        assertThat(result.parts).containsExactly("subdir", "MyFile_java")
+    }
+
+    @Test
+    fun `should strip extension when converting to relative path`() {
+        // Given
+        val analysisRoot = File("src/test/resources/rootdirectorywalker")
+        val absolutePath = File(analysisRoot, "components/App.ts")
+
+        // When
+        val result = toRelativePath(absolutePath, analysisRoot, stripExtension = true)
+
+        // Then
+        assertThat(result.parts).containsExactly("components", "App")
+    }
+
+    @Test
+    fun `should produce relative path for file in root`() {
+        // Given
+        val analysisRoot = File("src/test/resources/rootdirectorywalker")
+        val absolutePath = File(analysisRoot, "Sample.java")
+
+        // When
+        val result = toRelativePath(absolutePath, analysisRoot)
+
+        // Then
+        assertThat(result.parts).containsExactly("Sample_java")
+    }
+
+    @Test
+    fun `should strip vue extension when converting to relative path`() {
+        // Given
+        val analysisRoot = File("src/test/resources/rootdirectorywalker")
+        val absolutePath = File(analysisRoot, "views/Home.vue")
+
+        // When
+        val result = toRelativePath(absolutePath, analysisRoot, stripExtension = true)
+
+        // Then
+        assertThat(result.parts).containsExactly("views", "Home")
     }
 }
