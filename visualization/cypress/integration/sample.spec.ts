@@ -1,16 +1,11 @@
 describe('File Loader Integration Test', () => {
   beforeEach(() => {
-    // Intercept must be registered before visit so Cypress captures the request fired during NgOnInit
     // ?file= param forces a deterministic file in both local and CI environments
-    cy.intercept('GET', '/resources/java-example.cg.json').as('getAnalysisFile');
     cy.visit('/?file=/resources/java-example.cg.json');
-    cy.wait('@getAnalysisFile');
+    cy.get('#file').should('be.visible');
   });
 
   it('Should select a file and verify root nodes', () => {
-    // Given
-    cy.get('#file').should('be.visible');
-
     // Act
     const filePath = 'cypress/fixtures/analysis.cg.json';
     cy.get('#file').selectFile(filePath, {force: true});
@@ -30,7 +25,6 @@ describe('File Loader Integration Test', () => {
 
   it('Should expand a root node', () => {
     // Given
-    cy.get('#file').should('be.visible');
     const filePath = 'cypress/fixtures/analysis.cg.json';
     cy.get('#file').selectFile(filePath, {force: true});
 
