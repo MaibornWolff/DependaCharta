@@ -108,14 +108,11 @@ cd ../visualization && npm run start
 
 [tasks.ci-build-analysis]
 description = "Full analysis build+test with version (CI)"
+usage = 'arg "<version>"'
 dir = "analysis"
 run = """
 set -euo pipefail
-if [ $# -eq 0 ]; then
-  echo "Usage: mise run ci-build-analysis <version>"
-  exit 1
-fi
-./gradlew build -Pversion="$1"
+./gradlew build -Pversion="$usage_version"
 """
 
 [tasks.ci-compile-analysis]
@@ -130,14 +127,11 @@ run = "npm run ci-test"
 
 [tasks.ci-create-version]
 description = "Write version.json into visualization build output"
+usage = 'arg "<version>"'
 dir = "visualization"
 run = """
 set -euo pipefail
-if [ $# -eq 0 ]; then
-  echo "Usage: mise run ci-create-version <version>"
-  exit 1
-fi
-npm run ci-createVersion -- "$1"
+npm run ci-createVersion -- "$usage_version"
 """
 
 [tasks.ci-package-mac]
