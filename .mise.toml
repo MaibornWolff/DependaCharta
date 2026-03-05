@@ -7,7 +7,7 @@ windows_default_inline_shell_args = "sh -c"
 
 [tools]
 java = "temurin-17"
-node = "22.21.1"
+node = "22.22.1"
 
 # =============================================================================
 # Granular tasks — atomic reusable steps for analysis and visualization
