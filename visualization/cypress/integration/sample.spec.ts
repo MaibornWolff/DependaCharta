@@ -1,13 +1,14 @@
 describe('File Loader Integration Test', () => {
   beforeEach(() => {
-    cy.visit('/');
+    // Intercept must be registered before visit so Cypress captures the request fired during NgOnInit
+    // ?file= param forces a deterministic file in both local and CI environments
+    cy.intercept('GET', '/resources/java-example.cg.json').as('getAnalysisFile');
+    cy.visit('/?file=/resources/java-example.cg.json');
+    cy.wait('@getAnalysisFile');
   });
 
   it('Should select a file and verify root nodes', () => {
     // Given
-    // We assume that the java-example.cg.json is always loaded as default and that it is the last thing our NgOnInit is doing so we make sure it's finished before next steps
-    cy.intercept('GET', '/resources/java-example.cg.json').as('getAnalysisFile');
-    cy.wait('@getAnalysisFile');
     cy.get('#file').should('be.visible');
 
     // Act
@@ -19,8 +20,6 @@ describe('File Loader Integration Test', () => {
       .should('be.visible')
       .within(() => {
         cy.get('.non-compound-node')
-          .should('exist')
-          .and('have.length.at.least', 1)
           .should('have.length', 2)
           .then((nodes) => {
             expect(nodes.eq(0)).to.contain.text('cypress_config');
