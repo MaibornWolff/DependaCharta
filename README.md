@@ -252,7 +252,7 @@ mise run docker-analyze <directory-to-analyze>
 Do you have a **bug**, **feature request**, or question? Please open [a new issue](https://github.com/MaibornWolff/DependaCharta/issues/new).
 Feedback is always welcome.
 
-Want to **contribute**? Check out our [contributing guide](dev_docs/CONTRIBUTING.md) and [developer start guide](dev_docs/DEV_START_GUIDE.md).
+Want to **contribute**? Check out our [contributing guide](CONTRIBUTING.md).
 
 ## Development Practices
 
