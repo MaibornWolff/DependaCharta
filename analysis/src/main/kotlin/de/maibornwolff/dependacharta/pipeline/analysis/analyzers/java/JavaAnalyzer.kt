@@ -3,43 +3,43 @@ package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.java
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.LanguageAnalyzer
 import de.maibornwolff.dependacharta.pipeline.analysis.model.*
 import de.maibornwolff.dependacharta.pipeline.shared.SupportedLanguage
+import de.maibornwolff.treesitter.excavationsite.api.Declaration
+import de.maibornwolff.treesitter.excavationsite.api.DeclarationType
+import de.maibornwolff.treesitter.excavationsite.api.ImportDeclaration
 import de.maibornwolff.treesitter.excavationsite.api.Language
 import de.maibornwolff.treesitter.excavationsite.api.TreeSitterDependencies
-import de.maibornwolff.treesitter.excavationsite.shared.domain.Declaration
-import de.maibornwolff.treesitter.excavationsite.shared.domain.DeclarationType
-import de.maibornwolff.treesitter.excavationsite.shared.domain.DependencyResult
-import de.maibornwolff.treesitter.excavationsite.shared.domain.ImportDeclaration
-import de.maibornwolff.treesitter.excavationsite.shared.domain.UsedType
+import de.maibornwolff.treesitter.excavationsite.api.UsedType
 
 class JavaAnalyzer(
     private val fileInfo: FileInfo
 ) : LanguageAnalyzer {
     override fun analyze(): FileReport {
         val result = TreeSitterDependencies.analyze(fileInfo.content, Language.JAVA)
+        val implicitWildcardImport = Dependency(path = Path(result.packagePath), isWildcard = true)
+        val dependencies = (result.imports.map { toDependency(it) } + implicitWildcardImport).toSet()
         val nodes = result.declarations.map { declaration ->
-            toNode(result, declaration)
+            toNode(result.packagePath, dependencies, declaration)
         }
         return FileReport(nodes)
     }
 
     private fun toNode(
-        result: DependencyResult,
+        packagePath: List<String>,
+        dependencies: Set<Dependency>,
         declaration: Declaration,
     ): Node {
-        val implicitWildcardImport = Dependency(path = Path(result.packagePath), isWildcard = true)
-        val imports = result.imports.map { toImportDependency(it) }
         return Node(
-            pathWithName = Path(result.packagePath + declaration.name),
+            pathWithName = Path(packagePath + declaration.name),
             physicalPath = fileInfo.physicalPath,
             language = SupportedLanguage.JAVA,
             nodeType = toNodeType(declaration.type),
-            dependencies = (imports + implicitWildcardImport).toSet(),
+            dependencies = dependencies,
             usedTypes = declaration.usedTypes.map { toType(it) }.toSet()
         )
     }
 
-    private fun toImportDependency(import_: ImportDeclaration): Dependency {
-        return Dependency(path = Path(import_.path), isWildcard = import_.isWildcard)
+    private fun toDependency(importDeclaration: ImportDeclaration): Dependency {
+        return Dependency(path = Path(importDeclaration.path), isWildcard = importDeclaration.isWildcard)
     }
 
     private fun toType(usedType: UsedType): Type {
