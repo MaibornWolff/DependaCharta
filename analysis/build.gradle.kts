@@ -16,11 +16,12 @@ group = "de.maibornwolff"
 
 repositories {
     mavenCentral()
+    maven(url = "https://jitpack.io")
 }
 
 dependencies {
+    implementation("de.maibornwolff.treesitter.excavationsite:treesitter-excavationsite")
     implementation("io.github.bonede:tree-sitter:0.26.3")
-    implementation("io.github.bonede:tree-sitter-java:0.23.4")
     implementation("io.github.bonede:tree-sitter-c-sharp:0.23.1")
     implementation("io.github.bonede:tree-sitter-cpp:0.23.4")
     implementation("io.github.bonede:tree-sitter-typescript:0.23.2")
