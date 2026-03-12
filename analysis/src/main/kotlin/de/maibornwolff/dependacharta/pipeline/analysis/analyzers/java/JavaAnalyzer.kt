@@ -1,97 +1,61 @@
 package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.java
 
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.LanguageAnalyzer
-import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.nodeAsString
-import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.java.queries.*
 import de.maibornwolff.dependacharta.pipeline.analysis.model.*
 import de.maibornwolff.dependacharta.pipeline.shared.SupportedLanguage
-import org.treesitter.TSNode
-import org.treesitter.TSParser
-import org.treesitter.TreeSitterJava
+import de.maibornwolff.treesitter.excavationsite.api.Declaration
+import de.maibornwolff.treesitter.excavationsite.api.DeclarationType
+import de.maibornwolff.treesitter.excavationsite.api.ImportDeclaration
+import de.maibornwolff.treesitter.excavationsite.api.Language
+import de.maibornwolff.treesitter.excavationsite.api.TreeSitterDependencies
+import de.maibornwolff.treesitter.excavationsite.api.UsedType
 
 class JavaAnalyzer(
     private val fileInfo: FileInfo
 ) : LanguageAnalyzer {
-    private val java = TreeSitterJava()
-    private val methodAndConstructorQuery = JavaMethodAndConstructorQuery(java)
-    private val inheritanceQuery = JavaInheritanceQuery(java)
-    private val annotationTypesQuery = JavaAnnotationTypesQuery(java)
-    private val fieldTypesQuery = JavaFieldTypesQuery(java)
-    private val variableTypesQuery = JavaVariableTypesQuery(java)
-    private val constructorCallQuery = JavaConstructorCallQuery(java)
-    private val methodIncovationsAndFieldAccessesQuery = JavaMethodIncovationsAndFieldAccessesQuery(java)
-    private val thrownTypesQuery = JavaThrownTypesQuery(java)
-    private val declarationsQuery = JavaDeclarationsQuery(java)
-    private val packageQuery = JavaPackageQuery(java)
-    private val importQuery = JavaImportQuery(java)
-
     override fun analyze(): FileReport {
-        val rootNode = parseCode(fileInfo.content)
-        val packageResult = packageQuery.execute(rootNode, fileInfo.content)
-        val dependencies = importQuery.execute(rootNode, fileInfo.content)
-        val declarations = declarationsQuery.execute(rootNode)
-        val nodes = declarations.map {
-            extractNodeFromDeclaration(
-                packageResult,
-                dependencies,
-                it
-            )
+        val result = TreeSitterDependencies.analyze(fileInfo.content, Language.JAVA)
+        val implicitWildcardImport = Dependency(path = Path(result.packagePath), isWildcard = true)
+        val dependencies = (result.imports.map { toDependency(it) } + implicitWildcardImport).toSet()
+        val nodes = result.declarations.map { declaration ->
+            toNode(result.packagePath, dependencies, declaration)
         }
         return FileReport(nodes)
     }
 
-    private fun extractNodeFromDeclaration(
+    private fun toNode(
         packagePath: List<String>,
-        imports: List<Dependency>,
-        declaration: TSNode
+        dependencies: Set<Dependency>,
+        declaration: Declaration,
     ): Node {
-        val nodeBody = nodeAsString(declaration, fileInfo.content)
-        val declarationNode = parseCode(nodeBody).getChild(0)
-        val declarationName = nodeAsString(declarationNode.getChildByFieldName("name"), nodeBody)
-
-        val implicitWildcardImport = Dependency(path = Path(packagePath), isWildcard = true)
-        val usedTypes = extractUsedTypes(declarationNode, nodeBody)
         return Node(
-            pathWithName = Path(packagePath + declarationName),
+            pathWithName = Path(packagePath + declaration.name),
             physicalPath = fileInfo.physicalPath,
             language = SupportedLanguage.JAVA,
-            nodeType = nodeType(declarationNode),
-            dependencies = (imports + implicitWildcardImport).toSet(),
-            usedTypes = usedTypes
+            nodeType = toNodeType(declaration.type),
+            dependencies = dependencies,
+            usedTypes = declaration.usedTypes.map { toType(it) }.toSet()
         )
     }
 
-    private fun parseCode(javaCode: String): TSNode {
-        val parser = TSParser()
-        parser.language = java
-        val tree = parser.parseString(null, javaCode)
-        return tree.rootNode
+    private fun toDependency(importDeclaration: ImportDeclaration): Dependency {
+        return Dependency(path = Path(importDeclaration.path), isWildcard = importDeclaration.isWildcard)
     }
 
-    private fun extractUsedTypes(
-        declaration: TSNode,
-        nodeBody: String,
-    ): Set<Type> {
-        val interfaceImplementations = inheritanceQuery.execute(declaration, nodeBody)
-        val variables = variableTypesQuery.execute(declaration, nodeBody)
-        val annotations = annotationTypesQuery.execute(declaration, nodeBody)
-        val methodInvocationsAndFieldAccesses = methodIncovationsAndFieldAccessesQuery.execute(declaration, nodeBody)
-        val objectCreations = constructorCallQuery.execute(declaration, nodeBody)
-        val thrownTypes = thrownTypesQuery.execute(declaration, nodeBody)
-        val methodTypes = methodAndConstructorQuery.execute(declaration, nodeBody)
-        val fieldTypes = fieldTypesQuery.execute(declaration, nodeBody)
-        return (
-            interfaceImplementations + variables + annotations + methodInvocationsAndFieldAccesses +
-                objectCreations + thrownTypes + fieldTypes + methodTypes
-        ).toSet()
-    }
-
-    private fun nodeType(declaration: TSNode) =
-        when (declaration.type) {
-            "class_declaration", "record_declaration" -> NodeType.CLASS
-            "interface_declaration" -> NodeType.INTERFACE
-            "enum_declaration" -> NodeType.ENUM
-            "annotation_type_declaration" -> NodeType.ANNOTATION
-            else -> NodeType.UNKNOWN
+    private fun toType(usedType: UsedType): Type {
+        if (usedType.genericTypes.isEmpty()) {
+            return Type.simple(usedType.name)
         }
+        return Type.generic(usedType.name, usedType.genericTypes.map { toType(it) })
+    }
+
+    private fun toNodeType(type: DeclarationType): NodeType {
+        return when (type) {
+            DeclarationType.CLASS, DeclarationType.RECORD -> NodeType.CLASS
+            DeclarationType.INTERFACE -> NodeType.INTERFACE
+            DeclarationType.ENUM -> NodeType.ENUM
+            DeclarationType.ANNOTATION -> NodeType.ANNOTATION
+            DeclarationType.UNKNOWN -> NodeType.UNKNOWN
+        }
+    }
 }
