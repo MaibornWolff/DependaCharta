@@ -20,7 +20,7 @@ repositories {
 }
 
 dependencies {
-    implementation("de.maibornwolff.treesitter.excavationsite:treesitter-excavationsite")
+    implementation("com.github.MaibornWolff:TreeSitterExcavationSite:64405a0")
     implementation("io.github.bonede:tree-sitter:0.26.3")
     implementation("io.github.bonede:tree-sitter-c-sharp:0.23.1")
     implementation("io.github.bonede:tree-sitter-cpp:0.23.4")

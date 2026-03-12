@@ -3,4 +3,3 @@ plugins {
 }
 rootProject.name = "dependacharta-analysis"
 
-includeBuild("../../TreeSitterExcavationSite")
