@@ -30,7 +30,7 @@ dependencies {
     implementation("io.github.bonede:tree-sitter-kotlin:0.3.8.1")
     implementation("io.github.bonede:tree-sitter-javascript:0.23.1")
     implementation("io.github.bonede:tree-sitter-vue:0.2.1a")
-    implementation("com.github.ajalt.clikt:clikt:5.0.3")
+    implementation("com.github.ajalt.clikt:clikt:5.1.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
     implementation("me.tongfei:progressbar:0.10.2")
     testImplementation(kotlin("test"))
