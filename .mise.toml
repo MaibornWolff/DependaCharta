@@ -70,6 +70,10 @@ dir = "analysis"
 depends = ["build-analysis-jar"]
 run = "java -jar build/libs/dependacharta.jar --help"
 
+[tasks.clean-temp]
+description = "Remove temporary analysis files (for interrupted/crashed runs)"
+run = "rm -rf dependacharta_temp"
+
 [tasks.analyze]
 description = "Run analysis on a directory"
 usage = 'arg "<directory>"'

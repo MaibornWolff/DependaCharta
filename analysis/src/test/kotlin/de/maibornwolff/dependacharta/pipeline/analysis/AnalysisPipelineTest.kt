@@ -103,6 +103,34 @@ class AnalysisPipelineTest {
         assertThat(File("dependacharta_temp/records").listFiles()).hasSize(3)
     }
 
+    @Test
+    fun `should complete analysis with per-file timeout enabled`() {
+        // given & when
+        val fileReports = AnalysisPipeline.run(
+            "src/test/resources/pipeline/persistence",
+            true,
+            listOf(SupportedLanguage.JAVA, SupportedLanguage.C_SHARP),
+            fileTimeoutSeconds = 10
+        )
+
+        // then - all files should be analyzed since they are small
+        assertThat(fileReports).isNotEmpty()
+    }
+
+    @Test
+    fun `should complete analysis with no timeout when fileTimeoutSeconds is zero`() {
+        // given & when
+        val fileReports = AnalysisPipeline.run(
+            "src/test/resources/pipeline/persistence",
+            true,
+            listOf(SupportedLanguage.JAVA, SupportedLanguage.C_SHARP),
+            fileTimeoutSeconds = 0
+        )
+
+        // then - same as default behavior, all files analyzed
+        assertThat(fileReports).isNotEmpty()
+    }
+
     private fun List<FileReport>.removePhysicalPath() =
         this.map { fileReport ->
             fileReport.copy(nodes = fileReport.nodes.map { node -> node.copy(physicalPath = "") })

@@ -3,6 +3,7 @@ package de.maibornwolff.dependacharta.pipeline
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.main
 import com.github.ajalt.clikt.parameters.options.*
+import com.github.ajalt.clikt.parameters.types.int
 import de.maibornwolff.dependacharta.pipeline.analysis.AnalysisPipeline
 import de.maibornwolff.dependacharta.pipeline.processing.ProcessingPipeline
 import de.maibornwolff.dependacharta.pipeline.shared.LogLevel
@@ -47,15 +48,47 @@ class Cli : CliktCommand() {
         "--omitGraphAnalysis",
         help = "Don't traverse the graph to detect cycles etc."
     ).flag(default = false)
+    private val maxFileSize by option(
+        "-s",
+        "--max-file-size",
+        help = "Skip files larger than this (in KB). 0 = no limit"
+    ).int().default(1024)
+    private val fileTimeout by option(
+        "-t",
+        "--file-timeout",
+        help = "Per-file analysis timeout in seconds. 0 = no timeout"
+    ).int().default(60)
+    private val excludeDir by option(
+        "-x",
+        "--exclude-dir",
+        help = "Additional directory names to exclude (comma-separated), added to defaults"
+    ).default("")
+    private val excludeSuffix by option(
+        "-X",
+        "--exclude-suffix",
+        help = "Additional file suffixes to exclude (comma-separated), added to defaults"
+    ).default("")
+    private val noDefaultExcludes by option(
+        "--no-default-excludes",
+        help = "Disable all default directory and suffix exclusions"
+    ).flag(default = false)
 
     override fun run() {
         Logger.d("Current Directory: ${System.getProperty("user.dir")}")
         configureLogging()
 
+        val excludedDirs = excludeDir.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+        val excludedSuffixes = excludeSuffix.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+
         val fileReports = AnalysisPipeline.run(
             rootDirectory,
             clean,
-            SupportedLanguage.entries.toList()
+            SupportedLanguage.entries.toList(),
+            fileTimeoutSeconds = fileTimeout,
+            maxFileSizeKB = maxFileSize,
+            excludedDirs = excludedDirs,
+            excludedSuffixes = excludedSuffixes,
+            useDefaultExcludes = !noDefaultExcludes
         )
         ProcessingPipeline.run(
             fileName,

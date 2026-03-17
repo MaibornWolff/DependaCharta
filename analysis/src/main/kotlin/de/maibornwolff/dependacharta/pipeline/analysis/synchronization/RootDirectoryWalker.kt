@@ -1,14 +1,25 @@
 package de.maibornwolff.dependacharta.pipeline.analysis.synchronization
 
 import de.maibornwolff.dependacharta.pipeline.analysis.model.FileInfo
+import de.maibornwolff.dependacharta.pipeline.shared.Logger
 import de.maibornwolff.dependacharta.pipeline.shared.SupportedLanguage
 import de.maibornwolff.dependacharta.pipeline.shared.languagesByExtension
 import java.io.File
 
 class RootDirectoryWalker(
     public val rootDirectory: File,
-    private val languages: List<SupportedLanguage>
+    private val languages: List<SupportedLanguage>,
+    private val maxFileSizeKB: Int = 0,
+    private val excludedDirs: List<String> = emptyList(),
+    private val excludedSuffixes: List<String> = emptyList(),
+    private val useDefaultExcludes: Boolean = true
 ) {
+    private val effectiveIgnoredDirs: List<String> =
+        if (useDefaultExcludes) ignoredDirectories() + excludedDirs else excludedDirs
+
+    private val effectiveIgnoredSuffixes: List<String> =
+        if (useDefaultExcludes) ignoredFileEndings() + excludedSuffixes else excludedSuffixes
+
     fun walk(): Sequence<String> {
         val languagesByExtension = languagesByExtension(languages)
         val ftw = rootDirectory.walk().filter { shouldAnalyze(it, languagesByExtension) }
@@ -38,14 +49,25 @@ class RootDirectoryWalker(
         if (!file.isFile) return false
         val extension = file.extension
         if (!languagesByExtension.containsKey(extension)) return false
+        if (exceedsFileSizeLimit(file)) return false
         val relativePath = file.toRelativeString(rootDirectory).replace("\\", "/")
         return isNotIgnored(relativePath)
     }
 
+    private fun exceedsFileSizeLimit(file: File): Boolean {
+        if (maxFileSizeKB <= 0) return false
+        val fileSizeKB = file.length() / 1024
+        if (fileSizeKB >= maxFileSizeKB) {
+            Logger.d("Skipping file (${fileSizeKB}KB > ${maxFileSizeKB}KB limit): ${file.path}")
+            return true
+        }
+        return false
+    }
+
     private fun isNotIgnored(path: String): Boolean {
         val pathParts = path.split("/")
-        val isInIgnoredDirectory = ignoredDirectories().any { pathParts.contains(it) }
-        val isIgnoredFileEnding = ignoredFileEndings().any { path.endsWith(it) }
+        val isInIgnoredDirectory = effectiveIgnoredDirs.any { pathParts.contains(it) }
+        val isIgnoredFileEnding = effectiveIgnoredSuffixes.any { path.endsWith(it) }
         return !isInIgnoredDirectory && !isIgnoredFileEnding
     }
 

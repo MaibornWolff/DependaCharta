@@ -57,9 +57,15 @@ The Docker image includes all necessary dependencies and Tree-sitter parsers, ma
 - `-h` or `--help`: Shows the help message
 - `-v` or `--version`: Shows the version of the tool
 - `-l` or `--logLevel`: Define the log level for STDOUT. Possible values are debug, info, warn, error, fatal. Independent of this setting the log file will always contain all levels. 
+- `-s` or `--max-file-size`: Skip files larger than this size in KB (default: `1024`). Set to `0` to disable the limit.
+- `-t` or `--file-timeout`: Per-file analysis timeout in seconds (default: `60`). Set to `0` to disable the timeout.
+- `-x` or `--exclude-dir`: Additional directory names to exclude (comma-separated), added to defaults.
+- `-X` or `--exclude-suffix`: Additional file suffixes to exclude (comma-separated), added to defaults.
+- `--no-default-excludes`: Disable all default directory and suffix exclusions.
 ## Attention
 - The analysis can take a long time for large projects. If an analysis is stopped midway, you can continue it by running the same command again.
 - During the analysis, a directory named `dependacharta_temp` is created in the current directory. This directory is used to store temporary files and will be deleted after the analysis is finished. **Do not delete it during a running analysis!**
+- If a previous analysis was interrupted, you can clean up temporary files with `mise run clean-temp` from the repository root.
 ## Result
 - The result is a `.cg.json` file that can be used in the [visualization](../visualization/README.md) tool
 - **Important**: The output file is always named `[filename].cg.json` (note the `.cg.json` extension, not just `.json`)

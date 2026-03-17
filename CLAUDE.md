@@ -28,6 +28,9 @@ mise run analyze <directory-to-analyze>
 # Analyze a directory, prepare for visualization, and start server (builds first if needed)
 mise run analyze-and-serve <directory-to-analyze>
 
+# Clean up temporary analysis files from interrupted/crashed runs
+mise run clean-temp
+
 # Start visualization development server (installs deps automatically)
 mise run dev-visualization
 ```
