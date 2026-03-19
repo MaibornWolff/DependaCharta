@@ -19,7 +19,7 @@ class RootDirectoryWalkerTest {
 
         // then
         val matchingFiles = files.toSet()
-        assertThat(matchingFiles).hasSize(3)
+        assertThat(matchingFiles).hasSize(8)
         matchingFiles.forEach { file ->
             assertThat(file).containsAnyOf(".java", ".cs")
         }
@@ -166,5 +166,128 @@ class RootDirectoryWalkerTest {
 
         // then
         assertThat(files.toList()).isEmpty()
+    }
+
+    // --- File size filtering tests ---
+
+    @Test
+    fun `Should skip files larger than maxFileSizeKB`() {
+        // given
+        val testee = RootDirectoryWalker(
+            File("src/test/resources/rootdirectorywalker/file-size-filtering"),
+            listOf(SupportedLanguage.JAVA),
+            maxFileSizeKB = 1
+        )
+
+        // when
+        val files = testee.walk().toList()
+
+        // then
+        assertThat(files).hasSize(1)
+        assertThat(files.first()).endsWith("small-file.java")
+    }
+
+    @Test
+    fun `Should include files below maxFileSizeKB`() {
+        // given
+        val testee = RootDirectoryWalker(
+            File("src/test/resources/rootdirectorywalker/file-size-filtering"),
+            listOf(SupportedLanguage.JAVA),
+            maxFileSizeKB = 2
+        )
+
+        // when
+        val files = testee.walk().toList()
+
+        // then
+        assertThat(files).hasSize(2)
+    }
+
+    @Test
+    fun `Should not filter by size when maxFileSizeKB is zero`() {
+        // given
+        val testee = RootDirectoryWalker(
+            File("src/test/resources/rootdirectorywalker/file-size-filtering"),
+            listOf(SupportedLanguage.JAVA),
+            maxFileSizeKB = 0
+        )
+
+        // when
+        val files = testee.walk().toList()
+
+        // then
+        assertThat(files).hasSize(2)
+    }
+
+    // --- Minified file exclusion tests ---
+
+    @Test
+    fun `Should exclude min js files by default`() {
+        // given
+        val testee = RootDirectoryWalker(
+            File("src/test/resources/rootdirectorywalker/minified-files"),
+            listOf(SupportedLanguage.TYPESCRIPT, SupportedLanguage.JAVASCRIPT)
+        )
+
+        // when
+        val files = testee.walk().toList()
+
+        // then
+        assertThat(files).hasSize(2)
+        assertThat(files).anyMatch { it.endsWith("app.ts") }
+        assertThat(files).anyMatch { it.endsWith("app.js") }
+        assertThat(files).noneMatch { it.contains(".min.") }
+    }
+
+    // --- Custom exclusion tests ---
+
+    @Test
+    fun `Should exclude additional directories from excludedDirs`() {
+        // given
+        val testee = RootDirectoryWalker(
+            File("src/test/resources/rootdirectorywalker/custom-exclusions"),
+            listOf(SupportedLanguage.JAVA),
+            excludedDirs = listOf("generated", "vendor")
+        )
+
+        // when
+        val files = testee.walk().toList()
+
+        // then
+        assertThat(files).hasSize(1)
+        assertThat(files.first()).endsWith("App.java")
+    }
+
+    @Test
+    fun `Should exclude additional suffixes from excludedSuffixes`() {
+        // given
+        val testee = RootDirectoryWalker(
+            File("src/test/resources/rootdirectorywalker/minified-files"),
+            listOf(SupportedLanguage.TYPESCRIPT, SupportedLanguage.JAVASCRIPT),
+            excludedSuffixes = listOf(".min.ts", ".min.js")
+        )
+
+        // when
+        val files = testee.walk().toList()
+
+        // then
+        assertThat(files).hasSize(2)
+        assertThat(files).noneMatch { it.contains(".min.") }
+    }
+
+    @Test
+    fun `Should clear all defaults when useDefaultExcludes is false`() {
+        // given
+        val testee = RootDirectoryWalker(
+            File("src/test/resources/rootdirectorywalker/ignoreddirectories"),
+            listOf(SupportedLanguage.TYPESCRIPT),
+            useDefaultExcludes = false
+        )
+
+        // when
+        val files = testee.walk().toList()
+
+        // then - should include files in node_modules since defaults are disabled
+        assertThat(files).hasSize(2)
     }
 }

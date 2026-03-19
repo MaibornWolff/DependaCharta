@@ -23,11 +23,23 @@ class AnalysisPipeline {
             rootDirectory: String,
             clean: Boolean,
             languages: List<SupportedLanguage>,
-            maxConcurrency: Int = Runtime.getRuntime().availableProcessors()
+            maxConcurrency: Int = Runtime.getRuntime().availableProcessors(),
+            fileTimeoutSeconds: Int = 0,
+            maxFileSizeKB: Int = 0,
+            excludedDirs: List<String> = emptyList(),
+            excludedSuffixes: List<String> = emptyList(),
+            useDefaultExcludes: Boolean = true
         ): List<FileReport> =
             Logger.timed("Executing Analysis") {
                 runBlocking {
-                    val rootWalker = RootDirectoryWalker(File(rootDirectory), languages)
+                    val rootWalker = RootDirectoryWalker(
+                        File(rootDirectory),
+                        languages,
+                        maxFileSizeKB = maxFileSizeKB,
+                        excludedDirs = excludedDirs,
+                        excludedSuffixes = excludedSuffixes,
+                        useDefaultExcludes = useDefaultExcludes
+                    )
                     val analysisSynchronizer = AnalysisSynchronizer()
 
                     if (clean) {
@@ -35,7 +47,7 @@ class AnalysisPipeline {
                     }
 
                     val analysisRecord = fetchOrCreateAnalysisRecord(rootWalker, analysisSynchronizer)
-                    analyzeFilesParallel(rootWalker, analysisSynchronizer, analysisRecord, maxConcurrency)
+                    analyzeFilesParallel(rootWalker, analysisSynchronizer, analysisRecord, maxConcurrency, fileTimeoutSeconds)
                     val finalRecord = fetchOrCreateAnalysisRecord(rootWalker, analysisSynchronizer)
                     return@runBlocking finalRecord.pathToFileReport
                         .filter { it.value != null }
@@ -52,7 +64,8 @@ class AnalysisPipeline {
             rootWalker: RootDirectoryWalker,
             analysisSynchronizer: AnalysisSynchronizer,
             analysisRecord: AnalysisRecord,
-            maxConcurrency: Int
+            maxConcurrency: Int,
+            fileTimeoutSeconds: Int
         ) = coroutineScope {
             val tempRecord = ConcurrentHashMap<String, String>()
 
@@ -82,7 +95,8 @@ class AnalysisPipeline {
                                     analysisSynchronizer,
                                     tempRecord,
                                     progressBar,
-                                    analysisRecord // <- hier übergeben
+                                    analysisRecord,
+                                    fileTimeoutSeconds
                                 )
                             }
                         }
@@ -102,14 +116,23 @@ class AnalysisPipeline {
             analysisSynchronizer: AnalysisSynchronizer,
             tempRecord: ConcurrentHashMap<String, String>,
             progressBar: ProgressBar,
-            analysisRecord: AnalysisRecord
+            analysisRecord: AnalysisRecord,
+            fileTimeoutSeconds: Int
         ) {
             val fileInfo = rootWalker.getFileInfo(filePath)
             var nonFatalAnalysisExceptionsHappened = false
 
             try {
-                val fileReport = withContext(Dispatchers.IO) {
-                    LanguageAnalyzerFactory.createAnalyzer(fileInfo).analyze()
+                val fileReport = if (fileTimeoutSeconds > 0) {
+                    withTimeout(fileTimeoutSeconds * 1000L) {
+                        withContext(Dispatchers.IO) {
+                            LanguageAnalyzerFactory.createAnalyzer(fileInfo).analyze()
+                        }
+                    }
+                } else {
+                    withContext(Dispatchers.IO) {
+                        LanguageAnalyzerFactory.createAnalyzer(fileInfo).analyze()
+                    }
                 }
 
                 val id = analysisSynchronizer.saveFileReport(fileReport)
@@ -121,6 +144,11 @@ class AnalysisPipeline {
                     analysisSynchronizer.saveAnalysisRecord(AnalysisRecord(recordToSave))
                 }
 
+                synchronized(progressBar) {
+                    progressBar.step()
+                }
+            } catch (ex: TimeoutCancellationException) {
+                Logger.w("Timeout after ${fileTimeoutSeconds}s analyzing: ${fileInfo.physicalPath}")
                 synchronized(progressBar) {
                     progressBar.step()
                 }
