@@ -7,12 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.21.0] - 2026-03-23
+
+### Added
+
+- Collapsible explorer panel with tree navigation
+- Search/filter with hide-all in explorer panel
+- File size limit, per-file timeout, and configurable exclusions for analysis
+- Post-analysis visualization links
+
 ### Changed
 
 - Migrate Java dependency analysis to TreeSitterExcavationSite library
+- Replace just with mise for task running and runtime management
 
 ### Fixed
 
+- Normalize file paths for Windows compatibility
+- Flaky Cypress e2e tests
+- npm audit vulnerabilities
 - Analysis unit tests failing on Windows due to path separator handling
 
 ## [0.20.0] - 2026-02-13
