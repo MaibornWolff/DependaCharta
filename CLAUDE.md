@@ -119,10 +119,24 @@ visualization/
 ```
 
 ### Important Patterns
-- Parser implementations extend `Parser` class and follow visitor pattern
-- Each language has its own parser in `analysis/src/main/kotlin/de/maibornwolff/dependacharta/core/input/*/`
+- Language analyzers live in `analysis/src/main/kotlin/de/maibornwolff/dependacharta/pipeline/analysis/analyzers/<lang>/`
+- Each analyzer implements `LanguageAnalyzer` and extracts packages, imports, declarations, and used types from AST
+- **Java** delegates to the [TreeSitterExcavationSite](https://github.com/MaibornWolff/TreeSitterExcavationSite) (TSE) library via `TreeSitterDependencies.analyze()` and maps TSE domain types to DC domain types. This is the target pattern for future language migrations.
+- **Other languages** still use custom TreeSitter queries (TSQuery) directly. These can be migrated to TSE once it supports dependency analysis for the respective language.
 - Angular components follow standard Angular patterns with services for data management
 - Visualization uses reactive patterns with RxJS for state management
+
+### Migrating a Language Analyzer to TSE
+
+TSE provides dependency analysis via `TreeSitterDependencies.analyze(code, language)` returning a `DependencyResult` with `packagePath`, `imports`, and `declarations` (including `usedTypes`). When TSE adds support for a new language's dependency analysis, DC's analyzer for that language can be migrated.
+
+**Steps:**
+1. **In TSE**: Add dependency analysis support for the language (see TSE's `language-definitions.md` rule). Release a new TSE version.
+2. **In DC**: Update the TSE dependency version in `analysis/build.gradle.kts`
+3. **Replace the analyzer**: Simplify the analyzer to call `TreeSitterDependencies.analyze()` and map TSE types to DC types. See `JavaAnalyzer.kt` as the reference implementation.
+4. **Map types**: `Declaration` → `Node`, `ImportDeclaration` → `Dependency`, `UsedType` → `Type`, `DeclarationType` → `NodeType`
+5. **Verify**: Run the existing analyzer tests — they should pass without changes since the output is the same.
+6. **Clean up**: Remove obsolete files and modules that are no longer needed after the migration (e.g. query classes, utils, unused tree-sitter grammar dependencies).
 
 ## CI/CD Pipeline
 
