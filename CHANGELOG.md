@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Migrate Java dependency analysis to TreeSitterExcavationSite library
+
 ### Fixed
 
 - Analysis unit tests failing on Windows due to path separator handling
