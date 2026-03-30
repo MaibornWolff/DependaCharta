@@ -121,7 +121,7 @@ visualization/
 ### Important Patterns
 - Language analyzers live in `analysis/src/main/kotlin/de/maibornwolff/dependacharta/pipeline/analysis/analyzers/<lang>/`
 - Each analyzer implements `LanguageAnalyzer` and extracts packages, imports, declarations, and used types from AST
-- **Java** delegates to the [TreeSitterExcavationSite](https://github.com/MaibornWolff/TreeSitterExcavationSite) (TSE) library via `TreeSitterDependencies.analyze()` and maps TSE domain types to DC domain types. This is the target pattern for future language migrations.
+- **Java and Kotlin** delegate to the [TreeSitterExcavationSite](https://github.com/MaibornWolff/TreeSitterExcavationSite) (TSE) library via `TreeSitterDependencies.analyze()` and map TSE domain types to DC domain types. This is the target pattern for future language migrations.
 - **Other languages** still use custom TreeSitter queries (TSQuery) directly. These can be migrated to TSE once it supports dependency analysis for the respective language.
 - Angular components follow standard Angular patterns with services for data management
 - Visualization uses reactive patterns with RxJS for state management
