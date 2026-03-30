@@ -1155,7 +1155,7 @@ class KotlinAnalyzerTest {
 
         val nodes = report.nodes
         assertEquals(1, nodes.size)
-        assertEquals(NodeType.CLASS, nodes[0].nodeType)
+        assertEquals(NodeType.ANNOTATION, nodes[0].nodeType)
     }
 
     @Test
