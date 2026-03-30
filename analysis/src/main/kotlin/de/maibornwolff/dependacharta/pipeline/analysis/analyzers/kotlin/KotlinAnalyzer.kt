@@ -15,8 +15,12 @@ class KotlinAnalyzer(
 ) : LanguageAnalyzer {
     override fun analyze(): FileReport {
         val result = TreeSitterDependencies.analyze(fileInfo.content, Language.KOTLIN)
-        val implicitWildcardImport = Dependency(path = Path(result.packagePath), isWildcard = true)
-        val dependencies = (result.imports.map { it.toDependency() } + implicitWildcardImport).toSet()
+        val imports = result.imports.map { it.toDependency() }
+        val dependencies = if (result.packagePath.isNotEmpty()) {
+            (imports + Dependency(path = Path(result.packagePath), isWildcard = true)).toSet()
+        } else {
+            imports.toSet()
+        }
         val nodes = result.declarations.map { declaration ->
             toNode(result.packagePath, dependencies, declaration)
         }
