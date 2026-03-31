@@ -201,10 +201,22 @@ jobs:
           name: coverage-${{ github.run_id }}
           path: visualization/coverage
 
+      - name: Determine version for SonarCloud
+        id: sonar-version
+        run: |
+          if [ "${{ github.ref_type }}" == "tag" ]; then
+            echo "version=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          else
+            LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0")
+            echo "version=${LATEST_TAG}" >> $GITHUB_OUTPUT
+          fi
+
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v5.0.0
         with:
           projectBaseDir: visualization
+          args: >
+            -Dsonar.projectVersion=${{ steps.sonar-version.outputs.version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_VISUALIZATION }}
