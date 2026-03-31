@@ -5,6 +5,8 @@ import de.maibornwolff.dependacharta.pipeline.processing.model.EdgeInfoDto
 import de.maibornwolff.dependacharta.pipeline.processing.model.ProjectNodeDto
 import de.maibornwolff.dependacharta.pipeline.processing.model.build
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
 class GraphNodeTest {
@@ -117,5 +119,55 @@ class GraphNodeTest {
         )
 
         assertThat(projectNodeDto).isEqualTo(expected)
+    }
+
+    @Nested
+    inner class WrapInVirtualRootIfNeeded {
+        @Test
+        fun `should return single root unchanged`() {
+            // Arrange
+            val root = GraphNode(id = "com.example", parent = null, children = emptyList())
+
+            // Act
+            val (nodes, resultRoot) = GraphNode.wrapInVirtualRootIfNeeded(listOf(root))
+
+            // Assert
+            assertThat(nodes).hasSize(1)
+            assertThat(resultRoot).isEqualTo(root)
+        }
+
+        @Test
+        fun `should wrap multiple roots in virtual root`() {
+            // Arrange
+            val root1 = GraphNode(id = "com.first", parent = null, children = emptyList())
+            val root2 = GraphNode(id = "com.second", parent = null, children = emptyList())
+
+            // Act
+            val (nodes, virtualRoot) = GraphNode.wrapInVirtualRootIfNeeded(listOf(root1, root2))
+
+            // Assert
+            assertThat(virtualRoot.id).isEqualTo("__virtual_root__")
+            assertThat(virtualRoot.parent).isNull()
+            assertThat(virtualRoot.children).hasSize(2)
+            assertThat(nodes).allMatch { it.parent == "__virtual_root__" }
+        }
+
+        @Test
+        fun `should throw on empty list`() {
+            // Act & Assert
+            assertThatThrownBy { GraphNode.wrapInVirtualRootIfNeeded(emptyList()) }
+                .isInstanceOf(IllegalArgumentException::class.java)
+        }
+
+        @Test
+        fun `should throw when nodes already have parents`() {
+            // Arrange
+            val node1 = GraphNode(id = "child", parent = "some.parent", children = emptyList())
+            val node2 = GraphNode(id = "root", parent = null, children = emptyList())
+
+            // Act & Assert
+            assertThatThrownBy { GraphNode.wrapInVirtualRootIfNeeded(listOf(node1, node2)) }
+                .isInstanceOf(IllegalStateException::class.java)
+        }
     }
 }
