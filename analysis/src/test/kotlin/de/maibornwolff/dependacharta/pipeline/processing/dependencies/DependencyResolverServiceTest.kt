@@ -257,6 +257,8 @@ class DependencyResolverServiceTest {
         val serverResolved = resolvedNodes.first { it.pathWithName.parts.last() == "Server" }
         assertThat(serverResolved.resolvedNodeDependencies.internalDependencies)
             .containsExactly(Dependency(handler.pathWithName))
+        assertThat(serverResolved.resolvedNodeDependencies.externalDependencies)
+            .isEmpty()
     }
 
     @Test
@@ -271,8 +273,8 @@ class DependencyResolverServiceTest {
                 Dependency(Path(listOf("MyApp", "Services")), true),
             ),
             usedTypes = setOf(
-                Type("String", TypeOfUsage.USAGE, emptyList()),
-                Type("List", TypeOfUsage.USAGE, emptyList()),
+                Type("string", TypeOfUsage.USAGE, emptyList()),
+                Type("bool", TypeOfUsage.USAGE, emptyList()),
                 Type("UserRepository", TypeOfUsage.USAGE, emptyList())
             ),
         )
@@ -297,6 +299,8 @@ class DependencyResolverServiceTest {
         val serviceResolved = resolvedNodes.first { it.pathWithName.parts.last() == "UserService" }
         assertThat(serviceResolved.resolvedNodeDependencies.internalDependencies)
             .containsExactly(Dependency(repository.pathWithName))
+        assertThat(serviceResolved.resolvedNodeDependencies.externalDependencies)
+            .isEmpty()
     }
 
     @Test
