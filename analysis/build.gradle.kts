@@ -20,7 +20,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.MaibornWolff:TreeSitterExcavationSite:v0.4.0")
+    implementation("com.github.MaibornWolff:TreeSitterExcavationSite:v0.5.0")
     implementation("io.github.bonede:tree-sitter:0.26.3")
     implementation("io.github.bonede:tree-sitter-c-sharp:0.23.1")
     implementation("io.github.bonede:tree-sitter-cpp:0.23.4")
@@ -28,7 +28,7 @@ dependencies {
     implementation("io.github.bonede:tree-sitter-php:0.23.11")
     implementation("io.github.bonede:tree-sitter-go:0.23.3")
     implementation("io.github.bonede:tree-sitter-python:0.23.4")
-    implementation("io.github.bonede:tree-sitter-kotlin:0.3.8.1")
+
     implementation("io.github.bonede:tree-sitter-javascript:0.23.1")
     implementation("io.github.bonede:tree-sitter-vue:0.2.1a")
     implementation("com.github.ajalt.clikt:clikt:5.0.3")

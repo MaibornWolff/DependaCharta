@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.22.0] - 2026-03-31
+
+### Changed
+
+- Migrate Kotlin dependency analysis to TreeSitterExcavationSite library
+
+### Fixed
+
+- Skip implicit wildcard import for package-less Java and Kotlin files
+
 ## [0.21.0] - 2026-03-23
 
 ### Added

@@ -673,6 +673,7 @@ class KotlinAnalyzerTest {
         assertEquals(1, nodes.size)
         assertEquals("NoPackageClass", nodes[0].pathWithName.parts.last())
         assertThat(nodes[0].usedTypes).contains(Type.simple("String"))
+        assertThat(nodes[0].dependencies).noneMatch { it.path.parts.isEmpty() }
     }
 
     @Test
@@ -1155,7 +1156,7 @@ class KotlinAnalyzerTest {
 
         val nodes = report.nodes
         assertEquals(1, nodes.size)
-        assertEquals(NodeType.CLASS, nodes[0].nodeType)
+        assertEquals(NodeType.ANNOTATION, nodes[0].nodeType)
     }
 
     @Test

@@ -431,4 +431,21 @@ class JavaAnalyzerTest {
             Type.simple("SomeClass")
         )
     }
+
+    @Test
+    fun `should not add empty-path wildcard dependency for package-less file`() {
+        // given
+        val javaCode = """
+            public class NoPackageClass {
+                private String name;
+            }
+        """.trimIndent()
+
+        // when
+        val report = JavaAnalyzer(FileInfo(SupportedLanguage.JAVA, "./path", javaCode)).analyze()
+
+        // then
+        val dependencies = report.nodes.first().dependencies
+        assertThat(dependencies).noneMatch { it.path.parts.isEmpty() }
+    }
 }
