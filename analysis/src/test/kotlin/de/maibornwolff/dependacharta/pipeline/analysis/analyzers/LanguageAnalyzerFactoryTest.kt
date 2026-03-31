@@ -1,9 +1,15 @@
 package de.maibornwolff.dependacharta.pipeline.analysis.analyzers
 
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.cpp.CppAnalyzer
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.csharp.CSharpAnalyzer
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.golang.GoAnalyzer
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.java.JavaAnalyzer
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.javascript.JavascriptAnalyzer
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.kotlin.KotlinAnalyzer
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.php.PhpAnalyzer
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.python.PythonAnalyzer
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.TypescriptAnalyzer
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.vue.VueAnalyzer
 import de.maibornwolff.dependacharta.pipeline.analysis.model.FileInfo
 import de.maibornwolff.dependacharta.pipeline.shared.SupportedLanguage
 import org.assertj.core.api.Assertions.assertThat
@@ -36,11 +42,47 @@ class LanguageAnalyzerFactoryTest {
                 physicalPath = "",
                 content = ""
             )
+            val javascriptFileInfo = FileInfo(
+                language = SupportedLanguage.JAVASCRIPT,
+                physicalPath = "",
+                content = ""
+            )
+            val phpFileInfo = FileInfo(
+                language = SupportedLanguage.PHP,
+                physicalPath = "",
+                content = ""
+            )
+            val goFileInfo = FileInfo(
+                language = SupportedLanguage.GO,
+                physicalPath = "",
+                content = ""
+            )
+            val pythonFileInfo = FileInfo(
+                language = SupportedLanguage.PYTHON,
+                physicalPath = "",
+                content = ""
+            )
+            val cppFileInfo = FileInfo(
+                language = SupportedLanguage.CPP,
+                physicalPath = "",
+                content = ""
+            )
+            val vueFileInfo = FileInfo(
+                language = SupportedLanguage.VUE,
+                physicalPath = "",
+                content = ""
+            )
             return listOf(
                 Arguments.of(javaFileInfo, JavaAnalyzer(javaFileInfo)),
                 Arguments.of(cSharpFileInfo, CSharpAnalyzer(cSharpFileInfo)),
                 Arguments.of(typescriptFileInfo, TypescriptAnalyzer(typescriptFileInfo)),
-                Arguments.of(kotlinFileInfo, KotlinAnalyzer(kotlinFileInfo))
+                Arguments.of(kotlinFileInfo, KotlinAnalyzer(kotlinFileInfo)),
+                Arguments.of(javascriptFileInfo, JavascriptAnalyzer(javascriptFileInfo)),
+                Arguments.of(phpFileInfo, PhpAnalyzer(phpFileInfo)),
+                Arguments.of(goFileInfo, GoAnalyzer(goFileInfo)),
+                Arguments.of(pythonFileInfo, PythonAnalyzer(pythonFileInfo)),
+                Arguments.of(cppFileInfo, CppAnalyzer(cppFileInfo)),
+                Arguments.of(vueFileInfo, VueAnalyzer(vueFileInfo))
             )
         }
     }

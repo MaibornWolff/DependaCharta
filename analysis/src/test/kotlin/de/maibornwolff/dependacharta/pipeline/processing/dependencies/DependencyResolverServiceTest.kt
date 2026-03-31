@@ -220,6 +220,90 @@ class DependencyResolverServiceTest {
     }
 
     @Test
+    fun `should resolve Go node and filter out standard library types`() {
+        // Arrange
+        val goStruct = Node.build(
+            pathWithName = Path(listOf("myapp", "handler", "Server")),
+            physicalPath = "handler/server.go",
+            nodeType = NodeType.CLASS,
+            language = SupportedLanguage.GO,
+            dependencies = setOf(
+                Dependency(Path(listOf("myapp", "handler")), true),
+            ),
+            usedTypes = setOf(
+                Type("error", TypeOfUsage.USAGE, emptyList()),
+                Type("string", TypeOfUsage.USAGE, emptyList()),
+                Type("Handler", TypeOfUsage.USAGE, emptyList())
+            ),
+        )
+
+        val handler = Node.build(
+            pathWithName = Path(listOf("myapp", "handler", "Handler")),
+            physicalPath = "handler/handler.go",
+            nodeType = NodeType.INTERFACE,
+            language = SupportedLanguage.GO,
+            dependencies = setOf(
+                Dependency(Path(listOf("myapp", "handler")), true),
+            ),
+            usedTypes = setOf(),
+        )
+
+        val report = FileReport(nodes = listOf(goStruct, handler))
+
+        // Act
+        val resolvedNodes = DependencyResolverService.resolveNodes(listOf(report))
+
+        // Assert
+        val serverResolved = resolvedNodes.first { it.pathWithName.parts.last() == "Server" }
+        assertThat(serverResolved.resolvedNodeDependencies.internalDependencies)
+            .containsExactly(Dependency(handler.pathWithName))
+        assertThat(serverResolved.resolvedNodeDependencies.externalDependencies)
+            .isEmpty()
+    }
+
+    @Test
+    fun `should resolve C# node and filter out standard library types`() {
+        // Arrange
+        val csClass = Node.build(
+            pathWithName = Path(listOf("MyApp", "Services", "UserService")),
+            physicalPath = "Services/UserService.cs",
+            nodeType = NodeType.CLASS,
+            language = SupportedLanguage.C_SHARP,
+            dependencies = setOf(
+                Dependency(Path(listOf("MyApp", "Services")), true),
+            ),
+            usedTypes = setOf(
+                Type("string", TypeOfUsage.USAGE, emptyList()),
+                Type("bool", TypeOfUsage.USAGE, emptyList()),
+                Type("UserRepository", TypeOfUsage.USAGE, emptyList())
+            ),
+        )
+
+        val repository = Node.build(
+            pathWithName = Path(listOf("MyApp", "Services", "UserRepository")),
+            physicalPath = "Services/UserRepository.cs",
+            nodeType = NodeType.CLASS,
+            language = SupportedLanguage.C_SHARP,
+            dependencies = setOf(
+                Dependency(Path(listOf("MyApp", "Services")), true),
+            ),
+            usedTypes = setOf(),
+        )
+
+        val report = FileReport(nodes = listOf(csClass, repository))
+
+        // Act
+        val resolvedNodes = DependencyResolverService.resolveNodes(listOf(report))
+
+        // Assert
+        val serviceResolved = resolvedNodes.first { it.pathWithName.parts.last() == "UserService" }
+        assertThat(serviceResolved.resolvedNodeDependencies.internalDependencies)
+            .containsExactly(Dependency(repository.pathWithName))
+        assertThat(serviceResolved.resolvedNodeDependencies.externalDependencies)
+            .isEmpty()
+    }
+
+    @Test
     fun `Maps Node to NodeInformation`() {
         // given
         val node = Node.build(
