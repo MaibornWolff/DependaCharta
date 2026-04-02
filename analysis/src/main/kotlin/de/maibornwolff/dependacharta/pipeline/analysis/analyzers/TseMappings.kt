@@ -25,6 +25,8 @@ fun DeclarationType.toNodeType(): NodeType {
         DeclarationType.INTERFACE -> NodeType.INTERFACE
         DeclarationType.ENUM -> NodeType.ENUM
         DeclarationType.ANNOTATION -> NodeType.ANNOTATION
+        DeclarationType.FUNCTION -> NodeType.FUNCTION
+        DeclarationType.VARIABLE -> NodeType.VARIABLE
         DeclarationType.UNKNOWN -> NodeType.UNKNOWN
     }
 }
