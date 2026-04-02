@@ -20,7 +20,8 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.MaibornWolff:TreeSitterExcavationSite:v0.5.0")
+    // Composite build: use local TSE checkout for development. REVERT BEFORE MERGING.
+    implementation("de.maibornwolff.treesitter.excavationsite:treesitter-excavationsite")
     implementation("io.github.bonede:tree-sitter:0.26.3")
     implementation("io.github.bonede:tree-sitter-c-sharp:0.23.1")
     implementation("io.github.bonede:tree-sitter-cpp:0.23.4")
