@@ -2,3 +2,9 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 rootProject.name = "dependacharta-analysis"
+
+includeBuild("../../TreeSitterExcavationSite") {
+    dependencySubstitution {
+        substitute(module("com.github.MaibornWolff:TreeSitterExcavationSite")).using(project(":"))
+    }
+}
