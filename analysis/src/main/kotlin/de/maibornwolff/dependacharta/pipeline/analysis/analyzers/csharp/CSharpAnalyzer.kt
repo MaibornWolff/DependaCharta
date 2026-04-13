@@ -18,11 +18,14 @@ class CSharpAnalyzer(
 ) : LanguageAnalyzer {
     override fun analyze(): FileReport {
         val result = TreeSitterDependencies.analyze(fileInfo.content, Language.CSHARP)
-        val imports = result.imports.map { it.toDependency() }
+        val globalImports = result.imports.filter { it.namespacePath.isEmpty() }.map { it.toDependency() }
 
         val nodes = result.declarations.map { declaration ->
             val namespacePath = declaration.parentPath
-            val dependencies = (imports + Dependency(path = Path(namespacePath), isWildcard = true)).toSet()
+            val scopedImports = result.imports
+                .filter { it.namespacePath == declaration.parentPath }
+                .map { it.toDependency() }
+            val dependencies = (globalImports + scopedImports + Dependency(path = Path(namespacePath), isWildcard = true)).toSet()
 
             Node(
                 pathWithName = Path(namespacePath + declaration.name),
