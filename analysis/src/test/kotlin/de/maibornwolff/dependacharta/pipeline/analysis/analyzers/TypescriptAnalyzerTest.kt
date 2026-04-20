@@ -260,13 +260,12 @@ class TypescriptAnalyzerTest {
 
         // then
         val expectedDependency = Dependency(
-            path = Path(listOf("MyGreatInterface", "MyGreatInterface_$DEFAULT_EXPORT_NODE_NAME")),
+            path = Path(listOf("MyGreatInterface", "DEFAULT_EXPORT")),
         )
         val node = report.nodes[0]
         assertThat(node.dependencies).contains(expectedDependency)
-        assertThat(node.usedTypes).containsExactlyInAnyOrder(
+        assertThat(node.usedTypes).containsExactly(
             Type.simple("MyGreatInterface"),
-            Type.simple("MyGreatInterface_$DEFAULT_EXPORT_NODE_NAME")
         )
     }
 
@@ -820,7 +819,7 @@ class TypescriptAnalyzerTest {
 
         // then
         assertThat(report.nodes[0].dependencies).contains(
-            Dependency(Path(listOf("MyGreatInterface", "MyGreatInterface_$DEFAULT_EXPORT_NODE_NAME"))),
+            Dependency(Path(listOf("MyGreatInterface", "DEFAULT_EXPORT"))),
             Dependency(Path(listOf("MyGreatInterface", "SomeNamedImport")))
         )
     }
@@ -844,7 +843,7 @@ class TypescriptAnalyzerTest {
 
         // then
         assertThat(report.nodes[0].dependencies).contains(
-            Dependency(Path(listOf("myModule", "myModule_$DEFAULT_EXPORT_NODE_NAME")))
+            Dependency(Path(listOf("myModule", "DEFAULT_EXPORT")))
         )
     }
 
