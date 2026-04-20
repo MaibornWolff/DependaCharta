@@ -9,6 +9,7 @@ import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
 import de.maibornwolff.dependacharta.pipeline.shared.SupportedLanguage
 import de.maibornwolff.treesitter.excavationsite.api.Declaration
 import de.maibornwolff.treesitter.excavationsite.api.ImportDeclaration
+import de.maibornwolff.treesitter.excavationsite.api.Language
 
 const val DEFAULT_EXPORT_NODE_NAME = "DEFAULT_EXPORT"
 
@@ -16,6 +17,8 @@ class TypescriptAnalyzer(
     private val fileInfo: FileInfo,
 ) : BaseLanguageAnalyzer(fileInfo) {
     override val language = SupportedLanguage.TYPESCRIPT
+
+    override fun tseLanguage(): Language = if (fileInfo.physicalPath.endsWith(".tsx")) Language.TSX else Language.TYPESCRIPT
 
     override fun buildPathWithName(
         packagePath: List<String>,

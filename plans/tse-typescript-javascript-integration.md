@@ -74,6 +74,7 @@ After tests pass:
 - [x] Run existing `TypescriptAnalyzerTest` (baseline: all green)
 - [x] Replace `TypescriptAnalyzer` body with `BaseLanguageAnalyzer` extension
 - [ ] Run `TypescriptAnalyzerTest`, fix failures iteratively (20/49 passing; 29 blocked on TSE changes)
+- [-] Implement TSX dependency support — see `plans/tsx-dependency-support.md` (in progress)
 - [ ] Delete TypeScript legacy query/model/tsconfig files
 - [ ] Run existing `JavascriptAnalyzerTest` (baseline)
 - [ ] Replace `JavascriptAnalyzer` body with `BaseLanguageAnalyzer` extension
@@ -118,5 +119,5 @@ After tests pass:
 - **Key files to modify**: `analysis/settings.gradle.kts`, `typescript/TypescriptAnalyzer.kt`, `javascript/JavascriptAnalyzer.kt`
 - **Key files to delete**: `typescript/queries/*`, `typescript/model/*`, `typescript/tsconfig/*`, `TypescriptExportNameExtractor.kt`, `javascript/queries/*`
 - **Test files** (should pass unchanged after migration): `analyzers/TypescriptAnalyzerTest.kt` (1382 lines), `analyzers/JavascriptAnalyzerTest.kt` (611 lines)
-- TSX files use `.tsx` extension; TSE's `TYPESCRIPT` language should handle both `.ts` and `.tsx` — verify this
+- TSX support (detecting `<Routes />` as a usedType) is tracked separately in `plans/tsx-dependency-support.md` and must be completed as part of this migration — it is a regression, not a future feature.
 - The `dependency-migration.md` file does not yet exist; create it in `.claude/rules/` after the migration to document lessons learned
