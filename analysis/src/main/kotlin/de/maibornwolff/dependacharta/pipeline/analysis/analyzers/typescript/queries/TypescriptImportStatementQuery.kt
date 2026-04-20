@@ -5,7 +5,6 @@ import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.ex
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.getNamedChildren
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.nodeAsString
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.stripSourceFileExtension
-import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.DEFAULT_EXPORT_NODE_NAME
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.model.DependenciesAndAliases
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.model.IdentifierWithAlias
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Dependency
@@ -16,6 +15,8 @@ import org.treesitter.TSLanguage
 import org.treesitter.TSNode
 import org.treesitter.TSQuery
 import org.treesitter.TSQueryMatch
+
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.DEFAULT_EXPORT_NODE_NAME
 
 /**
  *  [execute]
