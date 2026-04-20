@@ -3,6 +3,7 @@ package de.maibornwolff.dependacharta.pipeline.analysis.analyzers
 import de.maibornwolff.dependacharta.pipeline.analysis.model.*
 import de.maibornwolff.dependacharta.pipeline.shared.SupportedLanguage
 import de.maibornwolff.treesitter.excavationsite.api.Declaration
+import de.maibornwolff.treesitter.excavationsite.api.ImportDeclaration
 import de.maibornwolff.treesitter.excavationsite.api.Language
 import de.maibornwolff.treesitter.excavationsite.api.TreeSitterDependencies
 
@@ -13,7 +14,7 @@ abstract class BaseLanguageAnalyzer(
 
     override fun analyze(): FileReport {
         val result = TreeSitterDependencies.analyze(fileInfo.content, Language.valueOf(language.name))
-        val imports = result.imports.map { it.toDependency() }
+        val imports = result.imports.map { convertImport(it) }
         val dependencies = if (result.packagePath.isNotEmpty()) {
             (imports + Dependency(path = Path(result.packagePath), isWildcard = true)).toSet()
         } else {
@@ -24,6 +25,8 @@ abstract class BaseLanguageAnalyzer(
         }
         return FileReport(nodes)
     }
+
+    protected open fun convertImport(import: ImportDeclaration): Dependency = import.toDependency()
 
     protected open fun buildPathWithName(
         packagePath: List<String>,

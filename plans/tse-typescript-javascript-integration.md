@@ -72,8 +72,8 @@ After tests pass:
 - [ ] Check out `feat/typescript-javascript-dependency-support` on the TSE repo (handled manually)
 - [x] Verify composite build works: `./gradlew test` picks up local TSE
 - [x] Run existing `TypescriptAnalyzerTest` (baseline: all green)
-- [ ] Replace `TypescriptAnalyzer` body with `BaseLanguageAnalyzer` extension
-- [ ] Run `TypescriptAnalyzerTest`, fix failures iteratively
+- [x] Replace `TypescriptAnalyzer` body with `BaseLanguageAnalyzer` extension
+- [ ] Run `TypescriptAnalyzerTest`, fix failures iteratively (20/49 passing; 29 blocked on TSE changes)
 - [ ] Delete TypeScript legacy query/model/tsconfig files
 - [ ] Run existing `JavascriptAnalyzerTest` (baseline)
 - [ ] Replace `JavascriptAnalyzer` body with `BaseLanguageAnalyzer` extension
@@ -90,6 +90,26 @@ After tests pass:
 - Fixed `TseMappings.kt`: new TSE version added `DeclarationType.FUNCTION` and `DeclarationType.VARIABLE` — added mappings to `NodeType.FUNCTION` / `NodeType.VARIABLE`.
 - `TypescriptAnalyzerTest` baseline: all green.
 - Next session starts at: **Replace `TypescriptAnalyzer` body with `BaseLanguageAnalyzer` extension**
+
+## Session notes (2026-04-20)
+
+- `TypescriptAnalyzer` replaced with `BaseLanguageAnalyzer` extension; ktlint clean.
+- Added `convertImport` hook to `BaseLanguageAnalyzer` (protected open, used in `analyze()`).
+- `TypescriptAnalyzer` overrides:
+  - `buildPathWithName`: uses file path (not TSE `packagePath`) as node prefix; handles `.tsx`
+  - `convertImport`: resolves relative paths (`./`, `../`) and strips file extensions
+- `DEFAULT_EXPORT_NODE_NAME` kept as a package-level const in `TypescriptAnalyzer.kt` (still used by `TypescriptImportStatementQuery` for VueAnalyzer + by tests).
+- 20/49 `TypescriptAnalyzerTest` tests passing. 29 blocked on TSE changes.
+- **TSE changes needed** (see prompt below):
+  1. Named import granularity: `import { A, B }` → one `ImportDeclaration` per name
+  2. Default import: `import X from './foo'` → `[".", "foo", "DEFAULT_EXPORT"]`
+  3. Named re-export granularity: `export { A, B }` → one `ImportDeclaration` per name
+  4. Named re-export alias: `export { A as B }` → use original name `A` in import path
+  5. CommonJS named destructuring: `const { A, B } = require(...)` → one per name
+  6. CommonJS default: `const X = require(...)` → `[".", "foo", "DEFAULT_EXPORT"]`
+  7. Fix: Add `variable_declaration` to handled declaration types (for `var`)
+  8. Fix: Skip nested declarations (only top-level declarations should be extracted)
+- Next session: after TSE implements changes, re-run `TypescriptAnalyzerTest` and fix remaining failures.
 
 ## Notes
 

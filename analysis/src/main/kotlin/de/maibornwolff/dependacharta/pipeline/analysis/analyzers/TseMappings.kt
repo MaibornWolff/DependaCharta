@@ -27,6 +27,7 @@ fun DeclarationType.toNodeType(): NodeType {
         DeclarationType.ANNOTATION -> NodeType.ANNOTATION
         DeclarationType.FUNCTION -> NodeType.FUNCTION
         DeclarationType.VARIABLE -> NodeType.VARIABLE
+        DeclarationType.REEXPORT -> NodeType.REEXPORT
         DeclarationType.UNKNOWN -> NodeType.UNKNOWN
     }
 }
