@@ -1,5 +1,6 @@
 package de.maibornwolff.dependacharta.pipeline.analysis.analyzers
 
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.stripSourceFileExtension
 import de.maibornwolff.dependacharta.pipeline.analysis.model.*
 import de.maibornwolff.dependacharta.pipeline.shared.SupportedLanguage
 import de.maibornwolff.treesitter.excavationsite.api.Declaration
@@ -8,7 +9,7 @@ import de.maibornwolff.treesitter.excavationsite.api.Language
 import de.maibornwolff.treesitter.excavationsite.api.TreeSitterDependencies
 
 abstract class BaseLanguageAnalyzer(
-    private val fileInfo: FileInfo,
+    protected val fileInfo: FileInfo,
 ) : LanguageAnalyzer {
     protected abstract val language: SupportedLanguage
 
@@ -29,6 +30,18 @@ abstract class BaseLanguageAnalyzer(
     }
 
     protected open fun convertImport(import: ImportDeclaration): Dependency = import.toDependency()
+
+    protected fun resolveImportPath(tsePath: List<String>): List<String> {
+        val stripped = tsePath.map { it.stripSourceFileExtension() }.filter { it.isNotEmpty() }
+        if (stripped.isEmpty() || (stripped.first() != "." && stripped.first() != "..")) return stripped
+        var dirParts = fileInfo.physicalPathAsPath().parts.dropLast(1)
+        var remaining = stripped
+        while (remaining.isNotEmpty() && (remaining.first() == "." || remaining.first() == "..")) {
+            if (remaining.first() == "..") dirParts = dirParts.dropLast(1)
+            remaining = remaining.drop(1)
+        }
+        return dirParts + remaining
+    }
 
     protected open fun buildPathWithName(
         packagePath: List<String>,
