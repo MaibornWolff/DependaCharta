@@ -76,9 +76,9 @@ After tests pass:
 - [ ] Run `TypescriptAnalyzerTest`, fix failures iteratively (20/49 passing; 29 blocked on TSE changes)
 - [-] Implement TSX dependency support — see `plans/tsx-dependency-support.md` (in progress)
 - [ ] Delete TypeScript legacy query/model/tsconfig files
-- [ ] Run existing `JavascriptAnalyzerTest` (baseline)
-- [ ] Replace `JavascriptAnalyzer` body with `BaseLanguageAnalyzer` extension
-- [ ] Run `JavascriptAnalyzerTest`, fix failures iteratively
+- [x] Run existing `JavascriptAnalyzerTest` (baseline: all green)
+- [x] Replace `JavascriptAnalyzer` body with `BaseLanguageAnalyzer` extension
+- [ ] Run `JavascriptAnalyzerTest`, fix failures iteratively (0/22 passing; blocked on TSE adding `DeclarationExtractor` to `JavascriptDependencyMapping`)
 - [ ] Delete JavaScript legacy query files and data classes
 - [ ] Run full `mise run test-analysis` (all green)
 - [ ] Run `/dc-compare` on a real TS project, iterate until output matches
