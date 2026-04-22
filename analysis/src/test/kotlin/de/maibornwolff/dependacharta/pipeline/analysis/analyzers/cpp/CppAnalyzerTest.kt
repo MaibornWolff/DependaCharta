@@ -568,4 +568,37 @@ void Creature::SetSpeed(SpeedType speedType, const Speed& speed) {
         val fooNode = report.nodes.first { it.name() == "Foo" }
         assertThat(fooNode.pathWithName.withoutName().last()).isEqualTo("B")
     }
+
+    /**
+     * Documents Issue 1 of the cppcheck dc-compare gap (round 5 analysis):
+     * header and .cpp variants of the same class currently produce different
+     * `pathWithName` values (`cli.executor_h.Executor` vs `cli.executor_cpp.Executor`),
+     * so ProcessingPipeline.mergeIdenticalTypes never unites them and the .cpp's
+     * out-of-class usedTypes never reach the header's node. See resolver-gap
+     * backlog in plans/add-cpp-dependency-support.md.
+     */
+    @org.junit.jupiter.api.Disabled("Issue 1: .h and .cpp declarations don't merge — documented for future fix")
+    @Test
+    fun `should produce matching pathWithName for class declared in header and its implementation file`() {
+        // Arrange — header declares the class; .cpp defines an out-of-class method for it.
+        val headerCode = """
+            class Executor {
+                Executor(const Settings& settings);
+            };
+        """.trimIndent()
+        val implCode = """
+            Executor::Executor(const Settings& settings) {}
+        """.trimIndent()
+
+        // Act
+        val headerReport = CppAnalyzer(FileInfo(SupportedLanguage.CPP, "cli/executor.h", headerCode)).analyze()
+        val implReport = CppAnalyzer(FileInfo(SupportedLanguage.CPP, "cli/executor.cpp", implCode)).analyze()
+
+        // Assert
+        val headerExecutor = headerReport.nodes.single { it.name() == "Executor" }
+        val implExecutor = implReport.nodes.single { it.name() == "Executor" }
+        assertThat(implExecutor.pathWithName)
+            .`as`("header and implementation files must produce the same pathWithName so ProcessingPipeline.mergeDuplicates can unite them")
+            .isEqualTo(headerExecutor.pathWithName)
+    }
 }

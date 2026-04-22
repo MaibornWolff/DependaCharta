@@ -38,7 +38,12 @@ class CppAnalyzer(
             } else {
                 emptyList()
             }
-            val dependencies = (globalImports + scopedImports + selfWildcard).toSet()
+            val namespacePrefixWildcards = declaration.usedTypes
+                .map { it.namespacePrefix }
+                .filter { it.isNotEmpty() }
+                .map { Dependency(path = Path(it), isWildcard = true) }
+                .toSet()
+            val dependencies = (globalImports + scopedImports + selfWildcard + namespacePrefixWildcards).toSet()
             val pathWithName = if (declaration.parentPath.isEmpty()) {
                 Path(physicalPathParts + declaration.name)
             } else {
