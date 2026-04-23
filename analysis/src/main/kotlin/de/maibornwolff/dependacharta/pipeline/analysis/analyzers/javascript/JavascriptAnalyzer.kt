@@ -4,13 +4,10 @@ import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.BaseLanguageAna
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.withoutFileSuffix
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Dependency
 import de.maibornwolff.dependacharta.pipeline.analysis.model.FileInfo
-import de.maibornwolff.dependacharta.pipeline.analysis.model.NodeType
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
 import de.maibornwolff.dependacharta.pipeline.shared.SupportedLanguage
 import de.maibornwolff.treesitter.excavationsite.api.Declaration
 import de.maibornwolff.treesitter.excavationsite.api.ImportDeclaration
-
-const val DEFAULT_EXPORT_NAME = "default"
 
 class JavascriptAnalyzer(
     fileInfo: FileInfo,
@@ -30,14 +27,3 @@ class JavascriptAnalyzer(
         return Dependency(path = Path(resolvedPath), isWildcard = import.isWildcard)
     }
 }
-
-// Kept for query classes (deleted in cleanup phase)
-data class JavascriptDeclaration(
-    val name: String,
-    val nodeType: NodeType
-)
-
-data class JavascriptReexport(
-    val exportedName: String,
-    val dependency: Dependency
-)
