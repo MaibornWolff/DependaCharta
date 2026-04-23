@@ -17,6 +17,7 @@ import de.maibornwolff.treesitter.excavationsite.api.ImportDeclaration
 import de.maibornwolff.treesitter.excavationsite.api.ImportKind
 import de.maibornwolff.treesitter.excavationsite.api.Language
 import de.maibornwolff.treesitter.excavationsite.api.TreeSitterDependencies
+import de.maibornwolff.treesitter.excavationsite.api.UsedType
 
 class CppAnalyzer(
     private val fileInfo: FileInfo
@@ -37,8 +38,7 @@ class CppAnalyzer(
                 Dependency(path = Path(declaration.parentPath), isWildcard = true)
             )
             val namespacePrefixWildcards = declaration.usedTypes
-                .map { it.namespacePrefix }
-                .filter { it.isNotEmpty() }
+                .flatMap { it.collectNamespacePrefixes() }
                 .map { Dependency(path = Path(it), isWildcard = true) }
                 .toSet()
             val dependencies = (globalImports + scopedImports + selfWildcard + namespacePrefixWildcards).toSet()
@@ -58,6 +58,11 @@ class CppAnalyzer(
             )
         }
         return FileReport(nodes)
+    }
+
+    private fun UsedType.collectNamespacePrefixes(): List<List<String>> {
+        val own = if (namespacePrefix.isEmpty()) emptyList() else listOf(namespacePrefix)
+        return own + genericTypes.flatMap { it.collectNamespacePrefixes() }
     }
 
     private fun ImportDeclaration.normalize(physicalPath: Path): Dependency {
