@@ -33,11 +33,9 @@ class CppAnalyzer(
             val scopedImports = result.imports
                 .filter { it.namespacePath == declaration.parentPath }
                 .map { it.normalize(physicalPathAsPath) }
-            val selfWildcard = if (declaration.parentPath.isNotEmpty()) {
-                listOf(Dependency(path = Path(declaration.parentPath), isWildcard = true))
-            } else {
-                emptyList()
-            }
+            val selfWildcard = listOf(
+                Dependency(path = Path(declaration.parentPath), isWildcard = true)
+            )
             val namespacePrefixWildcards = declaration.usedTypes
                 .map { it.namespacePrefix }
                 .filter { it.isNotEmpty() }
