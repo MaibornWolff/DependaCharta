@@ -57,6 +57,23 @@ After tests pass:
 - `JavascriptDeclaration` and `JavascriptReexport` data classes (in `JavascriptAnalyzer.kt`)
 - `DEFAULT_EXPORT_NAME` constant
 
+### 5a. Migrate VueAnalyzer to TSE (prerequisite for legacy deletion)
+VueAnalyzer depends directly on legacy TS/JS query classes that will be deleted. Must be migrated first.
+
+**Design**: VueAnalyzer calls `TreeSitterDependencies.analyze()` directly for script blocks (TS/JS), same as BaseLanguageAnalyzer does. Template component usage logic stays unchanged.
+
+**Refactoring needed**: Extract `resolveImportPath` from `BaseLanguageAnalyzer` to a package-level function so VueAnalyzer (which doesn't extend BaseLanguageAnalyzer) can share the logic.
+
+**Expected test failures (TSE-limited, not migration bugs)**:
+- `tracks named imports from both module alias and relative paths` — needs TSE named import granularity (#1)
+- `handles Vue SFC with TSX script` / `handles Vue SFC with JSX script` — needs TSE TSX/JSX support
+
+**Steps**:
+- Extract `resolveImportPath` to package-level function; update `BaseLanguageAnalyzer` to call it
+- Replace legacy query calls in VueAnalyzer with direct TSE call + import mapping
+- Remove `DependenciesAndAliases` usage from VueAnalyzer
+- Run `VueAnalyzerTest` — confirm structure tests pass, note TSE-blocked failures
+
 ### 6. Verify with /dc-compare
 - Run `/dc-compare` against a real TypeScript project; iterate until output matches `main`
 - Run `/dc-compare` against a real JavaScript project; iterate until output matches `main`
@@ -80,6 +97,9 @@ After tests pass:
 - [x] Replace `JavascriptAnalyzer` body with `BaseLanguageAnalyzer` extension
 - [ ] Run `JavascriptAnalyzerTest`, fix failures iteratively (0/22 passing; blocked on TSE adding `DeclarationExtractor` to `JavascriptDependencyMapping`)
 - [ ] Delete JavaScript legacy query files and data classes
+- [x] Extract `resolveImportPath` to package-level function; update `BaseLanguageAnalyzer`
+- [x] Migrate VueAnalyzer to TSE (replace legacy query calls)
+- [x] Run `VueAnalyzerTest` — 8/10 green; 2 blocked on TSE (TSX + named import granularity)
 - [ ] Run full `mise run test-analysis` (all green)
 - [ ] Run `/dc-compare` on a real TS project, iterate until output matches
 - [ ] Run `/dc-compare` on a real JS project, iterate until output matches

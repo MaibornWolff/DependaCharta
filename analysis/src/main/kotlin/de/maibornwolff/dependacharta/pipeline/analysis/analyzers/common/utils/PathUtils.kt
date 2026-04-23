@@ -3,6 +3,7 @@ package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.model.DirectImport
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.model.Import
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.model.RelativeImport
+import de.maibornwolff.dependacharta.pipeline.analysis.model.FileInfo
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
 import java.io.File
 
@@ -71,6 +72,25 @@ fun String.stripSourceFileExtension(): String {
         this.endsWith(".js") -> this.dropLast(3)
         else -> this
     }
+}
+
+/**
+ * Resolves a TSE import path (List<String>) to a flat list of path segments,
+ * handling relative paths (starting with "." or "..") using the containing file's location.
+ */
+fun resolveImportPath(
+    tsePath: List<String>,
+    fileInfo: FileInfo
+): List<String> {
+    val stripped = tsePath.map { it.stripSourceFileExtension() }.filter { it.isNotEmpty() }
+    if (stripped.isEmpty() || (stripped.first() != "." && stripped.first() != "..")) return stripped
+    var dirParts = fileInfo.physicalPathAsPath().parts.dropLast(1)
+    var remaining = stripped
+    while (remaining.isNotEmpty() && (remaining.first() == "." || remaining.first() == "..")) {
+        if (remaining.first() == "..") dirParts = dirParts.dropLast(1)
+        remaining = remaining.drop(1)
+    }
+    return dirParts + remaining
 }
 
 /**
