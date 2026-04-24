@@ -9,6 +9,10 @@ import de.maibornwolff.dependacharta.pipeline.shared.SupportedLanguage
 import de.maibornwolff.treesitter.excavationsite.api.Declaration
 import de.maibornwolff.treesitter.excavationsite.api.ImportDeclaration
 
+// "DEFAULT_EXPORT" is the name TSE assigns to default export declarations
+private const val DEFAULT_EXPORT = "DEFAULT_EXPORT"
+private const val JS_DEFAULT_EXPORT = "default"
+
 class JavascriptAnalyzer(
     fileInfo: FileInfo,
 ) : BaseLanguageAnalyzer(fileInfo) {
@@ -22,8 +26,10 @@ class JavascriptAnalyzer(
         return fileInfo.physicalPathAsPath().withoutFileSuffix(extension) + declaration.name
     }
 
-    override fun convertImport(import: ImportDeclaration): Dependency {
-        val resolvedPath = resolveImportPath(import.path)
-        return Dependency(path = Path(resolvedPath), isWildcard = import.isWildcard)
+    override fun convertImport(import: ImportDeclaration): Set<Dependency> {
+        val resolvedPath = resolveImportPath(import.path).let { path ->
+            if (path.lastOrNull() == DEFAULT_EXPORT) path.dropLast(1) + JS_DEFAULT_EXPORT else path
+        }
+        return setOf(Dependency(path = Path(resolvedPath), isWildcard = import.isWildcard))
     }
 }
