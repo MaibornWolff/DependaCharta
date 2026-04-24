@@ -90,20 +90,36 @@ VueAnalyzer depends directly on legacy TS/JS query classes that will be deleted.
 - [x] Verify composite build works: `./gradlew test` picks up local TSE
 - [x] Run existing `TypescriptAnalyzerTest` (baseline: all green)
 - [x] Replace `TypescriptAnalyzer` body with `BaseLanguageAnalyzer` extension
-- [ ] Run `TypescriptAnalyzerTest`, fix failures iteratively (20/49 passing; 29 blocked on TSE changes)
+- [x] Run `TypescriptAnalyzerTest`, fix failures iteratively (46/49 passing; 3 remain blocked on TSE/complex DC)
 - [-] Implement TSX dependency support — see `plans/tsx-dependency-support.md` (in progress)
 - [ ] Delete TypeScript legacy query/model/tsconfig files
 - [x] Run existing `JavascriptAnalyzerTest` (baseline: all green)
 - [x] Replace `JavascriptAnalyzer` body with `BaseLanguageAnalyzer` extension
-- [ ] Run `JavascriptAnalyzerTest`, fix failures iteratively (0/22 passing; blocked on TSE adding `DeclarationExtractor` to `JavascriptDependencyMapping`)
+- [x] Run `JavascriptAnalyzerTest`, fix failures iteratively (20/22 passing; 2 remain blocked on TSE/complex DC)
 - [ ] Delete JavaScript legacy query files and data classes
 - [x] Extract `resolveImportPath` to package-level function; update `BaseLanguageAnalyzer`
 - [x] Migrate VueAnalyzer to TSE (replace legacy query calls)
-- [x] Run `VueAnalyzerTest` — 8/10 green; 2 blocked on TSE (TSX + named import granularity)
+- [x] Run `VueAnalyzerTest` — 9/10 green; 1 blocked on TSE (named import granularity)
 - [ ] Run full `mise run test-analysis` (all green)
 - [ ] Run `/dc-compare` on a real TS project, iterate until output matches
 - [ ] Run `/dc-compare` on a real JS project, iterate until output matches
 - [ ] Remove composite build config once TSE version is released; ask user to commit
+
+## Session notes (2026-04-24)
+
+**Progress: 12 → 6 test failures (606/612 passing)**
+
+Fixes applied in DC:
+1. **Declare module paths** (3 tests fixed): `buildPathWithName` now uses `declaration.parentPath` when non-empty
+2. **REEXPORT per-import filtering** (1 test fixed): `selectImports` hook filters imports to only the matching one per REEXPORT node; handles aliased re-exports via `usedTypes`
+3. **Implicit index dependency** (1 test fixed): `convertImport` returns `Set<Dependency>` including an index variant
+4. **Import specifiers as usedTypes** (2 tests fixed + ProcessingPipelineTest): `extraUsedTypes` hook adds import specifier names so the pipeline can resolve type dependencies
+5. **JS default import naming** (3 tests fixed): JavascriptAnalyzer normalizes `DEFAULT_EXPORT` → `default`
+
+**6 remaining failures** are all blocked on TSE or complex wildcard file resolution:
+- 3× `export default X` / `export * from` requiring TSE or file-system logic
+- 2× JS same issues
+- 1× Vue named import granularity (TSE)
 
 ## Session notes (2026-04-02)
 

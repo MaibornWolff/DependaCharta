@@ -17,19 +17,25 @@ abstract class BaseLanguageAnalyzer(
 
     override fun analyze(): FileReport {
         val result = TreeSitterDependencies.analyze(fileInfo.content, tseLanguage())
-        val imports = result.imports.map { convertImport(it) }
-        val dependencies = if (result.packagePath.isNotEmpty()) {
-            (imports + Dependency(path = Path(result.packagePath), isWildcard = true)).toSet()
-        } else {
-            imports.toSet()
-        }
         val nodes = result.declarations.map { declaration ->
-            toNode(result.packagePath, dependencies, declaration)
+            val selectedImports = selectImports(declaration, result.imports)
+            val importDeps = selectedImports.flatMap { convertImport(it) }.toSet()
+            val dependencies = if (result.packagePath.isNotEmpty()) {
+                importDeps + Dependency(path = Path(result.packagePath), isWildcard = true)
+            } else {
+                importDeps
+            }
+            toNode(result.packagePath, dependencies, declaration, selectedImports)
         }
         return FileReport(nodes)
     }
 
-    protected open fun convertImport(import: ImportDeclaration): Dependency = import.toDependency()
+    protected open fun selectImports(
+        declaration: Declaration,
+        imports: List<ImportDeclaration>
+    ): List<ImportDeclaration> = imports
+
+    protected open fun convertImport(import: ImportDeclaration): Set<Dependency> = setOf(import.toDependency())
 
     protected fun resolveImportPath(tsePath: List<String>): List<String> = resolveImportPath(tsePath, fileInfo)
 
@@ -40,10 +46,13 @@ abstract class BaseLanguageAnalyzer(
         return Path(packagePath + declaration.name)
     }
 
+    protected open fun extraUsedTypes(imports: List<ImportDeclaration>): Set<Type> = emptySet()
+
     private fun toNode(
         packagePath: List<String>,
         dependencies: Set<Dependency>,
         declaration: Declaration,
+        selectedImports: List<ImportDeclaration> = emptyList(),
     ): Node {
         return Node(
             pathWithName = buildPathWithName(packagePath, declaration),
@@ -51,7 +60,7 @@ abstract class BaseLanguageAnalyzer(
             language = language,
             nodeType = declaration.type.toNodeType(),
             dependencies = dependencies,
-            usedTypes = declaration.usedTypes.map { it.toType() }.toSet()
+            usedTypes = declaration.usedTypes.map { it.toType() }.toSet() + extraUsedTypes(selectedImports)
         )
     }
 }
