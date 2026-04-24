@@ -1,7 +1,7 @@
 ---
 name: tsx-dependency-support
 issue:
-state: todo
+state: progress
 version:
 ---
 
@@ -38,12 +38,12 @@ In `DependaCharta` on branch `feat/tse-typescript-javascript-integration`:
 ## Steps
 
 - [x] Write failing `TsxDependencyTest` in TSE: JSX component asserts as `usedType`
-- [ ] Extend `UsedTypeExtractor` with JSX node types → test goes green (TSE agent)
-- [ ] Override `dependencyMapping` in `TsxDefinition` with `TypescriptDependencyMapping.dependencyMapping` (TSE agent)
+- [x] Extend `UsedTypeExtractor` with JSX node types → test goes green (TSE agent)
+- [x] Override `dependencyMapping` in `TsxDefinition` with `TypescriptDependencyMapping.dependencyMapping` (TSE agent)
 - [x] Add `open fun tseLanguage()` to `BaseLanguageAnalyzer`; use it in `analyze()`
 - [x] Override `tseLanguage()` in `TypescriptAnalyzer` for `.tsx`
-- [ ] Run `TypescriptAnalyzerTest` JSX tests (lines ~1135–1258) → green
-- [ ] Run full `mise run test-analysis` → all green
+- [x] Run `TypescriptAnalyzerTest` JSX tests (lines ~1135–1258) → green
+- [ ] Run full `mise run test-analysis` → all green (blocked: 6 pre-existing failures on TSE/complex DC)
 
 ## Notes
 
