@@ -20,11 +20,12 @@ abstract class BaseLanguageAnalyzer(
         val nodes = result.declarations.map { declaration ->
             val selectedImports = selectImports(declaration, result.imports)
             val importDeps = selectedImports.flatMap { convertImport(it) }.toSet()
-            val dependencies = if (result.packagePath.isNotEmpty()) {
-                importDeps + Dependency(path = Path(result.packagePath), isWildcard = true)
+            val packageDep = if (result.packagePath.isNotEmpty()) {
+                setOf(Dependency(path = Path(result.packagePath), isWildcard = true))
             } else {
-                importDeps
+                emptySet()
             }
+            val dependencies = importDeps + packageDep + extraDependencies(declaration)
             toNode(result.packagePath, dependencies, declaration, selectedImports)
         }
         return FileReport(nodes)
@@ -47,6 +48,8 @@ abstract class BaseLanguageAnalyzer(
     }
 
     protected open fun extraUsedTypes(imports: List<ImportDeclaration>): Set<Type> = emptySet()
+
+    protected open fun extraDependencies(declaration: Declaration): Set<Dependency> = emptySet()
 
     private fun toNode(
         packagePath: List<String>,

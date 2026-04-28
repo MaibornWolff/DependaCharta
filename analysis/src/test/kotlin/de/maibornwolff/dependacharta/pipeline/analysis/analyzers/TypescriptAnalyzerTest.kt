@@ -1,6 +1,5 @@
 package de.maibornwolff.dependacharta.pipeline.analysis.analyzers
 
-import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.DEFAULT_EXPORT_NODE_NAME
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.TypescriptAnalyzer
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Dependency
 import de.maibornwolff.dependacharta.pipeline.analysis.model.FileInfo
@@ -728,7 +727,7 @@ class TypescriptAnalyzerTest {
                 isWildcard = true
             )
         )
-        assertThat(node.pathWithName).isEqualTo(Path(listOf("MyDirectory", "MyClass", "MyDirectory_MyClass_$DEFAULT_EXPORT_NODE_NAME")))
+        assertThat(node.pathWithName).isEqualTo(Path(listOf("MyDirectory", "MyClass", "MyDirectory_MyClass_DEFAULT_EXPORT")))
         assertThat(node.usedTypes).containsExactly(Type.simple("MyDefaultExport"))
     }
 
