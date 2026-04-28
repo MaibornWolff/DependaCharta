@@ -2,6 +2,7 @@ package de.maibornwolff.dependacharta.pipeline.analysis.analyzers
 
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.cpp.CppAnalyzer
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.csharp.CSharpAnalyzer
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.delphi.DelphiAnalyzer
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.golang.GoAnalyzer
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.java.JavaAnalyzer
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.javascript.JavascriptAnalyzer
@@ -72,6 +73,11 @@ class LanguageAnalyzerFactoryTest {
                 physicalPath = "",
                 content = ""
             )
+            val delphiFileInfo = FileInfo(
+                language = SupportedLanguage.DELPHI,
+                physicalPath = "",
+                content = ""
+            )
             return listOf(
                 Arguments.of(javaFileInfo, JavaAnalyzer(javaFileInfo)),
                 Arguments.of(cSharpFileInfo, CSharpAnalyzer(cSharpFileInfo)),
@@ -82,7 +88,8 @@ class LanguageAnalyzerFactoryTest {
                 Arguments.of(goFileInfo, GoAnalyzer(goFileInfo)),
                 Arguments.of(pythonFileInfo, PythonAnalyzer(pythonFileInfo)),
                 Arguments.of(cppFileInfo, CppAnalyzer(cppFileInfo)),
-                Arguments.of(vueFileInfo, VueAnalyzer(vueFileInfo))
+                Arguments.of(vueFileInfo, VueAnalyzer(vueFileInfo)),
+                Arguments.of(delphiFileInfo, DelphiAnalyzer(delphiFileInfo))
             )
         }
     }
