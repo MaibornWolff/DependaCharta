@@ -105,6 +105,17 @@ VueAnalyzer depends directly on legacy TS/JS query classes that will be deleted.
 - [ ] Run `/dc-compare` on a real JS project, iterate until output matches
 - [ ] Remove composite build config once TSE version is released; ask user to commit
 
+## Session notes (2026-04-27)
+
+**All 612 tests passing.**
+
+Fixes applied to reach 612/612:
+1. TSE delivered: `export default X;` → `Declaration(name="DEFAULT_EXPORT")`, `export * from '...'` → `Declaration(name="*", type=REEXPORT)`
+2. `extraDependencies` hook in `BaseLanguageAnalyzer`; TypescriptAnalyzer overrides: DEFAULT_EXPORT gets self-referential wildcard dep to file path
+3. `selectImports` in TypescriptAnalyzer: wildcard `*` declaration passes through wildcard imports
+4. `analyze()` override in TypescriptAnalyzer: expands `*` REEXPORT nodes by reading the source file and creating one REEXPORT node per declaration
+5. VueAnalyzer: import specifiers added to usedTypes from TSE result
+
 ## Session notes (2026-04-24)
 
 **Progress: 12 → 6 test failures (606/612 passing)**
