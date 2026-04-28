@@ -3,7 +3,6 @@ package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.cpp
 import de.maibornwolff.dependacharta.pipeline.analysis.model.*
 import de.maibornwolff.dependacharta.pipeline.shared.SupportedLanguage
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
@@ -279,12 +278,6 @@ inline bool Address::offset_ok_for_immed(int64_t offset, uint shift) {
         )
     }
 
-    @Disabled(
-        "TSE extraction gap: ImportExtractor does not strip backslash + newline + leading whitespace " +
-            "from multiline #include paths. The raw source `dir/\\\\\\n    subdir/Foo.h` is read literally, " +
-            "producing `dir.\\.subdir.Foo_h` instead of `dir.subdir.Foo_h`. Re-enable once TSE strips " +
-            "`\\\\\\n\\s*` from include path text. TODO: add a TSE issue link here when filed."
-    )
     @Test
     fun `should recognize multiline include statements`() {
         // given
