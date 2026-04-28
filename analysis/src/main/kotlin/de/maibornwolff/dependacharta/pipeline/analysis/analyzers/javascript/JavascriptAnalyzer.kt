@@ -23,7 +23,8 @@ class JavascriptAnalyzer(
         declaration: Declaration,
     ): Path {
         val extension = if (fileInfo.physicalPath.endsWith(".jsx")) "jsx" else "js"
-        return fileInfo.physicalPathAsPath().withoutFileSuffix(extension) + declaration.name
+        val name = if (declaration.name == DEFAULT_EXPORT) JS_DEFAULT_EXPORT else declaration.name
+        return fileInfo.physicalPathAsPath().withoutFileSuffix(extension) + name
     }
 
     override fun convertImport(import: ImportDeclaration): Set<Dependency> {
