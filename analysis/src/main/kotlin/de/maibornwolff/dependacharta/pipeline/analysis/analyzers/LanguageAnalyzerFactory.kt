@@ -2,6 +2,7 @@ package de.maibornwolff.dependacharta.pipeline.analysis.analyzers
 
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.cpp.CppAnalyzer
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.csharp.CSharpAnalyzer
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.delphi.DelphiAnalyzer
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.golang.GoAnalyzer
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.java.JavaAnalyzer
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.javascript.JavascriptAnalyzer
@@ -27,6 +28,7 @@ class LanguageAnalyzerFactory {
                 SupportedLanguage.CPP -> CppAnalyzer(fileInfo)
                 SupportedLanguage.KOTLIN -> KotlinAnalyzer(fileInfo)
                 SupportedLanguage.VUE -> VueAnalyzer(fileInfo)
+                SupportedLanguage.DELPHI -> DelphiAnalyzer(fileInfo)
             }
     }
 }

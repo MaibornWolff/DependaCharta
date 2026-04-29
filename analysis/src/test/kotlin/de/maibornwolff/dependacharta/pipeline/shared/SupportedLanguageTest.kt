@@ -61,6 +61,9 @@ class SupportedLanguageTest {
         assertThat(helpText).contains(".tsx")
         assertThat(helpText).contains("C#")
         assertThat(helpText).contains(".cs")
+        assertThat(helpText).contains("Delphi")
+        assertThat(helpText).contains(".pas")
+        assertThat(helpText).contains(".dpr")
     }
 
     @Test
