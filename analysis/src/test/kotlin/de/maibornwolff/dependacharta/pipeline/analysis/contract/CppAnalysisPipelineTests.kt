@@ -33,6 +33,7 @@ class SotsCppExpectedNodesBuilder : SotsExpectedNodesBuilder() {
                     Type.simple("shared_ptr"),
                     Type.simple("int"),
                     Type.simple("void"),
+                    Type.simple("char"),
                     Type.simple("move"),
                     Type.simple("string"),
                     Type.simple("std"),
@@ -332,7 +333,10 @@ class SotsCppExpectedNodesBuilder : SotsExpectedNodesBuilder() {
             nodes = listOf(
                 node.copy(
                     physicalPath = "${domainModel}Fightable.h",
-                    nodeType = NodeType.VALUECLASS,
+                    // struct → CLASS is an accepted improvement of the TSE migration over DC legacy
+                    // (which emitted VALUECLASS). VALUECLASS has no downstream behavior in the resolver
+                    // or levelizer; it was only a string label in cc.json.
+                    nodeType = NodeType.CLASS,
                     dependencies = setOf(
                         Dependency.asWildcard("de", "sots", "cellarsandcentaurs", "domain", "model"),
                     )
@@ -386,7 +390,9 @@ class SotsCppExpectedNodesBuilder : SotsExpectedNodesBuilder() {
             nodes = listOf(
                 node.copy(
                     physicalPath = "${application}CreatureUtil.h",
-                    nodeType = NodeType.VALUECLASS,
+                    // struct → CLASS is an accepted improvement of the TSE migration over DC legacy
+                    // (which emitted VALUECLASS); see buildFightableResult for the full rationale.
+                    nodeType = NodeType.CLASS,
                     dependencies = setOf(
                         Dependency.asWildcard("de", "sots", "cellarsandcentaurs", "application"),
                     )

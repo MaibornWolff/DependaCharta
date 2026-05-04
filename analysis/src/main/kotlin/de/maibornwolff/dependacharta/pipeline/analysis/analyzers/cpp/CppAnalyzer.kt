@@ -1,41 +1,97 @@
 package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.cpp
 
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.LanguageAnalyzer
-import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.cpp.model.CppContext
-import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.cpp.processing.BodyProcessor
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.model.RelativeImport
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.resolveRelativePath
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.toDependency
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.toNodeType
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.toType
+import de.maibornwolff.dependacharta.pipeline.analysis.common.splitNameToParts
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Dependency
 import de.maibornwolff.dependacharta.pipeline.analysis.model.FileInfo
 import de.maibornwolff.dependacharta.pipeline.analysis.model.FileReport
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Node
-import org.treesitter.TSNode
-import org.treesitter.TSParser
-import org.treesitter.TreeSitterCpp
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
+import de.maibornwolff.dependacharta.pipeline.shared.SupportedLanguage
+import de.maibornwolff.treesitter.excavationsite.api.Declaration
+import de.maibornwolff.treesitter.excavationsite.api.ImportDeclaration
+import de.maibornwolff.treesitter.excavationsite.api.ImportKind
+import de.maibornwolff.treesitter.excavationsite.api.Language
+import de.maibornwolff.treesitter.excavationsite.api.TreeSitterDependencies
+import de.maibornwolff.treesitter.excavationsite.api.UsedType
 
 class CppAnalyzer(
     private val fileInfo: FileInfo
 ) : LanguageAnalyzer {
-    private val cpp = TreeSitterCpp()
-
     override fun analyze(): FileReport {
-        val rootNode = parseCode(fileInfo.content)
-        val context = CppContext.empty(fileInfo)
-        val allItems = processNode(context, rootNode)
-        return FileReport(allItems)
+        val result = TreeSitterDependencies.analyze(fileInfo.content, Language.CPP)
+        val physicalPath = Path.fromPhysicalPath(fileInfo.physicalPath)
+        val physicalPathParts = splitNameToParts(fileInfo.physicalPath).filter { it != "." }
+        val importsByNamespace = result.imports
+            .groupBy { it.namespacePath }
+            .mapValues { (_, imports) -> imports.map { it.normalize(physicalPath) } }
+        val globalImports = importsByNamespace[emptyList()].orEmpty()
+
+        val nodes = result.declarations.map { declaration ->
+            toNode(declaration, globalImports, importsByNamespace, physicalPathParts)
+        }
+        return FileReport(nodes)
     }
 
-    private fun processNode(
-        context: CppContext,
-        rootNode: TSNode
-    ): List<Node> {
-        val processor = BodyProcessor()
-        val processorResult = processor.process(context, rootNode)
-
-        return processorResult.nodes
+    private fun toNode(
+        declaration: Declaration,
+        globalImports: List<Dependency>,
+        importsByNamespace: Map<List<String>, List<Dependency>>,
+        physicalPathParts: List<String>,
+    ): Node {
+        return Node(
+            pathWithName = buildPathWithName(declaration, physicalPathParts),
+            physicalPath = fileInfo.physicalPath,
+            language = SupportedLanguage.CPP,
+            nodeType = declaration.type.toNodeType(),
+            dependencies = buildDependencies(declaration, globalImports, importsByNamespace),
+            usedTypes = declaration.usedTypes.map { it.toType() }.toSet(),
+        )
     }
 
-    private fun parseCode(cppCode: String): TSNode {
-        val parser = TSParser()
-        parser.language = cpp
-        val tree = parser.parseString(null, cppCode)
-        return tree.rootNode
+    private fun buildPathWithName(
+        declaration: Declaration,
+        physicalPathParts: List<String>,
+    ): Path {
+        return if (declaration.parentPath.isEmpty()) {
+            Path(physicalPathParts + declaration.name)
+        } else {
+            Path(declaration.parentPath + declaration.name)
+        }
+    }
+
+    private fun buildDependencies(
+        declaration: Declaration,
+        globalImports: List<Dependency>,
+        importsByNamespace: Map<List<String>, List<Dependency>>,
+    ): Set<Dependency> {
+        val scopedImports = importsByNamespace[declaration.parentPath].orEmpty()
+        val selfWildcard = Dependency.asWildcard(declaration.parentPath)
+        val namespacePrefixWildcards = declaration.usedTypes
+            .flatMap { it.collectNamespacePrefixes() }
+            .map { Dependency.asWildcard(it) }
+        return (globalImports + scopedImports + selfWildcard + namespacePrefixWildcards).toSet()
+    }
+
+    private fun UsedType.collectNamespacePrefixes(): List<List<String>> {
+        val own = if (namespacePrefix.isEmpty()) emptyList() else listOf(namespacePrefix)
+        return own + genericTypes.flatMap { it.collectNamespacePrefixes() }
+    }
+
+    private fun ImportDeclaration.normalize(physicalPath: Path): Dependency {
+        if (kind != ImportKind.INCLUDE) return toDependency()
+        val firstSegment = path.firstOrNull()
+        val resolved = if (firstSegment == "." || firstSegment == "..") {
+            resolveRelativePath(RelativeImport(path.joinToString("/")), physicalPath)
+        } else {
+            Path(path)
+        }
+        val transformedFilename = resolved.parts.last().replace(".", "_")
+        return Dependency(Path(resolved.parts.dropLast(1) + transformedFilename), isWildcard = false)
     }
 }
