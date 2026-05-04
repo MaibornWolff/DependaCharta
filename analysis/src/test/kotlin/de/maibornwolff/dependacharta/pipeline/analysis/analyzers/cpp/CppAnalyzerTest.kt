@@ -487,7 +487,7 @@ void Creature::SetSpeed(SpeedType speedType, const Speed& speed) {
         """.trimIndent()
 
         // when
-        val report = CppAnalyzer(FileInfo(SupportedLanguage.C_SHARP, "./path", cppCode)).analyze()
+        val report = CppAnalyzer(FileInfo(SupportedLanguage.CPP, "./path", cppCode)).analyze()
 
         // then
         val usedTypes = report.nodes.first().usedTypes
