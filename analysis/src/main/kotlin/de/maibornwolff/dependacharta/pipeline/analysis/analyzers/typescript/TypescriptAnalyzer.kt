@@ -17,6 +17,7 @@ import de.maibornwolff.treesitter.excavationsite.api.DeclarationType
 import de.maibornwolff.treesitter.excavationsite.api.ImportDeclaration
 import de.maibornwolff.treesitter.excavationsite.api.Language
 import de.maibornwolff.treesitter.excavationsite.api.TreeSitterDependencies
+import de.maibornwolff.treesitter.excavationsite.api.UsedType
 import java.io.File
 
 // "DEFAULT_EXPORT" is the name TSE assigns to default export declarations
@@ -84,15 +85,27 @@ class TypescriptAnalyzer(
         return if (index != null) setOf(primary, index) else setOf(primary)
     }
 
+    // TSE v0.9.0 resolves default import bindings to DEFAULT_EXPORT in declaration.usedTypes.
+    // Filter it out for non-REEXPORT declarations so the pipeline sees useful type names.
+    override fun selectUsedTypes(declaration: Declaration): Set<UsedType> {
+        if (declaration.type == DeclarationType.REEXPORT) return declaration.usedTypes
+        return declaration.usedTypes.filter { it.name != DEFAULT_EXPORT_NODE_NAME }.toSet()
+    }
+
     // Adds import specifier names as usedTypes so the pipeline can resolve function call usages
-    // (e.g. `foo()` where `foo` was imported). For REEXPORT nodes this overlaps with
-    // declaration.usedTypes from TSE, which is harmless.
+    // (e.g. `foo()` where `foo` was imported). For default imports, uses the module name as a
+    // proxy for the local alias since TSE does not expose the local binding name.
     override fun extraUsedTypes(imports: List<ImportDeclaration>): Set<Type> {
         return imports
             .filter { !it.isWildcard && it.path.isNotEmpty() }
             .mapNotNull { import ->
                 val specifier = import.path.last().stripSourceFileExtension()
-                if (specifier.isEmpty() || specifier == DEFAULT_EXPORT_NODE_NAME) null else Type.simple(specifier)
+                when {
+                    specifier.isEmpty() -> null
+                    specifier == DEFAULT_EXPORT_NODE_NAME && import.path.size >= 2 ->
+                        Type.simple(import.path[import.path.size - 2].stripSourceFileExtension())
+                    else -> Type.simple(specifier)
+                }
             }.toSet()
     }
 

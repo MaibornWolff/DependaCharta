@@ -103,7 +103,36 @@ VueAnalyzer depends directly on legacy TS/JS query classes that will be deleted.
 - [x] Run full `mise run test-analysis` — 612/612 passing
 - [ ] Run `/dc-compare` on a real TS project, iterate until output matches
 - [ ] Run `/dc-compare` on a real JS project, iterate until output matches
-- [ ] Remove composite build config once TSE version is released; ask user to commit
+- [x] Remove composite build config; bump TSE to v0.9.0; fix v0.9.0 regressions; all tests green
+
+## Session notes (2026-05-11)
+
+**TSE v0.9.0 released; composite build removed; all tests green.**
+
+TSE v0.9.0 introduced two behavioral changes vs the feature branch that caused test failures:
+
+**Change 1: `export default <identifier>` now produces two declarations**
+- Commit: `fix(dependencies): keep original declaration and add REEXPORT for default export`
+- Before: `export default buildFunction` → single `Declaration(name="DEFAULT_EXPORT", type=VARIABLE)`
+- After: two declarations — `buildFunction` (VARIABLE) + `DEFAULT_EXPORT` (REEXPORT)
+- DC fix: updated `JavascriptAnalyzerTest.should handle default export of declared identifier` to expect both nodes
+
+**Change 2: Default import bindings resolved to DEFAULT_EXPORT in usedTypes**
+- Commit: `fix(javascript): resolve default import binding to DEFAULT_EXPORT in usedTypes`
+- Before: `import MyGreatInterface from '...'` → class using it gets usedType `MyGreatInterface`
+- After: same class gets usedType `DEFAULT_EXPORT` (TSE resolves the binding)
+- Problem: `DEFAULT_EXPORT` as usedType is useless to the pipeline (too generic; can't match specific node)
+- DC fix: added `selectUsedTypes(declaration)` hook to `BaseLanguageAnalyzer`; `TypescriptAnalyzer` overrides it to filter `DEFAULT_EXPORT` from non-REEXPORT declarations; updated `extraUsedTypes` to emit the module name (path[-2]) for default imports as a proxy for the local alias (exact when import alias matches module name, approximate otherwise)
+
+**Files changed:**
+- `analysis/settings.gradle.kts` — removed `includeBuild`
+- `analysis/build.gradle.kts` — bumped TSE to `v0.9.0`
+- `BaseLanguageAnalyzer.kt` — added `selectUsedTypes` hook
+- `TypescriptAnalyzer.kt` — added `selectUsedTypes` override + updated `extraUsedTypes`
+- `JavascriptAnalyzerTest.kt` — updated assertion for default export of declared identifier
+
+**Note on `selectUsedTypes` design:**
+The hook is intentionally NOT overridden in `JavascriptAnalyzer` — JS tests all still pass, meaning v0.9.0's resolved usedTypes don't cause failures in the current JS test suite. If JS `/dc-compare` reveals issues, the same hook can be overridden there.
 
 ## Session notes (2026-04-27)
 
