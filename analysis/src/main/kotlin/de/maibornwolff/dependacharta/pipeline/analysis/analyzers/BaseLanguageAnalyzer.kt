@@ -7,6 +7,7 @@ import de.maibornwolff.treesitter.excavationsite.api.Declaration
 import de.maibornwolff.treesitter.excavationsite.api.ImportDeclaration
 import de.maibornwolff.treesitter.excavationsite.api.Language
 import de.maibornwolff.treesitter.excavationsite.api.TreeSitterDependencies
+import de.maibornwolff.treesitter.excavationsite.api.UsedType
 
 abstract class BaseLanguageAnalyzer(
     protected val fileInfo: FileInfo
@@ -51,6 +52,8 @@ abstract class BaseLanguageAnalyzer(
 
     protected open fun extraDependencies(declaration: Declaration): Set<Dependency> = emptySet()
 
+    protected open fun selectUsedTypes(declaration: Declaration): Set<UsedType> = declaration.usedTypes
+
     private fun toNode(
         packagePath: List<String>,
         dependencies: Set<Dependency>,
@@ -63,7 +66,7 @@ abstract class BaseLanguageAnalyzer(
             language = language,
             nodeType = declaration.type.toNodeType(),
             dependencies = dependencies,
-            usedTypes = declaration.usedTypes.map { it.toType() }.toSet() + extraUsedTypes(selectedImports)
+            usedTypes = selectUsedTypes(declaration).map { it.toType() }.toSet() + extraUsedTypes(selectedImports)
         )
     }
 }

@@ -525,7 +525,8 @@ class JavascriptAnalyzerTest {
         assertThat(report.nodes)
             .extracting("nodeType", "pathWithName")
             .containsExactly(
-                tuple(NodeType.VARIABLE, Path(listOf("module", "default")))
+                tuple(NodeType.VARIABLE, Path(listOf("module", "buildFunction"))),
+                tuple(NodeType.REEXPORT, Path(listOf("module", "default")))
             )
     }
 
