@@ -101,9 +101,20 @@ VueAnalyzer depends directly on legacy TS/JS query classes that will be deleted.
 - [x] Migrate VueAnalyzer to TSE (replace legacy query calls)
 - [x] Run `VueAnalyzerTest` — 9/10 green; 1 blocked on TSE (named import granularity)
 - [x] Run full `mise run test-analysis` — 612/612 passing
-- [ ] Run `/dc-compare` on a real TS project, iterate until output matches
-- [ ] Run `/dc-compare` on a real JS project, iterate until output matches
-- [x] Remove composite build config; bump TSE to v0.9.0; fix v0.9.0 regressions; all tests green
+- [x] Run `/dc-compare` on Prisma (TS project) — findings documented in session notes
+- [x] Run `/dc-compare` on React (JS project) — findings documented in session notes
+- [x] Remove composite build config; bump TSE to v0.9.0; fix v0.9.0 regressions; 613/613 tests passing
+- [x] Report all TSE gaps upstream; re-ran dc-compare with local TSE (0.10.0-local)
+- [x] TSE decision on intra-file non-exported dep gap: **Option A — accept as architectural trade-off**
+- [ ] Wait for TSE to release v0.10.0 (needs tagging/publishing on GitHub)
+- [ ] Bump TSE version in `analysis/build.gradle.kts` to `v0.10.0`
+- [ ] Delete `@Disabled` test `should add extended interface to usedTypes of a node` — fixed in TSE ✅
+- [x] Remove `selectUsedTypes()` workaround — TSE v0.10.0 emits local alias instead of DEFAULT_EXPORT ✅
+- [x] Remove DEFAULT_EXPORT proxy branch from `extraUsedTypes()` — TSE fix covers this ✅
+- [x] Keep `expandWildcardReexport()` + `resolveSourceFile()` permanently — cross-file expansion is DC's responsibility, not TSE's (TSE is per-file only) ✅
+- [x] Updated 4 DC tests for TSE v0.10.0 behavior changes (export-only filtering, declare-then-export-default)
+- [ ] Run `mise run test-analysis` — must be green after v0.10.0 bump
+- [ ] Ask user to commit
 
 ## Session notes (2026-05-11)
 
