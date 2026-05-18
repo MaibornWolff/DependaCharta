@@ -20,7 +20,8 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.MaibornWolff:TreeSitterExcavationSite:0.8.0")
+    // TEMPORARY: composite-build coordinate. REVERT to "com.github.MaibornWolff:TreeSitterExcavationSite:<tag>" before the DC PR.
+    implementation("de.maibornwolff.treesitter.excavationsite:treesitter-excavationsite")
     implementation("io.github.bonede:tree-sitter:0.26.3")
     implementation("io.github.bonede:tree-sitter-typescript:0.23.2")
     implementation("io.github.bonede:tree-sitter-php:0.23.11")
