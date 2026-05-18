@@ -735,7 +735,7 @@ class TypescriptAnalyzerTest {
     fun `should add non-exported class as a node`() {
         // given
         val typescriptCode = """
-            class MyPrivateClass {}      
+            class MyPrivateClass {}
         """.trimIndent()
 
         // when
@@ -781,7 +781,7 @@ class TypescriptAnalyzerTest {
                 myFunction() {
                     const nestedDeclaration = "Nested"
                 }
-            }  
+            }
         """.trimIndent()
 
         // when
@@ -873,7 +873,7 @@ class TypescriptAnalyzerTest {
         val typescriptCode = """
             const { myMethod: alias } = require('myModule');
             export class MyGreatClass {
-                alias()
+                doSomething() { return alias() }
             }
         """.trimIndent()
 
