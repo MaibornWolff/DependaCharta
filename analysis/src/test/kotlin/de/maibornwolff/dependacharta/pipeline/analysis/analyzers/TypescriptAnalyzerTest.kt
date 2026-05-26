@@ -1360,7 +1360,7 @@ class TypescriptAnalyzerTest {
         assertThat(selfRefDeps)
             .withFailMessage(
                 "BUG: REEXPORT node has self-referential dependency ($reexportNodePath -> $reexportNodePath). " +
-                    "It should depend on source node $expectedSourcePath instead."
+                        "It should depend on source node $expectedSourcePath instead."
             ).isEmpty()
 
         // Filter out the wildcard dependency to the file itself (added at end of analyze())
@@ -1369,12 +1369,44 @@ class TypescriptAnalyzerTest {
         assertThat(nonWildcardDeps)
             .withFailMessage(
                 "REEXPORT node should have exactly one non-wildcard dependency to source node ($expectedSourcePath), " +
-                    "but found: ${nonWildcardDeps.map { it.path }}"
+                        "but found: ${nonWildcardDeps.map { it.path }}"
             ).hasSize(1)
 
         assertThat(nonWildcardDeps.first().path)
             .withFailMessage(
                 "REEXPORT node should depend on source node ($expectedSourcePath), not on itself ($reexportNodePath)"
             ).isEqualTo(expectedSourcePath)
+    }
+
+    @Test
+    fun `wildcard re-export should not create duplicate REEXPORT node for name already declared in own file`() {
+        // Given - a file that exports its own FOO and also re-exports * from constants (which also exports FOO)
+        val testRoot = File("src/test/resources/typescript-wildcard")
+        assumeTrue(testRoot.exists())
+
+        val fileContent = """
+            export const FOO = 'own value';
+            export * from './constants'
+        """.trimIndent()
+
+        // When
+        val report = TypescriptAnalyzer(
+            FileInfo(
+                SupportedLanguage.TYPESCRIPT,
+                "common/index.ts",
+                fileContent,
+                analysisRoot = testRoot
+            )
+        ).analyze()
+
+        // Then - exactly one FOO node, which is the own declaration (not a REEXPORT)
+        val fooNodes = report.nodes.filter { it.pathWithName.getName() == "FOO" }
+        assertThat(fooNodes).hasSize(1)
+        assertThat(fooNodes.first().nodeType).isNotEqualTo(NodeType.REEXPORT)
+
+        // BAR from constants is still present as a REEXPORT
+        val barNode = report.nodes.find { it.pathWithName.getName() == "BAR" }
+        assertThat(barNode).isNotNull
+        assertThat(barNode!!.nodeType).isEqualTo(NodeType.REEXPORT)
     }
 }
