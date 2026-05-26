@@ -49,9 +49,13 @@ class TypescriptAnalyzer(
         val analysisRoot = fileInfo.analysisRoot ?: return baseReport
         val extension = if (fileInfo.physicalPath.endsWith(".tsx")) "tsx" else "ts"
         val currentFilePath = fileInfo.physicalPathAsPath().withoutFileSuffix(extension)
+        val ownNames = baseReport.nodes
+            .filter { it.pathWithName.parts.lastOrNull() != "*" }
+            .map { it.pathWithName.parts.lastOrNull() }
+            .toSet()
         val nodes = baseReport.nodes.flatMap { node ->
             if (node.pathWithName.parts.lastOrNull() == "*") {
-                expandWildcardReexport(node, currentFilePath, analysisRoot)
+                expandWildcardReexport(node, currentFilePath, analysisRoot, ownNames)
             } else {
                 listOf(node)
             }
@@ -89,7 +93,8 @@ class TypescriptAnalyzer(
     private fun expandWildcardReexport(
         wildcardNode: Node,
         currentFilePath: Path,
-        analysisRoot: File
+        analysisRoot: File,
+        ownNames: Set<String?>
     ): List<Node> {
         val wildcardDeps = wildcardNode.dependencies.filter { it.isWildcard }
         val sourceFiles = wildcardDeps.mapNotNull { resolveSourceFile(it.path.parts, analysisRoot) }.toSet()
@@ -98,16 +103,18 @@ class TypescriptAnalyzer(
             val sourceRelPath = toRelativePath(sourceFile, analysisRoot, stripExtension = true).parts
             val srcLanguage = if (sourceFile.name.endsWith(".tsx")) Language.TSX else Language.TYPESCRIPT
             val sourceTseResult = TreeSitterDependencies.analyze(sourceFile.readText(), srcLanguage)
-            sourceTseResult.declarations.map { decl ->
-                Node(
-                    pathWithName = currentFilePath + decl.name,
-                    physicalPath = wildcardNode.physicalPath,
-                    language = language,
-                    nodeType = NodeType.REEXPORT,
-                    dependencies = setOf(Dependency(path = Path(sourceRelPath + decl.name))),
-                    usedTypes = setOf(Type.simple(decl.name))
-                )
-            }
+            sourceTseResult.declarations
+                .filter { decl -> decl.name !in ownNames }
+                .map { decl ->
+                    Node(
+                        pathWithName = currentFilePath + decl.name,
+                        physicalPath = wildcardNode.physicalPath,
+                        language = language,
+                        nodeType = NodeType.REEXPORT,
+                        dependencies = setOf(Dependency(path = Path(sourceRelPath + decl.name))),
+                        usedTypes = setOf(Type.simple(decl.name))
+                    )
+                }
         }
     }
 
