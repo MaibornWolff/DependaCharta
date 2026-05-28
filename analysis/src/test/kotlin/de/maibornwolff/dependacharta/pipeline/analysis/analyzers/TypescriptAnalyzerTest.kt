@@ -1360,7 +1360,7 @@ class TypescriptAnalyzerTest {
         assertThat(selfRefDeps)
             .withFailMessage(
                 "BUG: REEXPORT node has self-referential dependency ($reexportNodePath -> $reexportNodePath). " +
-                        "It should depend on source node $expectedSourcePath instead."
+                    "It should depend on source node $expectedSourcePath instead."
             ).isEmpty()
 
         // Filter out the wildcard dependency to the file itself (added at end of analyze())
@@ -1369,7 +1369,7 @@ class TypescriptAnalyzerTest {
         assertThat(nonWildcardDeps)
             .withFailMessage(
                 "REEXPORT node should have exactly one non-wildcard dependency to source node ($expectedSourcePath), " +
-                        "but found: ${nonWildcardDeps.map { it.path }}"
+                    "but found: ${nonWildcardDeps.map { it.path }}"
             ).hasSize(1)
 
         assertThat(nonWildcardDeps.first().path)
