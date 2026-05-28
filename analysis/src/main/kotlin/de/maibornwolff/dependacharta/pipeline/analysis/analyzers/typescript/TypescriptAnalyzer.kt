@@ -1,6 +1,7 @@
 package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript
 
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.BaseLanguageAnalyzer
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.TSE_DEFAULT_EXPORT_NAME
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.toRelativePath
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.withoutFileSuffix
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Dependency
@@ -18,15 +19,15 @@ import de.maibornwolff.treesitter.excavationsite.api.Language
 import de.maibornwolff.treesitter.excavationsite.api.TreeSitterDependencies
 import java.io.File
 
-// "DEFAULT_EXPORT" is the name TSE assigns to default export declarations
-private const val DEFAULT_EXPORT_NODE_NAME = "DEFAULT_EXPORT"
-
 class TypescriptAnalyzer(
     fileInfo: FileInfo,
 ) : BaseLanguageAnalyzer(fileInfo) {
     override val language = SupportedLanguage.TYPESCRIPT
 
-    override fun tseLanguage(): Language = if (fileInfo.physicalPath.endsWith(".tsx")) Language.TSX else Language.TYPESCRIPT
+    private val isTsx = fileInfo.physicalPath.endsWith(".tsx")
+    private val extension = if (isTsx) "tsx" else "ts"
+
+    override fun tseLanguage(): Language = if (isTsx) Language.TSX else Language.TYPESCRIPT
 
     override fun buildPathWithName(
         packagePath: List<String>,
@@ -35,10 +36,9 @@ class TypescriptAnalyzer(
         if (declaration.parentPath.isNotEmpty()) {
             return Path(declaration.parentPath) + declaration.name
         }
-        val extension = if (fileInfo.physicalPath.endsWith(".tsx")) "tsx" else "ts"
         val filePath = fileInfo.physicalPathAsPath().withoutFileSuffix(extension)
-        if (declaration.name == DEFAULT_EXPORT_NODE_NAME) {
-            val qualifiedName = filePath.parts.joinToString("_") + "_$DEFAULT_EXPORT_NODE_NAME"
+        if (declaration.name == TSE_DEFAULT_EXPORT_NAME) {
+            val qualifiedName = filePath.parts.joinToString("_") + "_$TSE_DEFAULT_EXPORT_NAME"
             return filePath + qualifiedName
         }
         return filePath + declaration.name
@@ -47,7 +47,6 @@ class TypescriptAnalyzer(
     override fun analyze(): FileReport {
         val baseReport = super.analyze()
         val analysisRoot = fileInfo.analysisRoot ?: return baseReport
-        val extension = if (fileInfo.physicalPath.endsWith(".tsx")) "tsx" else "ts"
         val currentFilePath = fileInfo.physicalPathAsPath().withoutFileSuffix(extension)
         val ownNames = baseReport.nodes
             .filter { it.pathWithName.parts.lastOrNull() != "*" }
@@ -74,8 +73,7 @@ class TypescriptAnalyzer(
     }
 
     override fun extraDependencies(declaration: Declaration): Set<Dependency> {
-        if (declaration.name != DEFAULT_EXPORT_NODE_NAME) return emptySet()
-        val extension = if (fileInfo.physicalPath.endsWith(".tsx")) "tsx" else "ts"
+        if (declaration.name != TSE_DEFAULT_EXPORT_NAME) return emptySet()
         val filePath = fileInfo.physicalPathAsPath().withoutFileSuffix(extension)
         return setOf(Dependency(path = filePath, isWildcard = true))
     }
