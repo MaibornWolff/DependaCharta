@@ -1409,4 +1409,33 @@ class TypescriptAnalyzerTest {
         assertThat(barNode).isNotNull
         assertThat(barNode!!.nodeType).isEqualTo(NodeType.REEXPORT)
     }
+
+    @Test
+    fun `should resolve namespace alias constructor call to module dependency`() {
+        // given - Logger is only used via new types.Logger() with no type annotation
+        val typescriptCode = """
+            import * as types from './types'
+
+            export class Consumer {
+                log(): void {
+                    new types.Logger().log()
+                }
+            }
+        """.trimIndent()
+
+        // when
+        val report = TypescriptAnalyzer(
+            FileInfo(
+                SupportedLanguage.TYPESCRIPT,
+                "Consumer.ts",
+                typescriptCode
+            )
+        ).analyze()
+
+        // then - Logger is captured as usedType (extracted from new types.Logger() constructor call)
+        // and the wildcard dep on the types module is recorded for project-wide resolution
+        val node = report.nodes.first { it.pathWithName.getName() == "Consumer" }
+        assertThat(node.usedTypes).contains(Type.simple("Logger"))
+        assertThat(node.dependencies).contains(Dependency(path = Path(listOf("types")), isWildcard = true))
+    }
 }

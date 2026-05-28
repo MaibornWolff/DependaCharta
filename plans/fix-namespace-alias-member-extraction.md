@@ -1,7 +1,7 @@
 ---
 name: fix-namespace-alias-member-extraction
 issue:
-state: todo
+state: complete
 version:
 ---
 
@@ -101,10 +101,10 @@ that the resulting node has the correct dependency edge.
 
 ## Steps
 
-- [ ] Task 1: Fix `extractMemberAccesses` + `extractConstructorCalls` in TSE with failing tests first
-- [ ] Task 2: Update `ts-dc-test/src/ns-consumer.ts` demo
-- [ ] Task 3: Regenerate `analysis-before-fix.cg.json` and `analysis-after-fix.cg.json`
-- [ ] Task 4: Add TypescriptAnalyzerTest case for namespace alias
+- [x] Task 1: Fix `extractMemberAccesses` + `extractConstructorCalls` in TSE with failing tests first
+- [x] Task 2: Update `ts-dc-test/src/ns-consumer.ts` demo
+- [x] Task 3: Regenerate `analysis-before-fix.cg.json` and `analysis-after-fix.cg.json`
+- [x] Task 4: Add TypescriptAnalyzerTest case for namespace alias
 
 ## Notes
 
