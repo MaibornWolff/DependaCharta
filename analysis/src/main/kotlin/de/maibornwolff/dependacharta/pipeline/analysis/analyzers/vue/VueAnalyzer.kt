@@ -1,6 +1,7 @@
 package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.vue
 
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.LanguageAnalyzer
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.TSE_DEFAULT_EXPORT_NAME
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.resolveImportPath
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.stripSourceFileExtension
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.withoutFileSuffix
@@ -20,9 +21,10 @@ import org.treesitter.TSNode
 import org.treesitter.TSParser
 import org.treesitter.TreeSitterVue
 
-// "DEFAULT_EXPORT" is the name TSE assigns to default export declarations
-private const val DEFAULT_EXPORT_SENTINEL = "DEFAULT_EXPORT"
-
+// VueAnalyzer implements LanguageAnalyzer directly rather than extending BaseLanguageAnalyzer
+// because Vue files require a two-pass analysis: first a TSQuery parse of the Vue SFC structure
+// (to extract the <script> and <template> blocks), then a TSE analysis of the script content.
+// BaseLanguageAnalyzer assumes a single TSE pass over the raw file content, which doesn't apply here.
 class VueAnalyzer(
     private val fileInfo: FileInfo,
 ) : LanguageAnalyzer {
@@ -74,7 +76,7 @@ class VueAnalyzer(
             .filter { !it.isWildcard && it.path.isNotEmpty() }
             .mapNotNull { import ->
                 val specifier = import.path.last().stripSourceFileExtension()
-                if (specifier.isEmpty() || specifier == DEFAULT_EXPORT_SENTINEL) null else Type.simple(specifier)
+                if (specifier.isEmpty() || specifier == TSE_DEFAULT_EXPORT_NAME) null else Type.simple(specifier)
             }.toSet()
         return Pair(dependencies, usedTypes)
     }
