@@ -2,6 +2,7 @@ package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript
 
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.BaseLanguageAnalyzer
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.TSE_DEFAULT_EXPORT_NAME
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.WILDCARD_EXPORT_NAME
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.toRelativePath
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.withoutFileSuffix
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Dependency
@@ -49,11 +50,11 @@ class TypescriptAnalyzer(
         val analysisRoot = fileInfo.analysisRoot ?: return baseReport
         val currentFilePath = fileInfo.physicalPathAsPath().withoutFileSuffix(extension)
         val ownNames = baseReport.nodes
-            .filter { it.pathWithName.parts.lastOrNull() != "*" }
+            .filter { it.pathWithName.parts.lastOrNull() != WILDCARD_EXPORT_NAME }
             .map { it.pathWithName.parts.lastOrNull() }
             .toSet()
         val nodes = baseReport.nodes.flatMap { node ->
-            if (node.pathWithName.parts.lastOrNull() == "*") {
+            if (node.pathWithName.parts.lastOrNull() == WILDCARD_EXPORT_NAME) {
                 expandWildcardReexport(node, currentFilePath, analysisRoot, ownNames)
             } else {
                 listOf(node)
@@ -67,7 +68,10 @@ class TypescriptAnalyzer(
         imports: List<ImportDeclaration>
     ): List<ImportDeclaration> {
         if (declaration.type != DeclarationType.REEXPORT) return imports
-        if (declaration.name == "*") return imports
+        if (declaration.name == WILDCARD_EXPORT_NAME) return imports
+        // For named re-exports like `export { Foo } from 'module'`, TSE represents the
+        // imported binding as the last segment of the import path. Only pass through
+        // imports whose last path segment matches a name being re-exported.
         val reexportNames = setOf(declaration.name) + declaration.usedTypes.map { it.name }
         return imports.filter { it.path.isNotEmpty() && it.path.last() in reexportNames }
     }
@@ -121,8 +125,8 @@ class TypescriptAnalyzer(
         analysisRoot: File
     ): File? {
         val pathStr = pathParts.joinToString("/")
-        for (candidate in listOf("$pathStr.ts", "$pathStr.tsx", "$pathStr/index.ts", "$pathStr/index.tsx")) {
-            val file = File(analysisRoot, candidate)
+        for (suffix in SOURCE_FILE_SUFFIXES) {
+            val file = File(analysisRoot, "$pathStr$suffix")
             if (file.exists()) return file
         }
         return null
@@ -132,17 +136,13 @@ class TypescriptAnalyzer(
         resolvedPath: List<String>,
         isWildcard: Boolean
     ): Dependency? {
-        if (isWildcard) {
-            return if (resolvedPath.isEmpty()) {
-                null
-            } else {
-                Dependency(Path(resolvedPath + "index"), isWildcard = true)
-            }
-        }
-        return if (resolvedPath.size < 2) {
-            null
-        } else {
-            Dependency(Path(resolvedPath.dropLast(1) + listOf("index") + resolvedPath.takeLast(1)))
-        }
+        if (isWildcard && resolvedPath.isEmpty()) return null
+        if (isWildcard) return Dependency(Path(resolvedPath + "index"), isWildcard = true)
+        if (resolvedPath.size < 2) return null
+        return Dependency(Path(resolvedPath.dropLast(1) + listOf("index") + resolvedPath.takeLast(1)))
+    }
+
+    companion object {
+        private val SOURCE_FILE_SUFFIXES = listOf(".ts", ".tsx", "/index.ts", "/index.tsx")
     }
 }
