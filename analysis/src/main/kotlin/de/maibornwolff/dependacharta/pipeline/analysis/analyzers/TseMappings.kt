@@ -11,6 +11,9 @@ import de.maibornwolff.treesitter.excavationsite.api.UsedType
 // The sentinel name TSE assigns to default export declarations (e.g. `export default ...`)
 const val TSE_DEFAULT_EXPORT_NAME = "DEFAULT_EXPORT"
 
+// The sentinel name TSE assigns to wildcard re-export declarations (e.g. `export * from '...'`)
+const val WILDCARD_EXPORT_NAME = "*"
+
 fun ImportDeclaration.toDependency(): Dependency {
     return Dependency(path = Path(path), isWildcard = isWildcard)
 }

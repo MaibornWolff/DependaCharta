@@ -513,11 +513,8 @@ class TypescriptAnalyzerTest {
         ).analyze()
 
         // then
-        val expectedTypes = listOf(
-            Type.simple("MyType")
-        )
         val node = report.nodes[0]
-        assertThat(node.usedTypes).containsAll(expectedTypes)
+        assertThat(node.usedTypes).contains(Type.simple("MyType"))
     }
 
     @Test
