@@ -27,6 +27,7 @@ class TypescriptAnalyzer(
 
     private val isTsx = fileInfo.physicalPath.endsWith(".tsx")
     private val extension = if (isTsx) "tsx" else "ts"
+    private val physicalFilePath by lazy { fileInfo.physicalPathAsPath().withoutFileSuffix(extension) }
 
     override fun tseLanguage(): Language = if (isTsx) Language.TSX else Language.TYPESCRIPT
 
@@ -37,25 +38,23 @@ class TypescriptAnalyzer(
         if (declaration.parentPath.isNotEmpty()) {
             return Path(declaration.parentPath) + declaration.name
         }
-        val filePath = fileInfo.physicalPathAsPath().withoutFileSuffix(extension)
         if (declaration.name == TSE_DEFAULT_EXPORT_NAME) {
-            val qualifiedName = filePath.parts.joinToString("_") + "_$TSE_DEFAULT_EXPORT_NAME"
-            return filePath + qualifiedName
+            val qualifiedName = physicalFilePath.parts.joinToString("_") + "_$TSE_DEFAULT_EXPORT_NAME"
+            return physicalFilePath + qualifiedName
         }
-        return filePath + declaration.name
+        return physicalFilePath + declaration.name
     }
 
     override fun analyze(): FileReport {
         val baseReport = super.analyze()
         val analysisRoot = fileInfo.analysisRoot ?: return baseReport
-        val currentFilePath = fileInfo.physicalPathAsPath().withoutFileSuffix(extension)
         val ownNames = baseReport.nodes
             .filter { it.pathWithName.parts.lastOrNull() != WILDCARD_EXPORT_NAME }
-            .map { it.pathWithName.parts.lastOrNull() }
+            .mapNotNull { it.pathWithName.parts.lastOrNull() }
             .toSet()
         val nodes = baseReport.nodes.flatMap { node ->
             if (node.pathWithName.parts.lastOrNull() == WILDCARD_EXPORT_NAME) {
-                expandWildcardReexport(node, currentFilePath, analysisRoot, ownNames)
+                expandWildcardReexport(node, physicalFilePath, analysisRoot, ownNames)
             } else {
                 listOf(node)
             }
@@ -78,8 +77,7 @@ class TypescriptAnalyzer(
 
     override fun extraDependencies(declaration: Declaration): Set<Dependency> {
         if (declaration.name != TSE_DEFAULT_EXPORT_NAME) return emptySet()
-        val filePath = fileInfo.physicalPathAsPath().withoutFileSuffix(extension)
-        return setOf(Dependency(path = filePath, isWildcard = true))
+        return setOf(Dependency(path = physicalFilePath, isWildcard = true))
     }
 
     override fun convertImport(import: ImportDeclaration): Set<Dependency> {
@@ -96,7 +94,7 @@ class TypescriptAnalyzer(
         wildcardNode: Node,
         currentFilePath: Path,
         analysisRoot: File,
-        ownNames: Set<String?>
+        ownNames: Set<String>
     ): List<Node> {
         val wildcardDeps = wildcardNode.dependencies.filter { it.isWildcard }
         val sourceFiles = wildcardDeps.mapNotNull { resolveSourceFile(it.path.parts, analysisRoot) }.toSet()
@@ -136,6 +134,8 @@ class TypescriptAnalyzer(
         resolvedPath: List<String>,
         isWildcard: Boolean
     ): Dependency? {
+        // A wildcard import with an empty resolved path has no module to point an
+        // `index` barrel dependency at, so there is nothing to synthesize.
         if (isWildcard && resolvedPath.isEmpty()) return null
         if (isWildcard) return Dependency(Path(resolvedPath + "index"), isWildcard = true)
         if (resolvedPath.size < 2) return null

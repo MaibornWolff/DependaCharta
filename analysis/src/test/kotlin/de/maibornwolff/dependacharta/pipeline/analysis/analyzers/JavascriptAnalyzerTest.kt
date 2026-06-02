@@ -452,7 +452,7 @@ class JavascriptAnalyzerTest {
     }
 
     @Test
-    @Disabled("Anonymous default exports not yet supported - queries don't match AST structure")
+    @Disabled("Anonymous default exports not yet supported by TSE dependency analysis")
     fun `should handle default export of anonymous class`() {
         // given
         val javascriptCode = """
@@ -477,7 +477,7 @@ class JavascriptAnalyzerTest {
     }
 
     @Test
-    @Disabled("Anonymous default exports not yet supported - queries don't match AST structure")
+    @Disabled("Anonymous default exports not yet supported by TSE dependency analysis")
     fun `should handle default export of anonymous function`() {
         // given
         val javascriptCode = """
