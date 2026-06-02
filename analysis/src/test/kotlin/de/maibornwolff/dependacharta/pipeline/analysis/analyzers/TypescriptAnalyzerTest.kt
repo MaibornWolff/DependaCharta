@@ -1129,7 +1129,7 @@ class TypescriptAnalyzerTest {
 
     @Test
     fun `should detect JSX elements as dependencies in React components`() {
-        // Arrange - Simplified test case that shows the issue: Routes is used only in JSX, not in TS code
+        // Given - Routes is used only in JSX, not in TS code
         val tsxCode = """
             import { loadUser, logout } from './Auth';
             import { Routes } from './routes';
@@ -1141,7 +1141,7 @@ class TypescriptAnalyzerTest {
             };
         """.trimIndent()
 
-        // Act
+        // When
         val report = TypescriptAnalyzer(
             FileInfo(
                 SupportedLanguage.TYPESCRIPT,
@@ -1150,19 +1150,17 @@ class TypescriptAnalyzerTest {
             )
         ).analyze()
 
-        // Assert - All three imports should be detected as dependencies
-        // loadUser and logout are detected because they are called as functions
-        // Routes should be detected because it's used as a JSX element, but currently it's NOT
+        // Then - All three imports should be detected as dependencies
         val loadUserDep = Dependency(path = Path(listOf("Auth", "loadUser")))
         val logoutDep = Dependency(path = Path(listOf("Auth", "logout")))
         val routesDep = Dependency(path = Path(listOf("routes", "Routes")))
 
         val appNode = report.nodes[0]
 
-        // These two pass because they're used as function calls
+        // loadUser and logout are detected because they are called as functions
         assertThat(appNode.dependencies).contains(loadUserDep, logoutDep)
 
-        // This should pass but currently FAILS because JSX elements aren't detected
+        // Routes is detected because it is used as a JSX element
         assertThat(appNode.dependencies)
             .withFailMessage("Routes component used in JSX should be detected as a dependency")
             .contains(routesDep)
@@ -1175,7 +1173,7 @@ class TypescriptAnalyzerTest {
 
     @Test
     fun `should detect JSX member expressions as dependencies`() {
-        // Arrange - Test JSX member expressions like <Form.Input />
+        // Given - JSX member expression like <Form.Input />
         val tsxCode = """
             import { Form } from './Form';
 
@@ -1184,7 +1182,7 @@ class TypescriptAnalyzerTest {
             };
         """.trimIndent()
 
-        // Act
+        // When
         val report = TypescriptAnalyzer(
             FileInfo(
                 SupportedLanguage.TYPESCRIPT,
@@ -1193,7 +1191,7 @@ class TypescriptAnalyzerTest {
             )
         ).analyze()
 
-        // Assert - Form should be detected as a dependency
+        // Then - Form should be detected as a dependency
         val formDep = Dependency(path = Path(listOf("Form", "Form")))
         val componentNode = report.nodes[0]
 
@@ -1208,7 +1206,7 @@ class TypescriptAnalyzerTest {
 
     @Test
     fun `should detect Routes in JSX even with complex component structure`() {
-        // Arrange - Closer to the real App.tsx with useEffect and props destructuring
+        // Given - Closer to the real App.tsx with useEffect and props destructuring
         val tsxCode = """
             import React, { useEffect } from 'react';
             import { loadUser, logout } from 'src/components/Auth/Auth_thunks';
@@ -1230,7 +1228,7 @@ class TypescriptAnalyzerTest {
             export const App = _App;
         """.trimIndent()
 
-        // Act
+        // When
         val report = TypescriptAnalyzer(
             FileInfo(
                 SupportedLanguage.TYPESCRIPT,
@@ -1239,11 +1237,11 @@ class TypescriptAnalyzerTest {
             )
         ).analyze()
 
-        // Assert - Find the _App node
+        // Then - Find the _App node
         val appNode = report.nodes.find { it.pathWithName.toString().contains("_App") }
         assertThat(appNode).isNotNull
 
-        // Routes should be detected as a dependency (currently FAILS in real analysis!)
+        // Routes should be detected as a dependency
         val routesDep = Dependency(path = Path(listOf("src", "routes", "Routes")))
         assertThat(appNode!!.dependencies)
             .withFailMessage("Routes component used in JSX <Routes /> should be detected even with complex component")
@@ -1255,7 +1253,7 @@ class TypescriptAnalyzerTest {
 
     @Test
     fun `should extract regular exports from index tsx files`() {
-        // Arrange - Index file with regular export (not a re-export)
+        // Given - Index file with regular export (not a re-export)
         val tsxCode = """
             import React from 'react';
 
@@ -1264,7 +1262,7 @@ class TypescriptAnalyzerTest {
             };
         """.trimIndent()
 
-        // Act
+        // When
         val report = TypescriptAnalyzer(
             FileInfo(
                 SupportedLanguage.TYPESCRIPT,
@@ -1273,7 +1271,7 @@ class TypescriptAnalyzerTest {
             )
         ).analyze()
 
-        // Assert - Regular exports from index files should create nodes
+        // Then - Regular exports from index files should create nodes
         assertThat(report.nodes)
             .withFailMessage("Index files with regular exports should create nodes for those exports")
             .isNotEmpty()

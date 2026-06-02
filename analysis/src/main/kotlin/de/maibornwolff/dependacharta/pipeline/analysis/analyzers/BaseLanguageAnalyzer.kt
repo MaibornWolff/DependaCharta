@@ -14,7 +14,7 @@ abstract class BaseLanguageAnalyzer(
 ) : LanguageAnalyzer {
     protected abstract val language: SupportedLanguage
 
-    open fun tseLanguage(): Language = Language.valueOf(language.name)
+    protected open fun tseLanguage(): Language = Language.valueOf(language.name)
 
     override fun analyze(): FileReport {
         val result = TreeSitterDependencies.analyze(fileInfo.content, tseLanguage())
