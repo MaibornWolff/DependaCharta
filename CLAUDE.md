@@ -138,6 +138,8 @@ TSE provides dependency analysis via `TreeSitterDependencies.analyze(code, langu
 5. **Verify**: Run the existing analyzer tests — they should pass without changes since the output is the same.
 6. **Clean up**: Remove obsolete files and modules that are no longer needed after the migration (e.g. query classes, utils, unused tree-sitter grammar dependencies).
 
+> **⚠️ Import alias resolution is a DC-side concern — TSE cannot do it.** TSE's `analyze(content, language)` only sees file content, so it cannot resolve tsconfig/jsconfig `paths`, bundler aliases (webpack/vite/vue), or Module Federation remotes — these need the file path, project root, and config files. DC resolves them in `PathUtils.resolveImportPath` via `AliasPathResolver`. When migrating a TS/JS/Vue analyzer, do **not** delete the alias resolvers, and when verifying with `/dc-compare` include at least one project that uses tsconfig `paths` (and ideally Module Federation) — comparing only alias-free projects (e.g. React/Prisma) produces a false green that hides alias-resolution regressions.
+
 ## CI/CD Pipeline
 
 The GitLab CI pipeline automatically:

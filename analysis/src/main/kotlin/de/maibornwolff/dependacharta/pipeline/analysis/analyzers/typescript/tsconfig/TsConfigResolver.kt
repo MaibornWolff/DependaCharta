@@ -1,9 +1,18 @@
 package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript.tsconfig
 
 import java.io.File
+import java.util.Collections
+import java.util.Optional
+import java.util.concurrent.ConcurrentHashMap
 
 class TsConfigResolver {
-    private val cache = mutableMapOf<String, TsConfigData?>()
+    // Analysis runs multi-threaded, so the caches must be safe for concurrent access.
+    private val cache: MutableMap<String, TsConfigData?> = Collections.synchronizedMap(mutableMapOf())
+
+    // Caches the upward config-file lookup per starting directory so the directory walk runs once
+    // per directory instead of once per bare import (Optional models the "no config found" result,
+    // which ConcurrentHashMap cannot store as null).
+    private val lookupCache = ConcurrentHashMap<String, Optional<File>>()
 
     companion object {
         private const val TSCONFIG_FILENAME = "tsconfig.json"
@@ -17,7 +26,15 @@ class TsConfigResolver {
     }
 
     private fun findTsConfigFile(sourceFile: File): File? {
-        var currentDir = if (sourceFile.isDirectory) sourceFile else sourceFile.parentFile
+        val startDir = (if (sourceFile.isDirectory) sourceFile else sourceFile.parentFile) ?: return null
+        val cached = lookupCache.computeIfAbsent(startDir.absolutePath) {
+            Optional.ofNullable(walkForConfigFile(startDir))
+        }
+        return cached.orElse(null)
+    }
+
+    private fun walkForConfigFile(startDir: File): File? {
+        var currentDir: File? = startDir
 
         while (currentDir != null) {
             // Prefer tsconfig.json if it exists, otherwise use jsconfig.json

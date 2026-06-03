@@ -1,13 +1,22 @@
 package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.bundler
 
 import java.io.File
+import java.util.Collections
+import java.util.Optional
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Finds bundler config files (webpack, vite, vue) by walking up from a source file.
- * Caches parsed configs for performance.
+ * Caches parsed configs for performance. The caches are thread-safe because the analysis
+ * run is multi-threaded and this resolver is shared via AliasPathResolver.
  */
 class BundlerConfigResolver {
-    private val cache = mutableMapOf<String, BundlerConfigData?>()
+    private val cache: MutableMap<String, BundlerConfigData?> = Collections.synchronizedMap(mutableMapOf())
+
+    // Caches the upward config-file lookup per starting directory so the directory walk runs once
+    // per directory instead of once per bare import (Optional models the "no config found" result,
+    // which ConcurrentHashMap cannot store as null).
+    private val lookupCache = ConcurrentHashMap<String, Optional<File>>()
 
     companion object {
         // Priority order: Vite (modern) > Vue CLI > Webpack (legacy)
@@ -26,7 +35,15 @@ class BundlerConfigResolver {
     }
 
     private fun findConfigFile(sourceFile: File): File? {
-        var currentDir = if (sourceFile.isDirectory) sourceFile else sourceFile.parentFile
+        val startDir = (if (sourceFile.isDirectory) sourceFile else sourceFile.parentFile) ?: return null
+        val cached = lookupCache.computeIfAbsent(startDir.absolutePath) {
+            Optional.ofNullable(walkForConfigFile(startDir))
+        }
+        return cached.orElse(null)
+    }
+
+    private fun walkForConfigFile(startDir: File): File? {
+        var currentDir: File? = startDir
 
         while (currentDir != null) {
             for (filename in CONFIG_FILENAMES) {

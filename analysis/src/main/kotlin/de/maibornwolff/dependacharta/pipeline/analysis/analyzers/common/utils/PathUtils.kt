@@ -1,5 +1,6 @@
 package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils
 
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.AliasPathResolver
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.model.DirectImport
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.model.Import
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.model.RelativeImport
@@ -75,15 +76,25 @@ fun String.stripSourceFileExtension(): String {
 }
 
 /**
- * Resolves a TSE import path (List<String>) to a flat list of path segments,
- * handling relative paths (starting with "." or "..") using the containing file's location.
+ * Resolves a TSE import path (List<String>) to a flat list of path segments.
+ *
+ * - Relative paths (starting with "." or "..") are resolved against the containing file's location.
+ * - Bare specifiers (e.g. "@shared/utils") are resolved through config-based alias resolution
+ *   (tsconfig/jsconfig `paths` -> bundler aliases -> federation remotes) via [AliasPathResolver],
+ *   falling back to the unresolved literal path so real npm packages stay external.
  */
 fun resolveImportPath(
     tsePath: List<String>,
     fileInfo: FileInfo
 ): List<String> {
     val stripped = tsePath.map { it.stripSourceFileExtension() }.filter { it.isNotEmpty() }
-    if (stripped.isEmpty() || (stripped.first() != "." && stripped.first() != "..")) return stripped
+    if (stripped.isEmpty()) return stripped
+    if (stripped.first() != "." && stripped.first() != "..") {
+        // Bare specifier (e.g. "@shared/utils"): try config-based alias resolution
+        // (tsconfig paths -> bundler aliases -> federation remotes). Falls back to the
+        // unresolved literal path, so real npm packages stay external as before.
+        return AliasPathResolver.resolve(stripped.joinToString("/"), fileInfo)?.parts ?: stripped
+    }
     var dirParts = fileInfo.physicalPathAsPath().parts.dropLast(1)
     var remaining = stripped
     while (remaining.isNotEmpty() && (remaining.first() == "." || remaining.first() == "..")) {
