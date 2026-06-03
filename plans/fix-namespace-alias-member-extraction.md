@@ -89,9 +89,9 @@ After fix: `Logger` is emitted as UsedType → DC resolves via wildcard → edge
 
 ### 3. DC: Regenerate demo JSONs
 
-After TSE fix:
-- `jj edit <pre-fix-commit>` in TSE → `publishToMavenLocal` → `clean fatJar` → run DC on ts-dc-test → save `analysis-before-fix.cg.json`
-- `jj edit <post-fix-commit>` in TSE → `publishToMavenLocal` → `clean fatJar` → run DC on ts-dc-test → save `analysis-after-fix.cg.json`
+After TSE fix, against a local TS project exercising a namespace alias (`import * as ns from '...'` + `new ns.Class()`):
+- `jj edit <pre-fix-commit>` in TSE → `publishToMavenLocal` → `clean fatJar` → run DC → save `analysis-before-fix.cg.json`
+- `jj edit <post-fix-commit>` in TSE → `publishToMavenLocal` → `clean fatJar` → run DC → save `analysis-after-fix.cg.json`
 - Verify: before has no `src.types.Logger` dep on NsConsumer; after has it
 
 ### 4. DC: Add TypescriptAnalyzerTest case for namespace alias
@@ -102,7 +102,7 @@ that the resulting node has the correct dependency edge.
 ## Steps
 
 - [x] Task 1: Fix `extractMemberAccesses` + `extractConstructorCalls` in TSE with failing tests first
-- [x] Task 2: Update `ts-dc-test/src/ns-consumer.ts` demo
+- [x] Task 2: Update the local `ns-consumer.ts` demo
 - [x] Task 3: Regenerate `analysis-before-fix.cg.json` and `analysis-after-fix.cg.json`
 - [x] Task 4: Add TypescriptAnalyzerTest case for namespace alias
 

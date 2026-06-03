@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Restore import alias resolution for TypeScript/JavaScript/Vue (tsconfig/jsconfig `paths`, bundler aliases, Module Federation remotes), which was silently lost during the TreeSitterExcavationSite migration. Aliased imports now resolve to their target modules instead of being dropped from the dependency graph.
+
 ## [0.25.0] - 2026-05-04
 
 ### Changed

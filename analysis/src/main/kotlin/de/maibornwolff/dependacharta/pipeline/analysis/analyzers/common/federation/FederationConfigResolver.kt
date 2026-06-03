@@ -1,13 +1,22 @@
 package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.federation
 
 import java.io.File
+import java.util.Collections
+import java.util.Optional
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Finds package.json files with Module Federation configuration.
- * Caches parsed configs for performance.
+ * Caches parsed configs for performance. The caches are thread-safe because the analysis
+ * run is multi-threaded and this resolver is shared via AliasPathResolver.
  */
 class FederationConfigResolver {
-    private val cache = mutableMapOf<String, FederationConfigData?>()
+    private val cache: MutableMap<String, FederationConfigData?> = Collections.synchronizedMap(mutableMapOf())
+
+    // Caches the upward package.json lookup per starting directory so the directory walk runs once
+    // per directory instead of once per bare import (Optional models the "no config found" result,
+    // which ConcurrentHashMap cannot store as null).
+    private val lookupCache = ConcurrentHashMap<String, Optional<File>>()
 
     companion object {
         private const val PACKAGE_JSON = "package.json"
@@ -68,7 +77,15 @@ class FederationConfigResolver {
     }
 
     private fun findPackageJsonWithFederation(sourceFile: File): File? {
-        var currentDir = if (sourceFile.isDirectory) sourceFile else sourceFile.parentFile
+        val startDir = (if (sourceFile.isDirectory) sourceFile else sourceFile.parentFile) ?: return null
+        val cached = lookupCache.computeIfAbsent(startDir.absolutePath) {
+            Optional.ofNullable(walkForFederationPackageJson(startDir))
+        }
+        return cached.orElse(null)
+    }
+
+    private fun walkForFederationPackageJson(startDir: File): File? {
+        var currentDir: File? = startDir
 
         while (currentDir != null) {
             val packageJson = currentDir.resolve(PACKAGE_JSON)
