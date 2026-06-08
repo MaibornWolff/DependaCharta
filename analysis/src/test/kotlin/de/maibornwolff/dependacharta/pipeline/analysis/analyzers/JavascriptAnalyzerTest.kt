@@ -243,6 +243,31 @@ class JavascriptAnalyzerTest {
     }
 
     @Test
+    @Disabled("Inline CommonJS named exports (exports.x = <expr>) not yet supported by TSE dependency analysis - DeclarationExtractor does not parse exports-property assignments; was handled by the removed JavascriptCommonJsExportsQuery")
+    fun `should capture inline CommonJS named export without a separate declaration`() {
+        // given - the export binding is the ONLY source of the name; unlike the test above there
+        // is no standalone `function compute` declaration to mask a dropped `exports.x = ...` export
+        val javascriptCode = """
+            exports.compute = function () {
+              return 42
+            }
+        """.trimIndent()
+
+        // when
+        val report = JavascriptAnalyzer(
+            FileInfo(
+                SupportedLanguage.JAVASCRIPT,
+                "TestClass.js",
+                javascriptCode
+            )
+        ).analyze()
+
+        // then - the inline named export must still surface as a node
+        val nodeNames = report.nodes.map { it.pathWithName.parts.last() }
+        assertThat(nodeNames).contains("compute")
+    }
+
+    @Test
     fun `should handle ES6 re-exports from index file`() {
         // Given
         val javascriptCode = """
