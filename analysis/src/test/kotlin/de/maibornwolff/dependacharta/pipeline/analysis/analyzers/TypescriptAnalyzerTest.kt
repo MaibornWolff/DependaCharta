@@ -416,6 +416,32 @@ class TypescriptAnalyzerTest {
     }
 
     @Test
+    fun `should keep dependency for aliased named re-export`() {
+        // Given - a named re-export that renames the imported binding: the source module's `Foo`
+        // is re-exported locally as `Bar`
+        val typescriptCode = """
+            export { Foo as Bar } from './MyModule'
+        """.trimIndent()
+
+        // When
+        val report = TypescriptAnalyzer(
+            FileInfo(
+                SupportedLanguage.TYPESCRIPT,
+                "MyDirectory/index.ts",
+                typescriptCode
+            )
+        ).analyze()
+
+        // Then - the re-export node is named after the alias `Bar` but must still depend on the
+        // source module's original `Foo` binding (selectImports filters imports by re-export name,
+        // so a mismatch between the alias and the imported name would silently drop this edge)
+        val node = report.nodes.first { it.pathWithName.parts.last() == "Bar" }
+        assertThat(node.dependencies).contains(
+            Dependency(path = Path(listOf("MyDirectory", "MyModule", "Foo")))
+        )
+    }
+
+    @Test
     fun `should handle reexports from non-index barrel file`() {
         // Given
         val typescriptCode = """
