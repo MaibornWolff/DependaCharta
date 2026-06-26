@@ -43,6 +43,15 @@ class ProcessingPipeline {
             }
             val (resolvedNodes, nodeInfos) = resolveDependencies(reports)
 
+            if (resolvedNodes.isEmpty()) {
+                Logger.w(
+                    "No analyzable nodes were found, so no report was generated. " +
+                        "This usually means no supported source files were found in the given directory, " +
+                        "or every file failed to parse. Re-run with '-l debug' for per-file details."
+                )
+                return
+            }
+
             val cycles = detectCycles(nodeInfos, omitGraphAnalysis)
             val leveledNodes = levelize(resolvedNodes, omitGraphAnalysis)
             saveResults(reports, cycles, resolvedNodes, leveledNodes, outputFileName, outputDirectoryName)

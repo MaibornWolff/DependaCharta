@@ -15,7 +15,17 @@ class AnalysisSynchronizer {
     private val recordLock = Any()
     private val directoryLock = Any()
 
-    fun hasOngoingAnalysis(): Boolean = File(tempDir + recordFileNameName).exists()
+    fun hasOngoingAnalysis(): Boolean {
+        synchronized(recordLock) {
+            val recordFile = File(tempDir + recordFileNameName)
+            if (!recordFile.exists()) {
+                return false
+            }
+            return runCatching {
+                Json.decodeFromString<Map<String, String?>>(recordFile.readText(Charsets.UTF_8)).isNotEmpty()
+            }.getOrDefault(false)
+        }
+    }
 
     fun getAnalysisRecord(): AnalysisRecord {
         synchronized(recordLock) {

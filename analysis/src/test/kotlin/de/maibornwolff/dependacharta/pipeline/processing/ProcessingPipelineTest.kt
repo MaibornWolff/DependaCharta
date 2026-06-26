@@ -315,6 +315,30 @@ class ProcessingPipelineTest {
     }
 
     @Test
+    fun `does not crash and writes no report when there are no analyzable nodes`() {
+        // Given
+        val outputFileName = "test"
+        val outputDirectoryName = "testresult"
+        val emptyReports = listOf(FileReport(emptyList()))
+        val originalOut = System.out
+        val outputStream = ByteArrayOutputStream()
+        System.setOut(PrintStream(outputStream))
+        Logger.setLevel(LogLevel.INFO)
+        Logger.setLoggingDirectory(null)
+
+        try {
+            // When
+            ProcessingPipeline.run(outputFileName, outputDirectoryName, emptyReports, false)
+
+            // Then
+            assertThat(File("testresult/test.cg.json")).doesNotExist()
+            assertThat(outputStream.toString()).contains("No analyzable nodes were found")
+        } finally {
+            System.setOut(originalOut)
+        }
+    }
+
+    @Test
     fun `should print visualization links after successful analysis`() {
         // Given
         val outputFileName = "test"
