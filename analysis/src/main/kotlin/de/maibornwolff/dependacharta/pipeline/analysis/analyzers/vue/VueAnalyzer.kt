@@ -3,6 +3,7 @@ package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.vue
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.LanguageAnalyzer
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.TSE_DEFAULT_EXPORT_NAME
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.resolveImportPath
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.defaultImportPath
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.stripSourceFileExtension
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.withoutFileSuffix
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.vue.queries.ScriptBlock
@@ -69,13 +70,13 @@ class VueAnalyzer(
         val tseResult = TreeSitterDependencies.analyze(scriptBlock.content, tseLanguage)
         val dependencies = tseResult.imports
             .map { import ->
-                val resolvedPath = resolveImportPath(import.path, fileInfo)
+                val resolvedPath = resolveImportPath(import.defaultImportPath(), fileInfo)
                 Dependency(path = Path(resolvedPath), isWildcard = import.isWildcard)
             }.toSet()
         val usedTypes = tseResult.imports
             .filter { !it.isWildcard && it.path.isNotEmpty() }
             .mapNotNull { import ->
-                val specifier = import.path.last().stripSourceFileExtension()
+                val specifier = import.defaultImportPath().last().stripSourceFileExtension()
                 if (specifier.isEmpty() || specifier == TSE_DEFAULT_EXPORT_NAME) null else Type.simple(specifier)
             }.toSet()
         return Pair(dependencies, usedTypes)

@@ -376,4 +376,40 @@ class VueAnalyzerTest {
             it.endsWith("ChildComponent") && !it.contains(".vue")
         }
     }
+
+    @Test
+    fun `resolves a script default import to its binding name instead of the DEFAULT_EXPORT marker`() {
+        // Given
+        val vueCode = """
+            <template>
+              <div>{{ title }}</div>
+            </template>
+
+            <script lang="ts">
+            import TitleBuilder from './util/titleBuilder'
+
+            export default {
+              computed: { title() { return new TitleBuilder().build() } }
+            }
+            </script>
+        """.trimIndent()
+
+        val fileInfo = FileInfo(
+            language = SupportedLanguage.VUE,
+            physicalPath = "src/widgets/Header.vue",
+            content = vueCode
+        )
+
+        // When
+        val result = VueAnalyzer(fileInfo).analyze()
+
+        // Then
+        // The default import binds to TitleBuilder; both the dependency and the usedType must carry that
+        // binding name so the dependency can resolve to the exported declaration, not a DEFAULT_EXPORT marker.
+        val node = result.nodes.first()
+        val dependencyPaths = node.dependencies.map { it.path.toString() }
+        assertThat(dependencyPaths).anyMatch { it.endsWith("titleBuilder.TitleBuilder") }
+        assertThat(dependencyPaths).noneMatch { it.endsWith("DEFAULT_EXPORT") }
+        assertThat(node.usedTypes.map { it.name }).contains("TitleBuilder")
+    }
 }
