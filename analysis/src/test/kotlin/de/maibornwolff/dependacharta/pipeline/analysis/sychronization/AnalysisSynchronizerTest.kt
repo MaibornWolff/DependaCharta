@@ -134,6 +134,18 @@ class AnalysisSynchronizerTest {
     }
 
     @Test
+    fun `Has no ongoing analysis if the record exists but is empty`() {
+        // given
+        testee.saveAnalysisRecord(AnalysisRecord(emptyMap()))
+
+        // when
+        val isOngoing = testee.hasOngoingAnalysis()
+
+        // then
+        assertThat(isOngoing).isEqualTo(false)
+    }
+
+    @Test
     fun `Deletes temp directory`() {
         // given
         testee.saveAnalysisRecord(AnalysisRecord(mapOf("file" to null)))
