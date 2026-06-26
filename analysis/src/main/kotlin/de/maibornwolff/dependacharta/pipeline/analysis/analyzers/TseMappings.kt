@@ -18,6 +18,18 @@ fun ImportDeclaration.toDependency(): Dependency {
     return Dependency(path = Path(path), isWildcard = isWildcard)
 }
 
+// TSE represents a default import (`import Foo from './bar'`) as the module path plus a DEFAULT_EXPORT
+// marker, while the default-exported declaration is keyed by its real name (`Foo`). Substituting the
+// local binding name for the marker lets the dependency resolve to that declaration instead of dangling
+// on an unmatchable DEFAULT_EXPORT segment. Falls back to the raw path when there is no binding name.
+fun ImportDeclaration.defaultImportPath(): List<String> {
+    val binding = bindingName
+    if (binding != null && path.lastOrNull() == TSE_DEFAULT_EXPORT_NAME) {
+        return path.dropLast(1) + binding
+    }
+    return path
+}
+
 fun UsedType.toType(): Type {
     if (genericTypes.isEmpty()) {
         return Type.simple(name)

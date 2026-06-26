@@ -130,11 +130,14 @@ class JavascriptAnalyzerTest {
         ).analyze()
 
         // then
+        // The default import binds the module's default export to `MyModule`; the dependency must end
+        // in that binding name so it can resolve to the exported declaration, not the DEFAULT_EXPORT marker.
         val expectedDependency = Dependency(
-            path = Path(listOf("MyDirectory", "MyModule", "default"))
+            path = Path(listOf("MyDirectory", "MyModule", "MyModule"))
         )
         val node = report.nodes[0]
         assertThat(node.dependencies).contains(expectedDependency)
+        assertThat(node.dependencies).noneMatch { it.path.parts.last() == "DEFAULT_EXPORT" }
     }
 
     @Test
@@ -157,8 +160,9 @@ class JavascriptAnalyzerTest {
         ).analyze()
 
         // then
+        // A default `require` binds the module to `MyModule`; the dependency resolves under that name.
         val expectedDependency = Dependency(
-            path = Path(listOf("MyDirectory", "MyModule", "default"))
+            path = Path(listOf("MyDirectory", "MyModule", "MyModule"))
         )
         val node = report.nodes[0]
         assertThat(node.dependencies).contains(expectedDependency)
@@ -417,7 +421,7 @@ class JavascriptAnalyzerTest {
         // then
         val expectedDependencies = listOf(
             Dependency(path = Path(listOf("MyDirectory", "ES6Module", "ES6Class"))),
-            Dependency(path = Path(listOf("MyDirectory", "CommonJSModule", "default")))
+            Dependency(path = Path(listOf("MyDirectory", "CommonJSModule", "CommonJSClass")))
         )
         val node = report.nodes[0]
         assertThat(node.dependencies).containsAll(expectedDependencies)

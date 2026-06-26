@@ -3,6 +3,7 @@ package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.javascript
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.BaseLanguageAnalyzer
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.TSE_DEFAULT_EXPORT_NAME
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.withoutFileSuffix
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.defaultImportPath
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Dependency
 import de.maibornwolff.dependacharta.pipeline.analysis.model.FileInfo
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
@@ -30,7 +31,7 @@ class JavascriptAnalyzer(
     }
 
     override fun convertImport(import: ImportDeclaration): Set<Dependency> {
-        val path = resolveImportPath(import.path)
+        val path = resolveImportPath(import.defaultImportPath())
         val resolvedPath = if (path.isEmpty()) path else path.dropLast(1) + localExportName(path.last())
         return setOf(Dependency(path = Path(resolvedPath), isWildcard = import.isWildcard))
     }

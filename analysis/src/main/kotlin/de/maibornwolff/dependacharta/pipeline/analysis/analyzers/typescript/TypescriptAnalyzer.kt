@@ -3,6 +3,7 @@ package de.maibornwolff.dependacharta.pipeline.analysis.analyzers.typescript
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.BaseLanguageAnalyzer
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.TSE_DEFAULT_EXPORT_NAME
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.WILDCARD_EXPORT_NAME
+import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.defaultImportPath
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.toRelativePath
 import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.common.utils.withoutFileSuffix
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Dependency
@@ -81,22 +82,10 @@ class TypescriptAnalyzer(
     }
 
     override fun convertImport(import: ImportDeclaration): Set<Dependency> {
-        val resolvedPath = resolveImportPath(defaultImportPath(import))
+        val resolvedPath = resolveImportPath(import.defaultImportPath())
         val primary = Dependency(path = Path(resolvedPath), isWildcard = import.isWildcard)
         val index = buildIndexDependency(resolvedPath, import.isWildcard)
         return if (index != null) setOf(primary, index) else setOf(primary)
-    }
-
-    // TSE represents a default import (`import Foo from './bar'`) as the module path plus a
-    // DEFAULT_EXPORT marker, while the default-exported declaration is keyed by its real name (`Foo`).
-    // Substitute the local binding name for the marker so the dependency resolves to that declaration
-    // instead of dangling on an unmatchable DEFAULT_EXPORT segment.
-    private fun defaultImportPath(import: ImportDeclaration): List<String> {
-        val bindingName = import.bindingName
-        if (bindingName != null && import.path.lastOrNull() == TSE_DEFAULT_EXPORT_NAME) {
-            return import.path.dropLast(1) + bindingName
-        }
-        return import.path
     }
 
     // Nodes here are synthetic — constructed from a secondary TSE parse of the source file,
