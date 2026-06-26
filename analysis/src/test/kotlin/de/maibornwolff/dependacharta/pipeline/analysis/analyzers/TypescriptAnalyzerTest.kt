@@ -244,7 +244,7 @@ class TypescriptAnalyzerTest {
         // given
         val typescriptCode = """
             import MyGreatInterface from 'MyGreatInterface';
-            
+
             export class MyGreatClass implements MyGreatInterface {}
         """.trimIndent()
 
@@ -258,14 +258,46 @@ class TypescriptAnalyzerTest {
         ).analyze()
 
         // then
+        // A default import (`import Foo from './bar'`) binds the imported default export to the
+        // local name `Foo`. The dependency must end in that binding name so it can resolve to the
+        // exported declaration (which is keyed by its real name), not the internal DEFAULT_EXPORT marker.
         val expectedDependency = Dependency(
-            path = Path(listOf("MyGreatInterface", "DEFAULT_EXPORT")),
+            path = Path(listOf("MyGreatInterface", "MyGreatInterface")),
         )
         val node = report.nodes[0]
         assertThat(node.dependencies).contains(expectedDependency)
+        assertThat(node.dependencies).noneMatch { it.path.parts.last() == "DEFAULT_EXPORT" }
         assertThat(node.usedTypes).containsExactly(
             Type.simple("MyGreatInterface"),
         )
+    }
+
+    @Test
+    fun `should resolve default import used as a base class to the exported declaration`() {
+        // given
+        val typescriptCode = """
+            import BoundingBox from './boundingBox';
+
+            export default class House extends BoundingBox {}
+        """.trimIndent()
+
+        // when
+        val report = TypescriptAnalyzer(
+            FileInfo(
+                SupportedLanguage.TYPESCRIPT,
+                "street/house.ts",
+                typescriptCode
+            )
+        ).analyze()
+
+        // then
+        // The dependency must point at street/boundingBox/BoundingBox - the real exported class -
+        // so it matches the BoundingBox declaration's node during dependency resolution.
+        val node = report.nodes.first { it.usedTypes.contains(Type.simple("BoundingBox")) }
+        assertThat(node.dependencies).contains(
+            Dependency(path = Path(listOf("street", "boundingBox", "BoundingBox"))),
+        )
+        assertThat(node.dependencies).noneMatch { it.path.parts.last() == "DEFAULT_EXPORT" }
     }
 
     @Test
@@ -840,10 +872,12 @@ class TypescriptAnalyzerTest {
         ).analyze()
 
         // then
+        // The default binding resolves under its local name; the named import keeps its own name.
         assertThat(report.nodes[0].dependencies).contains(
-            Dependency(Path(listOf("MyGreatInterface", "DEFAULT_EXPORT"))),
+            Dependency(Path(listOf("MyGreatInterface", "MyGreatInterface"))),
             Dependency(Path(listOf("MyGreatInterface", "SomeNamedImport")))
         )
+        assertThat(report.nodes[0].dependencies).noneMatch { it.path.parts.last() == "DEFAULT_EXPORT" }
     }
 
     @Test
@@ -864,8 +898,9 @@ class TypescriptAnalyzerTest {
         ).analyze()
 
         // then
+        // A default `require` binding resolves under its local name, not the DEFAULT_EXPORT marker.
         assertThat(report.nodes[0].dependencies).contains(
-            Dependency(Path(listOf("myModule", "DEFAULT_EXPORT")))
+            Dependency(Path(listOf("myModule", "myModule")))
         )
     }
 
