@@ -101,7 +101,7 @@ For a detailed explanation of DependaCharta's domain concepts, see our [Domain M
 ### Key Technologies
 - **Analysis**: Kotlin, Tree-sitter, Gradle, Clikt CLI framework
 - **Visualization**: Angular 20, TypeScript, Cytoscape.js, Electron
-- **Supported Languages**: Java, C#, C++, TypeScript, JavaScript, PHP, Go, Python, Kotlin, Vue, Delphi
+- **Supported Languages**: Java, C#, C++, TypeScript, JavaScript, PHP, Go, Python, Kotlin, Vue, Delphi, Rust
 
 ### Project Structure
 ```
@@ -121,7 +121,7 @@ visualization/
 ### Important Patterns
 - Language analyzers live in `analysis/src/main/kotlin/de/maibornwolff/dependacharta/pipeline/analysis/analyzers/<lang>/`
 - Each analyzer implements `LanguageAnalyzer` and extracts packages, imports, declarations, and used types from AST
-- **Java, Kotlin, and C#** delegate to the [TreeSitterExcavationSite](https://github.com/MaibornWolff/TreeSitterExcavationSite) (TSE) library via `TreeSitterDependencies.analyze()` and map TSE domain types to DC domain types. This is the target pattern for future language migrations.
+- **Java, Kotlin, C#, C++, TypeScript, JavaScript, Delphi, and Rust** delegate to the [TreeSitterExcavationSite](https://github.com/MaibornWolff/TreeSitterExcavationSite) (TSE) library via `TreeSitterDependencies.analyze()` and map TSE domain types to DC domain types. This is the target pattern for future language migrations. (Rust is TSE-native — it has no DC legacy analyzer.)
 - **Other languages** still use custom TreeSitter queries (TSQuery) directly. These can be migrated to TSE once it supports dependency analysis for the respective language.
 - Angular components follow standard Angular patterns with services for data management
 - Visualization uses reactive patterns with RxJS for state management

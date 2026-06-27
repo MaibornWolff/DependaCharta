@@ -15,6 +15,7 @@ enum class SupportedLanguage(
     KOTLIN("Kotlin", listOf("kt", "kts")),
     VUE("Vue", listOf("vue")),
     DELPHI("Delphi", listOf("pas", "dpr")),
+    RUST("Rust", listOf("rs")),
 }
 
 fun languagesByExtension(languages: List<SupportedLanguage>) =
