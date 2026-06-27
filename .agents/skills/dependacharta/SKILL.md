@@ -5,7 +5,7 @@ description: Analyze codebase dependencies using DependaCharta. Detects dependen
 
 # DependaCharta Analysis
 
-Analyze source code dependencies without compilation using Tree-sitter parsers. Supports Java, C#, C++, TypeScript, JavaScript, PHP, Go, Python, Kotlin, and Vue.
+Analyze source code dependencies without compilation using Tree-sitter parsers. Supports Java, C#, C++, TypeScript, JavaScript, PHP, Go, Python, Kotlin, Vue, Delphi, and Rust.
 
 ## Setup
 

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add Rust dependency analysis support (`.rs` files), including Cargo-workspace crate-aware node paths (cross-crate `use other_crate::Type` references resolve) and `pub use` re-export flattening (a consumer's `use crate::Type` resolves through the crate's `lib.rs` re-export to the real `crate::module::Type` definition).
+
 ### Fixed
 
 - Restore import alias resolution for TypeScript/JavaScript/Vue (tsconfig/jsconfig `paths`, bundler aliases, Module Federation remotes), which was silently lost during the TreeSitterExcavationSite migration. Aliased imports now resolve to their target modules instead of being dropped from the dependency graph.
