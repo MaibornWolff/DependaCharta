@@ -4,6 +4,7 @@ import de.maibornwolff.dependacharta.pipeline.analysis.analyzers.rust.RustAnalyz
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Dependency
 import de.maibornwolff.dependacharta.pipeline.analysis.model.FileInfo
 import de.maibornwolff.dependacharta.pipeline.analysis.model.FileReport
+import de.maibornwolff.dependacharta.pipeline.analysis.model.Node
 import de.maibornwolff.dependacharta.pipeline.analysis.model.NodeType
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Path
 import de.maibornwolff.dependacharta.pipeline.analysis.model.Type
@@ -319,5 +320,139 @@ class RustAnalyzerTest {
         val render = resolved.first { it.pathWithName.parts.last() == "render" }
         assertThat(render.resolvedNodeDependencies.internalDependencies.map { it.path.withDots() })
             .contains("domain.workshop.Workshop")
+    }
+
+    @Test
+    fun `should resolve crate and self prefixes in pub use re-exports to the crate-rooted target`() {
+        // Given — a crate root re-exporting via both crate:: and self::
+        val code = """
+            pub use crate::workshop::Workshop;
+            pub use self::finding::Finding;
+        """.trimIndent()
+
+        // When
+        val report = analyze(code, "/repo/crates/domain/src/lib.rs")
+
+        // Then — both forms resolve to the crate-rooted definition path
+        assertThat(report.node("Workshop").dependencies).contains(Dependency(Path(listOf("domain", "workshop", "Workshop"))))
+        assertThat(report.node("Finding").dependencies).contains(Dependency(Path(listOf("domain", "finding", "Finding"))))
+    }
+
+    @Test
+    fun `should resolve a super prefix in a pub use re-export from a submodule`() {
+        // Given — a submodule re-exporting a sibling-of-parent item via super::
+        val code = "pub use super::shared::Helper;"
+
+        // When
+        val report = analyze(code, "/repo/crates/domain/src/feature/mod.rs")
+
+        // Then — fileModulePath [domain, feature]; super:: strips one segment -> [domain, shared, Helper]
+        val helper = report.node("Helper")
+        assertThat(helper.nodeType).isEqualTo(NodeType.REEXPORT)
+        assertThat(helper.pathWithName.parts).containsExactly("domain", "feature", "Helper")
+        assertThat(helper.dependencies).contains(Dependency(Path(listOf("domain", "shared", "Helper"))))
+    }
+
+    @Test
+    fun `should not emit a node for a glob pub use re-export`() {
+        // Given — a wildcard re-export (needs cross-file expansion; out of scope)
+        val code = "pub use internal::*;"
+
+        // When
+        val report = analyze(code, "/repo/crates/domain/src/lib.rs")
+
+        // Then — no forwarding node is synthesized for a glob re-export
+        assertThat(report.nodes).isEmpty()
+    }
+
+    @Test
+    fun `should normalize chained super segments in imports`() {
+        // Given — a deep module importing via super::super::
+        val code = """
+            use super::super::shared::Helper;
+            struct Foo { h: Helper }
+        """.trimIndent()
+
+        // When
+        val report = analyze(code, "/repo/crates/domain/src/a/b.rs")
+
+        // Then — fileModulePath [domain, a, b]; two supers strip two segments -> [domain, shared, Helper]
+        assertThat(report.node("Foo").dependencies).contains(Dependency(Path(listOf("domain", "shared", "Helper"))))
+    }
+
+    @Test
+    fun `should derive the module path for a file outside any src directory`() {
+        // Given — a build script with no enclosing src/ directory
+        val code = "struct Foo {}"
+
+        // When
+        val report = analyze(code, "build.rs")
+
+        // Then — falls back to the file name as the module segment, with no crate prefix
+        assertThat(report.node("Foo").pathWithName.parts).containsExactly("build", "Foo")
+    }
+
+    @Test
+    fun `should derive an empty module path for a blank physical path`() {
+        // Given — no physical path information at all
+        val code = "struct Foo {}"
+
+        // When
+        val report = analyze(code, "")
+
+        // Then — the node sits at the (empty) crate root
+        assertThat(report.node("Foo").pathWithName.parts).containsExactly("Foo")
+    }
+
+    @Test
+    fun `should ignore current-directory segments in the physical path`() {
+        // Given — a path with a leading ./ segment
+        val code = "struct Foo {}"
+
+        // When
+        val report = analyze(code, "./crates/domain/src/model.rs")
+
+        // Then — the "." segment is dropped; crate name and module are derived normally
+        assertThat(report.node("Foo").pathWithName.parts).containsExactly("domain", "model", "Foo")
+    }
+
+    @Test
+    fun `should drop a re-export carrier that has no concrete target`() {
+        // Given — a synthetic RUST re-export node whose only dependency is a wildcard (no concrete target)
+        val carrier = Node(
+            pathWithName = Path(listOf("domain", "Foo")),
+            physicalPath = "x",
+            nodeType = NodeType.REEXPORT,
+            language = SupportedLanguage.RUST,
+            dependencies = setOf(Dependency.asWildcard(listOf("domain"))),
+            usedTypes = emptySet()
+        )
+
+        // When
+        val resolved = DependencyResolverService.resolveNodes(listOf(FileReport(listOf(carrier))))
+
+        // Then — with no concrete target to alias onto, the carrier is dropped without error
+        assertThat(resolved.map { it.pathWithName.withDots() }).doesNotContain("domain.Foo")
+    }
+
+    @Test
+    fun `should drop a re-export whose target is not in the analyzed set`() {
+        // Given — domain re-exports Workshop, but workshop.rs is NOT among the analyzed files
+        val domainLib = analyze("pub use workshop::Workshop;", "/repo/crates/domain/src/lib.rs")
+        val consumer = analyze(
+            """
+            use domain::Workshop;
+            pub fn render(w: &Workshop) -> String { String::new() }
+            """.trimIndent(),
+            "/repo/crates/adapter_exporter/src/markdown.rs"
+        )
+
+        // When
+        val resolved = DependencyResolverService.resolveNodes(listOf(domainLib, consumer))
+
+        // Then — with no real definition to alias onto, the carrier is dropped and render stays unresolved
+        assertThat(resolved.map { it.pathWithName.withDots() }).doesNotContain("domain.Workshop")
+        val render = resolved.first { it.pathWithName.parts.last() == "render" }
+        assertThat(render.resolvedNodeDependencies.internalDependencies).isEmpty()
     }
 }
