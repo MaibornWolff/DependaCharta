@@ -6,7 +6,7 @@ unix_default_inline_shell_args = "bash -c"
 windows_default_inline_shell_args = "sh -c"
 
 [tools]
-java = "temurin-17"
+java = "temurin-17.0.19+10"
 node = "22.21.1"
 
 # =============================================================================
