@@ -33,7 +33,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
     implementation("me.tongfei:progressbar:0.10.2")
     testImplementation(kotlin("test"))
-    testImplementation("org.assertj:assertj-core:3.27.6")
+    testImplementation("org.assertj:assertj-core:3.27.7")
     testImplementation(platform("org.junit:junit-bom:5.14.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     // Kotlin Coroutines
