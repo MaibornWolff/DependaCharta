@@ -34,6 +34,12 @@
 
 </div>
 
+> [!IMPORTANT]
+> **DependaCharta is no longer supported.**
+>
+> DependaCharta is now part of **[CodeCharta](https://github.com/MaibornWolff/codecharta)**. All further development, bug fixes and releases happen there.
+> Please use CodeCharta and open new issues in the [CodeCharta repository](https://github.com/MaibornWolff/codecharta/issues).
+
 ![Screenshot of CodeCharta](assets/promo_img.png)
 ---
 
